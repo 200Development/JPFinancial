@@ -1,4 +1,4 @@
-﻿@model JPFinancial.Models.ExternalLoginListViewModel
+﻿@model JPFinancial.ViewModels.ExternalLoginListViewModel
 @using Microsoft.Owin.Security
 
 <h4>Use another service to log in.</h4>
@@ -14,7 +14,7 @@
         </div>
     }
     else {
-        using (Html.BeginForm("ExternalLogin", "UserAccount", new { ReturnUrl = Model.ReturnUrl })) {
+        using (Html.BeginForm("ExternalLogin", "Identity", new { ReturnUrl = Model.ReturnUrl })) {
             @Html.AntiForgeryToken()
             <div id="socialLoginList">
                 <p>

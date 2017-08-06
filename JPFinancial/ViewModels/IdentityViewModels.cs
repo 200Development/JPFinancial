@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace JPFinancial.Models
+namespace JPFinancial.ViewModels
 {
     public class ExternalLoginConfirmationViewModel
     {
