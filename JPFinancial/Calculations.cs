@@ -8,7 +8,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 
-namespace Financial_Tracking
+namespace JPFinancial
 {
     public class Calculations
     {

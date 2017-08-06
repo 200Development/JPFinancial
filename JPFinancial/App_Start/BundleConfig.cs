@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace Financial_Tracking
+namespace JPFinancial
 {
     public class BundleConfig
     {

@@ -1,121 +1,145 @@
 ﻿using JPFinancial.Models;
+using JPFinancial.ViewModels;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 
-
 namespace JPFinancial.Controllers
 {
-    public class AccountController : Controller
+    public class BillsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
 
-        // GET: Accounts
+        // GET: Bills
         public ActionResult Index()
         {
-            _calculations.GetRequiredAcctSavings();
-            _calculations.GetReqBalanceSurplus();
-
-            return View(_db.Accounts.ToList());
+            return View(_db.Bills.ToList());
         }
 
-        // GET: Accounts/Details/5
+        // GET: Bills/Details/5
         public ActionResult Details(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
-            if (account == null)
+            Bill bill = _db.Bills.Find(id);
+            if (bill == null)
             {
                 return HttpNotFound();
             }
-            return View(account);
+            return View(bill);
         }
 
-        // GET: Accounts/Create
+        // GET: Bills/Create
         public ActionResult Create()
         {
-            return View();
+
+            var viewModel = new CreateBillViewModel
+            {
+                Accounts = _db.Accounts.ToList()
+            };
+
+            return View(viewModel);
         }
 
-        // POST: Accounts/Create
+        // POST: Bills/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AccountId,Name,Balance,Goal")] Account account)
+        public ActionResult Create(CreateBillViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
-                //Add create date
-                var editDate = DateTime.Today.ToShortDateString();
+                var account = _db.Accounts.Single(a => a.Id == viewModel.Account);
+                var accountId = account.Id;
 
-                _db.Accounts.Add(account);
+                var bill = new Bill
+                {
+                    Name = viewModel.Name,
+                    IsMandatory = viewModel.IsMandatory,
+                    AmountDue = viewModel.AmountDue,
+                    DueDate = Convert.ToDateTime(viewModel.DueDate),
+                    PaymentFrequency = viewModel.PaymentFrequency,
+                    AccountId = accountId,
+                    Account = account
+                };
+
+                _db.Bills.Add(bill);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(account);
+            return View();
         }
 
-        // GET: Accounts/Edit/5
+        public static IEnumerable<SelectListItem> ToSelectListItems(IEnumerable<Account> accounts, int selectedId)
+        {
+            return accounts.OrderBy(account => account.Name).Select(account => new SelectListItem
+            {
+                Selected = (account.Id == selectedId),
+                Text = account.Name,
+                Value = account.Id.ToString()
+            });
+        }
+
+        // GET: Bills/Edit/5
         public ActionResult Edit(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
-            if (account == null)
+            Bill bill = _db.Bills.Find(id);
+            if (bill == null)
             {
                 return HttpNotFound();
             }
-            return View(account);
+            return View(bill);
         }
 
-        // POST: Accounts/Edit/5
+        // POST: Bills/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AccountId,Name,Balance,Goal,Date")] Account account)
+        public ActionResult Edit([Bind(Include = "BillId,Name,IsMandatory,AccountNumber,Balance,DueDate,PaymentFrequency,IsLate")] Bill bill)
         {
             if (ModelState.IsValid)
             {
-                _db.Entry(account).State = EntityState.Modified;
+                _db.Entry(bill).State = EntityState.Modified;
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(account);
+            return View(bill);
         }
 
-        // GET: Accounts/Delete/5
+        // GET: Bills/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
-            if (account == null)
+            Bill bill = _db.Bills.Find(id);
+            if (bill == null)
             {
                 return HttpNotFound();
             }
-            return View(account);
+            return View(bill);
         }
 
-        // POST: Accounts/Delete/5
+        // POST: Bills/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Account account = _db.Accounts.Find(id);
-            _db.Accounts.Remove(account);
+            Bill bill = _db.Bills.Find(id);
+            _db.Bills.Remove(bill);
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -128,6 +152,5 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
-
     }
 }

@@ -1,6 +1,5 @@
-﻿using Financial_Tracking;
-using Financial_Tracking.ViewModels;
-using JPFinancial.Models;
+﻿using JPFinancial.Models;
+using JPFinancial.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

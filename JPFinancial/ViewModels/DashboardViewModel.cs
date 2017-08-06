@@ -1,7 +1,7 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-namespace Financial_Tracking.ViewModels
+namespace JPFinancial.ViewModels
 {
     public class DashboardViewModel
     {
