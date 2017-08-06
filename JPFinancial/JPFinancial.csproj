@@ -169,6 +169,7 @@
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Calculations.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -179,6 +180,7 @@
     <Compile Include="Models\Bill.cs" />
     <Compile Include="Models\Frequency.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
+    <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IdentityViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
@@ -248,6 +250,12 @@
     <Content Include="Views\Account\Edit.cshtml" />
     <Content Include="Views\Account\Index.cshtml" />
     <Content Include="Views\Account\_Accounts.cshtml" />
+    <Content Include="Views\Dashboard\Create.cshtml" />
+    <Content Include="Views\Dashboard\Delete.cshtml" />
+    <Content Include="Views\Dashboard\Details.cshtml" />
+    <Content Include="Views\Dashboard\Edit.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Dashboard\IndexList.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
