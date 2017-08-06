@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JPFinancial.Models
 {
-    public class CashAccount : IAccount
+    public class Account : IAccount
     {
-        public CashAccount()
+        public Account()
         {
             Balance = decimal.Zero;
             Goal = decimal.Zero;

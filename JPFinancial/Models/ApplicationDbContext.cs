@@ -12,9 +12,8 @@ namespace JPFinancial.Models
         {
         }
 
-        public IDbSet<CashAccount> CashAccounts { get; set; }
-        public IDbSet<SavingsAccount> SavingsAccounts { get; set; }
-        public IDbSet<CheckingAccount> CheckingAccounts { get; set; }
+        public IDbSet<Account> Accounts { get; set; }
+        public IDbSet<Bill> Bills { get; set; }
 
         public static ApplicationDbContext Create()
         {
