@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
+using System.Data.Entity;
 
 namespace JPFinancial.Models
 {
@@ -11,6 +12,7 @@ namespace JPFinancial.Models
         {
         }
 
+        public IDbSet<CashAccount> CashAccounts { get; set; }
 
         public static ApplicationDbContext Create()
         {

@@ -1,28 +1,25 @@
-﻿using System;
-using System.Globalization;
-using System.Linq;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
+﻿using JPFinancial.Models;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using JPFinancial.Models;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 
 namespace JPFinancial.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class UserAccountController : Controller
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
-        public AccountController()
+        public UserAccountController()
         {
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public UserAccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
         {
             UserManager = userManager;
             SignInManager = signInManager;
@@ -53,7 +50,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/Login
+        // GET: /UserAccount/Login
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
@@ -62,7 +59,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/Login
+        // POST: /UserAccount/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -73,8 +70,8 @@ namespace JPFinancial.Controllers
                 return View(model);
             }
 
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, change to shouldLockout: true
+            // This doesn't count login failures towards UserAccount lockout
+            // To enable password failures to trigger UserAccount lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
@@ -92,7 +89,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/VerifyCode
+        // GET: /UserAccount/VerifyCode
         [AllowAnonymous]
         public async Task<ActionResult> VerifyCode(string provider, string returnUrl, bool rememberMe)
         {
@@ -105,7 +102,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/VerifyCode
+        // POST: /UserAccount/VerifyCode
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -117,9 +114,9 @@ namespace JPFinancial.Controllers
             }
 
             // The following code protects for brute force attacks against the two factor codes. 
-            // If a user enters incorrect codes for a specified amount of time then the user account 
+            // If a user enters incorrect codes for a specified amount of time then the user UserAccount 
             // will be locked out for a specified amount of time. 
-            // You can configure the account lockout settings in IdentityConfig
+            // You can configure the UserAccount lockout settings in IdentityConfig
             var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
@@ -135,7 +132,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/Register
+        // GET: /UserAccount/Register
         [AllowAnonymous]
         public ActionResult Register()
         {
@@ -143,7 +140,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/Register
+        // POST: /UserAccount/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -157,11 +154,11 @@ namespace JPFinancial.Controllers
                 {
                     await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
                     
-                    // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                    // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                     // Send an email with this link
                     // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                    // var callbackUrl = Url.Action("ConfirmEmail", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                    // await UserManager.SendEmailAsync(user.Id, "Confirm your UserAccount", "Please confirm your UserAccount by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
                     return RedirectToAction("Index", "Home");
                 }
@@ -173,7 +170,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ConfirmEmail
+        // GET: /UserAccount/ConfirmEmail
         [AllowAnonymous]
         public async Task<ActionResult> ConfirmEmail(string userId, string code)
         {
@@ -186,7 +183,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ForgotPassword
+        // GET: /UserAccount/ForgotPassword
         [AllowAnonymous]
         public ActionResult ForgotPassword()
         {
@@ -194,7 +191,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/ForgotPassword
+        // POST: /UserAccount/ForgotPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -209,12 +206,12 @@ namespace JPFinancial.Controllers
                     return View("ForgotPasswordConfirmation");
                 }
 
-                // For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
                 // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
+                // var callbackUrl = Url.Action("ResetPassword", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);		
                 // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "Account");
+                // return RedirectToAction("ForgotPasswordConfirmation", "UserAccount");
             }
 
             // If we got this far, something failed, redisplay form
@@ -222,7 +219,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ForgotPasswordConfirmation
+        // GET: /UserAccount/ForgotPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ForgotPasswordConfirmation()
         {
@@ -230,7 +227,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ResetPassword
+        // GET: /UserAccount/ResetPassword
         [AllowAnonymous]
         public ActionResult ResetPassword(string code)
         {
@@ -238,7 +235,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/ResetPassword
+        // POST: /UserAccount/ResetPassword
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -252,19 +249,19 @@ namespace JPFinancial.Controllers
             if (user == null)
             {
                 // Don't reveal that the user does not exist
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
+                return RedirectToAction("ResetPasswordConfirmation", "UserAccount");
             }
             var result = await UserManager.ResetPasswordAsync(user.Id, model.Code, model.Password);
             if (result.Succeeded)
             {
-                return RedirectToAction("ResetPasswordConfirmation", "Account");
+                return RedirectToAction("ResetPasswordConfirmation", "UserAccount");
             }
             AddErrors(result);
             return View();
         }
 
         //
-        // GET: /Account/ResetPasswordConfirmation
+        // GET: /UserAccount/ResetPasswordConfirmation
         [AllowAnonymous]
         public ActionResult ResetPasswordConfirmation()
         {
@@ -272,18 +269,18 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/ExternalLogin
+        // POST: /UserAccount/ExternalLogin
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             // Request a redirect to the external login provider
-            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "Account", new { ReturnUrl = returnUrl }));
+            return new ChallengeResult(provider, Url.Action("ExternalLoginCallback", "UserAccount", new { ReturnUrl = returnUrl }));
         }
 
         //
-        // GET: /Account/SendCode
+        // GET: /UserAccount/SendCode
         [AllowAnonymous]
         public async Task<ActionResult> SendCode(string returnUrl, bool rememberMe)
         {
@@ -298,7 +295,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/SendCode
+        // POST: /UserAccount/SendCode
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -318,7 +315,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ExternalLoginCallback
+        // GET: /UserAccount/ExternalLoginCallback
         [AllowAnonymous]
         public async Task<ActionResult> ExternalLoginCallback(string returnUrl)
         {
@@ -340,7 +337,7 @@ namespace JPFinancial.Controllers
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = false });
                 case SignInStatus.Failure:
                 default:
-                    // If the user does not have an account, then prompt the user to create an account
+                    // If the user does not have an UserAccount, then prompt the user to create an UserAccount
                     ViewBag.ReturnUrl = returnUrl;
                     ViewBag.LoginProvider = loginInfo.Login.LoginProvider;
                     return View("ExternalLoginConfirmation", new ExternalLoginConfirmationViewModel { Email = loginInfo.Email });
@@ -348,7 +345,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/ExternalLoginConfirmation
+        // POST: /UserAccount/ExternalLoginConfirmation
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -386,7 +383,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // POST: /Account/LogOff
+        // POST: /UserAccount/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
@@ -396,7 +393,7 @@ namespace JPFinancial.Controllers
         }
 
         //
-        // GET: /Account/ExternalLoginFailure
+        // GET: /UserAccount/ExternalLoginFailure
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
         {
