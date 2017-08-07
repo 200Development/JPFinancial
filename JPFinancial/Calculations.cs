@@ -267,7 +267,7 @@ namespace JPFinancial
             }
         }
 
-        public Dictionary<string, decimal> SavingsReqForBills(IEnumerable<Bill> bills, Dictionary<string, decimal> savingsAccountBalances)
+        public Dictionary<string, decimal> SavingsReqForBills(IEnumerable<Bill> bills, Dictionary<string, decimal> accountBalances)
         {
             try
             {
@@ -303,16 +303,16 @@ namespace JPFinancial
                             break;
                     }
                     decimal save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    if (savingsAccountBalances.ContainsKey(bill.Account.Name))
+                    if (accountBalances.ContainsKey(bill.Account.Name))
                     {
-                        savingsAccountBalances[bill.Account.Name] = save;
+                        accountBalances[bill.Account.Name] = save;
                     }
                     else
                     {
-                        savingsAccountBalances.Add(bill.Account.Name, save);
+                        accountBalances.Add(bill.Account.Name, save);
                     }
                 }
-                return savingsAccountBalances;
+                return accountBalances;
             }
             catch (Exception e)
             {
@@ -367,7 +367,7 @@ namespace JPFinancial
             }
         }
 
-        public static void UpdateAccountGoals(IEnumerable<Account> accounts, Dictionary<string, decimal> savingsAccountBalances)
+        public static void UpdateAccountGoals(IEnumerable<Account> accounts, Dictionary<string, decimal> accountBalances)
         {
             try
             {
@@ -376,7 +376,7 @@ namespace JPFinancial
                     var valuesFound = false;
                     decimal totalSavings = 0;
 
-                    foreach (var savings in savingsAccountBalances)
+                    foreach (var savings in accountBalances)
                     {
                         if (savings.Key != account.Name) continue;
                         totalSavings += savings.Value;
@@ -452,12 +452,12 @@ namespace JPFinancial
             }
         }
 
-        private static Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDue)
+        private static Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
         {
             try
             {
                 var bills = _db.Bills.ToList();
-                var beginDate = Convert.ToDateTime(billsDue["currentDate"]);
+                var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
 
                 foreach (var bill in bills)
                 {
@@ -501,10 +501,10 @@ namespace JPFinancial
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
-                        billsDue[bill.Name] = newDueDate.ToShortDateString();
+                        billsDictionary[bill.Name] = newDueDate.ToShortDateString();
                     }
                 }
-                return billsDue;
+                return billsDictionary;
             }
             catch (Exception e)
             {
@@ -528,7 +528,7 @@ namespace JPFinancial
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
                             : new DateTime(date.Year, date.Month, GetLastDayOfMonth(date)).ToShortDateString()
                     },
-                    {"totalCost", "0"},
+                    {"periodCosts", "0"},
                     {"totalSavings", "0"}
                 };
 
@@ -540,16 +540,12 @@ namespace JPFinancial
                 while (Convert.ToDecimal(bills["totalSavings"]) < futureValue)
                 {
                     bills = UpdateBillDueDates(bills);
-                    bills = UpdateTotalCostsAndSavings(bills);
+                    bills = UpdateTotalCosts(bills);
                     UpdateCurrentAndEndDate(bills);
                     var savings = Convert.ToDecimal(bills["totalSavings"]);
                     savings += netPay;
                     bills["totalSavings"] = savings.ToString(CultureInfo.InvariantCulture);
                 }
-
-                var cost = Convert.ToDecimal(bills["totalCost"]);
-                var save = Convert.ToDecimal(bills["totalSavings"]);
-
                 return Convert.ToDateTime(bills["endDate"]);
             }
             catch (Exception e)
@@ -569,13 +565,12 @@ namespace JPFinancial
                 var bills = new Dictionary<string, string>
                 {
                     {"currentDate", DateTime.Today.ToShortDateString()},
-                    {
-                        "endDate",
-                        DateTime.Today.Day <= 14
+                    {"endDate", DateTime.Today.Day <= 14
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
                             : new DateTime(date.Year, date.Month, GetLastDayOfMonth(date)).ToShortDateString()
                     },
-                    {"totalCost", "0"},
+                    {"periodCosts", "0"},
+                    {"totalCosts", "0"},
                     {"totalSavings", "0"}
                 };
 
@@ -587,18 +582,20 @@ namespace JPFinancial
                 for (var i = 0; i < payperiods; i++)
                 {
                     bills = UpdateBillDueDates(bills);
-                    bills = UpdateTotalCostsAndSavings(bills);
+                    bills = UpdateTotalCosts(bills);
                     UpdateCurrentAndEndDate(bills);
                     var savings = Convert.ToDecimal(bills["totalSavings"]);
-                    savings += netPay;
+                    //var costs = Convert.ToDecimal(bills["totalCosts"]);
+                    var periodCosts = Convert.ToDecimal(bills["periodCosts"]);
+
+                    savings += netPay - periodCosts;
+                    //bills["totalCosts"] = (costs + periodCosts).ToString(CultureInfo.InvariantCulture);
                     bills["totalSavings"] = savings.ToString(CultureInfo.InvariantCulture);
                 }
-
-                var cost = Convert.ToDecimal(bills["totalCost"]);
+                //var cost = Convert.ToDecimal(bills["periodCosts"]);
                 var save = Convert.ToDecimal(bills["totalSavings"]);
-                var netSavings = save - cost;
 
-                return netSavings;
+                return save;
             }
             catch (Exception e)
             {
@@ -606,19 +603,20 @@ namespace JPFinancial
             }
         }
 
-        private static Dictionary<string, string> UpdateTotalCostsAndSavings(Dictionary<string, string> bills)
+        private static Dictionary<string, string> UpdateTotalCosts(Dictionary<string, string> billsDictionary)
         {
             try
             {
                 var billsFromDb = _db.Bills.ToList();
-                var currentDate = Convert.ToDateTime(bills["currentDate"]);
-                var endDate = Convert.ToDateTime(bills["endDate"]);
+                var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
                 var expenses = 0.0m;
+                billsDictionary["periodCosts"] = "0";
 
-                foreach (var bill in bills)
+                foreach (var bill in billsDictionary)
                 {
-                    if (bill.Key == "currentDate" || bill.Key == "endDate" || bill.Key == "totalCost" ||
-                        bill.Key == "totalSavings") continue;
+                    if (bill.Key == "currentDate" || bill.Key == "endDate" || bill.Key == "periodCosts" ||
+                        bill.Key == "totalSavings" || bill.Key == "totalCosts") continue;
 
                     var dueDate = Convert.ToDateTime(bill.Value);
                     if (!(dueDate >= currentDate && dueDate <= endDate)) continue;
@@ -626,10 +624,11 @@ namespace JPFinancial
                     expenses += billsFromDb.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
                 }
 
-                var billCosts = Convert.ToDecimal(bills["totalCost"]);
-                bills["totalCost"] = (expenses + billCosts).ToString(CultureInfo.InvariantCulture);
+                var billCosts = Convert.ToDecimal(billsDictionary["totalCosts"]);
+                billsDictionary["totalCosts"] = (expenses + billCosts).ToString(CultureInfo.InvariantCulture);
+                billsDictionary["periodCosts"] = expenses.ToString(CultureInfo.InvariantCulture);
 
-                return bills;
+                return billsDictionary;
             }
             catch (Exception e)
             {
@@ -637,29 +636,29 @@ namespace JPFinancial
             }
         }
 
-        private static void UpdateCurrentAndEndDate(IDictionary<string, string> bills)
+        private static void UpdateCurrentAndEndDate(IDictionary<string, string> billsDictionary)
         {
             try
             {
-                var currentDate = Convert.ToDateTime(bills["currentDate"]);
-                var endDate = Convert.ToDateTime(bills["endDate"]);
+                var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
 
-                if (Convert.ToDateTime(bills["currentDate"]).Day <= 14)
+                if (Convert.ToDateTime(billsDictionary["currentDate"]).Day <= 14)
                 {
-                    bills["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
-                    currentDate = Convert.ToDateTime(bills["currentDate"]);
-                    bills["endDate"] =
+                    billsDictionary["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
+                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                    billsDictionary["endDate"] =
                         new DateTime(currentDate.Year, currentDate.Month, GetLastDayOfMonth(currentDate))
                             .ToShortDateString();
                 }
                 else
                 {
-                    bills["currentDate"] =
+                    billsDictionary["currentDate"] =
                         GetFirstDayOfMonth(currentDate.AddMonths(1).Year, currentDate.AddMonths(1).Month)
                             .ToString(CultureInfo.InvariantCulture);
-                    endDate = Convert.ToDateTime(bills["endDate"]);
-                    bills["endDate"] =
-                        new DateTime(endDate.AddMonths(1).Year, endDate.Month + 1, 15).ToShortDateString();
+                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                    billsDictionary["endDate"] =
+                        new DateTime(currentDate.Year, currentDate.Month, 15).ToShortDateString();
                     //TODO: simplify
                 }
             }

@@ -5,7 +5,7 @@ namespace JPFinancial.ViewModels
 {
     public class DashboardViewModel
     {
-        [Display(Name = "Name of Account")]
+        [Display(Name = "Name of AccountId")]
         public virtual string AccountName { get; set; }
 
         [Display(Name = "Net Income")]
@@ -14,7 +14,7 @@ namespace JPFinancial.ViewModels
         [Display(Name = "Expense")]
         public virtual string BillName { get; set; }
 
-        [Display(Name = "Account Balance"), DataType(DataType.Currency)]
+        [Display(Name = "AccountId Balance"), DataType(DataType.Currency)]
         public virtual decimal AccountBalance { get; set; }
 
         [Display(Name = "Amount Due"), DataType(DataType.Currency)]

@@ -61,13 +61,13 @@
                     if (Model.SelectedFVType == "futureValue")
                     {
                         <dl>
-                            <dt>You will reach your savings goal of $@Model.FutureAmount on @Model.FutureDate</dt>
+                            <dt>You will reach your savings goal of @Html.FormatValue(@Model.FutureAmount, "{0:C}") on @Html.FormatValue(Model.FutureDate,"{0:MMM dd, yyyy}")</dt>
                         </dl>
                     }
                     else
                     {
                         <dl>
-                            <dt>You will have saved $@Model.FutureAmount by @Model.FutureDate</dt>
+                            <dt>You will have saved @Html.FormatValue(@Model.FutureAmount, "{0:C}") by @Html.FormatValue(Model.FutureDate, "{0:MMM dd, yyyy}")</dt>
                         </dl>
                     }
                 }

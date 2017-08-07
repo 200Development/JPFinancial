@@ -15,7 +15,7 @@ namespace JPFinancial.ViewModels
 
         public Frequency PaymentFrequency { get; set; }
 
-        public int Account { get; set; }
+        public int AccountId { get; set; }
 
         public IList<Account> Accounts { get; set; }
     }

@@ -55,7 +55,7 @@ namespace JPFinancial.Controllers
         {
             if (ModelState.IsValid)
             {
-                var account = _db.Accounts.Single(a => a.Id == viewModel.Account);
+                var account = _db.Accounts.Single(a => a.Id == viewModel.AccountId);
                 var accountId = account.Id;
 
                 var bill = new Bill
