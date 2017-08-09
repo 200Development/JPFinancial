@@ -14,6 +14,12 @@ namespace JPFinancial.Models
 
         public IDbSet<Account> Accounts { get; set; }
         public IDbSet<Bill> Bills { get; set; }
+        public IDbSet<Salary> Salaries { get; set; }
+        public IDbSet<Bonus> Bonuses { get; set; }
+        public IDbSet<Expense> Expenses { get; set; }
+        public IDbSet<Benefit> Benefits { get; set; }
+        public IDbSet<Company> Companies { get; set; }
+
 
         public static ApplicationDbContext Create()
         {

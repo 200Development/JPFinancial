@@ -1,4 +1,5 @@
 ﻿using JPFinancial.Models;
+using JPFinancial.Models.Enumerations;
 using System.Collections.Generic;
 
 namespace JPFinancial.ViewModels

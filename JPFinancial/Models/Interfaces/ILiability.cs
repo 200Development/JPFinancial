@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JPFinancial.Models.Enumerations;
+using System;
 
 namespace JPFinancial.Models.Interfaces
 {

@@ -1,4 +1,4 @@
-﻿namespace JPFinancial.Models
+﻿namespace JPFinancial.Models.Enumerations
 {
     public enum Frequency
     {

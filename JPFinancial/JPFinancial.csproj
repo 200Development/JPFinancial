@@ -167,11 +167,23 @@
     <Compile Include="Migrations\201708062352016_initialMigrationWithAccountAndBillTables.Designer.cs">
       <DependentUpon>201708062352016_initialMigrationWithAccountAndBillTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.cs" />
+    <Compile Include="Migrations\201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.Designer.cs">
+      <DependentUpon>201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
+    <Compile Include="Models\Benefit.cs" />
     <Compile Include="Models\Bill.cs" />
-    <Compile Include="Models\Frequency.cs" />
+    <Compile Include="Models\Bonus.cs" />
+    <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Enumerations\Frequency.cs" />
+    <Compile Include="Models\Enumerations\PayType.cs" />
+    <Compile Include="Models\Enumerations\State.cs" />
+    <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
+    <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
+    <Compile Include="Models\Salary.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IdentityViewModels.cs" />
@@ -277,6 +289,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201708062352016_initialMigrationWithAccountAndBillTables.resx">
       <DependentUpon>201708062352016_initialMigrationWithAccountAndBillTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.resx">
+      <DependentUpon>201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

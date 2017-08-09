@@ -1,4 +1,5 @@
 ﻿using JPFinancial.Models;
+using JPFinancial.Models.Enumerations;
 //using QuandlCS.Connection;
 //using QuandlCS.Requests;
 //using QuandlCS.Types;
@@ -12,14 +13,14 @@ namespace JPFinancial
 {
     public class Calculations
     {
-        private static readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private static readonly ApplicationDbContext Db = new ApplicationDbContext();
 
         public void GetRequiredAcctSavings()
         {
             try
             {
-                var accounts = _db.Accounts.ToList();
-                var bills = _db.Bills.ToList();
+                var accounts = Db.Accounts.ToList();
+                var bills = Db.Bills.ToList();
                 var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
 
                 foreach (var bill in bills)
@@ -71,8 +72,8 @@ namespace JPFinancial
                     }
                     if (!valuesFound) continue;
                     account.RequiredSavings = totalSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
+                    Db.Entry(account).State = EntityState.Modified;
+                    Db.SaveChanges();
                 }
             }
             catch (Exception e)
@@ -85,15 +86,15 @@ namespace JPFinancial
         {
             try
             {
-                var accounts = _db.Accounts.ToList();
+                var accounts = Db.Accounts.ToList();
 
                 foreach (var account in accounts)
                 {
                     var acctBalance = account.Balance;
                     var reqbalance = account.RequiredSavings;
                     account.BalanceSurplus = acctBalance - reqbalance;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
+                    Db.Entry(account).State = EntityState.Modified;
+                    Db.SaveChanges();
 
                 }
             }
@@ -224,13 +225,13 @@ namespace JPFinancial
 
                 if (DateTime.Today < firstPaycheck) // Bills with due dates 1st - 15th of the current month
                 {
-                    billsDue = (from b in _db.Bills
+                    billsDue = (from b in Db.Bills
                                 where b.DueDate >= DateTime.Today && (b.DueDate > firstDayOfMonth && b.DueDate <= firstPaycheck)
                                 select b).ToList();
                 }
                 else // Bills with due dates 16th - last day of the current month
                 {
-                    billsDue = (from b in _db.Bills
+                    billsDue = (from b in Db.Bills
                                 where b.DueDate > DateTime.Today && (b.DueDate > firstPaycheck && b.DueDate <= lastPaycheck)
                                 select b).ToList();
                 }
@@ -398,7 +399,7 @@ namespace JPFinancial
         {
             try
             {
-                var bills = _db.Bills.ToList();
+                var bills = Db.Bills.ToList();
                 var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
 
                 foreach (var bill in bills)
@@ -459,7 +460,7 @@ namespace JPFinancial
             try
             {
                 var date = DateTime.Today;
-                var billsFromDb = _db.Bills.ToList();
+                var billsFromDb = Db.Bills.ToList();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -503,7 +504,7 @@ namespace JPFinancial
             {
                 var payperiods = PayPeriodsTilDue(futureDate);
                 var date = DateTime.Today;
-                var billsFromDb = _db.Bills.ToList();
+                var billsFromDb = Db.Bills.ToList();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -550,7 +551,7 @@ namespace JPFinancial
         {
             try
             {
-                var billsFromDb = _db.Bills.ToList();
+                var billsFromDb = Db.Bills.ToList();
                 var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                 var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
                 var expenses = 0.0m;

@@ -1,4 +1,5 @@
-﻿using JPFinancial.Models.Interfaces;
+﻿using JPFinancial.Models.Enumerations;
+using JPFinancial.Models.Interfaces;
 using System;
 using System.ComponentModel.DataAnnotations;
 
