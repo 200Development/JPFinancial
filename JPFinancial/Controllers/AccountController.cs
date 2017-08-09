@@ -79,11 +79,11 @@ namespace JPFinancial.Controllers
         }
 
         // POST: Accounts/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
+        // To protect from over posting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "AccountId,Name,Balance,Goal,Date")] Account account)
+        public ActionResult Edit([Bind(Include = "Id,Name,Balance,Goal,Date")] Account account)
         {
             if (ModelState.IsValid)
             {

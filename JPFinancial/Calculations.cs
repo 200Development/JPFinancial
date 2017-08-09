@@ -394,64 +394,6 @@ namespace JPFinancial
             }
         }
 
-        public void UpdateBillDueDates(DateTime currentDate)
-        {
-            try
-            {
-                var bills = _db.Bills.ToList();
-
-                foreach (var bill in bills)
-                {
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-
-                    while (newDueDate < currentDate)
-                    {
-                        switch (frequency)
-                        {
-                            case Frequency.Daily:
-                                newDueDate = newDueDate.AddDays(1);
-                                break;
-                            case Frequency.Weekly:
-                                newDueDate = newDueDate.AddDays(7);
-                                break;
-                            case Frequency.BiWeekly:
-                                newDueDate = newDueDate.AddDays(14);
-                                break;
-                            case Frequency.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                break;
-                            case Frequency.Monthly:
-                                newDueDate = newDueDate.AddMonths(1);
-                                break;
-                            case Frequency.BiMonthly:
-                                newDueDate = newDueDate.AddMonths(2);
-                                break;
-                            case Frequency.Quarterly:
-                                newDueDate = newDueDate.AddMonths(3);
-                                break;
-                            case Frequency.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(6);
-                                break;
-                            case Frequency.Annually:
-                                newDueDate = newDueDate.AddYears(1);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        bill.DueDate = newDueDate;
-                        _db.Entry(bill).State = EntityState.Modified;
-                        _db.SaveChanges();
-                    }
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
         private static Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
         {
             try
@@ -529,6 +471,7 @@ namespace JPFinancial
                             : new DateTime(date.Year, date.Month, GetLastDayOfMonth(date)).ToShortDateString()
                     },
                     {"periodCosts", "0"},
+                    {"totalCosts", "0"},
                     {"totalSavings", "0"}
                 };
 
