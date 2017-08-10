@@ -9,7 +9,7 @@ using System.Web.Mvc;
 
 namespace JPFinancial.Controllers
 {
-    public class BillsController : Controller
+    public class BillController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
