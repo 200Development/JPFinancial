@@ -160,6 +160,7 @@
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Controllers\SalaryController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -185,6 +186,7 @@
     <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
     <Compile Include="Models\Salary.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
+    <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IdentityViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -274,6 +276,11 @@
     <Content Include="Views\Bill\Edit.cshtml" />
     <Content Include="Views\Bill\Index.cshtml" />
     <Content Include="Views\Bill\_Bills.cshtml" />
+    <Content Include="Views\Salary\Create.cshtml" />
+    <Content Include="Views\Salary\Delete.cshtml" />
+    <Content Include="Views\Salary\Details.cshtml" />
+    <Content Include="Views\Salary\Edit.cshtml" />
+    <Content Include="Views\Salary\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
