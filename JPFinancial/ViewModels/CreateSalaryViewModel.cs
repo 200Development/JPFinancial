@@ -5,7 +5,7 @@ namespace JPFinancial.ViewModels
 {
     public class CreateSalaryViewModel
     {
-        [Required, Display(Name = "Payee")]
+        [Required,Display(Name = "Payee")]
         public string Payee { get; set; }
 
         [Required, Display(Name = "Pay Type")]
@@ -14,17 +14,20 @@ namespace JPFinancial.ViewModels
         [Required, Display(Name = "Pay Frequency")]
         public Frequency PayFrequency { get; set; }
 
-        [Required, Display(Name = "Gross Pay"), DataType(DataType.Currency)]
+        [Display(Name = "Gross Pay"), DataType(DataType.Currency)]
         public decimal? GrossPay { get; set; }
+
+        [Display(Name = "Net Income"), DataType(DataType.Currency)]
+        public decimal? NetIncome { get; set; }
 
         public string Expense { get; set; }
 
         [Display(Name = "Cost")]
-        public decimal ExpenseAmount { get; set; }
+        public decimal? ExpenseAmount { get; set; }
 
         public string Benefit { get; set; }
 
         [Display(Name = "Amount")]
-        public decimal BenefitAmount { get; set; }
+        public decimal? BenefitAmount { get; set; }
     }
 }

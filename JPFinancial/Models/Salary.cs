@@ -17,7 +17,10 @@ namespace JPFinancial.Models
         [Required, Display(Name = "Pay Frequency")]
         public Frequency PayFrequency { get; set; }
 
-        [Required, Display(Name = "Gross Pay"), DataType(DataType.Currency)]
+        [Display(Name = "Gross Pay"), DataType(DataType.Currency)]
         public decimal? GrossPay { get; set; }
+
+        [Display(Name = "Net Income"), DataType(DataType.Currency)]
+        public decimal? NetIncome { get; set; }
     }
 }

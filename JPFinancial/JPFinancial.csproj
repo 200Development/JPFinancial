@@ -172,6 +172,10 @@
     <Compile Include="Migrations\201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.Designer.cs">
       <DependentUpon>201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201708272305389_netIncomeAddedToSalaryModel.cs" />
+    <Compile Include="Migrations\201708272305389_netIncomeAddedToSalaryModel.Designer.cs">
+      <DependentUpon>201708272305389_netIncomeAddedToSalaryModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -299,6 +303,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.resx">
       <DependentUpon>201708090430062_addsSalaryBonusBenefitExpenseAndCompanyModels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201708272305389_netIncomeAddedToSalaryModel.resx">
+      <DependentUpon>201708272305389_netIncomeAddedToSalaryModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

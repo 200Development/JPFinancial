@@ -1,4 +1,5 @@
 ﻿using JPFinancial.Models;
+using JPFinancial.ViewModels;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -42,11 +43,21 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Company.Name,PayType,PayFrequency,GrossPay")] Salary salary)
+        public ActionResult Create([Bind(Include = "Id,Company.Name,PayType,PayFrequency,NetIncome")] CreateSalaryViewModel salary)
         {
             if (ModelState.IsValid)
             {
-                db.Salaries.Add(salary);
+                var company = db.Companies.FirstOrDefault(c => c.Name == salary.Payee);
+                var newSalary = new Salary()
+                {
+                    NetIncome = salary.NetIncome,
+                    PayFrequency = salary.PayFrequency,
+                    Company = company,
+                    GrossPay = 0.0m,
+                    PayType = salary.PayType
+                };
+
+                db.Salaries.Add(newSalary);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
