@@ -9,7 +9,7 @@ namespace JPFinancial.Models
         public int Id { get; set; }
 
         [Required, Display(Name = "Payee")]
-        public Company Company { get; set; }
+        public string Payee { get; set; }
 
         [Required, Display(Name = "Pay Type")]
         public PayType PayType { get; set; }

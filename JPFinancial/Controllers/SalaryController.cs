@@ -43,7 +43,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Company.Name,PayType,PayFrequency,NetIncome")] CreateSalaryViewModel salary)
+        public ActionResult Create([Bind(Include = "Id,Payee,PayType,PayFrequency,NetIncome,GrossPay")] CreateSalaryViewModel salary)
         {
             if (ModelState.IsValid)
             {
@@ -52,8 +52,8 @@ namespace JPFinancial.Controllers
                 {
                     NetIncome = salary.NetIncome,
                     PayFrequency = salary.PayFrequency,
-                    Company = company,
-                    GrossPay = 0.0m,
+                    Payee = salary.Payee,
+                    GrossPay = salary.GrossPay,
                     PayType = salary.PayType
                 };
 
