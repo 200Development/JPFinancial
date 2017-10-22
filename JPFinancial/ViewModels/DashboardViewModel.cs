@@ -1,4 +1,6 @@
-﻿using System;
+﻿using JPFinancial.Models;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace JPFinancial.ViewModels
@@ -35,15 +37,33 @@ namespace JPFinancial.ViewModels
         public string SelectedFVType { get; set; }
 
         [DataType(DataType.Currency)]
-        public virtual decimal OneMonthSavings { get; set; }
+        public virtual string OneMonthSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public virtual decimal ThreeMonthsSavings { get; set; }
+        public virtual string ThreeMonthsSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public virtual decimal SixMonthsSavings { get; set; }
+        public virtual string SixMonthsSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public virtual decimal OneYearSavings { get; set; }
+        public virtual string OneYearSavings { get; set; }
+
+        [Display(Name = "Monthly Expenses"), DataType(DataType.Currency)]
+        public virtual string MonthlyExpenses { get; set; }
+
+        [Display(Name = "Monthly Income"), DataType(DataType.Currency)]
+        public virtual string MonthlyIncome { get; set; }
+
+        [Display(Name = "Monthly Net Savings"), DataType(DataType.Currency)]
+        public virtual string MonthlyNetSavings { get; set; }
+
+        public virtual string SavedUp { get; set; }
+
+        public virtual string TotalDue { get; set; }
+        public virtual string TotalMonthlyDue { get; set; }
+        public virtual string BillsDue { get; set; }
+        public virtual List<Account> Accounts { get; set; }
+        public virtual string CurrentMonth { get; set; }
+
     }
 }

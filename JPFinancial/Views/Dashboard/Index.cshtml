@@ -1,5 +1,4 @@
-﻿@using System.Diagnostics
-@model JPFinancial.ViewModels.DashboardViewModel
+﻿@model JPFinancial.ViewModels.DashboardViewModel
 
 
 @{
@@ -76,22 +75,37 @@
     }
 </div>
 
+<div style="margin: 25px 15px" class="col-md-12">
+    <h2 class="center-block" style="text-align: center">Expense & Income Summary for @Model.CurrentMonth</h2>
+    <div class="col-md-4" style="text-align: center">
+        <h3 style="text-decoration: underline">Bills Due</h3>
+        <h4>@Model.MonthlyExpenses</h4>
+    </div>
+    <div class="col-md-4" style="text-align: center">
+        <h3 style="text-decoration: underline">Budget Expenses</h3>
+    </div>
+    <div class="col-md-4" style="text-align: center">
+        <h3 style="text-decoration: underline">Income</h3>
+        <h4>@Model.MonthlyIncome</h4>
+    </div>
+</div>
+
 <div style="margin: 25px 15px" class="col-md-10">
-    <p title="Savings Projections">With current spending and income, your savings should be</p>
-    <div class="col-md-3" id="oneMonthDiv">
-        <h3>1 Month</h3>
+    <h2 class="center-block" style="text-align: center">With current spending and income, your savings should be</h2>
+    <div class="col-md-3" id="oneMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">1 Month</h3>
         <h4>@Model.OneMonthSavings</h4>
     </div>
-    <div class="col-md-3" id="threeMonthDiv">
-        <h3>3 Months</h3>
+    <div class="col-md-3" id="threeMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">3 Months</h3>
         <h4>@Model.ThreeMonthsSavings</h4>
     </div>
-    <div class="col-md-3" id="sixMonthDiv">
-        <h3>6 Months</h3>
+    <div class="col-md-3" id="sixMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">6 Months</h3>
         <h4>@Model.SixMonthsSavings</h4>
     </div>
-    <div class="col-md-3" id="oneYearDiv">
-        <h3>1 Year</h3>
+    <div class="col-md-3" id="oneYearDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">1 Year</h3>
         <h4>@Model.OneYearSavings</h4>
     </div>
 
