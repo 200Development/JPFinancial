@@ -33,5 +33,17 @@ namespace JPFinancial.ViewModels
         public virtual bool IsMandatory { get; set; }
 
         public string SelectedFVType { get; set; }
+
+        [DataType(DataType.Currency)]
+        public virtual decimal OneMonthSavings { get; set; }
+
+        [DataType(DataType.Currency)]
+        public virtual decimal ThreeMonthsSavings { get; set; }
+
+        [DataType(DataType.Currency)]
+        public virtual decimal SixMonthsSavings { get; set; }
+
+        [DataType(DataType.Currency)]
+        public virtual decimal OneYearSavings { get; set; }
     }
 }

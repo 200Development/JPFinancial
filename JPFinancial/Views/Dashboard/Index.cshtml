@@ -7,7 +7,7 @@
 }
 
 <h2>Dashboard</h2>
-<div style="margin: 25px 15px">
+<div style="margin: 25px 15px" class="col-md-10">
     @using (Html.BeginForm("GetFutureValue", "Dashboard"))
     {
         {
@@ -17,40 +17,40 @@
                 <h4>Future Value</h4>
                 <div class="row">
                     <label class="label label-info">FV by Amount:&nbsp;&nbsp;&nbsp;</label>
-                    @Html.RadioButtonFor(model => Model.SelectedFVType, "futureValue", new { htmlAttributes = new { @class = "btn btn-default" } })
+                    @Html.RadioButtonFor(model => Model.SelectedFVType, "futureValue", new {htmlAttributes = new {@class = "btn btn-default"}})
                     <label class="label label-info">FV by Date:&nbsp;&nbsp;&nbsp;</label>
-                    @Html.RadioButtonFor(model => Model.SelectedFVType, "futureDate", new { htmlAttributes = new { @class = "btn btn-default" } })
+                    @Html.RadioButtonFor(model => Model.SelectedFVType, "futureDate", new {htmlAttributes = new {@class = "btn btn-default"}})
                 </div>
-                <hr />
-                <hr />
-                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                <hr/>
+                <hr/>
+                @Html.ValidationSummary(true, "", new {@class = "text-danger"})
                 <div class="form-group">
-                    @Html.LabelFor(model => model.NetIncome, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.NetIncome, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.NetIncome, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.NetIncome, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.NetIncome, new {htmlAttributes = new {@class = "form-control"}})
+                        @Html.ValidationMessageFor(model => model.NetIncome, "", new {@class = "text-danger"})
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.FutureAmount, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.FutureAmount, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.FutureAmount, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.FutureAmount, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.FutureAmount, new {htmlAttributes = new {@class = "form-control"}})
+                        @Html.ValidationMessageFor(model => model.FutureAmount, "", new {@class = "text-danger"})
                     </div>
                 </div>
 
                 <div class="form-group">
-                    @Html.LabelFor(model => model.FutureDate, htmlAttributes: new { @class = "control-label col-md-2" })
+                    @Html.LabelFor(model => model.FutureDate, htmlAttributes: new {@class = "control-label col-md-2"})
                     <div class="col-md-10">
-                        @Html.EditorFor(model => model.FutureDate, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.FutureDate, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.FutureDate, new {htmlAttributes = new {@class = "form-control"}})
+                        @Html.ValidationMessageFor(model => model.FutureDate, "", new {@class = "text-danger"})
                     </div>
                 </div>
 
                 <div class="form-group">
                     <div class="col-md-offset-2 col-md-10">
-                        <input type="submit" value="Calculate Future Value" class="btn btn-primary" />
+                        <input type="submit" value="Calculate Future Value" class="btn btn-primary"/>
                     </div>
                 </div>
             </div>
@@ -61,7 +61,7 @@
                     if (Model.SelectedFVType == "futureValue")
                     {
                         <dl>
-                            <dt>You will reach your savings goal of @Html.FormatValue(@Model.FutureAmount, "{0:C}") on @Html.FormatValue(Model.FutureDate,"{0:MMM dd, yyyy}")</dt>
+                            <dt>You will reach your savings goal of @Html.FormatValue(@Model.FutureAmount, "{0:C}") on @Html.FormatValue(Model.FutureDate, "{0:MMM dd, yyyy}")</dt>
                         </dl>
                     }
                     else
@@ -74,6 +74,27 @@
             </div>
         }
     }
+</div>
+
+<div style="margin: 25px 15px" class="col-md-10">
+    <p title="Savings Projections">With current spending and income, your savings should be</p>
+    <div class="col-md-3" id="oneMonthDiv">
+        <h3>1 Month</h3>
+        <h4>@Model.OneMonthSavings</h4>
+    </div>
+    <div class="col-md-3" id="threeMonthDiv">
+        <h3>3 Months</h3>
+        <h4>@Model.ThreeMonthsSavings</h4>
+    </div>
+    <div class="col-md-3" id="sixMonthDiv">
+        <h3>6 Months</h3>
+        <h4>@Model.SixMonthsSavings</h4>
+    </div>
+    <div class="col-md-3" id="oneYearDiv">
+        <h3>1 Year</h3>
+        <h4>@Model.OneYearSavings</h4>
+    </div>
+
 </div>
 
 @*<script type="text/javascript">

@@ -16,6 +16,11 @@ namespace JPFinancial.Controllers
         // GET: Dashboard
         public ActionResult Index()
         {
+            var viewModel = new DashboardViewModel();
+            viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), 1828.44m);
+            viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), 1828.44m);
+            viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), 1828.44m);
+            viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), 1828.44m);
             var savingsAccountBalances = new Dictionary<string, decimal>();
             var bills = (from b in _db.Bills select b).ToList();
             var accounts = (from a in _db.Accounts select a).ToList();
@@ -33,7 +38,7 @@ namespace JPFinancial.Controllers
             ViewBag.Bills = billsDue;
             ViewBag.Accounts = accounts;
 
-            return View();
+            return View(viewModel);
         }
 
 
