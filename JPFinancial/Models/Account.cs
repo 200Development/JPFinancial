@@ -8,7 +8,7 @@ namespace JPFinancial.Models
         public Account()
         {
             Balance = decimal.Zero;
-            Goal = decimal.Zero;
+            PaycheckContribution = decimal.Zero;
         }
 
         [Key]
@@ -20,8 +20,8 @@ namespace JPFinancial.Models
         [Required, DataType(DataType.Currency)]
         public decimal Balance { get; set; }
 
-        [DataType(DataType.Currency)]
-        public decimal? Goal { get; set; }
+        [DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
+        public decimal? PaycheckContribution { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Required Savings")]
         public decimal? RequiredSavings { get; set; }

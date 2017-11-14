@@ -385,7 +385,7 @@ namespace JPFinancial
                     }
                     if (valuesFound)
                     {
-                        account.Goal = totalSavings;
+                        account.PaycheckContribution = totalSavings;
                     }
                 }
             }

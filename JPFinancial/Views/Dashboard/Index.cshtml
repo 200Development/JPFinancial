@@ -111,6 +111,27 @@
 
 </div>
 
+<div style="margin: 25px 15px" class="col-md-10">
+    <h2 class="center-block" style="text-align: center">Financial Health</h2>
+    <div class="col-md-3" id="oneMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">Savings %</h3>
+        <h4>@Model.SavingsPercentage</h4>
+    </div>
+    <div class="col-md-3" id="threeMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">Total Monthly Income</h3>
+        <h4>@Model.MonthlyIncome</h4>
+    </div>
+    <div class="col-md-3" id="sixMonthDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">Total Monthly Bills</h3>
+        <h4>@Model.MonthlyExpenses</h4>
+    </div>
+    <div class="col-md-3" id="oneYearDiv" style="text-align: center">
+        <h3 style="text-decoration: underline">Net Worth</h3>
+        <h4>@Model.NetWorth</h4>
+    </div>
+
+</div>
+
 @*<script type="text/javascript">
         $(document).ready(function () {
             debugger;

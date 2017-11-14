@@ -57,6 +57,12 @@ namespace JPFinancial.ViewModels
         [Display(Name = "Monthly Net Savings"), DataType(DataType.Currency)]
         public virtual string MonthlyNetSavings { get; set; }
 
+        [Display(Name = "Savings %"), DataType(DataType.Currency)]
+        public virtual string SavingsPercentage { get; set; }
+
+        [Display(Name = "Net Worth"), DataType(DataType.Currency)]
+        public virtual string NetWorth { get; set; }
+
         public virtual string SavedUp { get; set; }
 
         public virtual string TotalDue { get; set; }
