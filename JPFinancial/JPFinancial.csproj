@@ -194,11 +194,16 @@
     <Compile Include="Migrations\201710211855177_changeSalaryModel.Designer.cs">
       <DependentUpon>201710211855177_changeSalaryModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712100500180_updateTables.cs" />
+    <Compile Include="Migrations\201712100500180_updateTables.Designer.cs">
+      <DependentUpon>201712100500180_updateTables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
     <Compile Include="Models\Bill.cs" />
     <Compile Include="Models\Bonus.cs" />
+    <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\Company.cs" />
     <Compile Include="Models\Enumerations\Frequency.cs" />
     <Compile Include="Models\Enumerations\PayType.cs" />
@@ -335,6 +340,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201710211855177_changeSalaryModel.resx">
       <DependentUpon>201710211855177_changeSalaryModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712100500180_updateTables.resx">
+      <DependentUpon>201712100500180_updateTables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
