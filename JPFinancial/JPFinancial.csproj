@@ -198,6 +198,10 @@
     <Compile Include="Migrations\201712100500180_updateTables.Designer.cs">
       <DependentUpon>201712100500180_updateTables.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201712302212371_TransactionClassAdded.cs" />
+    <Compile Include="Migrations\201712302212371_TransactionClassAdded.Designer.cs">
+      <DependentUpon>201712302212371_TransactionClassAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -347,6 +351,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712100500180_updateTables.resx">
       <DependentUpon>201712100500180_updateTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712302212371_TransactionClassAdded.resx">
+      <DependentUpon>201712302212371_TransactionClassAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
