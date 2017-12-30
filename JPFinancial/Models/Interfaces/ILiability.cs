@@ -9,7 +9,7 @@ namespace JPFinancial.Models.Interfaces
         string Name { get; set; }
         DateTime DueDate { get; set; }
         decimal AmountDue { get; set; }
-        Frequency PaymentFrequency { get; set; }
+        FrequencyEnum PaymentFrequency { get; set; }
         int AccountId { get; set; }
         Account Account { get; set; }
     }

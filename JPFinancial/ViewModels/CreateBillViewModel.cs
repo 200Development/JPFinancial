@@ -14,7 +14,7 @@ namespace JPFinancial.ViewModels
 
         public string DueDate { get; set; }
 
-        public Frequency PaymentFrequency { get; set; }
+        public FrequencyEnum PaymentFrequency { get; set; }
 
         public int AccountId { get; set; }
 

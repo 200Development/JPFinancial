@@ -16,7 +16,7 @@ namespace JPFinancial.Models
 
         public string City { get; set; }
 
-        public State State { get; set; }
+        public StatesEnum StatesEnum { get; set; }
 
         [DataType(DataType.PostalCode)]
         public string Zipcode { get; set; }

@@ -9,10 +9,10 @@ namespace JPFinancial.ViewModels
         public string Payee { get; set; }
 
         [Required, Display(Name = "Pay Type")]
-        public PayType PayType { get; set; }
+        public PayTypesEnum PayTypesEnum { get; set; }
 
         [Required, Display(Name = "Pay Frequency")]
-        public Frequency PayFrequency { get; set; }
+        public FrequencyEnum PayFrequency { get; set; }
 
         [Display(Name = "Gross Pay"), DataType(DataType.Currency)]
         public decimal? GrossPay { get; set; }

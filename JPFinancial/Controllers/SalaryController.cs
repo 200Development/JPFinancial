@@ -54,7 +54,7 @@ namespace JPFinancial.Controllers
                     PayFrequency = salary.PayFrequency,
                     Payee = salary.Payee,
                     GrossPay = salary.GrossPay,
-                    PayType = salary.PayType
+                    PayTypesEnum = salary.PayTypesEnum
                 };
 
                 db.Salaries.Add(newSalary);

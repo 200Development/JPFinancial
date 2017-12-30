@@ -1,6 +1,6 @@
 ﻿namespace JPFinancial.Models.Enumerations
 {
-    public enum State
+    public enum StatesEnum
     {
         AL,
         AK,

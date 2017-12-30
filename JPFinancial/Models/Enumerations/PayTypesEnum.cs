@@ -1,6 +1,6 @@
 ﻿namespace JPFinancial.Models.Enumerations
 {
-    public enum PayType
+    public enum PayTypesEnum
     {
         Salary,
         Hourly,

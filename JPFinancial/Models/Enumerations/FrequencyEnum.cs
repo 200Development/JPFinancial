@@ -1,6 +1,6 @@
 ﻿namespace JPFinancial.Models.Enumerations
 {
-    public enum Frequency
+    public enum FrequencyEnum
     {
         Daily = 1,
         Weekly = 2,

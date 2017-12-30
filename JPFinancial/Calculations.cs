@@ -32,22 +32,22 @@ namespace JPFinancial
 
                     switch (bill.PaymentFrequency)
                     {
-                        case Frequency.Annually:
+                        case FrequencyEnum.Annually:
                             savePerPaycheck = billTotal / 24;
                             break;
-                        case Frequency.SemiAnnually:
+                        case FrequencyEnum.SemiAnnually:
                             savePerPaycheck = billTotal / 12;
                             break;
-                        case Frequency.Quarterly:
+                        case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case Frequency.BiMonthly:
+                        case FrequencyEnum.BiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
-                        case Frequency.Monthly:
+                        case FrequencyEnum.Monthly:
                             savePerPaycheck = billTotal / 2;
                             break;
-                        case Frequency.Weekly:
+                        case FrequencyEnum.Weekly:
                             savePerPaycheck = billTotal * 2;
                             break;
                         default:
@@ -281,22 +281,22 @@ namespace JPFinancial
 
                     switch (bill.PaymentFrequency)
                     {
-                        case Frequency.Annually:
+                        case FrequencyEnum.Annually:
                             savePerPaycheck = billTotal / 24;
                             break;
-                        case Frequency.SemiAnnually:
+                        case FrequencyEnum.SemiAnnually:
                             savePerPaycheck = billTotal / 12;
                             break;
-                        case Frequency.Quarterly:
+                        case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case Frequency.BiMonthly:
+                        case FrequencyEnum.BiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
-                        case Frequency.Monthly:
+                        case FrequencyEnum.Monthly:
                             savePerPaycheck = billTotal / 2;
                             break;
-                        case Frequency.Weekly:
+                        case FrequencyEnum.Weekly:
                             savePerPaycheck = billTotal * 2;
                             break;
                         default:
@@ -335,22 +335,22 @@ namespace JPFinancial
 
                     switch (bill.PaymentFrequency)
                     {
-                        case Frequency.Annually:
+                        case FrequencyEnum.Annually:
                             savePerPaycheck = billTotal / 24;
                             break;
-                        case Frequency.SemiAnnually:
+                        case FrequencyEnum.SemiAnnually:
                             savePerPaycheck = billTotal / 12;
                             break;
-                        case Frequency.Quarterly:
+                        case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case Frequency.BiMonthly:
+                        case FrequencyEnum.BiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
-                        case Frequency.Monthly:
+                        case FrequencyEnum.Monthly:
                             savePerPaycheck = billTotal / 2;
                             break;
-                        case Frequency.Weekly:
+                        case FrequencyEnum.Weekly:
                             savePerPaycheck = billTotal * 2;
                             break;
                         default:
@@ -414,31 +414,31 @@ namespace JPFinancial
                     {
                         switch (frequency)
                         {
-                            case Frequency.Daily:
+                            case FrequencyEnum.Daily:
                                 newDueDate = newDueDate.AddDays(1);
                                 break;
-                            case Frequency.Weekly:
+                            case FrequencyEnum.Weekly:
                                 newDueDate = newDueDate.AddDays(7);
                                 break;
-                            case Frequency.BiWeekly:
+                            case FrequencyEnum.BiWeekly:
                                 newDueDate = newDueDate.AddDays(14);
                                 break;
-                            case Frequency.SemiMonthly:
+                            case FrequencyEnum.SemiMonthly:
                                 newDueDate = newDueDate.AddDays(15);
                                 break;
-                            case Frequency.Monthly:
+                            case FrequencyEnum.Monthly:
                                 newDueDate = newDueDate.AddMonths(1);
                                 break;
-                            case Frequency.BiMonthly:
+                            case FrequencyEnum.BiMonthly:
                                 newDueDate = newDueDate.AddMonths(2);
                                 break;
-                            case Frequency.Quarterly:
+                            case FrequencyEnum.Quarterly:
                                 newDueDate = newDueDate.AddMonths(3);
                                 break;
-                            case Frequency.SemiAnnually:
+                            case FrequencyEnum.SemiAnnually:
                                 newDueDate = newDueDate.AddMonths(6);
                                 break;
-                            case Frequency.Annually:
+                            case FrequencyEnum.Annually:
                                 newDueDate = newDueDate.AddYears(1);
                                 break;
                             default:
