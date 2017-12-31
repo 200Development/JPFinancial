@@ -25,6 +25,7 @@
                     <li>@Html.ActionLink("Income", "Index", "Salary")</li>
                     <li>@Html.ActionLink("Accounts", "Index", "Account")</li>
                     <li>@Html.ActionLink("Bills", "Index", "Bill")</li>
+                    <li>@Html.ActionLink("Transactions", "Index", "Transactions")</li>
                 </ul>
                 @Html.Partial("_LoginPartial")
             </div>
@@ -33,9 +34,11 @@
     <div class="container body-content">
         @RenderBody()
         <hr />
-        <footer>
-            <p>&copy; @DateTime.Now.Year - JP Financial</p>
-        </footer>
+        <div class="col-md-12 col-lg-12 row">
+            <footer>
+                <p>&copy; @DateTime.Now.Year - JP Financial</p>
+            </footer>
+        </div>
     </div>
 
     @Scripts.Render("~/bundles/jquery")

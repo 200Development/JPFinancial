@@ -175,6 +175,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -201,6 +202,10 @@
     <Compile Include="Migrations\201712302212371_TransactionClassAdded.cs" />
     <Compile Include="Migrations\201712302212371_TransactionClassAdded.Designer.cs">
       <DependentUpon>201712302212371_TransactionClassAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201712310644538_addTransactionTable.cs" />
+    <Compile Include="Migrations\201712310644538_addTransactionTable.Designer.cs">
+      <DependentUpon>201712310644538_addTransactionTable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -327,6 +332,11 @@
     <Content Include="Views\Salary\Details.cshtml" />
     <Content Include="Views\Salary\Edit.cshtml" />
     <Content Include="Views\Salary\Index.cshtml" />
+    <Content Include="Views\Transactions\Create.cshtml" />
+    <Content Include="Views\Transactions\Delete.cshtml" />
+    <Content Include="Views\Transactions\Details.cshtml" />
+    <Content Include="Views\Transactions\Edit.cshtml" />
+    <Content Include="Views\Transactions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -355,6 +365,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712302212371_TransactionClassAdded.resx">
       <DependentUpon>201712302212371_TransactionClassAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201712310644538_addTransactionTable.resx">
+      <DependentUpon>201712310644538_addTransactionTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

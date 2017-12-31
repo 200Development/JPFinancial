@@ -1,0 +1,98 @@
+﻿@model JPFinancial.Models.Transaction
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Transaction</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Date)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Date)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Payee)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Payee)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Memo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Memo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Type)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Type)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Category)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Category)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransferTo)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransferTo)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TransferFrom)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TransferFrom)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Spend)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Spend)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Receive)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Receive)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Amount)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Amount)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
