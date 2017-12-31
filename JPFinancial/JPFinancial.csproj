@@ -218,8 +218,7 @@
     <Compile Include="Models\Enumerations\PayTypesEnum.cs" />
     <Compile Include="Models\Enumerations\StatesEnum.cs" />
     <Compile Include="Models\Expense.cs" />
-    <Compile Include="Models\Enumerations\ExpensesEnum.cs" />
-    <Compile Include="Models\Enumerations\IncomeCategoriesEnum.cs" />
+    <Compile Include="Models\Enumerations\CategoriesEnum.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
     <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
     <Compile Include="Models\Salary.cs" />

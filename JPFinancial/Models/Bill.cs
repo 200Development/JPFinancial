@@ -1,6 +1,5 @@
 ﻿using JPFinancial.Models.Enumerations;
 using JPFinancial.Models.Interfaces;
-using Newtonsoft.Json;
 using System;
 using System.ComponentModel.DataAnnotations;
 
@@ -15,11 +14,11 @@ namespace JPFinancial.Models
         public string Name { get; set; }
 
         [Required, DataType(DataType.Date)]
-        [JsonProperty(PropertyName = "Due Date")]
+        [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 
         [Required, DataType(DataType.Currency)]
-        [JsonProperty(PropertyName = "Amount Due")]
+        [Display(Name = "Amount Due")]
         public decimal AmountDue { get; set; }
 
         [Required, Display(Name = "Frequency")]
@@ -30,11 +29,11 @@ namespace JPFinancial.Models
         public Account Account { get; set; }
 
         [Required]
-        [JsonProperty(PropertyName = "Late?")]
+        [Display(Name = "Late?")]
         public virtual bool IsLate { get; set; }
 
         [Required]
-        [JsonProperty(PropertyName = "Mandatory Expense?")]
+        [Display(Name = "Mandatory Expense?")]
         public virtual bool IsMandatory { get; set; }
     }
 }

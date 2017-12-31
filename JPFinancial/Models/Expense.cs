@@ -1,5 +1,5 @@
 ﻿using JPFinancial.Models.Interfaces;
-using Newtonsoft.Json;
+using System.ComponentModel.DataAnnotations;
 
 namespace JPFinancial.Models
 {
@@ -9,7 +9,7 @@ namespace JPFinancial.Models
         public string Name { get; set; }
         public decimal Amount { get; set; }
         public int SalaryId { get; set; }
-        [JsonProperty(PropertyName = "Pre-Taxed?")]
+        [Display(Name = "Pre-Taxed?")]
         public bool IsPreTax { get; set; }
     }
 }

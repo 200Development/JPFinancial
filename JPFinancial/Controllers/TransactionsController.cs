@@ -1,4 +1,5 @@
 ﻿using JPFinancial.Models;
+using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -34,10 +35,12 @@ namespace JPFinancial.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
+            var date = DateTime.Today;
             var viewModel = new TransactionDTO
             {
                 CreditAccounts = _db.Accounts.ToList(),
-                DebitAccounts = _db.Accounts.ToList()
+                DebitAccounts = _db.Accounts.ToList(),
+                Date = date.ToString("d")
             };
             return View(viewModel);
         }
@@ -53,9 +56,9 @@ namespace JPFinancial.Controllers
             {
                 var newTransaction = new Transaction();
                 newTransaction.Payee = transaction.Payee;
-                newTransaction.Date = transaction.Date;
+                newTransaction.Date = Convert.ToDateTime(transaction.Date);
                 newTransaction.Amount = transaction.Amount;
-                newTransaction.Category = transaction.IncomeCategoryEnum.ToString();
+                newTransaction.Category = transaction.CategoriesEnum.ToString();
                 newTransaction.TransferTo = transaction.SelectedDebitAccount.Name;
                 newTransaction.TransferFrom = transaction.SelectedCreditAccount.Name;
                 newTransaction.Spend = transaction.Spend;
