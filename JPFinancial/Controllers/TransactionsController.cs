@@ -59,10 +59,12 @@ namespace JPFinancial.Controllers
                 newTransaction.Date = Convert.ToDateTime(transaction.Date);
                 newTransaction.Amount = transaction.Amount;
                 newTransaction.Category = transaction.CategoriesEnum.ToString();
-                newTransaction.TransferTo = transaction.SelectedDebitAccount.Name;
-                newTransaction.TransferFrom = transaction.SelectedCreditAccount.Name;
+                if (transaction.SelectedDebitAccount != null)
+                    newTransaction.TransferTo = transaction.SelectedDebitAccount.Name;
+                if (transaction.SelectedCreditAccount != null)
+                    newTransaction.TransferFrom = transaction.SelectedCreditAccount.Name;
                 newTransaction.Spend = transaction.Spend;
-                newTransaction.Receive = transaction.Receive;
+                //newTransaction.Receive = transaction.Receive;
                 newTransaction.Memo = transaction.Memo;
                 newTransaction.Type = transaction.TypesEnum.ToString();
 

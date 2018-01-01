@@ -181,6 +181,7 @@ namespace JPFinancial.Models.Enumerations
         Toys,
         [Display(Name = "Trade Commission")]
         TradeCommission,
+        Transfer,
         Travel,
         Tuition,
         Uber,
