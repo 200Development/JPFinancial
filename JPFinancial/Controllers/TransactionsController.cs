@@ -1,5 +1,6 @@
 ﻿using JPFinancial.Models;
 using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -14,7 +15,25 @@ namespace JPFinancial.Controllers
         // GET: Transactions
         public ActionResult Index()
         {
-            return View(_db.Transactions.ToList());
+            var transactions = new List<Transaction>();
+            var allTransactions = _db.Transactions.ToList();
+
+            foreach (var transaction in allTransactions)
+            {
+                var newTransaction = new Transaction();
+                newTransaction.Amount = transaction.Amount;
+                newTransaction.Date = Convert.ToDateTime(transaction.Date.ToString("D"));
+                newTransaction.Payee = transaction.Payee;
+                newTransaction.Type = transaction.Type;
+                newTransaction.Category = transaction.Category;
+                newTransaction.Memo = transaction.Memo;
+                newTransaction.TransferTo = transaction.TransferTo;
+                newTransaction.TransferFrom = transaction.TransferFrom;
+
+                transactions.Add(newTransaction);
+            }
+
+            return View(transactions);
         }
 
         // GET: Transactions/Details/5
@@ -50,7 +69,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Date,Payee,Memo,Type,Category,TransferTo,TransferFrom,Spend,Receive,Amount")] TransactionDTO transaction)
+        public ActionResult Create([Bind(Include = "Date,Payee,Memo,Type,Category,TransferTo,TransferFrom,Amount")] TransactionDTO transaction)
         {
             if (ModelState.IsValid)
             {
@@ -63,8 +82,6 @@ namespace JPFinancial.Controllers
                     newTransaction.TransferTo = transaction.SelectedDebitAccount.Name;
                 if (transaction.SelectedCreditAccount != null)
                     newTransaction.TransferFrom = transaction.SelectedCreditAccount.Name;
-                newTransaction.Spend = transaction.Spend;
-                //newTransaction.Receive = transaction.Receive;
                 newTransaction.Memo = transaction.Memo;
                 newTransaction.Type = transaction.TypesEnum.ToString();
 

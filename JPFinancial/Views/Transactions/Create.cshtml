@@ -42,7 +42,7 @@
         <div class="form-group" id="divType">
             @Html.LabelFor(model => model.TypesEnum, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.TypesEnum, new { id = "ddType", @class = "form-control" } )
+                @Html.EnumDropDownListFor(model => model.TypesEnum, new { id = "ddType", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.TypesEnum, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -50,32 +50,16 @@
         <div class="form-group">
             @Html.LabelFor(model => model.CategoriesEnum, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.CategoriesEnum, new { @class = "form-control" })
+                @Html.EnumDropDownListFor(model => model.CategoriesEnum, new { id = "ddCategories", @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.CategoriesEnum, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group" id="divAmount">
-            @Html.LabelFor(model => model.Amount, new {@class = "control-label col-md-2"})
+            @Html.LabelFor(model => model.Amount, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Amount, new {htmlAttributes = new {id = "tbAmount", @class = "form-control"}})
-                @Html.ValidationMessageFor(model => model.Amount, "", new {@class = "text-danger"})
-            </div>
-        </div>
-
-        <div class="form-group" id="divSpend">
-            @Html.LabelFor(model => model.Spend, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Spend, new { htmlAttributes = new { id = "tbSpend", @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Spend, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group" id="divReceive">
-            @Html.LabelFor(model => model.Receive, new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.Receive, new { htmlAttributes = new { id = "tbReceive",  @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Receive, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { id = "tbAmount", @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
             </div>
         </div>
 

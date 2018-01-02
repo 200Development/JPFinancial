@@ -15,10 +15,7 @@ namespace JPFinancial.Models
         public string Date { get; set; }
         public string Payee { get; set; }
         public string Memo { get; set; }
-        public decimal? Spend { get; set; }
-        public decimal? Receive { get; set; }
         public decimal? Amount { get; set; }
-        public decimal? Balance { get; set; }
         [Display(Name = "Type")]
         public TransactionTypesEnum TypesEnum { get; set; }
         [Display(Name = "Category")]

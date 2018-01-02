@@ -207,6 +207,10 @@
     <Compile Include="Migrations\201712310644538_addTransactionTable.Designer.cs">
       <DependentUpon>201712310644538_addTransactionTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201801012331002_RemovesSpendReceiveFromTransactionsModel.cs" />
+    <Compile Include="Migrations\201801012331002_RemovesSpendReceiveFromTransactionsModel.Designer.cs">
+      <DependentUpon>201801012331002_RemovesSpendReceiveFromTransactionsModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -368,6 +372,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201712310644538_addTransactionTable.resx">
       <DependentUpon>201712310644538_addTransactionTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201801012331002_RemovesSpendReceiveFromTransactionsModel.resx">
+      <DependentUpon>201801012331002_RemovesSpendReceiveFromTransactionsModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

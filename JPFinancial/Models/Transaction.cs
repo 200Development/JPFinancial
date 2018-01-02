@@ -12,10 +12,10 @@ namespace JPFinancial.Models
         public string Memo { get; set; }
         public string Type { get; set; }
         public string Category { get; set; }
+        [Display(Name = "Debit")]
         public string TransferTo { get; set; }
+        [Display(Name = "Credit")]
         public string TransferFrom { get; set; }
-        public decimal? Spend { get; set; }
-        public decimal? Receive { get; set; }
         public decimal? Amount { get; set; }
     }
 }
