@@ -70,6 +70,7 @@ namespace JPFinancial.ViewModels
         public virtual string BillsDue { get; set; }
         public virtual List<Account> Accounts { get; set; }
         public virtual string CurrentMonth { get; set; }
+        public virtual List<Transaction> Transactions { get; set; }
 
     }
 }

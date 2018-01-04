@@ -17,7 +17,7 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             var viewModel = new DashboardViewModel();
-            
+
             viewModel.CurrentMonth = DateTime.Today.ToString("MMMM", CultureInfo.CurrentCulture);
             viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
             viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
@@ -25,11 +25,13 @@ namespace JPFinancial.Controllers
             viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
 
             var savingsAccountBalances = new Dictionary<string, decimal>();
-            var bills = (from b in _db.Bills select b).ToList();
-            var accounts = (from a in _db.Accounts select a).ToList();
+            var bills = _db.Bills.ToList();
+            var accounts = _db.Accounts.ToList();
+            var transactions = _db.Transactions.ToList();
+            var sortedTransactions = SortTransactions(transactions, 1);
             var firstDayOfMonth = Calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
             var lastDayOfMonth = Calculations.GetLastDayOfMonth(DateTime.Today);
-            var firstPaycheck = new DateTime(DateTime.Today.Year,DateTime.Today.Month,15);  //ToDo: make dynamic
+            var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
             var lastPaycheck = Calculations.GetLastDayOfMonth(DateTime.Today);
             var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
             var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
@@ -40,13 +42,102 @@ namespace JPFinancial.Controllers
 
 
             viewModel.MonthlyExpenses = totalDue.ToString("C", CultureInfo.CurrentCulture);
-
             viewModel.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2).ToString("C", CultureInfo.CurrentCulture);
             viewModel.SavedUp = Calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
             viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.Accounts = accounts;
 
             return View(viewModel);
+        }
+
+        private SortedTransactions SortTransactions(IEnumerable<Transaction> transactions, int yearsBack)
+        {
+            var date = DateTime.Today;
+            var year = date.Year;
+            var month = date.Month;
+
+            var howFarBack = date.AddYears(-yearsBack);
+            var previousYear = new DateTime(howFarBack.Year,1,1);
+            var sortedTransactions = new SortedTransactions();
+
+            var balancesByMonth = new Dictionary<string, decimal>();
+            var balancesByQuarter = new Dictionary<string, decimal>();
+            var balancesByYear = new Dictionary<string, decimal>();
+            var balancesByType = new Dictionary<string, decimal>();
+            var balancesByCategory = new Dictionary<string, decimal>();
+            var previousYearBalancesByMonth = new Dictionary<string, decimal>();
+            var previousYearBalancesByQuarter = new Dictionary<string, decimal>();
+            var previousYearBalancesByYear = new Dictionary<string, decimal>();
+            var previousYearBalancesByType = new Dictionary<string, decimal>();
+            var previousYearBalancesByCategory = new Dictionary<string, decimal>();
+
+            var yearBackTransactions = transactions.Where(t => t.Date > howFarBack);
+            var lastYearTransactions = transactions.Where(t => t.Date >= previousYear && t.Date <= new DateTime(previousYear.Year, 12, 31));
+
+            foreach (var transaction in yearBackTransactions)
+            {
+                var transactMonth = transaction.Date.Month;
+                var transactYear = transaction.Date.Year;
+                var monthKey = string.Concat(transactMonth.ToString(), transactYear);
+                if (balancesByMonth.ContainsKey(monthKey))
+                {
+                    var currentBalance = balancesByMonth[$"{monthKey}"];
+                    var newBalance = Convert.ToDecimal(transaction.Amount + currentBalance);
+                    balancesByMonth[monthKey] = newBalance;
+                }
+                else
+                {
+                    balancesByMonth.Add(monthKey, Convert.ToDecimal(transaction.Amount));
+                }
+            }
+
+            foreach (var transaction in lastYearTransactions)
+            {
+                var transactMonth = transaction.Date.Month;
+                var transactYear = transaction.Date.Year;
+                var monthKey = string.Concat(transactMonth.ToString(), transactYear);
+                if (previousYearBalancesByMonth.ContainsKey(monthKey))
+                {
+                    var currentBalance = previousYearBalancesByMonth[$"{monthKey}"];
+                    var newBalance = Convert.ToDecimal(transaction.Amount + currentBalance);
+                    previousYearBalancesByMonth[monthKey] = newBalance;
+
+                    if (transactMonth == 1 || transactMonth == 2 || transactMonth == 3)
+                        previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 4 || transactMonth == 5 || transactMonth == 6)
+                        previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 7 || transactMonth == 8 || transactMonth == 9)
+                        previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 10 || transactMonth == 11 || transactMonth == 12)
+                        previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                }
+                else
+                {
+                    previousYearBalancesByMonth.Add(monthKey, Convert.ToDecimal(transaction.Amount));
+
+                    if (transactMonth == 1 || transactMonth == 2 || transactMonth == 3)
+                        previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 4 || transactMonth == 5 || transactMonth == 6)
+                        previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 7 || transactMonth == 8 || transactMonth == 9)
+                        previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                    if (transactMonth == 10 || transactMonth == 11 || transactMonth == 12)
+                        previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                }
+            }
+
+            sortedTransactions.BalanceByMonth = balancesByMonth;
+            sortedTransactions.LastYearBalanceByMonth = previousYearBalancesByMonth;
+            sortedTransactions.BalanceByQuarter = balancesByQuarter;
+            sortedTransactions.LastYearBalanceByQuarter = previousYearBalancesByQuarter;
+            sortedTransactions.BalanceByYear = balancesByYear;
+            sortedTransactions.LastYearBalanceByYear = previousYearBalancesByYear;
+            sortedTransactions.BalanceByType = balancesByType;
+            sortedTransactions.LastYearBalanceByType = previousYearBalancesByType;
+            sortedTransactions.BalanceByCategory = balancesByCategory;
+            sortedTransactions.LastYearBalanceByCategory = previousYearBalancesByCategory;
+
+            return sortedTransactions;
         }
 
 
@@ -56,7 +147,7 @@ namespace JPFinancial.Controllers
             if (model.SelectedFVType.Equals("futureValue"))
             {
                 var fv = model.FutureAmount;
-                model.FutureDate = Calculations.CalculateFvDate(Convert.ToDecimal(fv),model.NetIncome);
+                model.FutureDate = Calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
             }
             else if (model.SelectedFVType.Equals("futureDate"))
             {
@@ -73,5 +164,19 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
+    }
+
+    public class SortedTransactions
+    {
+        public Dictionary<string,decimal> BalanceByMonth { get; set; }
+        public Dictionary<string,decimal> LastYearBalanceByMonth { get; set; }
+        public Dictionary<string,decimal> BalanceByQuarter { get; set; }
+        public Dictionary<string,decimal> LastYearBalanceByQuarter { get; set; }
+        public Dictionary<string,decimal> BalanceByYear { get; set; }
+        public Dictionary<string,decimal> LastYearBalanceByYear { get; set; }
+        public Dictionary<string,decimal> BalanceByType { get; set; }
+        public Dictionary<string,decimal> LastYearBalanceByType { get; set; }
+        public Dictionary<string,decimal> BalanceByCategory { get; set; }
+        public Dictionary<string,decimal> LastYearBalanceByCategory { get; set; }
     }
 }

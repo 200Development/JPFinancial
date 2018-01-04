@@ -21,6 +21,7 @@ namespace JPFinancial.Controllers
             foreach (var transaction in allTransactions)
             {
                 var newTransaction = new Transaction();
+                newTransaction.Id = transaction.Id;
                 newTransaction.Amount = transaction.Amount;
                 newTransaction.Date = Convert.ToDateTime(transaction.Date.ToString("D"));
                 newTransaction.Payee = transaction.Payee;
