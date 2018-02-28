@@ -2,8 +2,8 @@ namespace JPFinancial.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class initialMigrationWithAccountAndBillTables : DbMigration
+
+    public partial class Initial : DbMigration
     {
         public override void Up()
         {
@@ -14,12 +14,38 @@ namespace JPFinancial.Migrations
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 255),
                         Balance = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        Goal = c.Decimal(precision: 18, scale: 2),
+                        PaycheckContribution = c.Decimal(precision: 18, scale: 2),
                         RequiredSavings = c.Decimal(precision: 18, scale: 2),
                         BalanceSurplus = c.Decimal(precision: 18, scale: 2),
                     })
                 .PrimaryKey(t => t.Id);
-            
+
+            CreateTable(
+                "dbo.Benefits",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SalaryId = c.Int(nullable: false),
+                        Bonus_Id = c.Int(),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Bonus", t => t.Bonus_Id)
+                .Index(t => t.Bonus_Id);
+
+            CreateTable(
+                "dbo.Bonus",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                        Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        DatePaid = c.DateTime(nullable: false),
+                        SalaryId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+
             CreateTable(
                 "dbo.Bills",
                 c => new
@@ -36,7 +62,33 @@ namespace JPFinancial.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Accounts", t => t.AccountId, cascadeDelete: true)
                 .Index(t => t.AccountId);
-            
+
+            CreateTable(
+                "dbo.Companies",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                        StreetAddress = c.String(),
+                        City = c.String(),
+                        StatesEnum = c.Int(nullable: false),
+                        Zipcode = c.String(),
+                        Phone = c.String(),
+                    })
+                .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.Expenses",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        SalaryId = c.Int(nullable: false),
+                        IsPreTax = c.Boolean(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+
             CreateTable(
                 "dbo.AspNetRoles",
                 c => new
@@ -46,7 +98,7 @@ namespace JPFinancial.Migrations
                     })
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.Name, unique: true, name: "RoleNameIndex");
-            
+
             CreateTable(
                 "dbo.AspNetUserRoles",
                 c => new
@@ -59,7 +111,36 @@ namespace JPFinancial.Migrations
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.RoleId);
-            
+
+            CreateTable(
+                "dbo.Salaries",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Payee = c.String(nullable: false),
+                        PayTypesEnum = c.Int(nullable: false),
+                        PayFrequency = c.Int(nullable: false),
+                        GrossPay = c.Decimal(precision: 18, scale: 2),
+                        NetIncome = c.Decimal(precision: 18, scale: 2),
+                    })
+                .PrimaryKey(t => t.Id);
+
+            CreateTable(
+                "dbo.Transactions",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Date = c.DateTime(nullable: false),
+                        Payee = c.String(),
+                        Memo = c.String(),
+                        Type = c.String(),
+                        Category = c.String(),
+                        TransferTo = c.String(),
+                        TransferFrom = c.String(),
+                        Amount = c.Decimal(precision: 18, scale: 2),
+                    })
+                .PrimaryKey(t => t.Id);
+
             CreateTable(
                 "dbo.AspNetUsers",
                 c => new
@@ -79,7 +160,7 @@ namespace JPFinancial.Migrations
                     })
                 .PrimaryKey(t => t.Id)
                 .Index(t => t.UserName, unique: true, name: "UserNameIndex");
-            
+
             CreateTable(
                 "dbo.AspNetUserClaims",
                 c => new
@@ -92,7 +173,7 @@ namespace JPFinancial.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId);
-            
+
             CreateTable(
                 "dbo.AspNetUserLogins",
                 c => new
@@ -104,9 +185,9 @@ namespace JPFinancial.Migrations
                 .PrimaryKey(t => new { t.LoginProvider, t.ProviderKey, t.UserId })
                 .ForeignKey("dbo.AspNetUsers", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.UserId);
-            
+
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.AspNetUserRoles", "UserId", "dbo.AspNetUsers");
@@ -114,6 +195,7 @@ namespace JPFinancial.Migrations
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
             DropForeignKey("dbo.Bills", "AccountId", "dbo.Accounts");
+            DropForeignKey("dbo.Benefits", "Bonus_Id", "dbo.Bonus");
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
@@ -121,12 +203,19 @@ namespace JPFinancial.Migrations
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
             DropIndex("dbo.Bills", new[] { "AccountId" });
+            DropIndex("dbo.Benefits", new[] { "Bonus_Id" });
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
+            DropTable("dbo.Transactions");
+            DropTable("dbo.Salaries");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetRoles");
+            DropTable("dbo.Expenses");
+            DropTable("dbo.Companies");
             DropTable("dbo.Bills");
+            DropTable("dbo.Bonus");
+            DropTable("dbo.Benefits");
             DropTable("dbo.Accounts");
         }
     }

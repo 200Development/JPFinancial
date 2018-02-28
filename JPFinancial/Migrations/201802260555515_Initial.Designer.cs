@@ -7,13 +7,13 @@ namespace JPFinancial.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class changeSalaryModel : IMigrationMetadata
+    public sealed partial class Initial : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(changeSalaryModel));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Initial));
         
         string IMigrationMetadata.Id
         {
-            get { return "201710211855177_changeSalaryModel"; }
+            get { return "201802260555515_Initial"; }
         }
         
         string IMigrationMetadata.Source
