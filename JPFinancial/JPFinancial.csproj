@@ -193,6 +193,10 @@
     <Compile Include="Migrations\201803120249520_addSelectedAccountsToTransactions.Designer.cs">
       <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201803120451010_transactionAmountToNotNullable.cs" />
+    <Compile Include="Migrations\201803120451010_transactionAmountToNotNullable.Designer.cs">
+      <DependentUpon>201803120451010_transactionAmountToNotNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -339,6 +343,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803120249520_addSelectedAccountsToTransactions.resx">
       <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803120451010_transactionAmountToNotNullable.resx">
+      <DependentUpon>201803120451010_transactionAmountToNotNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>

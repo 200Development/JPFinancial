@@ -17,6 +17,6 @@ namespace JPFinancial.ViewModels
         public IEnumerable<Account> DebitAccounts { get; set; }
         public int? SelectedTransferToAccount { get; set; }
         public int? SelectedTransferFromAccount { get; set; }
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
     }
 }

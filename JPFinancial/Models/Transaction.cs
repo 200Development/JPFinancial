@@ -20,6 +20,6 @@ namespace JPFinancial.Models
         public IEnumerable<Account> DebitAccounts { get; set; }
         public Account CreditAccount { get; set; }
         public Account DebitAccount { get; set; }
-        public decimal? Amount { get; set; }
+        public decimal Amount { get; set; }
     }
 }

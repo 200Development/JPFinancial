@@ -14,6 +14,6 @@ namespace JPFinancial.Models
         CategoriesEnum Category { get; set; }
         IEnumerable<Account> CreditAccounts { get; set; }
         IEnumerable<Account> DebitAccounts { get; set; }
-        decimal? Amount { get; set; }
+        decimal Amount { get; set; }
     }
 }

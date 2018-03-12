@@ -57,6 +57,7 @@ namespace JPFinancial.Controllers
                 var debitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transaction.SelectedTransferFromAccount);
                 var creditAccount = _db.Accounts?.FirstOrDefault(a => a.Id == transaction.SelectedTransferToAccount);
                 var newTransaction = new Transaction();
+
                 newTransaction.Date = transaction.Date;
                 newTransaction.Payee = transaction.Payee;
                 newTransaction.Category = transaction.Category;
@@ -65,6 +66,18 @@ namespace JPFinancial.Controllers
                 newTransaction.DebitAccount = debitAccount;
                 newTransaction.CreditAccount = creditAccount;
                 newTransaction.Amount = transaction.Amount;
+
+                if (debitAccount != null)
+                {
+                    debitAccount.Balance += transaction.Amount;
+                    _db.Entry(debitAccount).State = EntityState.Modified;
+                }
+                if (creditAccount != null)
+                {
+                    creditAccount.Balance -= transaction.Amount;
+                    _db.Entry(creditAccount).State = EntityState.Modified;
+                }
+
                 _db.Transactions.Add(newTransaction);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
