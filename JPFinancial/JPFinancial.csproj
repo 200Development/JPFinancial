@@ -173,6 +173,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -183,6 +184,14 @@
     <Compile Include="Migrations\201803112357429_updateTransactionTableWithFKs.cs" />
     <Compile Include="Migrations\201803112357429_updateTransactionTableWithFKs.Designer.cs">
       <DependentUpon>201803112357429_updateTransactionTableWithFKs.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803120129308_updateTransactionModel.cs" />
+    <Compile Include="Migrations\201803120129308_updateTransactionModel.Designer.cs">
+      <DependentUpon>201803120129308_updateTransactionModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201803120249520_addSelectedAccountsToTransactions.cs" />
+    <Compile Include="Migrations\201803120249520_addSelectedAccountsToTransactions.Designer.cs">
+      <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -198,11 +207,13 @@
     <Compile Include="Models\Enumerations\CategoriesEnum.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
     <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
+    <Compile Include="Models\ITransaction.cs" />
     <Compile Include="Models\Salary.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\Enumerations\TransactionTypesEnum.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
     <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
+    <Compile Include="ViewModels\CreateTransactionViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IdentityViewModels.cs" />
     <Compile Include="Models\ApplicationUser.cs" />
@@ -303,6 +314,11 @@
     <Content Include="Views\Accounts\Details.cshtml" />
     <Content Include="Views\Accounts\Edit.cshtml" />
     <Content Include="Views\Accounts\Index.cshtml" />
+    <Content Include="Views\Transactions\Create.cshtml" />
+    <Content Include="Views\Transactions\Delete.cshtml" />
+    <Content Include="Views\Transactions\Details.cshtml" />
+    <Content Include="Views\Transactions\Edit.cshtml" />
+    <Content Include="Views\Transactions\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -317,6 +333,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201803112357429_updateTransactionTableWithFKs.resx">
       <DependentUpon>201803112357429_updateTransactionTableWithFKs.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803120129308_updateTransactionModel.resx">
+      <DependentUpon>201803120129308_updateTransactionModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201803120249520_addSelectedAccountsToTransactions.resx">
+      <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
