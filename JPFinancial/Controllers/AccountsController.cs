@@ -1,25 +1,19 @@
 ﻿using JPFinancial.Models;
-using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 
-
 namespace JPFinancial.Controllers
 {
-    public class AccountController : Controller
+    public class AccountsController : Controller
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         // GET: Accounts
         public ActionResult Index()
         {
-            _calculations.GetRequiredAcctSavings();
-            _calculations.GetReqBalanceSurplus();
-
-            return View(_db.Accounts.ToList());
+            return View(db.Accounts.ToList());
         }
 
         // GET: Accounts/Details/5
@@ -29,7 +23,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
+            Account account = db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -48,15 +42,12 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "AccountId,Name,Balance,Goal")] Account account)
+        public ActionResult Create([Bind(Include = "Id,Name,Balance,PaycheckContribution,RequiredSavings")] Account account)
         {
             if (ModelState.IsValid)
             {
-                //Add create date
-                var editDate = DateTime.Today.ToShortDateString();
-
-                _db.Accounts.Add(account);
-                _db.SaveChanges();
+                db.Accounts.Add(account);
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -70,7 +61,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
+            Account account = db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -79,16 +70,16 @@ namespace JPFinancial.Controllers
         }
 
         // POST: Accounts/Edit/5
-        // To protect from over posting attacks, please enable the specific properties you want to bind to, for
+        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Balance,Goal,Date")] Account account)
+        public ActionResult Edit([Bind(Include = "Id,Name,Balance,PaycheckContribution,RequiredSavings")] Account account)
         {
             if (ModelState.IsValid)
             {
-                _db.Entry(account).State = EntityState.Modified;
-                _db.SaveChanges();
+                db.Entry(account).State = EntityState.Modified;
+                db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(account);
@@ -101,7 +92,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = _db.Accounts.Find(id);
+            Account account = db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -114,9 +105,9 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Account account = _db.Accounts.Find(id);
-            _db.Accounts.Remove(account);
-            _db.SaveChanges();
+            Account account = db.Accounts.Find(id);
+            db.Accounts.Remove(account);
+            db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -124,10 +115,9 @@ namespace JPFinancial.Controllers
         {
             if (disposing)
             {
-                _db.Dispose();
+                db.Dispose();
             }
             base.Dispose(disposing);
         }
-
     }
 }

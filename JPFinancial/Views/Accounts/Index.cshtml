@@ -4,7 +4,7 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Accounts</h2>
+<h2>Index</h2>
 
 <p>
     @Html.ActionLink("Create New", "Create")
@@ -53,54 +53,5 @@
         </td>
     </tr>
 }
+
 </table>
-
-
-@*<div>
-    <h2>Transfers</h2>
-</div>
-<div>
-
-</div>
-<div>
-    @foreach (var account in Model)
-    {
-        <div class="col-md-2">
-            <button class="btn btn-block" style="text-align: center; width: 90%; margin: 0 0 12px 0">@account.Name<br/>@account.Balance</button>
-        </div>
-    }
-</div>*@
-
-
-
-
-
-
-@*ALL CODE BELOW ISN'T WORKING*@
-
-
-
-
-
-@*@foreach (var account in Model)
-{
-    <div class="col-md-3">
-        <h4 style="text-align: center">@account.Name</h4>
-        <div id="slidecontainer">
-            <input type="range" min="0" max="100" class="slider" id="myRange"/>
-        </div>
-        <label id="demo"></label>
-    </div>
-}
-
-
-<script type="text/javascript">
-    var slider = document.getElementById("myRange");
-    var output = document.getElementById("demo");
-    output.innerHTML = slider.value; // Display the default slider value
-
-    // Update the current slider value (each time you drag the slider handle)
-    slider.oninput = function () {
-        output.innerHTML = this.value;
-    }
-</script>*@

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using JPFinancial.Models.Enumerations;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace JPFinancial.Models
@@ -10,12 +11,12 @@ namespace JPFinancial.Models
         public DateTime Date { get; set; }
         public string Payee { get; set; }
         public string Memo { get; set; }
-        public string Type { get; set; }
-        public string Category { get; set; }
+        public TransactionTypesEnum Type { get; set; }
+        public CategoriesEnum Category { get; set; }
         [Display(Name = "Debit")]
-        public string TransferTo { get; set; }
+        public Account TransferTo { get; set; }
         [Display(Name = "Credit")]
-        public string TransferFrom { get; set; }
+        public Account TransferFrom { get; set; }
         public decimal? Amount { get; set; }
     }
 }
