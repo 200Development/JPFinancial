@@ -177,25 +177,9 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201802260555515_Initial.cs" />
-    <Compile Include="Migrations\201802260555515_Initial.Designer.cs">
-      <DependentUpon>201802260555515_Initial.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803112357429_updateTransactionTableWithFKs.cs" />
-    <Compile Include="Migrations\201803112357429_updateTransactionTableWithFKs.Designer.cs">
-      <DependentUpon>201803112357429_updateTransactionTableWithFKs.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803120129308_updateTransactionModel.cs" />
-    <Compile Include="Migrations\201803120129308_updateTransactionModel.Designer.cs">
-      <DependentUpon>201803120129308_updateTransactionModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803120249520_addSelectedAccountsToTransactions.cs" />
-    <Compile Include="Migrations\201803120249520_addSelectedAccountsToTransactions.Designer.cs">
-      <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201803120451010_transactionAmountToNotNullable.cs" />
-    <Compile Include="Migrations\201803120451010_transactionAmountToNotNullable.Designer.cs">
-      <DependentUpon>201803120451010_transactionAmountToNotNullable.cs</DependentUpon>
+    <Compile Include="Migrations\201803181615021_init.cs" />
+    <Compile Include="Migrations\201803181615021_init.Designer.cs">
+      <DependentUpon>201803181615021_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -332,24 +316,12 @@
     <None Include="Project_Readme.html" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201802260555515_Initial.resx">
-      <DependentUpon>201802260555515_Initial.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803112357429_updateTransactionTableWithFKs.resx">
-      <DependentUpon>201803112357429_updateTransactionTableWithFKs.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803120129308_updateTransactionModel.resx">
-      <DependentUpon>201803120129308_updateTransactionModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803120249520_addSelectedAccountsToTransactions.resx">
-      <DependentUpon>201803120249520_addSelectedAccountsToTransactions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201803120451010_transactionAmountToNotNullable.resx">
-      <DependentUpon>201803120451010_transactionAmountToNotNullable.cs</DependentUpon>
-    </EmbeddedResource>
+    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
   </ItemGroup>
   <ItemGroup>
-    <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
+    <EmbeddedResource Include="Migrations\201803181615021_init.resx">
+      <DependentUpon>201803181615021_init.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

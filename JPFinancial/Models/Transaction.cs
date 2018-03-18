@@ -14,12 +14,11 @@ namespace JPFinancial.Models
         public string Memo { get; set; }
         public TransactionTypesEnum Type { get; set; }
         public CategoriesEnum Category { get; set; }
-        [Display(Name = "Debit")]
-        public IEnumerable<Account> CreditAccounts { get; set; }
-        [Display(Name = "Credit")]
-        public IEnumerable<Account> DebitAccounts { get; set; }
+        public IEnumerable<Account> Accounts { get; set; }
         public Account CreditAccount { get; set; }
         public Account DebitAccount { get; set; }
+        public int? CreditAccountId { get; set; }
+        public int? DebitAccountId { get; set; }
         public decimal Amount { get; set; }
     }
 }

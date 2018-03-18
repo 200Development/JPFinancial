@@ -13,10 +13,9 @@ namespace JPFinancial.ViewModels
         public string Memo { get; set; }
         public TransactionTypesEnum Type { get; set; }
         public CategoriesEnum Category { get; set; }
-        public IEnumerable<Account> CreditAccounts { get; set; }
-        public IEnumerable<Account> DebitAccounts { get; set; }
-        public int? SelectedTransferToAccount { get; set; }
-        public int? SelectedTransferFromAccount { get; set; }
+        public IEnumerable<Account> Accounts { get; set; }
+        public int? SelectedCreditAccount { get; set; }
+        public int? SelectedDebitAccount { get; set; }
         public decimal Amount { get; set; }
     }
 }

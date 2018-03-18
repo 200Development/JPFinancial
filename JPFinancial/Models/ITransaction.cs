@@ -12,8 +12,7 @@ namespace JPFinancial.Models
         string Memo { get; set; }
         TransactionTypesEnum Type { get; set; }
         CategoriesEnum Category { get; set; }
-        IEnumerable<Account> CreditAccounts { get; set; }
-        IEnumerable<Account> DebitAccounts { get; set; }
+        IEnumerable<Account> Accounts { get; set; }
         decimal Amount { get; set; }
     }
 }

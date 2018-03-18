@@ -38,8 +38,7 @@ namespace JPFinancial.Controllers
         {
             var accounts = _db.Accounts.ToList();
             var viewModel = new CreateTransactionViewModel();
-            viewModel.DebitAccounts = accounts;
-            viewModel.CreditAccounts = accounts;
+            viewModel.Accounts = accounts;
             viewModel.Date = DateTime.Today;
 
             return View(viewModel);
@@ -50,33 +49,12 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Date,Payee,Memo,Type,Category,SelectedTransferToAccount,SelectedTransferFromAccount,Amount")] CreateTransactionViewModel transaction)
+        public ActionResult Create([Bind(Include = "Id,Date,Payee,Memo,Type,Category,SelectedCreditAccount,SelectedDebitAccount,Amount")] CreateTransactionViewModel transaction)
         {
             if (ModelState.IsValid)
             {
-                var debitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transaction.SelectedTransferFromAccount);
-                var creditAccount = _db.Accounts?.FirstOrDefault(a => a.Id == transaction.SelectedTransferToAccount);
-                var newTransaction = new Transaction();
-
-                newTransaction.Date = transaction.Date;
-                newTransaction.Payee = transaction.Payee;
-                newTransaction.Category = transaction.Category;
-                newTransaction.Memo = transaction.Memo;
-                newTransaction.Type = transaction.Type;
-                newTransaction.DebitAccount = debitAccount;
-                newTransaction.CreditAccount = creditAccount;
-                newTransaction.Amount = transaction.Amount;
-
-                if (debitAccount != null)
-                {
-                    debitAccount.Balance += transaction.Amount;
-                    _db.Entry(debitAccount).State = EntityState.Modified;
-                }
-                if (creditAccount != null)
-                {
-                    creditAccount.Balance -= transaction.Amount;
-                    _db.Entry(creditAccount).State = EntityState.Modified;
-                }
+                var newTransaction = ConvertFromVMToTransaction(transaction);
+                UpdateAccountBalances(newTransaction);
 
                 _db.Transactions.Add(newTransaction);
                 _db.SaveChanges();
@@ -110,6 +88,33 @@ namespace JPFinancial.Controllers
         {
             if (ModelState.IsValid)
             {
+                var originalTransaction = _db.Transactions.AsNoTracking().Where(t => t.Id == transaction.Id).Cast<Transaction>().FirstOrDefault();
+                if (originalTransaction != null)
+                {
+                    var originalCreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
+                    var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.DebitAccountId);
+                    var originalAmount = originalTransaction.Amount;
+
+                    // Reassign the Debit/Credit Account Id's to Transaction Model
+                    transaction.CreditAccountId = originalTransaction.CreditAccountId;
+                    transaction.DebitAccountId = originalTransaction.DebitAccountId;
+
+                    if (originalAmount != transaction.Amount)
+                    {
+                        var amountDifference = transaction.Amount - originalAmount;
+                        if (originalDebitAccount != null)
+                        {
+                            originalDebitAccount.Balance += amountDifference;
+                            _db.Entry(originalDebitAccount).State = EntityState.Modified;
+                        }
+                        if (originalCreditAccount != null)
+                        {
+                            originalCreditAccount.Balance -= amountDifference;
+                            _db.Entry(originalCreditAccount).State = EntityState.Modified;
+                        }
+                    }
+                }
+
                 _db.Entry(transaction).State = EntityState.Modified;
                 _db.SaveChanges();
                 return RedirectToAction("Index");
@@ -138,7 +143,28 @@ namespace JPFinancial.Controllers
         public ActionResult DeleteConfirmed(int id)
         {
             Transaction transaction = _db.Transactions.Find(id);
-            _db.Transactions.Remove(transaction);
+            try
+            {
+                _db.Transactions.Remove(transaction);
+                if (transaction != null)
+                {
+                    if (transaction.DebitAccount != null)
+                    {
+                        transaction.DebitAccount.Balance -= transaction.Amount;
+                        _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
+                    }
+                    if (transaction.CreditAccount != null)
+                    {
+                        transaction.CreditAccount.Balance += transaction.Amount;
+                        _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
+                    }
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                throw;
+            }
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
@@ -151,5 +177,54 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
+
+        private Transaction ConvertFromVMToTransaction(CreateTransactionViewModel transactionViewModel)
+        {
+            try
+            {
+                var newTransaction = new Transaction();
+                newTransaction.Id = transactionViewModel.Id;
+                newTransaction.Date = transactionViewModel.Date;
+                newTransaction.Payee = transactionViewModel.Payee;
+                newTransaction.Memo = transactionViewModel.Memo;
+                newTransaction.Type = transactionViewModel.Type;
+                newTransaction.Category = transactionViewModel.Category;
+                newTransaction.CreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedCreditAccount);
+                newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
+                newTransaction.Amount = transactionViewModel.Amount;
+
+                return newTransaction;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private void UpdateAccountBalances(Transaction transaction)
+        {
+            var newTransaction = new Transaction();
+
+            newTransaction.Date = transaction.Date;
+            newTransaction.Payee = transaction.Payee;
+            newTransaction.Category = transaction.Category;
+            newTransaction.Memo = transaction.Memo;
+            newTransaction.Type = transaction.Type;
+            newTransaction.DebitAccount = transaction.DebitAccount;
+            newTransaction.CreditAccount = transaction.CreditAccount;
+            newTransaction.Amount = transaction.Amount;
+
+            if (transaction.DebitAccount != null)
+            {
+                transaction.DebitAccount.Balance += transaction.Amount;
+                _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
+            }
+            if (transaction.CreditAccount != null)
+            {
+                transaction.CreditAccount.Balance -= transaction.Amount;
+                _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
+            }
+        }
+
     }
 }
