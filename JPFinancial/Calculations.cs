@@ -611,5 +611,10 @@ namespace JPFinancial
                 throw e;
             }
         }
+
+        public void FulfillTransaction(Account debitedAccount, Account creditedAccount, decimal? amount)
+        {
+             
+        }
     }
 }

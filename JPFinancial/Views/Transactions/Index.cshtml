@@ -27,23 +27,15 @@
             @Html.DisplayNameFor(model => model.Category)
         </th>
         <th>
-            @Html.DisplayNameFor(model => model.TransferTo)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TransferFrom)
-        </th>
-        <th>
             @Html.DisplayNameFor(model => model.Amount)
         </th>
         <th></th>
     </tr>
 
-@foreach (var item in Model)
-{
-    var formattedDate = item.Date.ToString("D");
+@foreach (var item in Model) {
     <tr>
         <td>
-            @Html.DisplayFor(modelItem => formattedDate)
+            @Html.DisplayFor(modelItem => item.Date)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Payee)
@@ -56,12 +48,6 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Category)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TransferTo)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TransferFrom)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Amount)

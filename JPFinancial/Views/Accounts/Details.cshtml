@@ -1,0 +1,58 @@
+﻿@model JPFinancial.Models.Account
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Account</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Balance)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Balance)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PaycheckContribution)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PaycheckContribution)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RequiredSavings)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RequiredSavings)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BalanceSurplus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BalanceSurplus)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
