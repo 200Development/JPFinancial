@@ -123,20 +123,6 @@ namespace JPFinancial.Controllers
             {
                 _db.Transactions.Remove(transaction);
                 UpdateAccountBalances(transaction, "delete");
-                //if (transaction != null)
-                //{
-                //    if (transaction.DebitAccount != null)
-                //    {
-                //        transaction.DebitAccount.Balance -= transaction.Amount;
-                //        _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
-                //    }
-                //    if (transaction.CreditAccount != null)
-                //    {
-                //        transaction.CreditAccount.Balance += transaction.Amount;
-                //        _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
-                //    }
-                //    _db.SaveChanges();
-                //}
             }
             catch (Exception)
             {

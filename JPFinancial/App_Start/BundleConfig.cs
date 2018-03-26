@@ -25,6 +25,41 @@ namespace JPFinancial
             bundles.Add(new StyleBundle("~/Content/css").Include(
                       "~/Content/bootstrap.min.css",
                       "~/Content/site.css"));
+
+
+            //Black-Forest Bundles
+            bundles.Add(new ScriptBundle("~/bundles/black-forest/jquery").Include(
+                      "~/black-forest/js/alertify.min.js",
+                      "~/black-forest/js/fullcalendar.js",
+                      "~/black-forest/js/jquery-ui-1.8.23.custom.min.js",
+                      "~/black-forest/js/jquery.bootstrap.wizard.js",
+                      "~/black-forest/js/jquery.dataTables.js",
+                      "~/black-forest/js/jquery.easy-pie-chart.js",
+                      "~/black-forest/js/jquery.min.js",
+                      "~/black-forest/js/jquery.scrollUp.js",
+                      "~/black-forest/js/jquery.sparkline.js",
+                      "~/black-forest/js/load-image.min.js",
+                      "~/black-forest/js/moment.js",
+                      "~/black-forest/js/tiny-scrollbar.js"));
+
+            bundles.Add(new ScriptBundle("~/bundles/black-forest/bootstrap").Include(
+                      "~/black-forest/js/bootstrap-colorpicker.js",
+                      "~/black-forest/js/bootstrap-editable.min.js",
+                      "~/black-forest/js/bootstrap-image-gallery-main.js",
+                      "~/black-forest/js/bootstrap-image-gallery.js",
+                      "~/black-forest/js/bootstrap-timepicker.js",
+                      "~/black-forest/js/bootstrap.js"));
+
+            bundles.Add(new StyleBundle("~/Content/black-forest/css").Include(
+                      "~/black-forest/css/alertify.core.css",
+                      "~/black-forest/css/bootstrap-editable.css",
+                      "~/black-forest/css/calendar-theme.css",
+                      "~/black-forest/css/charts-graphs.css",
+                      "~/black-forest/css/fullcalendar.css",
+                      "~/black-forest/css/main.css",
+                      "~/black-forest/css/select2.css",
+                      "~/black-forest/css/style.css",
+                      "~/black-forest/css/timepicker.css"));
         }
     }
 }
