@@ -614,7 +614,164 @@ namespace JPFinancial
 
         public void FulfillTransaction(Account debitedAccount, Account creditedAccount, decimal? amount)
         {
-             
+
+        }
+
+        /// <summary>
+        /// Calculates the remaining balance of the loan
+        /// </summary>
+        /// <param name="loan">Loan class that contains all pertinent information for the loan</param>
+        /// <returns name="remainingBalance" type="decimal">Remaining balance of the loan</returns>
+        public decimal GetRemainingBalance(Loan loan)
+        {
+            try
+            {
+                //bug: APR is not being calculated per pay-period
+                var remainingBalance = 0.0m;
+                if (loan != null)
+                {
+                    var payments = Convert.ToDouble(loan.Payments);
+                    var rate = Convert.ToDouble(decimal.One + loan.APR);
+                    var fv = (loan.CurrentBalance * (1 + loan.APR)) -
+                             loan.Payment * (decimal)((Math.Pow(loan.Payments, rate) - 1.0 / (double)loan.APR));
+
+
+                    return remainingBalance;
+                }
+                return remainingBalance;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public DateTime GetPayoffDate(Loan loan)
+        {
+            try
+            {
+                var payoffDate = DateTime.Today;
+                if (loan != null)
+                {
+                    double interestRate = 0.00;
+                    switch (loan.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Monthly:
+                            interestRate = (double)loan.APR / 12;
+                            break;
+                        case FrequencyEnum.Weekly:
+                            interestRate = (double)loan.APR / 52;
+                            break;
+                        case FrequencyEnum.Daily:
+                            interestRate = (double)loan.APR / 360;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    // Formula: N = -log(1-iA/P) / log(1+i)       N = # of payments, i = interest rate (APR/payments per year), A = loan amount, P = payment
+                    // step 1 = -log(1-iA/P)
+                    decimal interestTimesAmount = (decimal)interestRate * loan.OriginalBalance;
+                    decimal divideByPayment = Convert.ToDecimal(interestTimesAmount / loan.Payment);
+                    double getNegativeLog = Math.Log((double)divideByPayment) * -1;
+
+                    // step 2 = log(1+i)
+                    decimal interestPlusOne = (decimal)(1.0 + interestRate);
+                    double getLog = Math.Log((double)interestPlusOne);
+
+                    // step 3 = step 1 / step 2
+                    double numberOfPayments = getNegativeLog / getLog;
+                    int wholeNumber = (int)numberOfPayments;
+                    double fraction = numberOfPayments - wholeNumber;
+
+                    double days = 0.0;
+                    switch (loan.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Monthly:
+                            payoffDate = DateTime.Today.AddMonths(wholeNumber);
+                            days = Math.Ceiling(30 * fraction);
+                            payoffDate = payoffDate.AddDays(days);
+                            break;
+                        case FrequencyEnum.Weekly:
+                            payoffDate = DateTime.Today.AddDays(wholeNumber * 7);
+                            days = Math.Ceiling(7 * fraction);
+                            payoffDate = payoffDate.AddDays(days);
+                            break;
+                        case FrequencyEnum.Daily:
+                            payoffDate = DateTime.Today.AddDays(wholeNumber + 1);
+                            break;
+                    }
+
+                    return payoffDate;
+                }
+                return payoffDate;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
+        public decimal GetPayment(Loan loan)
+        {
+            try
+            {
+                var payment = decimal.Zero;
+                if (loan != null)
+                {
+
+
+
+                    return payment;
+                }
+                return payment;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public decimal GetInterestPayment(Loan loan)
+        {
+            try
+            {
+                var interestPayment = decimal.Zero;
+                if (loan != null)
+                {
+
+
+                    return interestPayment;
+                }
+                return interestPayment;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
+        }
+
+        public decimal GetPrincipalPayment(Loan loan)
+        {
+            try
+            {
+                var principalPayment = decimal.Zero;
+                if (loan != null)
+                {
+
+
+                    return principalPayment;
+                }
+                return principalPayment;
+            }
+            catch (Exception)
+            {
+
+                throw;
+            }
         }
     }
 }
