@@ -2,6 +2,7 @@
 using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
+using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.ViewModels
 {

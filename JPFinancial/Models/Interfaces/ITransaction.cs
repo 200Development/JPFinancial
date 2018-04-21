@@ -1,8 +1,8 @@
-using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
+using JPFinancial.Models.Enumerations;
 
-namespace JPFinancial.Models
+namespace JPFinancial.Models.Interfaces
 {
     public interface ITransaction
     {

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.Models
 {

@@ -632,7 +632,7 @@ namespace JPFinancial
                 {
                     var payments = Convert.ToDouble(loan.Payments);
                     var rate = Convert.ToDouble(decimal.One + loan.APR);
-                    var fv = (loan.CurrentBalance * (1 + loan.APR)) -
+                    var fv = (loan.OutstandingBalance * (1 + loan.APR)) -
                              loan.Payment * (decimal)((Math.Pow(loan.Payments, rate) - 1.0 / (double)loan.APR));
 
 
@@ -672,7 +672,7 @@ namespace JPFinancial
 
                     // Formula: N = -log(1-iA/P) / log(1+i)       N = # of payments, i = interest rate (APR/payments per year), A = loan amount, P = payment
                     // step 1 = -log(1-iA/P)
-                    decimal interestTimesAmount = (decimal)interestRate * loan.OriginalBalance;
+                    decimal interestTimesAmount = (decimal)interestRate * loan.OriginalLoanAmount;
                     decimal divideByPayment = Convert.ToDecimal(interestTimesAmount / loan.Payment);
                     double getNegativeLog = Math.Log((double)divideByPayment) * -1;
 

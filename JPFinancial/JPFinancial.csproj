@@ -145,6 +145,7 @@
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\SalaryController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
@@ -154,6 +155,14 @@
     <Compile Include="Migrations\201803181615021_init.cs" />
     <Compile Include="Migrations\201803181615021_init.Designer.cs">
       <DependentUpon>201803181615021_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804211709515_updatePropertiesToLoanModel.cs" />
+    <Compile Include="Migrations\201804211709515_updatePropertiesToLoanModel.Designer.cs">
+      <DependentUpon>201804211709515_updatePropertiesToLoanModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201804211738017_addPropertiesToLoanModel.cs" />
+    <Compile Include="Migrations\201804211738017_addPropertiesToLoanModel.Designer.cs">
+      <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -169,9 +178,10 @@
     <Compile Include="Models\Enumerations\CategoriesEnum.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
     <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
-    <Compile Include="Models\ITransaction.cs" />
+    <Compile Include="Models\Interfaces\ITransaction.cs" />
     <Compile Include="Models\Loan.cs" />
     <Compile Include="Models\Salary.cs" />
+    <Compile Include="Models\Enumerations\TermClassification.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\Enumerations\TransactionTypesEnum.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
@@ -282,6 +292,11 @@
     <Content Include="Views\Transactions\Details.cshtml" />
     <Content Include="Views\Transactions\Edit.cshtml" />
     <Content Include="Views\Transactions\Index.cshtml" />
+    <Content Include="Views\Loans\Create.cshtml" />
+    <Content Include="Views\Loans\Delete.cshtml" />
+    <Content Include="Views\Loans\Details.cshtml" />
+    <Content Include="Views\Loans\Edit.cshtml" />
+    <Content Include="Views\Loans\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -298,6 +313,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201803181615021_init.resx">
       <DependentUpon>201803181615021_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804211709515_updatePropertiesToLoanModel.resx">
+      <DependentUpon>201804211709515_updatePropertiesToLoanModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201804211738017_addPropertiesToLoanModel.resx">
+      <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
