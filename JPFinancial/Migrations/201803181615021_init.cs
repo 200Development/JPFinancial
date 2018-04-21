@@ -90,6 +90,22 @@ namespace JPFinancial.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
+                "dbo.Loans",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        OriginalBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CurrentBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        APR = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CompoundFrequency = c.Int(nullable: false),
+                        Payment = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        Payments = c.Int(nullable: false),
+                        PaymentFrequency = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.AspNetRoles",
                 c => new
                     {
@@ -219,6 +235,7 @@ namespace JPFinancial.Migrations
             DropTable("dbo.Salaries");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetRoles");
+            DropTable("dbo.Loans");
             DropTable("dbo.Expenses");
             DropTable("dbo.Companies");
             DropTable("dbo.Bills");
