@@ -1,4 +1,5 @@
-﻿using System.Data.Entity;
+﻿using System;
+using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -42,10 +43,12 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,OriginalLoanAmount,PrincipalBalance,OutstandingBalance,APR,AccruedInterest,CapitalizedInterest,CompoundFrequency,Payment,Fees,Payments,PaymentFrequency")] Loan loan)
+        public ActionResult Create([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,OriginalLoanAmount,OutstandingBalance,APR,Payment,PaymentFrequency")] Loan loan)
         {
             if (ModelState.IsValid)
             {
+                loan.LoanOriginationDate = Convert.ToDateTime(loan.LoanOriginationDate);
+                loan.NextDueDate = DateTime.MinValue;
                 _db.Loans.Add(loan);
                 _db.SaveChanges();
                 return RedirectToAction("Index");

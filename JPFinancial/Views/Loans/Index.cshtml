@@ -65,7 +65,7 @@
             @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.LoanOriginationDate)
+            @Html.FormatValue(@Html.DisplayFor(modelItem => item.LoanOriginationDate), "{0:MMM dd, yyyy}")
         </td>
         @*<td>
             @Html.DisplayFor(modelItem => item.Term)
@@ -74,7 +74,7 @@
             @Html.DisplayFor(modelItem => item.TermClassification)
         </td>*@
         <td>
-            @Html.DisplayFor(modelItem => item.OriginalLoanAmount)
+            @Html.FormatValue(@Html.DisplayFor(modelItem => item.OriginalLoanAmount), "{0:C}")
         </td>
         @*<td>
             @Html.DisplayFor(modelItem => item.PrincipalBalance)
@@ -95,10 +95,10 @@
             @Html.DisplayFor(modelItem => item.CompoundFrequency)
         </td>*@
         <td>
-            @Html.DisplayFor(modelItem => item.Payment)
+            @Html.FormatValue(@Html.DisplayFor(modelItem => item.Payment), "{0:C}")
         </td>
         <td>
-            @Html.DisplayFor(modelItem => item.Fees)
+            @Html.FormatValue(@Html.DisplayFor(modelItem => item.Fees), "{0:C}")
         </td>
         @*<td>
             @Html.DisplayFor(modelItem => item.Payments)
