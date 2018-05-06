@@ -1,4 +1,5 @@
-﻿@model IEnumerable<JPFinancial.Models.Loan>
+﻿@using System.ServiceModel.Security
+@model IEnumerable<JPFinancial.ViewModels.LoanViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -10,108 +11,79 @@
     @Html.ActionLink("Create New", "Create")
 </p>
 <table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.LoanOriginationDate)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.Term)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.TermClassification)
-        </th>*@
-        <th>
-            @Html.DisplayNameFor(model => model.OriginalLoanAmount)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.PrincipalBalance)
-        </th>*@
-        <th>
-            @Html.DisplayNameFor(model => model.OutstandingBalance)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.APR)
-        </th>*@
-        @*<th>
-            @Html.DisplayNameFor(model => model.AccruedInterest)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CapitalizedInterest)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.CompoundFrequency)
-        </th>*@
-        <th>
-            @Html.DisplayNameFor(model => model.Payment)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.Fees)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.Payments)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PaymentFrequency)
-        </th>*@
-        <th></th>
-    </tr>
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanOriginationDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OriginalLoanAmount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.OutstandingBalance)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payment)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.DailyInterestCost)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.FormatValue(@Html.DisplayFor(modelItem => item.LoanOriginationDate), "{0:MMM dd, yyyy}")
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.Term)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.TermClassification)
-        </td>*@
-        <td>
-            @Html.FormatValue(@Html.DisplayFor(modelItem => item.OriginalLoanAmount), "{0:C}")
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.PrincipalBalance)
-        </td>*@
-        <td>
-            @Html.DisplayFor(modelItem => item.OutstandingBalance)
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.APR)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AccruedInterest)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CapitalizedInterest)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.CompoundFrequency)
-        </td>*@
-        <td>
-            @Html.FormatValue(@Html.DisplayFor(modelItem => item.Payment), "{0:C}")
-        </td>
-        <td>
-            @Html.FormatValue(@Html.DisplayFor(modelItem => item.Fees), "{0:C}")
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.Payments)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PaymentFrequency)
-        </td>*@
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+    <tbody>
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.LoanOriginationDate)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OriginalLoanAmount)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.OutstandingBalance)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Payment)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.DailyInterestCost)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+            </td>
+        </tr>
 
+    }
+    </tbody>
+    
+    <tfoot>
+    <tr class="bg-info" title="Totals" style="margin-top: 20px">
+        <td></td>
+        <td></td>
+        <td>
+            @Model.Sum(l => l.OriginalLoanAmount).ToString("C")
+        </td>
+        <td>
+            @Model.Sum(l => l.OutstandingBalance).ToString("C")
+        </td>
+        <td>
+            @Model.Sum(l => l.Payment).ToString("C")
+        </td>
+        <td>
+            @Model.Sum(l => l.DailyInterestCost).ToString("C")
+        </td>
+        <td></td>
+    </tr>
+    </tfoot>
 </table>

@@ -1,8 +1,5 @@
 ﻿using JPFinancial.Models;
 using JPFinancial.Models.Enumerations;
-//using QuandlCS.Connection;
-//using QuandlCS.Requests;
-//using QuandlCS.Types;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -618,11 +615,11 @@ namespace JPFinancial
         }
 
         /// <summary>
-        /// Calculates the remaining balance of the loan
+        /// Calculate the remaining balance of a loan
         /// </summary>
         /// <param name="loan">Loan class that contains all pertinent information for the loan</param>
         /// <returns name="remainingBalance" type="decimal">Remaining balance of the loan</returns>
-        public decimal GetRemainingBalance(Loan loan)
+        public decimal CalculateRemainingBalance(Loan loan)
         {
             try
             {
@@ -647,7 +644,7 @@ namespace JPFinancial
             }
         }
 
-        public DateTime GetPayoffDate(Loan loan)
+        public DateTime CalculatePayoffDate(Loan loan)
         {
             try
             {
@@ -713,7 +710,7 @@ namespace JPFinancial
             }
         }
 
-        public decimal GetPayment(Loan loan)
+        public decimal CalculatePayment(Loan loan)
         {
             try
             {
@@ -734,7 +731,7 @@ namespace JPFinancial
             }
         }
 
-        public decimal GetInterestPayment(Loan loan)
+        public decimal CalculateInterestCost(Loan loan)
         {
             try
             {
@@ -754,7 +751,7 @@ namespace JPFinancial
             }
         }
 
-        public decimal GetPrincipalPayment(Loan loan)
+        public decimal CalculatePrincipalCost(Loan loan)
         {
             try
             {
@@ -770,6 +767,20 @@ namespace JPFinancial
             catch (Exception)
             {
 
+                throw;
+            }
+        }
+
+        public decimal CalculateDailyInterestCost(Loan loan)
+        {
+            try
+            {
+                var dailyInterestRate = (loan.APR / 100) / (decimal) 364.25;
+                return dailyInterestRate * loan.OutstandingBalance;
+            }
+            catch (Exception e)
+            {
+                
                 throw;
             }
         }

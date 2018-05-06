@@ -1,20 +1,38 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFinancial.Models;
+using JPFinancial.ViewModels;
 
 namespace JPFinancial.Controllers
 {
     public class LoansController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly Calculations _calculations = new Calculations();
 
         // GET: Loans
         public ActionResult Index()
         {
-            return View(_db.Loans.ToList());
+            var loansVM = new List<LoanViewModel>();
+            foreach (var loan in _db.Loans.ToList())
+            {
+                var newLoanVM = new LoanViewModel();
+                newLoanVM.Id = loan.Id;
+                newLoanVM.Name = loan.Name;
+                newLoanVM.LoanOriginationDate = loan.LoanOriginationDate;
+                newLoanVM.OriginalLoanAmount = loan.OriginalLoanAmount;
+                newLoanVM.OutstandingBalance = loan.OutstandingBalance;
+                newLoanVM.Payment = loan.Payment;
+                newLoanVM.APR = loan.APR;
+                newLoanVM.DailyInterestCost = _calculations.CalculateDailyInterestCost(loan);
+
+                loansVM.Add(newLoanVM);
+            }
+            return View(loansVM);
         }
 
         // GET: Loans/Details/5
@@ -43,7 +61,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,OriginalLoanAmount,OutstandingBalance,APR,Payment,PaymentFrequency")] Loan loan)
+        public ActionResult Create([Bind(Include = "Id,Name,LoanOriginationDate,Term,DueDayOfMonth,TermClassification,OriginalLoanAmount,OutstandingBalance,APR,Payment,PaymentFrequency")] Loan loan)
         {
             if (ModelState.IsValid)
             {
@@ -77,7 +95,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,OriginalLoanAmount,PrincipalBalance,OutstandingBalance,APR,AccruedInterest,CapitalizedInterest,CompoundFrequency,Payment,Fees,Payments,PaymentFrequency")] Loan loan)
+        public ActionResult Edit([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,DueDayOfMonth,OriginalLoanAmount,PrincipalBalance,OutstandingBalance,APR,AccruedInterest,CapitalizedInterest,CompoundFrequency,Payment,Fees,Payments,PaymentFrequency")] Loan loan)
         {
             if (ModelState.IsValid)
             {

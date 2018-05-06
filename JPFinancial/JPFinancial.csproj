@@ -164,6 +164,10 @@
     <Compile Include="Migrations\201804211738017_addPropertiesToLoanModel.Designer.cs">
       <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201805060150394_updateLoanModel.cs" />
+    <Compile Include="Migrations\201805060150394_updateLoanModel.Designer.cs">
+      <DependentUpon>201805060150394_updateLoanModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -171,11 +175,13 @@
     <Compile Include="Models\Bonus.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\Enumerations\DaysOfMonth.cs" />
     <Compile Include="Models\Enumerations\FrequencyEnum.cs" />
     <Compile Include="Models\Enumerations\PayTypesEnum.cs" />
     <Compile Include="Models\Enumerations\StatesEnum.cs" />
     <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Enumerations\CategoriesEnum.cs" />
+    <Compile Include="Models\Interfaces\ILoan.cs" />
     <Compile Include="Models\Interfaces\IAccount.cs" />
     <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
     <Compile Include="Models\Interfaces\ITransaction.cs" />
@@ -192,6 +198,7 @@
     <Compile Include="Models\ApplicationUser.cs" />
     <Compile Include="Models\ApplicationDbContext.cs" />
     <Compile Include="Models\Interfaces\ILiability.cs" />
+    <Compile Include="ViewModels\LoanViewModel.cs" />
     <Compile Include="ViewModels\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
@@ -319,6 +326,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201804211738017_addPropertiesToLoanModel.resx">
       <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201805060150394_updateLoanModel.resx">
+      <DependentUpon>201805060150394_updateLoanModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
