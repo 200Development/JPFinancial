@@ -132,6 +132,52 @@
 
 </div>
 
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanViewModelByMonth[0])
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanViewModelByMonth[1])
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanViewModelByMonth[2])
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanViewModelByMonth[3])
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.LoanViewModelByMonth[4])
+            </th>
+            <th>
+                
+            </th>
+            <th></th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in Model.LoanViewModelByMonth)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Keys)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Values)
+                </td>
+                <td>            </td>
+            </tr>
+        }
+        </tbody>
+        <tfoot>
+
+        </tfoot>
+    </table>
+
+</div>
+
 
 
 

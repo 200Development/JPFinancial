@@ -3,6 +3,7 @@ using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -775,13 +776,81 @@ namespace JPFinancial
         {
             try
             {
-                var dailyInterestRate = (loan.APR / 100) / (decimal) 364.25;
+                var dailyInterestRate = (loan.APR / 100) / (decimal)364.25;
                 return dailyInterestRate * loan.OutstandingBalance;
             }
             catch (Exception e)
             {
-                
+
                 throw;
+            }
+        }
+
+        public decimal CalculateExpenseRatio()
+        {
+            try
+            {
+                var bills = Db.Bills.ToList();
+                var salaries = Db.Salaries.ToList();
+                decimal monthlyExpenses = 0.00m;
+                decimal? income = 0.00m;
+
+                foreach (var bill in bills)
+                {
+                    switch (bill.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Weekly:
+                            monthlyExpenses += bill.AmountDue * 4;
+                            break;
+                        case FrequencyEnum.SemiMonthly:
+                            monthlyExpenses += bill.AmountDue * 2;
+                            break;
+                        case FrequencyEnum.Monthly:
+                            monthlyExpenses += bill.AmountDue;
+                            break;
+                        case FrequencyEnum.SemiAnnually:
+                            monthlyExpenses += bill.AmountDue / 6;
+                            break;
+                        case FrequencyEnum.Annually:
+                            monthlyExpenses += bill.AmountDue / 12;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                foreach (var salary in salaries)
+                {
+                    if (salary.PayTypesEnum == PayTypesEnum.Salary)
+                    {
+                        switch (salary.PayFrequency)
+                        {
+                            case FrequencyEnum.Weekly:
+                                income += salary.NetIncome * 4;
+                                break;
+                            case FrequencyEnum.SemiMonthly:
+                                income += salary.NetIncome * 2;
+                                break;
+                            case FrequencyEnum.Monthly:
+                                income += salary.NetIncome;
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                }
+
+                income = 3798.40m;
+                if (income != null)
+                {
+                    decimal expenseRatio = (decimal) income / monthlyExpenses;
+                    return expenseRatio;
+                }
+                return decimal.MinusOne;
+            }
+            catch (Exception e)
+            {
+                return decimal.MinusOne;
             }
         }
     }

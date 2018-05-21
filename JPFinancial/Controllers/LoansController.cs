@@ -17,7 +17,10 @@ namespace JPFinancial.Controllers
         // GET: Loans
         public ActionResult Index()
         {
+            var months = 12;
             var loansVM = new List<LoanViewModel>();
+            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
+
             foreach (var loan in _db.Loans.ToList())
             {
                 var newLoanVM = new LoanViewModel();
@@ -32,7 +35,8 @@ namespace JPFinancial.Controllers
 
                 loansVM.Add(newLoanVM);
             }
-            return View(loansVM);
+
+           return View(loansVM);
         }
 
         // GET: Loans/Details/5

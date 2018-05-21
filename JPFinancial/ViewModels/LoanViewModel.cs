@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using JPFinancial.Models.Enumerations;
 using JPFinancial.Models.Interfaces;
@@ -52,5 +53,20 @@ namespace JPFinancial.ViewModels
 
         [Display(Name = "Due Day (Day of Month)")]
         public DaysOfMonth DueDayOfMonth { get; set; }
+
+        [Display(Name = "Expense Ratio")]
+        public decimal? ExpenseRatio { get; set; }
+
+        [Display(Name = "Savings Ratio")]
+        public decimal? SavingsRatio { get; set; }
+
+        [Display(Name = "Emergency Fund Coverage")]
+        public decimal? EmergencyFundCoverage { get; set; }
+
+        [Display(Name = "28/36 Rule")]
+        public decimal? Rule2836 { get; set; }
+
+        [Display(Name = "Savings Needed For Retirement")]
+        public decimal? SavingsNeededForRetirement { get; set; }
     }
 }

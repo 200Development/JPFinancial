@@ -36,54 +36,55 @@
     </thead>
 
     <tbody>
-    @foreach (var item in Model)
-    {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Name)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.LoanOriginationDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OriginalLoanAmount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.OutstandingBalance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Payment)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DailyInterestCost)
-            </td>
-            <td>
-                @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-            </td>
-        </tr>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Name)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.LoanOriginationDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OriginalLoanAmount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.OutstandingBalance)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Payment)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.DailyInterestCost)
+                </td>
+                <td>
+                    @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                    @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                    @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                </td>
+            </tr>
 
-    }
+        }
     </tbody>
-    
+
     <tfoot>
-    <tr class="bg-info" title="Totals" style="margin-top: 20px">
-        <td></td>
-        <td></td>
-        <td>
-            @Model.Sum(l => l.OriginalLoanAmount).ToString("C")
-        </td>
-        <td>
-            @Model.Sum(l => l.OutstandingBalance).ToString("C")
-        </td>
-        <td>
-            @Model.Sum(l => l.Payment).ToString("C")
-        </td>
-        <td>
-            @Model.Sum(l => l.DailyInterestCost).ToString("C")
-        </td>
-        <td></td>
-    </tr>
+        <tr class="bg-info" title="Totals" style="margin-top: 20px">
+            <td></td>
+            <td></td>
+            <td>
+                @Model.Sum(l => l.OriginalLoanAmount).ToString("C")
+            </td>
+            <td>
+                @Model.Sum(l => l.OutstandingBalance).ToString("C")
+            </td>
+            <td>
+                @Model.Sum(l => l.Payment).ToString("C")
+            </td>
+            <td>
+                @Model.Sum(l => l.DailyInterestCost).ToString("C")
+            </td>
+            <td></td>
+        </tr>
     </tfoot>
 </table>
+

@@ -71,6 +71,6 @@ namespace JPFinancial.ViewModels
         public virtual List<Account> Accounts { get; set; }
         public virtual string CurrentMonth { get; set; }
         public virtual List<Transaction> Transactions { get; set; }
-
+        public List<Dictionary<DateTime, LoanViewModel>> LoanViewModelByMonth { get; set; }
     }
 }

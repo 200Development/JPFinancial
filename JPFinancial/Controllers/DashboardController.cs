@@ -47,6 +47,16 @@ namespace JPFinancial.Controllers
             viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.Accounts = accounts;
 
+            DateTime lastMonth = DateTime.Today.AddMonths(-1);
+            LoanViewModel loanViewModel = new LoanViewModel();
+            loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
+            var financialsPerMonth = new List<Dictionary<DateTime,LoanViewModel>>();
+            var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
+            financialsPerMonth.Add(financialsDictionary);
+            
+            viewModel.LoanViewModelByMonth = financialsPerMonth;
+           
+
             return View(viewModel);
         }
 
