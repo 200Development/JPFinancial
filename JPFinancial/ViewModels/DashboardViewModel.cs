@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Web.Helpers;
 
 namespace JPFinancial.ViewModels
 {
@@ -72,5 +73,6 @@ namespace JPFinancial.ViewModels
         public virtual string CurrentMonth { get; set; }
         public virtual List<Transaction> Transactions { get; set; }
         public List<Dictionary<DateTime, LoanViewModel>> LoanViewModelByMonth { get; set; }
+        public Chart AccountGraph { get; set; }
     }
 }

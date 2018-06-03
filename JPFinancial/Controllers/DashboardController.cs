@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Web.Helpers;
 using System.Web.Mvc;
+using JPFinancial.Models.Enumerations;
 
 namespace JPFinancial.Controllers
 {
@@ -17,12 +19,13 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             var viewModel = new DashboardViewModel();
+            var income = GetMonthlyIncome();
 
             viewModel.CurrentMonth = DateTime.Today.ToString("MMMM", CultureInfo.CurrentCulture);
-            viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), 1828.44m).ToString("C", CultureInfo.CurrentCulture);
+            viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), income).ToString("C", CultureInfo.CurrentCulture);
+            viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), income).ToString("C", CultureInfo.CurrentCulture);
+            viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), income).ToString("C", CultureInfo.CurrentCulture);
+            viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), income).ToString("C", CultureInfo.CurrentCulture);
 
             var savingsAccountBalances = new Dictionary<string, decimal>();
             var bills = _db.Bills.ToList();
@@ -50,14 +53,66 @@ namespace JPFinancial.Controllers
             DateTime lastMonth = DateTime.Today.AddMonths(-1);
             LoanViewModel loanViewModel = new LoanViewModel();
             loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
-            var financialsPerMonth = new List<Dictionary<DateTime,LoanViewModel>>();
+            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
             var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
             financialsPerMonth.Add(financialsDictionary);
-            
+
             viewModel.LoanViewModelByMonth = financialsPerMonth;
+
            
 
             return View(viewModel);
+        }
+
+        private decimal GetMonthlyIncome()
+        {
+            try
+            {
+                var incomePerPayperiod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
+                var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
+                var monthlyIncome = 0.00m;
+
+                switch (paymentFrequency)
+                {
+                    case FrequencyEnum.Weekly:
+                        monthlyIncome = incomePerPayperiod * 4;
+                        break;
+                    case FrequencyEnum.SemiMonthly:
+                        monthlyIncome = incomePerPayperiod * 2;
+                        break;
+                    case FrequencyEnum.Monthly:
+                        monthlyIncome = incomePerPayperiod;
+                        break;
+                    default:
+                        monthlyIncome = incomePerPayperiod * 2;
+                        break;
+                }
+
+                return monthlyIncome;
+            }
+            catch (Exception e)
+            {
+                return 0.0m;
+            }
+        }
+
+        public Chart AccountsGraph()
+        {
+            var accounts = _db.Accounts.ToList();
+
+            var accountNames = accounts.Select(a => a.Name).ToArray();
+            var accountBalances = accounts.Select(a => a.Balance).ToArray();
+
+            var accountGraph = new Chart(900, 500)
+                .AddTitle("Accounts")
+                .AddSeries(
+                    name: "Account",
+                    xValue: accountNames,
+                    yValues: accountBalances)
+                .Write();
+
+            accountGraph.Save("~/Content/chart" + "jpeg");
+            return accountGraph;
         }
 
         private SortedTransactions SortTransactions(IEnumerable<Transaction> transactions, int yearsBack)
@@ -67,7 +122,7 @@ namespace JPFinancial.Controllers
             var month = date.Month;
 
             var howFarBack = date.AddYears(-yearsBack);
-            var previousYear = new DateTime(howFarBack.Year,1,1);
+            var previousYear = new DateTime(howFarBack.Year, 1, 1);
             var sortedTransactions = new SortedTransactions();
 
             var balancesByMonth = new Dictionary<string, decimal>();
@@ -178,15 +233,15 @@ namespace JPFinancial.Controllers
 
     public class SortedTransactions
     {
-        public Dictionary<string,decimal> BalanceByMonth { get; set; }
-        public Dictionary<string,decimal> LastYearBalanceByMonth { get; set; }
-        public Dictionary<string,decimal> BalanceByQuarter { get; set; }
-        public Dictionary<string,decimal> LastYearBalanceByQuarter { get; set; }
-        public Dictionary<string,decimal> BalanceByYear { get; set; }
-        public Dictionary<string,decimal> LastYearBalanceByYear { get; set; }
-        public Dictionary<string,decimal> BalanceByType { get; set; }
-        public Dictionary<string,decimal> LastYearBalanceByType { get; set; }
-        public Dictionary<string,decimal> BalanceByCategory { get; set; }
-        public Dictionary<string,decimal> LastYearBalanceByCategory { get; set; }
+        public Dictionary<string, decimal> BalanceByMonth { get; set; }
+        public Dictionary<string, decimal> LastYearBalanceByMonth { get; set; }
+        public Dictionary<string, decimal> BalanceByQuarter { get; set; }
+        public Dictionary<string, decimal> LastYearBalanceByQuarter { get; set; }
+        public Dictionary<string, decimal> BalanceByYear { get; set; }
+        public Dictionary<string, decimal> LastYearBalanceByYear { get; set; }
+        public Dictionary<string, decimal> BalanceByType { get; set; }
+        public Dictionary<string, decimal> LastYearBalanceByType { get; set; }
+        public Dictionary<string, decimal> BalanceByCategory { get; set; }
+        public Dictionary<string, decimal> LastYearBalanceByCategory { get; set; }
     }
 }
