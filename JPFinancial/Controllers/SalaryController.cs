@@ -1,4 +1,5 @@
-﻿using JPFinancial.Models;
+﻿using System.Collections.Generic;
+using JPFinancial.Models;
 using JPFinancial.ViewModels;
 using System.Data.Entity;
 using System.Linq;
@@ -35,7 +36,18 @@ namespace JPFinancial.Controllers
         // GET: Salary/Create
         public ActionResult Create()
         {
-            return View();
+            var paydays = new List<string>();
+
+            for (int i = 1; i <= 31; i++)
+            {
+                paydays.Add(i.ToString());                
+            }
+            paydays.Add("Last");
+
+            CreateSalaryViewModel viewModel = new CreateSalaryViewModel();
+            viewModel.Paydays = paydays;
+
+            return View(viewModel);
         }
 
         // POST: Salary/Create

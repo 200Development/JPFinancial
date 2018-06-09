@@ -421,14 +421,11 @@ namespace JPFinancial
                             case FrequencyEnum.BiWeekly:
                                 newDueDate = newDueDate.AddDays(14);
                                 break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                break;
                             case FrequencyEnum.Monthly:
                                 newDueDate = newDueDate.AddMonths(1);
                                 break;
                             case FrequencyEnum.BiMonthly:
-                                newDueDate = newDueDate.AddMonths(2);
+                                newDueDate = newDueDate.AddDays(15);
                                 break;
                             case FrequencyEnum.Quarterly:
                                 newDueDate = newDueDate.AddMonths(3);
@@ -802,7 +799,7 @@ namespace JPFinancial
                         case FrequencyEnum.Weekly:
                             monthlyExpenses += bill.AmountDue * 4;
                             break;
-                        case FrequencyEnum.SemiMonthly:
+                        case FrequencyEnum.BiMonthly:
                             monthlyExpenses += bill.AmountDue * 2;
                             break;
                         case FrequencyEnum.Monthly:
@@ -828,7 +825,7 @@ namespace JPFinancial
                             case FrequencyEnum.Weekly:
                                 income += salary.NetIncome * 4;
                                 break;
-                            case FrequencyEnum.SemiMonthly:
+                            case FrequencyEnum.BiMonthly:
                                 income += salary.NetIncome * 2;
                                 break;
                             case FrequencyEnum.Monthly:
@@ -843,7 +840,7 @@ namespace JPFinancial
                 income = 3798.40m;
                 if (income != null)
                 {
-                    decimal expenseRatio = (decimal) income / monthlyExpenses;
+                    decimal expenseRatio = (decimal)income / monthlyExpenses;
                     return expenseRatio;
                 }
                 return decimal.MinusOne;
@@ -852,6 +849,61 @@ namespace JPFinancial
             {
                 return decimal.MinusOne;
             }
+        }
+
+        public DateTime GetLastPaydate(Salary salary)
+        {
+            if (salary == null)
+                return DateTime.MinValue;
+
+            var payDate = new DateTime();
+            switch (salary.PayFrequency)
+            {
+                case FrequencyEnum.Weekly:
+                    {
+                        switch (salary.PaydayOfWeek)
+                        {
+                            case DayEnum.Sunday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Sunday));
+                                break;
+                            case DayEnum.Monday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Monday));
+                                break;
+                            case DayEnum.Tuesday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Tuesday));
+                                break;
+                            case DayEnum.Wednesday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Wednesday));
+                                break;
+                            case DayEnum.Thursday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Thursday));
+                                break;
+                            case DayEnum.Friday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Friday));
+                                break;
+                            case DayEnum.Saturday:
+                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Saturday));
+                                break;
+                        }
+                    }
+                    break;
+                case FrequencyEnum.BiWeekly:
+                    break;
+                case FrequencyEnum.Monthly:
+                    break;
+                case FrequencyEnum.BiMonthly:
+                    break;
+                case FrequencyEnum.Quarterly:
+                    break;
+                case FrequencyEnum.SemiAnnually:
+                    break;
+                case FrequencyEnum.Annually:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return payDate;
         }
     }
 }

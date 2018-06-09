@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using JPFinancial.Models.Enumerations;
 using System.ComponentModel.DataAnnotations;
 
@@ -29,5 +30,16 @@ namespace JPFinancial.ViewModels
 
         [Display(Name = "Amount")]
         public decimal? BenefitAmount { get; set; }
+
+        [Display(Name = "Payday of Week")]
+        public DayEnum PaydayOfWeek { get; set; }
+
+        [Display(Name = "1st Payday")]
+        public string FirstPayday { get; set; }
+
+        [Display(Name = "Last Payday")]
+        public string LastPayday { get; set; }
+
+        public List<string> Paydays { get; set; }
     }
 }

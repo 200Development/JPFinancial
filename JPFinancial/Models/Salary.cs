@@ -22,5 +22,7 @@ namespace JPFinancial.Models
 
         [Display(Name = "Net Income"), DataType(DataType.Currency)]
         public decimal? NetIncome { get; set; }
+
+        public DayEnum PaydayOfWeek { get; set; }
     }
 }
