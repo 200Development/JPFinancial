@@ -8,12 +8,12 @@ namespace JPFinancial.Controllers
 {
     public class AccountsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Accounts
         public ActionResult Index()
         {
-            return View(db.Accounts.ToList());
+            return View(_db.Accounts.ToList());
         }
 
         // GET: Accounts/Details/5
@@ -23,7 +23,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -46,8 +46,8 @@ namespace JPFinancial.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Accounts.Add(account);
-                db.SaveChanges();
+                _db.Accounts.Add(account);
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
@@ -61,7 +61,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -78,8 +78,8 @@ namespace JPFinancial.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Entry(account).State = EntityState.Modified;
-                db.SaveChanges();
+                _db.Entry(account).State = EntityState.Modified;
+                _db.SaveChanges();
                 return RedirectToAction("Index");
             }
             return View(account);
@@ -92,7 +92,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -105,9 +105,9 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Account account = db.Accounts.Find(id);
-            db.Accounts.Remove(account);
-            db.SaveChanges();
+            Account account = _db.Accounts.Find(id);
+            _db.Accounts.Remove(account);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -115,7 +115,7 @@ namespace JPFinancial.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

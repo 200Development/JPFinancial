@@ -6,11 +6,11 @@ namespace JPFinancial.Models.Enumerations
     {
         Daily = 1,
         Weekly = 2,
-        [JsonProperty(PropertyName = "Bi-Weekly")]
+        [JsonProperty(PropertyName = "Every 2 Weeks")]
         BiWeekly = 3,
         Monthly = 4,
         [JsonProperty(PropertyName = "Twice a Month")]
-        BiMonthly = 5,
+        SemiMonthly = 5,
         Quarterly = 6,
         [JsonProperty(PropertyName = "Semi-Annually")]
         SemiAnnually = 7,
