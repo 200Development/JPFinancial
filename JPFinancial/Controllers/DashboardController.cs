@@ -77,7 +77,7 @@ namespace JPFinancial.Controllers
                     case FrequencyEnum.Weekly:
                         monthlyIncome = incomePerPayperiod * 4;
                         break;
-                    case FrequencyEnum.BiMonthly:
+                    case FrequencyEnum.SemiMonthly:
                         monthlyIncome = incomePerPayperiod * 2;
                         break;
                     case FrequencyEnum.Monthly:

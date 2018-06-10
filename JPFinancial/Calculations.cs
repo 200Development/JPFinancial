@@ -39,7 +39,7 @@ namespace JPFinancial
                         case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case FrequencyEnum.BiMonthly:
+                        case FrequencyEnum.SemiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
                         case FrequencyEnum.Monthly:
@@ -288,7 +288,7 @@ namespace JPFinancial
                         case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case FrequencyEnum.BiMonthly:
+                        case FrequencyEnum.SemiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
                         case FrequencyEnum.Monthly:
@@ -342,7 +342,7 @@ namespace JPFinancial
                         case FrequencyEnum.Quarterly:
                             savePerPaycheck = billTotal / 6;
                             break;
-                        case FrequencyEnum.BiMonthly:
+                        case FrequencyEnum.SemiMonthly:
                             savePerPaycheck = billTotal / 4;
                             break;
                         case FrequencyEnum.Monthly:
@@ -424,7 +424,7 @@ namespace JPFinancial
                             case FrequencyEnum.Monthly:
                                 newDueDate = newDueDate.AddMonths(1);
                                 break;
-                            case FrequencyEnum.BiMonthly:
+                            case FrequencyEnum.SemiMonthly:
                                 newDueDate = newDueDate.AddDays(15);
                                 break;
                             case FrequencyEnum.Quarterly:
@@ -799,7 +799,7 @@ namespace JPFinancial
                         case FrequencyEnum.Weekly:
                             monthlyExpenses += bill.AmountDue * 4;
                             break;
-                        case FrequencyEnum.BiMonthly:
+                        case FrequencyEnum.SemiMonthly:
                             monthlyExpenses += bill.AmountDue * 2;
                             break;
                         case FrequencyEnum.Monthly:
@@ -825,7 +825,7 @@ namespace JPFinancial
                             case FrequencyEnum.Weekly:
                                 income += salary.NetIncome * 4;
                                 break;
-                            case FrequencyEnum.BiMonthly:
+                            case FrequencyEnum.SemiMonthly:
                                 income += salary.NetIncome * 2;
                                 break;
                             case FrequencyEnum.Monthly:
@@ -891,7 +891,7 @@ namespace JPFinancial
                     break;
                 case FrequencyEnum.Monthly:
                     break;
-                case FrequencyEnum.BiMonthly:
+                case FrequencyEnum.SemiMonthly:
                     break;
                 case FrequencyEnum.Quarterly:
                     break;
