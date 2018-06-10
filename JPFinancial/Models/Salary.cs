@@ -17,6 +17,12 @@ namespace JPFinancial.Models
         [Required, Display(Name = "Pay Frequency")]
         public FrequencyEnum PayFrequency { get; set; }
 
+        [Display(Name = "1st Payday")]
+        public string FirstPayday { get; set; }
+
+        [Display(Name = "Last Payday")]
+        public string LastPayday { get; set; }
+
         [Display(Name = "Gross Pay"), DataType(DataType.Currency)]
         public decimal? GrossPay { get; set; }
 

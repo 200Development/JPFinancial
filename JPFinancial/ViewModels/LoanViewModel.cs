@@ -52,7 +52,7 @@ namespace JPFinancial.ViewModels
         public decimal DailyInterestCost { get; set; }
 
         [Display(Name = "Due Day (Day of Month)")]
-        public DaysOfMonth DueDayOfMonth { get; set; }
+        public DaysOfMonthEnum DueDayOfMonthEnum { get; set; }
 
         [Display(Name = "Expense Ratio")]
         public decimal? ExpenseRatio { get; set; }

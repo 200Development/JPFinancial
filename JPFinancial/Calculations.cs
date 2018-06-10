@@ -3,7 +3,6 @@ using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 
@@ -11,14 +10,14 @@ namespace JPFinancial
 {
     public class Calculations
     {
-        private static readonly ApplicationDbContext Db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
         public void GetRequiredAcctSavings()
         {
             try
             {
-                var accounts = Db.Accounts.ToList();
-                var bills = Db.Bills.ToList();
+                var accounts = _db.Accounts.ToList();
+                var bills = _db.Bills.ToList();
                 var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
 
                 foreach (var bill in bills)
@@ -70,8 +69,8 @@ namespace JPFinancial
                     }
                     if (!valuesFound) continue;
                     account.RequiredSavings = totalSavings;
-                    Db.Entry(account).State = EntityState.Modified;
-                    Db.SaveChanges();
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.SaveChanges();
                 }
             }
             catch (Exception e)
@@ -84,15 +83,15 @@ namespace JPFinancial
         {
             try
             {
-                var accounts = Db.Accounts.ToList();
+                var accounts = _db.Accounts.ToList();
 
                 foreach (var account in accounts)
                 {
                     var acctBalance = account.Balance;
                     var reqbalance = account.RequiredSavings;
                     account.BalanceSurplus = acctBalance - reqbalance;
-                    Db.Entry(account).State = EntityState.Modified;
-                    Db.SaveChanges();
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.SaveChanges();
 
                 }
             }
@@ -181,7 +180,7 @@ namespace JPFinancial
         //    return results;
         //}
 
-        private static int PayPeriodsTilDue(DateTime? dueDate)
+        private int PayPeriodsTilDue(DateTime? dueDate)
         {
             try
             {
@@ -215,7 +214,7 @@ namespace JPFinancial
             }
         }
 
-        public IList<Bill> GetBillsDue(DateTime firstPaycheck, DateTime firstDayOfMonth, DateTime lastPaycheck)
+        public IEnumerable<Bill> GetBillsDue(DateTime firstPaycheck, DateTime firstDayOfMonth, DateTime lastPaycheck)
         {
             try
             {
@@ -223,13 +222,13 @@ namespace JPFinancial
 
                 if (DateTime.Today < firstPaycheck) // Bills with due dates 1st - 15th of the current month
                 {
-                    billsDue = (from b in Db.Bills
+                    billsDue = (from b in _db.Bills
                                 where b.DueDate >= DateTime.Today && (b.DueDate > firstDayOfMonth && b.DueDate <= firstPaycheck)
                                 select b).ToList();
                 }
                 else // Bills with due dates 16th - last day of the current month
                 {
-                    billsDue = (from b in Db.Bills
+                    billsDue = (from b in _db.Bills
                                 where b.DueDate > DateTime.Today && (b.DueDate > firstPaycheck && b.DueDate <= lastPaycheck)
                                 select b).ToList();
                 }
@@ -242,11 +241,12 @@ namespace JPFinancial
             }
         }
 
-        public static int GetLastDayOfMonth(DateTime date)
+        public int GetLastDayOfMonth(DateTime date)
         {
             try
             {
-                return date.AddMonths(1).AddDays(-date.Day).Day;
+                //return date.AddMonths(1).AddDays(-date.Day).Day;
+                return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month)).Day;
             }
             catch (Exception e)
             {
@@ -254,7 +254,7 @@ namespace JPFinancial
             }
         }
 
-        public static DateTime GetFirstDayOfMonth(int year, int month)
+        public DateTime GetFirstDayOfMonth(int year, int month)
         {
             try
             {
@@ -319,7 +319,7 @@ namespace JPFinancial
             }
         }
 
-        public static decimal SavingsReqForBills(IEnumerable<Bill> bills)
+        public decimal SavingsReqForBills(IEnumerable<Bill> bills)
         {
             try
             {
@@ -366,7 +366,7 @@ namespace JPFinancial
             }
         }
 
-        public static void UpdateAccountGoals(IEnumerable<Account> accounts, Dictionary<string, decimal> accountBalances)
+        public void UpdateAccountGoals(IEnumerable<Account> accounts, Dictionary<string, decimal> accountBalances)
         {
             try
             {
@@ -393,11 +393,11 @@ namespace JPFinancial
             }
         }
 
-        private static Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
+        private Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
         {
             try
             {
-                var bills = Db.Bills.ToList();
+                var bills = _db.Bills.ToList();
                 var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
 
                 foreach (var bill in bills)
@@ -450,12 +450,12 @@ namespace JPFinancial
             }
         }
 
-        public static DateTime CalculateFvDate(decimal futureValue, decimal netPay)
+        public DateTime CalculateFvDate(decimal futureValue, decimal netPay)
         {
             try
             {
                 var date = DateTime.Today;
-                var billsFromDb = Db.Bills.ToList();
+                var billsFromDb = _db.Bills.ToList();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -499,7 +499,7 @@ namespace JPFinancial
             {
                 var payperiods = PayPeriodsTilDue(futureDate);
                 var date = DateTime.Today;
-                var billsFromDb = Db.Bills.ToList();
+                var billsFromDb = _db.Bills.ToList();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -542,11 +542,11 @@ namespace JPFinancial
             }
         }
 
-        private static Dictionary<string, string> UpdateTotalCosts(Dictionary<string, string> billsDictionary)
+        private Dictionary<string, string> UpdateTotalCosts(Dictionary<string, string> billsDictionary)
         {
             try
             {
-                var billsFromDb = Db.Bills.ToList();
+                var billsFromDb = _db.Bills.ToList();
                 var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                 var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
                 var expenses = 0.0m;
@@ -575,7 +575,7 @@ namespace JPFinancial
             }
         }
 
-        private static void UpdateCurrentAndEndDate(IDictionary<string, string> billsDictionary)
+        private void UpdateCurrentAndEndDate(IDictionary<string, string> billsDictionary)
         {
             try
             {
@@ -787,8 +787,8 @@ namespace JPFinancial
         {
             try
             {
-                var bills = Db.Bills.ToList();
-                var salaries = Db.Salaries.ToList();
+                var bills = _db.Bills.ToList();
+                var salaries = _db.Salaries.ToList();
                 decimal monthlyExpenses = 0.00m;
                 decimal? income = 0.00m;
 
@@ -841,6 +841,7 @@ namespace JPFinancial
                 if (income != null)
                 {
                     decimal expenseRatio = (decimal)income / monthlyExpenses;
+
                     return expenseRatio;
                 }
                 return decimal.MinusOne;
@@ -851,12 +852,19 @@ namespace JPFinancial
             }
         }
 
+        /// <summary>
+        /// Returns the last payday.  If the current date is the same as the first or last payday, the current date will be returned
+        /// </summary>
+        /// <param name="salary"></param>
+        /// <returns></returns>
         public DateTime GetLastPaydate(Salary salary)
         {
             if (salary == null)
                 return DateTime.MinValue;
 
             var payDate = new DateTime();
+            var today = DateTime.Today;
+
             switch (salary.PayFrequency)
             {
                 case FrequencyEnum.Weekly:
@@ -888,16 +896,50 @@ namespace JPFinancial
                     }
                     break;
                 case FrequencyEnum.BiWeekly:
+                    {
+                        throw new NotImplementedException();
+                    }
                     break;
                 case FrequencyEnum.Monthly:
+                    {
+                        payDate = today.Day == (int)salary.PaydayOfWeek ? today : today.AddMonths(-1);
+                    }
                     break;
                 case FrequencyEnum.SemiMonthly:
+                    {
+                        var firstPayDate = new DateTime(today.Year, today.Month, Convert.ToInt32(salary.FirstPayday));
+                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, GetLastDayOfMonth(today))
+                            : new DateTime(today.Year, today.Month, Convert.ToInt32(salary.LastPayday));
+
+                        if (today == firstPayDate)
+                            payDate = firstPayDate;
+                        else if (today == lastPayDate)
+                            payDate = lastPayDate;
+                        else if (today > firstPayDate && today < lastPayDate)
+                            payDate = firstPayDate;
+                        else if (today < firstPayDate)
+                            if (today.Month == 1)
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, GetLastDayOfMonth(today.AddMonths(-1)))
+                                    : new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, lastPayDate.Day);
+                            else
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, GetLastDayOfMonth(today.AddMonths(-1)))
+                                    : new DateTime(today.Year, today.AddMonths(-1).Month, today.Day);
+                    }
                     break;
                 case FrequencyEnum.Quarterly:
+                    {
+                        throw new NotImplementedException();
+                    }
                     break;
                 case FrequencyEnum.SemiAnnually:
+                    {
+                        throw new NotImplementedException();
+                    }
                     break;
                 case FrequencyEnum.Annually:
+                    {
+                        throw new NotImplementedException();
+                    }
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();

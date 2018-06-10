@@ -21,6 +21,6 @@ namespace JPFinancial.Models.Interfaces
         decimal Payment { get; set; }
         int Payments { get; set; }
         FrequencyEnum PaymentFrequency { get; set; }
-        DaysOfMonth DueDayOfMonth { get; set; }
+        DaysOfMonthEnum DueDayOfMonthEnum { get; set; }
     }
 }

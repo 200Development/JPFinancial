@@ -40,6 +40,6 @@ namespace JPFinancial.ViewModels
         [Display(Name = "Last Payday")]
         public string LastPayday { get; set; }
 
-        public List<string> Paydays { get; set; }
+        public DaysOfMonthEnum Paydays { get; set; }
     }
 }

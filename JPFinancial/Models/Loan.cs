@@ -56,6 +56,6 @@ namespace JPFinancial.Models
         public FrequencyEnum PaymentFrequency { get; set; }
 
         [Display(Name = "Due Day (Day of Month)")]
-        public DaysOfMonth DueDayOfMonth { get; set; }
+        public DaysOfMonthEnum DueDayOfMonthEnum { get; set; }
     }
 }

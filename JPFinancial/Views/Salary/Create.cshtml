@@ -50,7 +50,7 @@
         <div class="form-group firstPaydayClass">
             @Html.LabelFor(model => model.Paydays, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Paydays, new SelectList(Model.Paydays.ToArray()), "", new { @class = "form-control" })
+                @Html.EnumDropDownListFor(model => model.Paydays, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Paydays, "", new { @class = "text-danger" })
             </div>
         </div>
@@ -58,7 +58,7 @@
         <div class="form-group" id="lastPaydayClass">
             @Html.LabelFor(model => model.Paydays, new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.Paydays, new SelectList(Model.Paydays), "", new { @class = "form-control" })
+                @Html.EnumDropDownListFor(model => model.Paydays, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Paydays, "", new { @class = "text-danger" })
             </div>
         </div>

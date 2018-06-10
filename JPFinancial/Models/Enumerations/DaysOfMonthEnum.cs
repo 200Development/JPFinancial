@@ -2,7 +2,7 @@
 
 namespace JPFinancial.Models.Enumerations
 {
-    public enum DaysOfMonth
+    public enum DaysOfMonthEnum
     {
         [Display(Name = "1st")]
         One,

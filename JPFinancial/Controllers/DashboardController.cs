@@ -32,21 +32,21 @@ namespace JPFinancial.Controllers
             var accounts = _db.Accounts.ToList();
             var transactions = _db.Transactions.ToList();
             var sortedTransactions = SortTransactions(transactions, 1);
-            var firstDayOfMonth = Calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
-            var lastDayOfMonth = Calculations.GetLastDayOfMonth(DateTime.Today);
+            var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
+            var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
             var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
-            var lastPaycheck = Calculations.GetLastDayOfMonth(DateTime.Today);
+            var lastPaycheck = _calculations.GetLastDayOfMonth(DateTime.Today);
             var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
             var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
             savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
 
 
-            Calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
+            _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
 
 
             viewModel.MonthlyExpenses = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.SavedUp = Calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
+            viewModel.SavedUp = _calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
             viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.Accounts = accounts;
 
@@ -212,7 +212,7 @@ namespace JPFinancial.Controllers
             if (model.SelectedFVType.Equals("futureValue"))
             {
                 var fv = model.FutureAmount;
-                model.FutureDate = Calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
+                model.FutureDate = _calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
             }
             else if (model.SelectedFVType.Equals("futureDate"))
             {

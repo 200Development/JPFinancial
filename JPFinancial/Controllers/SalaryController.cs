@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using JPFinancial.Models.Enumerations;
 
 namespace JPFinancial.Controllers
 {
@@ -36,16 +37,8 @@ namespace JPFinancial.Controllers
         // GET: Salary/Create
         public ActionResult Create()
         {
-            var paydays = new List<string>();
-
-            for (int i = 1; i <= 31; i++)
-            {
-                paydays.Add(i.ToString());                
-            }
-            paydays.Add("Last");
-
             CreateSalaryViewModel viewModel = new CreateSalaryViewModel();
-            viewModel.Paydays = paydays;
+            viewModel.Paydays = new DaysOfMonthEnum();
 
             return View(viewModel);
         }
