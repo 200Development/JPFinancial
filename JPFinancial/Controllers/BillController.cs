@@ -95,11 +95,26 @@ namespace JPFinancial.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Bill bill = _db.Bills.Find(id);
+
             if (bill == null)
             {
                 return HttpNotFound();
             }
-            return View(bill);
+            CreateBillViewModel viewModel = new CreateBillViewModel();
+            var account = _db.Accounts.Single(a => a.Id == bill.AccountId);
+            //var accountId = account.Id;
+
+            viewModel.Name = bill.Name;
+            viewModel.AccountId = bill.AccountId;
+            viewModel.Account = account;
+            viewModel.AmountDue = bill.AmountDue;
+            viewModel.DueDate = bill.DueDate;
+            viewModel.Id = bill.Id;
+            viewModel.IsMandatory = bill.IsMandatory;
+            viewModel.PaymentFrequency = bill.PaymentFrequency;
+            viewModel.Accounts = _db.Accounts.ToList();
+
+            return View(viewModel);
         }
 
         // POST: Bills/Edit/5
@@ -107,15 +122,25 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "BillId,Name,IsMandatory,AccountNumber,Balance,DueDate,PaymentFrequency,IsLate")] Bill bill)
+        public ActionResult Edit(CreateBillViewModel viewModel)
         {
             if (ModelState.IsValid)
             {
+                var bill = new Bill();
+                bill.Name = viewModel.Name;
+                bill.Account = viewModel.Account;
+                bill.AccountId = viewModel.AccountId;
+                bill.AmountDue = viewModel.AmountDue;
+                bill.DueDate = viewModel.DueDate;
+                bill.Id = viewModel.Id;
+                bill.IsMandatory = viewModel.IsMandatory;
+                bill.PaymentFrequency = viewModel.PaymentFrequency;
+                
                 _db.Entry(bill).State = EntityState.Modified;
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(bill);
+            return View(viewModel);
         }
 
         // GET: Bills/Delete/5

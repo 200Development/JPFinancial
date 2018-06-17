@@ -177,6 +177,10 @@
     <Compile Include="Migrations\201806050004019_addPaydayOfWeekToSalaryModel.Designer.cs">
       <DependentUpon>201806050004019_addPaydayOfWeekToSalaryModel.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201806162140293_updateLoansSalariesModels.cs" />
+    <Compile Include="Migrations\201806162140293_updateLoansSalariesModels.Designer.cs">
+      <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -344,6 +348,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806050004019_addPaydayOfWeekToSalaryModel.resx">
       <DependentUpon>201806050004019_addPaydayOfWeekToSalaryModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201806162140293_updateLoansSalariesModels.resx">
+      <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>
