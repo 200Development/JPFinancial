@@ -63,7 +63,7 @@ namespace JPFinancial.Controllers
                     Name = viewModel.Name,
                     IsMandatory = viewModel.IsMandatory,
                     AmountDue = viewModel.AmountDue,
-                    DueDate = Convert.ToDateTime(viewModel.DueDate),
+                    DueDate = viewModel.DueDate,
                     PaymentFrequency = viewModel.PaymentFrequency,
                     AccountId = accountId,
                     Account = account

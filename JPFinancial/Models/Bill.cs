@@ -14,6 +14,7 @@ namespace JPFinancial.Models
         public string Name { get; set; }
 
         [Required, DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Due Date")]
         public DateTime DueDate { get; set; }
 

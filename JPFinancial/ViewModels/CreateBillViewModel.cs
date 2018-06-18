@@ -2,6 +2,7 @@
 using JPFinancial.Models;
 using JPFinancial.Models.Enumerations;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace JPFinancial.ViewModels
 {
@@ -15,6 +16,8 @@ namespace JPFinancial.ViewModels
 
         public decimal AmountDue { get; set; }
 
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime DueDate { get; set; }
 
         public FrequencyEnum PaymentFrequency { get; set; }
