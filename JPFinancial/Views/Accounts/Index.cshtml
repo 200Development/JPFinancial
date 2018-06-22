@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JPFinancial.Models.Account>
+﻿@model IEnumerable<JPFinancial.ViewModels.AccountViewModel>
 
 @{
     ViewBag.Title = "Index";
@@ -34,16 +34,16 @@
         <td>
             @Html.DisplayFor(modelItem => item.Name)
         </td>
-        <td>
+        <td style="color: @item.BalanceFontColor">
             @Html.DisplayFor(modelItem => item.Balance)
-        </td>
+            </td>
         <td>
             @Html.DisplayFor(modelItem => item.PaycheckContribution)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.RequiredSavings)
         </td>
-        <td>
+        <td style="color: @item.SurplusFontColor">
             @Html.DisplayFor(modelItem => item.BalanceSurplus)
         </td>
         <td>

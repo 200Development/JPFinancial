@@ -204,6 +204,7 @@
     <Compile Include="Models\Enumerations\TermClassification.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="Models\Enumerations\TransactionTypesEnum.cs" />
+    <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
     <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
     <Compile Include="ViewModels\CreateTransactionViewModel.cs" />

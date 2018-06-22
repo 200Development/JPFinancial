@@ -1,19 +1,42 @@
-﻿using JPFinancial.Models;
+﻿using System.Collections.Generic;
+using JPFinancial.Models;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using JPFinancial.ViewModels;
 
 namespace JPFinancial.Controllers
 {
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly Calculations _calculations = new Calculations();
 
         // GET: Accounts
         public ActionResult Index()
         {
-            return View(_db.Accounts.ToList());
+            _calculations.GetRequiredAcctSavings();
+            _calculations.GetReqBalanceSurplus();
+            var accounts = _db.Accounts.ToList();
+            var viewModel = new List<AccountViewModel>();
+
+            foreach (var account in accounts)
+            {
+                var vm = new AccountViewModel();
+                vm.Name = account.Name;
+                vm.Balance = account.Balance;
+                vm.BalanceSurplus = account.BalanceSurplus;
+                vm.Id = account.Id;
+                vm.PaycheckContribution = account.PaycheckContribution;
+                vm.RequiredSavings = account.RequiredSavings;
+                vm.BalanceFontColor = account.Balance < 0.0m ? "red" : "green";
+                vm.SurplusFontColor = account.BalanceSurplus < 0.0m ? "red" : "green";
+
+                viewModel.Add(vm);
+            }
+
+            return View(viewModel);
         }
 
         // GET: Accounts/Details/5
