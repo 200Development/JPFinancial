@@ -181,6 +181,14 @@
     <Compile Include="Migrations\201806162140293_updateLoansSalariesModels.Designer.cs">
       <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807140334584_AddCreditCardTable.cs" />
+    <Compile Include="Migrations\201807140334584_AddCreditCardTable.Designer.cs">
+      <DependentUpon>201807140334584_AddCreditCardTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.cs" />
+    <Compile Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.Designer.cs">
+      <DependentUpon>201807140343263_addUseCreditColumnToTransactionTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -188,6 +196,7 @@
     <Compile Include="Models\Bonus.cs" />
     <Compile Include="Models\Budget.cs" />
     <Compile Include="Models\Company.cs" />
+    <Compile Include="Models\CreditCard.cs" />
     <Compile Include="Models\Enumerations\DayEnum.cs" />
     <Compile Include="Models\Enumerations\DaysOfMonthEnum.cs" />
     <Compile Include="Models\Enumerations\FrequencyEnum.cs" />
@@ -225,6 +234,7 @@
     <Content Include="Content\bootstrap-theme.min.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\custom.css" />
     <Content Include="Content\Site.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
@@ -352,6 +362,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201806162140293_updateLoansSalariesModels.resx">
       <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807140334584_AddCreditCardTable.resx">
+      <DependentUpon>201807140334584_AddCreditCardTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.resx">
+      <DependentUpon>201807140343263_addUseCreditColumnToTransactionTable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

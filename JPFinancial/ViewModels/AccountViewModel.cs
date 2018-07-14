@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-using JPFinancial.Models;
+﻿using System.ComponentModel.DataAnnotations;
 using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.ViewModels

@@ -2,6 +2,7 @@
 using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.ViewModels
@@ -18,5 +19,8 @@ namespace JPFinancial.ViewModels
         public int? SelectedCreditAccount { get; set; }
         public int? SelectedDebitAccount { get; set; }
         public decimal Amount { get; set; }
+        public bool UsedCreditCard { get; set; }
+        public IEnumerable<CreditCard> CreditCards { get; set; }
+        public int? SelectedCreditCardAccount { get; set; }
     }
 }

@@ -37,8 +37,10 @@ namespace JPFinancial.Controllers
         public ActionResult Create()
         {
             var accounts = _db.Accounts.ToList();
+            var creditCards = _db.CreditCards.ToList();
             var viewModel = new CreateTransactionViewModel();
             viewModel.Accounts = accounts;
+            viewModel.CreditCards = creditCards;
             viewModel.Date = DateTime.Today;
 
             return View(viewModel);
@@ -155,6 +157,7 @@ namespace JPFinancial.Controllers
                 newTransaction.CreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedCreditAccount);
                 newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
                 newTransaction.Amount = transactionViewModel.Amount;
+                newTransaction.UsedCreditCard = transactionViewModel.UsedCreditCard;
 
                 return newTransaction;
             }

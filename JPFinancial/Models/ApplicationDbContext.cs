@@ -21,6 +21,7 @@ namespace JPFinancial.Models
         public IDbSet<Company> Companies { get; set; }
         public IDbSet<Transaction> Transactions { get; set; }
         public IDbSet<Loan> Loans { get; set; }
+        public IDbSet<CreditCard> CreditCards { get; set; }
 
 
         public static ApplicationDbContext Create()

@@ -21,5 +21,6 @@ namespace JPFinancial.Models
         public int? CreditAccountId { get; set; }
         public int? DebitAccountId { get; set; }
         public decimal Amount { get; set; }
+        public bool UsedCreditCard { get; set; }
     }
 }
