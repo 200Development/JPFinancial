@@ -193,6 +193,14 @@
     <Compile Include="Migrations\201807142124297_UpdateCreditCard.Designer.cs">
       <DependentUpon>201807142124297_UpdateCreditCard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201807151623599_AddCreditCardToTransaction.cs" />
+    <Compile Include="Migrations\201807151623599_AddCreditCardToTransaction.Designer.cs">
+      <DependentUpon>201807151623599_AddCreditCardToTransaction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201807151645532_updateTransactionModel.cs" />
+    <Compile Include="Migrations\201807151645532_updateTransactionModel.Designer.cs">
+      <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="Models\Benefit.cs" />
@@ -375,6 +383,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201807142124297_UpdateCreditCard.resx">
       <DependentUpon>201807142124297_UpdateCreditCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807151623599_AddCreditCardToTransaction.resx">
+      <DependentUpon>201807151623599_AddCreditCardToTransaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201807151645532_updateTransactionModel.resx">
+      <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <PropertyGroup>

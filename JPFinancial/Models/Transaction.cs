@@ -2,12 +2,21 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.Models
 {
     public class Transaction : ITransaction
     {
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+
+        public Transaction()
+        {
+            Accounts = _db.Accounts.ToList();
+            CreditCards = _db.CreditCards.ToList();
+        }
+
         [Key]
         public int Id { get; set; }
         public DateTime Date { get; set; }
@@ -22,5 +31,7 @@ namespace JPFinancial.Models
         public int? DebitAccountId { get; set; }
         public decimal Amount { get; set; }
         public bool UsedCreditCard { get; set; }
+        public int? SelectedCreditCardAccount { get; set; }
+        public IEnumerable<CreditCard> CreditCards { get; set; }
     }
 }

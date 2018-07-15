@@ -3,12 +3,21 @@ using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.ViewModels
 {
     public class CreateTransactionViewModel : ITransaction
     {
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+
+        public CreateTransactionViewModel()
+        {
+            Accounts = _db.Accounts.ToList();
+            CreditCards = _db.CreditCards.ToList();
+        }
+
         public int Id { get; set; }
         public DateTime Date { get; set; }
         public string Payee { get; set; }

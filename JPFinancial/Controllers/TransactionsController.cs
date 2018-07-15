@@ -58,7 +58,7 @@ namespace JPFinancial.Controllers
                 var newTransaction = ConvertViewModelToTransaction(transaction);
                 UpdateAccountBalances(newTransaction, "create");
                 if (transaction.UsedCreditCard)
-                    UpdateCreditCard(transaction);
+                    UpdateCreditCard(newTransaction, "create");
 
                 _db.Transactions.Add(newTransaction);
                 _db.SaveChanges();
@@ -88,14 +88,22 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Date,Payee,Memo,Type,Category,Amount")] Transaction transaction)
+        public ActionResult Edit([Bind(Include = "Id,Date,Payee,Memo,Type,Category,Amount, UsedCreditCard, SelectedCreditCardAccount")] Transaction transaction)
         {
             if (ModelState.IsValid)
             {
                 // AsNoTracking() is essential or EF will throw an error
                 UpdateAccountBalances(transaction, "edit");
+                UpdateCreditCard(transaction, "edit");
 
                 _db.Entry(transaction).State = EntityState.Modified;
+
+                if (transaction.UsedCreditCard)
+                {
+                    var creditCards = _db.CreditCards.ToList();
+                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
+                    _db.Entry(creditCard).State = EntityState.Modified;
+                }
                 _db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -127,22 +135,22 @@ namespace JPFinancial.Controllers
             {
                 _db.Transactions.Remove(transaction);
                 UpdateAccountBalances(transaction, "delete");
+                UpdateCreditCard(transaction, "delete");
+
+                if (transaction.UsedCreditCard)
+                {
+                    var creditCards = _db.CreditCards.ToList();
+                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
+                    _db.Entry(creditCard).State = EntityState.Modified;
+                }
+
+                _db.SaveChanges();
+                return RedirectToAction("Index");
             }
             catch (Exception)
             {
                 throw;
             }
-            _db.SaveChanges();
-            return RedirectToAction("Index");
-        }
-
-        protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                _db.Dispose();
-            }
-            base.Dispose(disposing);
         }
 
         private Transaction ConvertViewModelToTransaction(CreateTransactionViewModel transactionViewModel)
@@ -160,6 +168,7 @@ namespace JPFinancial.Controllers
                 newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
                 newTransaction.Amount = transactionViewModel.Amount;
                 newTransaction.UsedCreditCard = transactionViewModel.UsedCreditCard;
+                newTransaction.SelectedCreditCardAccount = transactionViewModel.SelectedCreditCardAccount;
 
 
                 return newTransaction;
@@ -172,89 +181,128 @@ namespace JPFinancial.Controllers
 
         private void UpdateAccountBalances(Transaction transaction, string type)
         {
-            switch (type)
+            if (type == "create")
             {
-                case "create":
-                    var newTransaction = new Transaction();
-                    newTransaction.Date = transaction.Date;
-                    newTransaction.Payee = transaction.Payee;
-                    newTransaction.Category = transaction.Category;
-                    newTransaction.Memo = transaction.Memo;
-                    newTransaction.Type = transaction.Type;
-                    newTransaction.DebitAccount = transaction.DebitAccount;
-                    newTransaction.CreditAccount = transaction.CreditAccount;
-                    newTransaction.Amount = transaction.Amount;
+                var newTransaction = new Transaction();
+                newTransaction.Date = transaction.Date;
+                newTransaction.Payee = transaction.Payee;
+                newTransaction.Category = transaction.Category;
+                newTransaction.Memo = transaction.Memo;
+                newTransaction.Type = transaction.Type;
+                newTransaction.DebitAccount = transaction.DebitAccount;
+                newTransaction.CreditAccount = transaction.CreditAccount;
+                newTransaction.Amount = transaction.Amount;
 
-                    if (transaction.DebitAccount != null)
+                if (transaction.DebitAccount != null)
+                {
+                    transaction.DebitAccount.Balance += transaction.Amount;
+                    _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
+                }
+
+                if (transaction.CreditAccount != null)
+                {
+                    transaction.CreditAccount.Balance -= transaction.Amount;
+                    _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
+                }
+            }
+            else if (type == "delete" || type == "edit")
+            {
+                var originalTransaction = _db.Transactions
+                    .AsNoTracking()
+                    .Where(t => t.Id == transaction.Id)
+                    .Cast<Transaction>()
+                    .FirstOrDefault();
+                if (originalTransaction == null) return;
+                var originalCreditAccount =
+                    _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
+                var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.DebitAccountId);
+                var originalAmount = originalTransaction.Amount;
+
+                // Reassign the Debit/Credit Account Id's to Transaction Model
+                transaction.CreditAccountId = originalTransaction.CreditAccountId;
+                transaction.DebitAccountId = originalTransaction.DebitAccountId;
+
+                if (type == "delete")
+                {
+                    if (originalDebitAccount != null)
                     {
-                        transaction.DebitAccount.Balance += transaction.Amount;
-                        _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
+                        originalDebitAccount.Balance -= transaction.Amount;
+                        _db.Entry(originalDebitAccount).State = EntityState.Modified;
                     }
-                    if (transaction.CreditAccount != null)
+
+                    if (originalCreditAccount != null)
                     {
-                        transaction.CreditAccount.Balance -= transaction.Amount;
-                        _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
+                        originalCreditAccount.Balance += transaction.Amount;
+                        _db.Entry(originalCreditAccount).State = EntityState.Modified;
                     }
-
-                    break;
-                case "delete":
-                case "edit":
-                    var originalTransaction = _db.Transactions
-                        .AsNoTracking()
-                        .Where(t => t.Id == transaction.Id)
-                        .Cast<Transaction>()
-                        .FirstOrDefault();
-                    if (originalTransaction == null) return;
-                    var originalCreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
-                    var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.DebitAccountId);
-                    var originalAmount = originalTransaction.Amount;
-
-                    // Reassign the Debit/Credit Account Id's to Transaction Model
-                    transaction.CreditAccountId = originalTransaction.CreditAccountId;
-                    transaction.DebitAccountId = originalTransaction.DebitAccountId;
-
-                    switch (type)
+                }
+                else if (type == "edit")
+                {
+                    var amountDifference = transaction.Amount - originalAmount;
+                    if (originalDebitAccount != null)
                     {
-                        case "delete":
-                            if (originalDebitAccount != null)
-                            {
-                                originalDebitAccount.Balance -= transaction.Amount;
-                                _db.Entry(originalDebitAccount).State = EntityState.Modified;
-                            }
-                            if (originalCreditAccount != null)
-                            {
-                                originalCreditAccount.Balance += transaction.Amount;
-                                _db.Entry(originalCreditAccount).State = EntityState.Modified;
-                            }
-
-                            break;
-                        case "edit":
-                            var amountDifference = transaction.Amount - originalAmount;
-                            if (originalDebitAccount != null)
-                            {
-                                originalDebitAccount.Balance += amountDifference;
-                                _db.Entry(originalDebitAccount).State = EntityState.Modified;
-                            }
-                            if (originalCreditAccount != null)
-                            {
-                                originalCreditAccount.Balance -= amountDifference;
-                                _db.Entry(originalCreditAccount).State = EntityState.Modified;
-                            }
-                            break;
+                        originalDebitAccount.Balance += amountDifference;
+                        _db.Entry(originalDebitAccount).State = EntityState.Modified;
                     }
-                    break;
+
+                    if (originalCreditAccount != null)
+                    {
+                        originalCreditAccount.Balance -= amountDifference;
+                        _db.Entry(originalCreditAccount).State = EntityState.Modified;
+                    }
+                }
             }
         }
 
-        private void UpdateCreditCard(CreateTransactionViewModel transaction)
+        private void UpdateCreditCard(Transaction transaction, string type)
         {
             var creditCardId = transaction?.SelectedCreditCardAccount;
             if (creditCardId == null) return;
             var creditCards = _db.CreditCards.ToList();
-
             var creditCard = creditCards.FirstOrDefault(c => c.Id == creditCardId);
-            if (creditCard != null) creditCard.Balance += transaction.Amount;
-            _db.Entry(creditCard).State = EntityState.Modified;
+
+            if (type == "create")
+            {
+                if (creditCard != null) creditCard.Balance += transaction.Amount;
+                _db.Entry(creditCard).State = EntityState.Modified;
+            }
+            else if (type == "delete" || type == "edit")
+            {
+                var originalTransaction = _db.Transactions
+                    .AsNoTracking()
+                    .Where(t => t.Id == transaction.Id)
+                    .Cast<Transaction>()
+                    .FirstOrDefault();
+                if (originalTransaction == null) return;
+                var originalCreditCard = _db.CreditCards.FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccount);
+                var originalAmount = originalTransaction.Amount;
+
+                // Reassign the credit card Id to Transaction Model
+                transaction.SelectedCreditCardAccount = originalTransaction.SelectedCreditCardAccount;
+
+                if (type == "delete")
+                {
+                    if (originalCreditCard == null) return;
+                    originalCreditCard.Balance -= transaction.Amount;
+                    _db.Entry(originalCreditCard).State = EntityState.Modified;
+                }
+                else if (type == "edit")
+                {
+                    var amountDifference = transaction.Amount - originalAmount;
+                    if (creditCard == null) return;
+                    creditCard.Balance += amountDifference;
+                    _db.Entry(creditCard).State = EntityState.Modified;
+                }
+            }
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                _db.Dispose();
+            }
+            base.Dispose(disposing);
         }
     }
 }
