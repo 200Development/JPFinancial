@@ -58,10 +58,26 @@ namespace JPFinancial.Controllers
             financialsPerMonth.Add(financialsDictionary);
 
             viewModel.LoanViewModelByMonth = financialsPerMonth;
-
+            viewModel.TopTransactions = _db.Transactions.Take(10).ToList();
            
 
             return View(viewModel);
+        }
+
+        public PartialViewResult TopAccounts()
+        {
+            var accounts = _db.Accounts.Take(10).ToList();
+           
+            return PartialView("_AccountsPartial",accounts);
+        }
+
+        public PartialViewResult TopTransactions()
+        {
+            var transactions = _db.Transactions.ToList();
+            var last30DaysTransactions = transactions.Where(t => t.Date >= DateTime.Today.AddDays(-30));
+            var largetstTransactions = last30DaysTransactions.OrderByDescending(t => t.Amount).Take(5);
+
+            return PartialView("_TopTransactions", largetstTransactions);
         }
 
         private decimal GetMonthlyIncome()

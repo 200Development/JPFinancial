@@ -18,6 +18,12 @@ namespace JPFinancial
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
             );
+
+            routes.MapRoute(
+                name: "Dashboard",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "Dashboard", action = "AccountsPartial", id = UrlParameter.Optional }
+            );
         }
     }
 }

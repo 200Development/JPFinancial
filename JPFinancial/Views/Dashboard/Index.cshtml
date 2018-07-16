@@ -7,6 +7,13 @@
 <h2 style="margin-bottom: 40px">Dashboard</h2>
 
 <div style="padding: 35px; margin: 20px 10px">
+    <div class="DashboardAccounts">
+        @{ Html.RenderAction("TopAccounts", "Dashboard"); }
+    </div>
+    
+    <div class="DashboardTransactions">
+        @{ Html.RenderAction("TopTransactions", "Dashboard"); }
+    </div>
 
     <div class="DashboardSummary">
         <div class="col-md-3">
