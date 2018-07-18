@@ -19,56 +19,70 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             var viewModel = new DashboardViewModel();
+            var loanViewModel = new LoanViewModel();
+            var lastMonth = DateTime.Today.AddMonths(-1);
+            var savingsAccountBalances = new Dictionary<string, decimal>();
+            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
+            var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
+            var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
+
+            var bills = _db.Bills.ToList();
+            var accounts = _db.Accounts.ToList();
+            var transactions = _db.Transactions.ToList();
+
+            var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
+            var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
+            var lastPaycheck = _calculations.GetLastDayOfMonth(DateTime.Today);
             var income = GetMonthlyIncome();
 
+            //var sortedTransactions = SortTransactions(transactions, 1);
+            var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
+            var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
+            var mandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
+            var discretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
+            savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
+            _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
+
+
+            loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
+            financialsPerMonth.Add(financialsDictionary);
+
+
+            viewModel.LoanViewModelByMonth = financialsPerMonth;
+            viewModel.TopTransactions = _db.Transactions.Take(10).ToList();
+            viewModel.MonthlyIncome = income.ToString("C", CultureInfo.CurrentCulture);
             viewModel.CurrentMonth = DateTime.Today.ToString("MMMM", CultureInfo.CurrentCulture);
             viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), income).ToString("C", CultureInfo.CurrentCulture);
             viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), income).ToString("C", CultureInfo.CurrentCulture);
             viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), income).ToString("C", CultureInfo.CurrentCulture);
             viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), income).ToString("C", CultureInfo.CurrentCulture);
-
-            var savingsAccountBalances = new Dictionary<string, decimal>();
-            var bills = _db.Bills.ToList();
-            var accounts = _db.Accounts.ToList();
-            var transactions = _db.Transactions.ToList();
-            var sortedTransactions = SortTransactions(transactions, 1);
-            var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
-            var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
-            var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
-            var lastPaycheck = _calculations.GetLastDayOfMonth(DateTime.Today);
-            var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
-            var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
-            savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
-
-
-            _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
-
-
             viewModel.MonthlyExpenses = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2).ToString("C", CultureInfo.CurrentCulture);
             viewModel.SavedUp = _calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
             viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.Accounts = accounts;
-
-            DateTime lastMonth = DateTime.Today.AddMonths(-1);
-            LoanViewModel loanViewModel = new LoanViewModel();
-            loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
-            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
-            var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
-            financialsPerMonth.Add(financialsDictionary);
-
-            viewModel.LoanViewModelByMonth = financialsPerMonth;
-            viewModel.TopTransactions = _db.Transactions.Take(10).ToList();
-           
+            
+            viewModel.MandatoryExpenses = mandatoryExpenses.ToString("C", CultureInfo.CurrentCulture);
+            viewModel.DiscretionarySpending = discretionaryExpenses.ToString("C", CultureInfo.CurrentCulture);
+            viewModel.SavingsRate = ((income - (mandatoryExpenses + discretionaryExpenses)) / income).ToString("P", CultureInfo.CurrentCulture);
 
             return View(viewModel);
         }
 
-        public PartialViewResult TopAccounts()
+        public PartialViewResult LargestAccounts()
         {
-            var accounts = _db.Accounts.Take(10).ToList();
-           
-            return PartialView("_AccountsPartial",accounts);
+            var accounts = _db.Accounts.ToList();
+            var largestAccounts = accounts.OrderByDescending(a => a.Balance).Take(5);
+
+            return PartialView("_AccountsPartial", largestAccounts);
+        }
+
+        public PartialViewResult SmallestAccounts()
+        {
+            var accounts = _db.Accounts.ToList();
+            var smallestAccounts = accounts.OrderBy(a => a.Balance).Take(5);
+
+            return PartialView("_AccountsPartial", smallestAccounts);
         }
 
         public PartialViewResult TopTransactions()

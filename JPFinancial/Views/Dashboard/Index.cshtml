@@ -7,11 +7,19 @@
 <h2 style="margin-bottom: 40px">Dashboard</h2>
 
 <div style="padding: 35px; margin: 20px 10px">
-    <div class="DashboardAccounts">
-        @{ Html.RenderAction("TopAccounts", "Dashboard"); }
+    <div class="DashboardLargestAccounts">
+        <h4 style="text-align: left; float: left; margin: 0; vertical-align: bottom">Largest 5 Accounts</h4>
+        <h4 style="text-align: right; float: right; margin: 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
+        @{ Html.RenderAction("LargestAccounts", "Dashboard"); }
     </div>
-    
-    <div class="DashboardTransactions">
+
+    <div class="DashboardSmallestAccounts">
+        <h4 style="text-align: left; float: left; margin: 40px 0 0 0; vertical-align: bottom">Smallest 5 Accounts</h4>
+        <h4 style="text-align: right; float: right; margin: 40px 0 0 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
+        @{ Html.RenderAction("SmallestAccounts", "Dashboard"); }
+    </div>
+
+    <div class="DashboardTransactions" style="margin: 40px 0 0 0">
         @{ Html.RenderAction("TopTransactions", "Dashboard"); }
     </div>
 
@@ -19,28 +27,28 @@
         <div class="col-md-3">
             <div class="panel panel-primary">
                 <div class="panel-heading" style="text-align: center">Income</div>
-                <div class="panel-body" style="text-align: center">@Model.MonthlyExpenses</div>
-            </div>
-        </div>
-
-        <div class="col-md-3">
-            <div class="panel panel-primary">
-                <div class="panel-heading" style="text-align: center">Mandatory Expenses</div>
                 <div class="panel-body" style="text-align: center">@Model.MonthlyIncome</div>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
+                <div class="panel-heading" style="text-align: center">Mandatory Expenses</div>
+                <div class="panel-body" style="text-align: center">@Model.MandatoryExpenses</div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="panel panel-primary">
                 <div class="panel-heading" style="text-align: center">Discretionary Spending</div>
-                <div class="panel-body" style="text-align: center">@Model.MonthlyExpenses</div>
+                <div class="panel-body" style="text-align: center">@Model.DiscretionarySpending</div>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
                 <div class="panel-heading" style="text-align: center">Savings Rate</div>
-                <div class="panel-body" style="text-align: center">@Model.MonthlyExpenses</div>
+                <div class="panel-body" style="text-align: center">@Model.SavingsRate</div>
             </div>
         </div>
     </div>

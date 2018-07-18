@@ -1,8 +1,7 @@
 ﻿@model IEnumerable<JPFinancial.Models.Transaction>
 
-@*<p>
-    @Html.ActionLink("Create New", "Create")
-</p>*@
+<h4 style="text-align: left; float: left; margin: 0; vertical-align: bottom">Most Expensive Transactions (Past 30 Days)</h4>
+<h4 style="text-align: right; float: right; margin: 0; vertical-align: bottom">@Html.ActionLink("All Transactions", "Index", "Transactions")</h4>
 <table class="table">
     <tr>
         <th>
@@ -19,26 +18,23 @@
         </th>
     </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Date)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Payee)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Category)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.Amount)
-        </td>
-        @*<td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>*@
-    </tr>
-}
-
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Payee)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td></td>
+        </tr>
+    }
 </table>
+<h4 class="col-md-12" style="-moz-align-content: center; -o-align-content: center; -webkit-align-content: center; align-content: center; margin: 12px 0 0 24px">@Html.ActionLink("All Transactions", "Index", "Transactions")</h4>

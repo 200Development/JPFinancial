@@ -1,5 +1,6 @@
 ﻿@model IEnumerable<JPFinancial.Models.Account>
 
+
 <table class="table">
     <tr>
         <th>
@@ -8,16 +9,6 @@
         <th>
             @Html.DisplayNameFor(model => model.Balance)
         </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PaycheckContribution)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.RequiredSavings)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.BalanceSurplus)
-        </th>
-        <th></th>
     </tr>
 
 @foreach (var item in Model) {
@@ -28,16 +19,6 @@
         <td>
             @Html.DisplayFor(modelItem => item.Balance)
         </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PaycheckContribution)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.RequiredSavings)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.BalanceSurplus)
-        </td>
     </tr>
 }
-
 </table>

@@ -75,5 +75,8 @@ namespace JPFinancial.ViewModels
         public virtual List<Transaction> TopTransactions { get; set; }
         public List<Dictionary<DateTime, LoanViewModel>> LoanViewModelByMonth { get; set; }
         public Chart AccountGraph { get; set; }
+        public string MandatoryExpenses { get; set; }
+        public string DiscretionarySpending { get; set; }
+        public string SavingsRate { get; set; }
     }
 }
