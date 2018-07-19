@@ -783,6 +783,20 @@ namespace JPFinancial
             }
         }
 
+        public decimal CalculateMonthlyInterestCost(Loan loan)
+        {
+            try
+            {
+                var monthlyInterestRate = (loan.APR / 100) / 12;
+                return monthlyInterestRate * loan.OutstandingBalance;
+            }
+            catch (Exception e)
+            {
+
+                throw;
+            }
+        }
+
         public decimal CalculateExpenseRatio()
         {
             try

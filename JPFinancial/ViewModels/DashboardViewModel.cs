@@ -78,5 +78,10 @@ namespace JPFinancial.ViewModels
         public string MandatoryExpenses { get; set; }
         public string DiscretionarySpending { get; set; }
         public string SavingsRate { get; set; }
+        public string CostliestCategory { get; set; }
+        public string CostliestExpensePercentage { get; set; }
+        public string CostliestExpenseAmount { get; set; }
+        public string LoanInterestPercentOfInterest { get; set; }
+        public string MonthlyLoanInterest { get; set; }
     }
 }

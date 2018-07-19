@@ -29,6 +29,7 @@ namespace JPFinancial.Controllers
             var bills = _db.Bills.ToList();
             var accounts = _db.Accounts.ToList();
             var transactions = _db.Transactions.ToList();
+            var loans = _db.Loans.ToList();
 
             var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
             var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
@@ -40,6 +41,22 @@ namespace JPFinancial.Controllers
             var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
             var mandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
             var discretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
+            var costliestExpenseAmount = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
+                .OrderByDescending(t => t.Amount)
+                .Select(t => t.Amount)
+                .Take(1)
+                .FirstOrDefault();
+            var costlisetCategory = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
+                .OrderByDescending(t => t.Amount)
+                .Select(t => t.Category)
+                .Take(1)
+                .FirstOrDefault();
+
+            var monthlyLoanInterest = 0.0m;
+            foreach (var loan in loans)
+            {
+                monthlyLoanInterest += _calculations.CalculateMonthlyInterestCost(loan);
+            }
             savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
             _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
 
@@ -61,10 +78,14 @@ namespace JPFinancial.Controllers
             viewModel.SavedUp = _calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
             viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
             viewModel.Accounts = accounts;
-            
             viewModel.MandatoryExpenses = mandatoryExpenses.ToString("C", CultureInfo.CurrentCulture);
             viewModel.DiscretionarySpending = discretionaryExpenses.ToString("C", CultureInfo.CurrentCulture);
             viewModel.SavingsRate = ((income - (mandatoryExpenses + discretionaryExpenses)) / income).ToString("P", CultureInfo.CurrentCulture);
+            viewModel.CostliestCategory = costlisetCategory.ToString();
+            viewModel.CostliestExpenseAmount = costliestExpenseAmount.ToString("C");
+            viewModel.CostliestExpensePercentage = (costliestExpenseAmount / income).ToString("P", CultureInfo.CurrentCulture);
+            viewModel.LoanInterestPercentOfInterest = (monthlyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
+            viewModel.MonthlyLoanInterest = monthlyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
 
             return View(viewModel);
         }
