@@ -81,7 +81,11 @@ namespace JPFinancial.ViewModels
         public string CostliestCategory { get; set; }
         public string CostliestExpensePercentage { get; set; }
         public string CostliestExpenseAmount { get; set; }
-        public string LoanInterestPercentOfInterest { get; set; }
+        public string LoanInterestPercentOfIncome { get; set; }
         public string MonthlyLoanInterest { get; set; }
+        public string DailyLoanInterestPercentage { get; set; }
+        public string DailyLoanInterest { get; set; }
+        public string DisposableIncomePercentage { get; set; }
+        public string DisposableIncome { get; set; }
     }
 }

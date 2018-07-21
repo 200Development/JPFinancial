@@ -7,20 +7,28 @@
 <h2 style="margin-bottom: 40px">Dashboard</h2>
 
 <div style="padding: 35px; margin: 20px 10px">
-    <div class="DashboardLargestAccounts">
-        <h4 style="text-align: left; float: left; margin: 0; vertical-align: bottom">Largest 5 Accounts</h4>
-        <h4 style="text-align: right; float: right; margin: 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
-        @{ Html.RenderAction("LargestAccounts", "Dashboard"); }
+    
+    <div class="DashboardTransactions">
+        @{ Html.RenderAction("CreateTransaction", "Dashboard"); }
+        @{ Html.RenderAction("Transactions", "Dashboard"); }
     </div>
 
-    <div class="DashboardSmallestAccounts">
-        <h4 style="text-align: left; float: left; margin: 40px 0 0 0; vertical-align: bottom">Smallest 5 Accounts</h4>
-        <h4 style="text-align: right; float: right; margin: 40px 0 0 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
-        @{ Html.RenderAction("SmallestAccounts", "Dashboard"); }
-    </div>
+    <div class="DashboardAccounts">
+        <div class="DashboardLargestAccounts">
+            <h4 style="text-align: left; float: left; margin: 0; vertical-align: bottom">Largest 5 Accounts</h4>
+            <h4 style="text-align: right; float: right; margin: 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
+            @{ Html.RenderAction("LargestAccounts", "Dashboard"); }
+        </div>
 
-    <div class="DashboardTransactions" style="margin: 40px 0 0 0">
-        @{ Html.RenderAction("TopTransactions", "Dashboard"); }
+        <div class="DashboardSmallestAccounts">
+            <h4 style="text-align: left; float: left; margin: 40px 0 0 0; vertical-align: bottom">Smallest 5 Accounts</h4>
+            <h4 style="text-align: right; float: right; margin: 40px 0 0 0; vertical-align: bottom">@Html.ActionLink("All Accounts", "Index", "Accounts")</h4>
+            @{ Html.RenderAction("SmallestAccounts", "Dashboard"); }
+        </div>
+
+        <div class="DashboardTransactions" style="margin: 40px 0 0 0">
+            @{ Html.RenderAction("TopTransactions", "Dashboard"); }
+        </div>
     </div>
 
     <div class="DashboardSummary">
@@ -88,39 +96,43 @@
     </div>
 
     <div class="DashboardFinancials">
+     
         <div class="col-md-12" style="margin-top: 35px">
-            <h2 class="center-block" style="text-align: center">Spending Summary for @{ DateTime.Today.AddMonths(-1).ToString("M");}</h2>
+            <h2 class="center-block" style="text-align: center">
+                Spending Summary for
+                @{ DateTime.Today.AddMonths(-1).ToString("M");}
+            </h2>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
                 <div class="panel-heading" style="text-align: center">Costliest Expense Category</div>
-                <div class="panel-body" style="text-align: center">@Model.CostliestCategory<br />@Model.CostliestExpensePercentage&nbsp;</div>
+                <div class="panel-body" style="text-align: center">@Model.CostliestCategory<br />@Model.CostliestExpensePercentage</div>
                 <div class="panel-footer" style="text-align: center">@Model.CostliestExpenseAmount</div>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
-                <div class="panel-heading" style="text-align: center">Loan Interest</div>
-                <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.LoanInterestPercentOfInterest&nbsp;</div>
+                <div class="panel-heading" style="text-align: center">Monthly Loan Interest</div>
+                <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.LoanInterestPercentOfIncome</div>
                 <div class="panel-footer" style="text-align: center">@Model.MonthlyLoanInterest</div>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
-                <div class="panel-heading" style="text-align: center">Loan Interest</div>
-                <div class="panel-body" style="text-align: center">Percentage of Income<br />%</div>
-                <div class="panel-footer" style="text-align: center">$</div>
+                <div class="panel-heading" style="text-align: center">Daily Loan Interest</div>
+                <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.DailyLoanInterestPercentage</div>
+                <div class="panel-footer" style="text-align: center">@Model.DailyLoanInterest</div>
             </div>
         </div>
 
         <div class="col-md-3">
             <div class="panel panel-primary">
-                <div class="panel-heading" style="text-align: center">Loan Interest</div>
-                <div class="panel-body" style="text-align: center">Percentage of Income<br />%</div>
-                <div class="panel-footer" style="text-align: center">$</div>
+                <div class="panel-heading" style="text-align: center">Disposable Income</div>
+                <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.DisposableIncomePercentage</div>
+                <div class="panel-footer" style="text-align: center">@Model.DisposableIncome</div>
             </div>
         </div>
 

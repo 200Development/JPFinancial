@@ -53,14 +53,14 @@ namespace JPFinancial.Controllers
                 .FirstOrDefault();
 
             var monthlyLoanInterest = 0.0m;
+            var dailyLoanInterest = 0.0m;
             foreach (var loan in loans)
             {
                 monthlyLoanInterest += _calculations.CalculateMonthlyInterestCost(loan);
+                dailyLoanInterest += _calculations.CalculateDailyInterestCost(loan);
             }
             savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
             _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
-
-
             loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
             financialsPerMonth.Add(financialsDictionary);
 
@@ -84,10 +84,29 @@ namespace JPFinancial.Controllers
             viewModel.CostliestCategory = costlisetCategory.ToString();
             viewModel.CostliestExpenseAmount = costliestExpenseAmount.ToString("C");
             viewModel.CostliestExpensePercentage = (costliestExpenseAmount / income).ToString("P", CultureInfo.CurrentCulture);
-            viewModel.LoanInterestPercentOfInterest = (monthlyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
+            viewModel.LoanInterestPercentOfIncome = (monthlyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
             viewModel.MonthlyLoanInterest = monthlyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
+            viewModel.DailyLoanInterestPercentage = (dailyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
+            viewModel.DailyLoanInterest = dailyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
 
             return View(viewModel);
+        }
+
+        public PartialViewResult CreateTransaction()
+        {
+            var accounts = _db.Accounts.ToList();
+            var creditCards = _db.CreditCards.ToList();
+            var viewModel = new CreateTransactionViewModel();
+            viewModel.Accounts = accounts;
+            viewModel.CreditCards = creditCards;
+            viewModel.Date = DateTime.Today;
+
+            return PartialView("_CreateTransaction", viewModel);
+        }
+
+        public PartialViewResult Transactions()
+        {
+            return PartialView("_Transactions", _db.Transactions.ToList());
         }
 
         public PartialViewResult LargestAccounts()

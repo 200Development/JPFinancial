@@ -241,6 +241,7 @@
     <Compile Include="ViewModels\TransactionsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Views\Shared\_CreateTransaction.cshtml" />
     <None Include="Views\Dashboard\index.cshtml" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -345,6 +346,7 @@
     <Content Include="Views\Loans\Index.cshtml" />
     <Content Include="Views\Dashboard\_AccountsPartial.cshtml" />
     <Content Include="Views\Dashboard\_TopTransactions.cshtml" />
+    <Content Include="Views\Shared\_Transactions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

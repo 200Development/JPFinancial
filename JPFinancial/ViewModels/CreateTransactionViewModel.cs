@@ -19,6 +19,8 @@ namespace JPFinancial.ViewModels
         }
 
         public int Id { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public DateTime Date { get; set; }
         public string Payee { get; set; }
         public string Memo { get; set; }
