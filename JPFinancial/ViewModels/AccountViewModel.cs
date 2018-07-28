@@ -1,9 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using JPFinancial.Models.Interfaces;
 
 namespace JPFinancial.ViewModels
 {
-    public class AccountViewModel : IAccount
+    public class AccountViewModel
     {
         public AccountViewModel()
         {

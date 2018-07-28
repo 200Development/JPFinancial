@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using JPFinancial.Models.Enumerations;
 using System.ComponentModel.DataAnnotations;
+using JPFData.Enumerations;
 
 namespace JPFinancial.ViewModels
 {

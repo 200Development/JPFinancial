@@ -1,14 +1,15 @@
 ﻿using JPFinancial.Models;
-using JPFinancial.Models.Enumerations;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using JPFinancial.Models.Interfaces;
+using JPFData;
+using JPFData.Enumerations;
+using JPFData.Models;
 
 namespace JPFinancial.ViewModels
 {
-    public class CreateTransactionViewModel : ITransaction
+    public class CreateTransactionViewModel
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 

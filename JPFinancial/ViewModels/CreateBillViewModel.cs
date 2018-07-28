@@ -1,8 +1,10 @@
 ﻿using System;
 using JPFinancial.Models;
-using JPFinancial.Models.Enumerations;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using JPFData;
+using JPFData.Enumerations;
+using JPFData.Models;
 
 namespace JPFinancial.ViewModels
 {

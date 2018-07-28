@@ -5,7 +5,9 @@ using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
-using JPFinancial.Models.Enumerations;
+using JPFData;
+using JPFData.Enumerations;
+using JPFData.Models;
 
 namespace JPFinancial.Controllers
 {

@@ -144,7 +144,6 @@
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Calculations.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
     <Compile Include="Controllers\BillController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -202,38 +201,12 @@
       <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
-    <Compile Include="Models\Account.cs" />
-    <Compile Include="Models\Benefit.cs" />
-    <Compile Include="Models\Bill.cs" />
-    <Compile Include="Models\Bonus.cs" />
-    <Compile Include="Models\Budget.cs" />
-    <Compile Include="Models\Company.cs" />
-    <Compile Include="Models\CreditCard.cs" />
-    <Compile Include="Models\Enumerations\DayEnum.cs" />
-    <Compile Include="Models\Enumerations\DaysOfMonthEnum.cs" />
-    <Compile Include="Models\Enumerations\FrequencyEnum.cs" />
-    <Compile Include="Models\Enumerations\PayTypesEnum.cs" />
-    <Compile Include="Models\Enumerations\StatesEnum.cs" />
-    <Compile Include="Models\Expense.cs" />
-    <Compile Include="Models\Enumerations\CategoriesEnum.cs" />
-    <Compile Include="Models\Interfaces\ILoan.cs" />
-    <Compile Include="Models\Interfaces\IAccount.cs" />
-    <Compile Include="Models\Interfaces\ISalaryLineItem.cs" />
-    <Compile Include="Models\Interfaces\ITransaction.cs" />
-    <Compile Include="Models\Loan.cs" />
-    <Compile Include="Models\Salary.cs" />
-    <Compile Include="Models\Enumerations\TermClassification.cs" />
-    <Compile Include="Models\Transaction.cs" />
-    <Compile Include="Models\Enumerations\TransactionTypesEnum.cs" />
     <Compile Include="ViewModels\AccountViewModel.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
     <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
     <Compile Include="ViewModels\CreateTransactionViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
     <Compile Include="ViewModels\IdentityViewModels.cs" />
-    <Compile Include="Models\ApplicationUser.cs" />
-    <Compile Include="Models\ApplicationDbContext.cs" />
-    <Compile Include="Models\Interfaces\ILiability.cs" />
     <Compile Include="ViewModels\LoanViewModel.cs" />
     <Compile Include="ViewModels\ManageViewModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -394,6 +367,12 @@
     <EmbeddedResource Include="Migrations\201807151645532_updateTransactionModel.resx">
       <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Data\Data.csproj">
+      <Project>{febe0a96-5468-4912-90c0-2308c803a8d3}</Project>
+      <Name>Data</Name>
+    </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

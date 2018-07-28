@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JPFinancial.Models.Enumerations;
-using JPFinancial.Models.Interfaces;
+using JPFData.Enumerations;
 
 namespace JPFinancial.ViewModels
 {
-    public class LoanViewModel : ILoan
+    public class LoanViewModel
     {
         public int Id { get; set; }
 
