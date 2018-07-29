@@ -22,6 +22,7 @@ namespace JPFinancial.Controllers
         {
             var viewModel = new DashboardViewModel();
             var loanViewModel = new LoanViewModel();
+            var createTransactionViewModel = new CreateTransactionViewModel();
             var lastMonth = DateTime.Today.AddMonths(-1);
             var savingsAccountBalances = new Dictionary<string, decimal>();
             var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
@@ -32,6 +33,7 @@ namespace JPFinancial.Controllers
             var accounts = _db.Accounts.ToList();
             var transactions = _db.Transactions.ToList();
             var loans = _db.Loans.ToList();
+            var creditCards = _db.CreditCards.ToList();
 
             var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
             var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
@@ -65,7 +67,9 @@ namespace JPFinancial.Controllers
             _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
             loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
             financialsPerMonth.Add(financialsDictionary);
-
+            createTransactionViewModel.Accounts = accounts;
+            createTransactionViewModel.CreditCards = creditCards;
+            createTransactionViewModel.Date = DateTime.Today;
 
             viewModel.LoanViewModelByMonth = financialsPerMonth;
             viewModel.TopTransactions = _db.Transactions.Take(10).ToList();
@@ -90,6 +94,12 @@ namespace JPFinancial.Controllers
             viewModel.MonthlyLoanInterest = monthlyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
             viewModel.DailyLoanInterestPercentage = (dailyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
             viewModel.DailyLoanInterest = dailyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
+            viewModel.Transactions = transactions;
+            viewModel.CreateTransaction = createTransactionViewModel;
+            viewModel.IsAddTransactionAreaVisible = true;
+            viewModel.IsEditTransactionAreaVisible = false;
+            viewModel.IsTransactionsListAreaVisible = true;
+
 
             return View(viewModel);
         }

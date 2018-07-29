@@ -75,6 +75,8 @@ namespace JPFinancial.ViewModels
         public virtual string CurrentMonth { get; set; }
         public virtual List<Transaction> Transactions { get; set; }
         public virtual List<Transaction> TopTransactions { get; set; }
+        public virtual Transaction Transaction { get; set; }
+        public virtual CreateTransactionViewModel CreateTransaction { get; set; }
         public List<Dictionary<DateTime, LoanViewModel>> LoanViewModelByMonth { get; set; }
         public Chart AccountGraph { get; set; }
         public string MandatoryExpenses { get; set; }
@@ -89,5 +91,8 @@ namespace JPFinancial.ViewModels
         public string DailyLoanInterest { get; set; }
         public string DisposableIncomePercentage { get; set; }
         public string DisposableIncome { get; set; }
+        public bool IsAddTransactionAreaVisible { get; set; }
+        public bool IsTransactionsListAreaVisible { get; set; }
+        public bool IsEditTransactionAreaVisible { get; set; }
     }
 }
