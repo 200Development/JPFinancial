@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JPFData;
 using JPFData.Models;
-using JPFinancial.Models;
 
 namespace JPFinancial.ViewModels
 {

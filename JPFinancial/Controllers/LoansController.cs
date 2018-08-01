@@ -6,7 +6,6 @@ using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Models;
-using JPFinancial.Models;
 using JPFinancial.ViewModels;
 
 namespace JPFinancial.Controllers

@@ -1,14 +1,12 @@
-﻿using JPFinancial.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
 
-namespace JPFinancial
+namespace JPFData
 {
     public class Calculations
     {

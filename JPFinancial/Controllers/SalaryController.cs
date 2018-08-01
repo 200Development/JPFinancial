@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JPFinancial.Models;
 using JPFinancial.ViewModels;
 using System.Data.Entity;
 using System.Linq;

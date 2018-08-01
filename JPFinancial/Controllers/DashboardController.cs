@@ -1,5 +1,4 @@
-﻿using JPFinancial.Models;
-using JPFinancial.ViewModels;
+﻿using JPFinancial.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Globalization;

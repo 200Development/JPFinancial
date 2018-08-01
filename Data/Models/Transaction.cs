@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using JPFData.Enumerations;
-using JPFinancial.Models;
 
 namespace JPFData.Models
 {

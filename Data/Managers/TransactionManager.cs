@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using JPFData.Models;
-using JPFinancial.Models;
 
 
 namespace JPFData.Managers

@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
 
-namespace JPFinancial.ViewModels
+namespace JPFData.ViewModels
 {
     public class CreateBillViewModel
     {
