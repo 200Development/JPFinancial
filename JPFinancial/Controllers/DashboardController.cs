@@ -1,106 +1,132 @@
-﻿using JPFinancial.ViewModels;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Web.Helpers;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
+
 
         // GET: Dashboard
         public ActionResult Index()
         {
-            var viewModel = new DashboardViewModel();
-            var loanViewModel = new LoanViewModel();
-            var createTransactionViewModel = new CreateTransactionViewModel();
-            var lastMonth = DateTime.Today.AddMonths(-1);
-            var savingsAccountBalances = new Dictionary<string, decimal>();
-            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
-            var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
-            var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
+            DashboardViewModel vm = new DashboardViewModel();
 
-            var bills = _db.Bills.ToList();
-            var accounts = _db.Accounts.ToList();
-            var transactions = _db.Transactions.ToList();
-            var loans = _db.Loans.ToList();
-            var creditCards = _db.CreditCards.ToList();
+            vm.HandleRequest();
 
-            var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
-            var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
-            var lastPaycheck = _calculations.GetLastDayOfMonth(DateTime.Today);
-            var income = GetMonthlyIncome();
 
-            //var sortedTransactions = SortTransactions(transactions, 1);
-            var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
-            var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
-            var mandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
-            var discretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
-            var costliestExpenseAmount = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
-                .OrderByDescending(t => t.Amount)
-                .Select(t => t.Amount)
-                .Take(1)
-                .FirstOrDefault();
-            var costlisetCategory = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
-                .OrderByDescending(t => t.Amount)
-                .Select(t => t.Category)
-                .Take(1)
-                .FirstOrDefault();
+            return View(vm);
+            //var viewModel = new DashboardViewModel();
+            //var loanViewModel = new LoanViewModel();
+            //var createTransactionViewModel = new CreateTransactionViewModel();
+            //var lastMonth = DateTime.Today.AddMonths(-1);
+            //var savingsAccountBalances = new Dictionary<string, decimal>();
+            //var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
+            //var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
+            //var financialsDictionary = new Dictionary<DateTime, LoanViewModel> { { lastMonth, loanViewModel } };
 
-            var monthlyLoanInterest = 0.0m;
-            var dailyLoanInterest = 0.0m;
-            foreach (var loan in loans)
+            //var bills = _db.Bills.ToList();
+            //var accounts = _db.Accounts.ToList();
+            //var transactions = _db.Transactions.ToList();
+            //var loans = _db.Loans.ToList();
+            //var creditCards = _db.CreditCards.ToList();
+
+            //var firstDayOfMonth = _calculations.GetFirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
+            //var lastDayOfMonth = _calculations.GetLastDayOfMonth(DateTime.Today);
+            //var lastPaycheck = _calculations.GetLastDayOfMonth(DateTime.Today);
+            //var income = GetMonthlyIncome();
+
+            ////var sortedTransactions = SortTransactions(transactions, 1);
+            //var billsDue = _calculations.GetBillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
+            //var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
+            //var mandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
+            //var discretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
+            //var costliestExpenseAmount = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
+            //    .OrderByDescending(t => t.Amount)
+            //    .Select(t => t.Amount)
+            //    .Take(1)
+            //    .FirstOrDefault();
+            //var costlisetCategory = transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
+            //    .OrderByDescending(t => t.Amount)
+            //    .Select(t => t.Category)
+            //    .Take(1)
+            //    .FirstOrDefault();
+
+            //var monthlyLoanInterest = 0.0m;
+            //var dailyLoanInterest = 0.0m;
+            //foreach (var loan in loans)
+            //{
+            //    monthlyLoanInterest += _calculations.CalculateMonthlyInterestCost(loan);
+            //    dailyLoanInterest += _calculations.CalculateDailyInterestCost(loan);
+            //}
+            //savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
+            //_calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
+            //loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
+            //financialsPerMonth.Add(financialsDictionary);
+            //createTransactionViewModel.Accounts = accounts;
+            //createTransactionViewModel.CreditCards = creditCards;
+            //createTransactionViewModel.Date = DateTime.Today;
+
+            //viewModel.MonthlyIncome = income.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.CurrentMonth = DateTime.Today.ToString("MMMM", CultureInfo.CurrentCulture);
+            //viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), income).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), income).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), income).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), income).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.MonthlyExpenses = totalDue.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.SavedUp = _calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.Accounts = accounts;
+            //viewModel.MandatoryExpenses = mandatoryExpenses.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.DiscretionarySpending = discretionaryExpenses.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.SavingsRate = ((income - (mandatoryExpenses + discretionaryExpenses)) / income).ToString("P", CultureInfo.CurrentCulture);
+            //viewModel.CostliestCategory = costlisetCategory.ToString();
+            //viewModel.CostliestExpenseAmount = costliestExpenseAmount.ToString("C");
+            //viewModel.CostliestExpensePercentage = (costliestExpenseAmount / income).ToString("P", CultureInfo.CurrentCulture);
+            //viewModel.LoanInterestPercentOfIncome = (monthlyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
+            //viewModel.MonthlyLoanInterest = monthlyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.DailyLoanInterestPercentage = (dailyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
+            //viewModel.DailyLoanInterest = dailyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
+            //viewModel.Transactions = transactions;
+            //viewModel.CreateTransaction = createTransactionViewModel;
+            //viewModel.IsAddTransactionAreaVisible = true;
+            //viewModel.IsEditTransactionAreaVisible = false;
+            //viewModel.IsTransactionsListAreaVisible = true;
+
+
+
+        }
+
+        [HttpPost]
+        public ActionResult Index(DashboardViewModel vm)
+        {
+            vm.IsValid = ModelState.IsValid;
+            vm.HandleRequest();
+
+            if (vm.IsValid)
             {
-                monthlyLoanInterest += _calculations.CalculateMonthlyInterestCost(loan);
-                dailyLoanInterest += _calculations.CalculateDailyInterestCost(loan);
+                // NOTE: Must clear the model state in order to bind
+                //       the @Html helpers to the new model values
+                ModelState.Clear();
             }
-            savingsAccountBalances = _calculations.SavingsReqForBills(bills, savingsAccountBalances);
-            _calculations.UpdateAccountGoals(accounts, savingsAccountBalances);
-            loanViewModel.ExpenseRatio = _calculations.CalculateExpenseRatio();
-            financialsPerMonth.Add(financialsDictionary);
-            createTransactionViewModel.Accounts = accounts;
-            createTransactionViewModel.CreditCards = creditCards;
-            createTransactionViewModel.Date = DateTime.Today;
+            else
+            {
+                foreach (KeyValuePair<string, string> item in vm.ValidationErrors)
+                {
+                    ModelState.AddModelError(item.Key, item.Value);
+                }
+            }
 
-            viewModel.LoanViewModelByMonth = financialsPerMonth;
-            viewModel.TopTransactions = _db.Transactions.Take(10).ToList();
-            viewModel.MonthlyIncome = income.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.CurrentMonth = DateTime.Today.ToString("MMMM", CultureInfo.CurrentCulture);
-            viewModel.OneMonthSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(1), income).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.ThreeMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(3), income).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.SixMonthsSavings = _calculations.CalculateFv(DateTime.Today.AddMonths(6), income).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.OneYearSavings = _calculations.CalculateFv(DateTime.Today.AddYears(1), income).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.MonthlyExpenses = totalDue.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.SavedUp = _calculations.SavingsReqForBills(bills).ToString("C", CultureInfo.CurrentCulture);
-            viewModel.TotalDue = totalDue.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.Accounts = accounts;
-            viewModel.MandatoryExpenses = mandatoryExpenses.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.DiscretionarySpending = discretionaryExpenses.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.SavingsRate = ((income - (mandatoryExpenses + discretionaryExpenses)) / income).ToString("P", CultureInfo.CurrentCulture);
-            viewModel.CostliestCategory = costlisetCategory.ToString();
-            viewModel.CostliestExpenseAmount = costliestExpenseAmount.ToString("C");
-            viewModel.CostliestExpensePercentage = (costliestExpenseAmount / income).ToString("P", CultureInfo.CurrentCulture);
-            viewModel.LoanInterestPercentOfIncome = (monthlyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
-            viewModel.MonthlyLoanInterest = monthlyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.DailyLoanInterestPercentage = (dailyLoanInterest / income).ToString("P", CultureInfo.CurrentCulture);
-            viewModel.DailyLoanInterest = dailyLoanInterest.ToString("C", CultureInfo.CurrentCulture);
-            viewModel.Transactions = transactions;
-            viewModel.CreateTransaction = createTransactionViewModel;
-            viewModel.IsAddTransactionAreaVisible = true;
-            viewModel.IsEditTransactionAreaVisible = false;
-            viewModel.IsTransactionsListAreaVisible = true;
-
-
-            return View(viewModel);
+            return View(vm);
         }
 
         public PartialViewResult CreateTransaction()
@@ -287,20 +313,20 @@ namespace JPFinancial.Controllers
         }
 
 
-        public ActionResult GetFutureValue(DashboardViewModel model)
-        {
-            if (!ModelState.IsValid) return View("Index", model);
-            if (model.SelectedFVType.Equals("futureValue"))
-            {
-                var fv = model.FutureAmount;
-                model.FutureDate = _calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
-            }
-            else if (model.SelectedFVType.Equals("futureDate"))
-            {
-                model.FutureAmount = _calculations.CalculateFv(Convert.ToDateTime(model.FutureDate), model.NetIncome);
-            }
-            return View("Index", model);
-        }
+        //public ActionResult GetFutureValue(DashboardViewModel model)
+        //{
+        //    if (!ModelState.IsValid) return View("Index", model);
+        //    if (model.SelectedFVType.Equals("futureValue"))
+        //    {
+        //        var fv = model.FutureAmount;
+        //        model.FutureDate = _calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
+        //    }
+        //    else if (model.SelectedFVType.Equals("futureDate"))
+        //    {
+        //        model.FutureAmount = _calculations.CalculateFv(Convert.ToDateTime(model.FutureDate), model.NetIncome);
+        //    }
+        //    return View("Index", model);
+        //}
 
         protected override void Dispose(bool disposing)
         {

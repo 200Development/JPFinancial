@@ -31,6 +31,8 @@ namespace JPFData.DTO
         [Display(Name = "Monthly Net Savings"), DataType(DataType.Currency)]
         public string MonthlyNetSavings { get; set; }
 
+        public string SelectedFVType { get; set; }
+
         [Display(Name = "Future Value"), DataType(DataType.Currency)]
         public decimal? AmountAtFutureDate { get; set; }
 

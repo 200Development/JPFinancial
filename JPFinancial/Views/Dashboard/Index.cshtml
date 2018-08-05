@@ -1,4 +1,4 @@
-﻿@model JPFinancial.ViewModels.DashboardViewModel
+﻿@model JPFData.ViewModels.DashboardViewModel
 
 
 @{
@@ -17,7 +17,7 @@
         <!-- BEGIN HIDDEN FIELDS AREA -->
         <!-- END HIDDEN FIELDS AREA -->
 
-        if (Model.IsAddTransactionAreaVisible)
+        if (Model.IsCreateAreaVisible)
         {
             <!-- BEGIN CREATE TRANSACTION AREA-->
             <div class="panel panel-primary">
@@ -26,83 +26,83 @@
                 </div>
                 <div class="panel-body">
                     <div class="form-inline">
-                        
+
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Date, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Date, new { @class = "control-label col-md-2" })
                             <div class="col-md-2">
-                                @Html.EditorFor(model => model.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Date, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.Entity.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Date, "", new { @class = "text-danger" })
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Payee, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Payee, new { @class = "control-label col-md-2" })
                             <div class="col-md-3">
-                                @Html.EditorFor(model => model.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Payee, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Payee, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Memo, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Memo, new { @class = "control-label col-md-2" })
                             <div class="col-md-3">
-                                @Html.EditorFor(model => model.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Memo, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.Entity.Transaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Memo, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Type, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Type, new { @class = "control-label col-md-2" })
                             <div class="col-md-2">
-                                @Html.EnumDropDownListFor(model => model.CreateTransaction.Type, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Type, "", new { @class = "text-danger" })
+                                @Html.EnumDropDownListFor(model => model.Entity.Transaction.Type, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Type, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Category, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Category, new { @class = "control-label col-md-2" })
                             <div class="col-md-2">
-                                @Html.EnumDropDownListFor(model => model.CreateTransaction.Category, new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Category, "", new { @class = "text-danger" })
+                                @Html.EnumDropDownListFor(model => model.Entity.Transaction.Category, new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Category, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="control-label col-md-2">Credit</label>
                             <div class="col-md-2">
-                                @Html.DropDownListFor(model => model.CreateTransaction.SelectedCreditAccount, new SelectList(Model.CreateTransaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Accounts, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Accounts, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="control-label col-md-2">Debit</label>
                             <div class="col-md-2">
-                                @Html.DropDownListFor(model => model.CreateTransaction.SelectedDebitAccount, new SelectList(Model.CreateTransaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Accounts, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Accounts, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.Amount, new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.Amount, new { @class = "control-label col-md-2" })
                             <div class="col-md-2">
-                                @Html.EditorFor(model => model.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.Amount, "", new { @class = "text-danger" })
+                                @Html.EditorFor(model => model.Entity.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.Amount, "", new { @class = "text-danger" })
                             </div>
                         </div>
 
                         <div class="form-group">
-                            @Html.LabelFor(model => model.CreateTransaction.UsedCreditCard, "Credit?", new { @class = "control-label col-md-2" })
+                            @Html.LabelFor(model => model.Entity.Transaction.UsedCreditCard, "Credit?", new { @class = "control-label col-md-2" })
                             <div class="col-md-1">
-                                @Html.CheckBoxFor(model => model.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.CheckBoxFor(model => model.Entity.Transaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
                             </div>
                         </div>
 
                         <div class="form-group">
                             <label class="control-label col-md-2">Credit Card</label>
                             <div class="col-md-2">
-                                @Html.DropDownListFor(model => model.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.CreateTransaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
-                                @Html.ValidationMessageFor(model => model.CreateTransaction.SelectedCreditCardAccount, "", new { @class = "text-danger" })
+                                @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.Entity.Transaction.SelectedCreditCardAccount, "", new { @class = "text-danger" })
                             </div>
                         </div>
                     </div>
@@ -116,76 +116,90 @@
             <!-- END CREATE TRANSACTION AREA-->
         }
 
-        if (Model.IsEditTransactionAreaVisible)
+        if (Model.IsDetailAreaVisible)
         {
             <!-- BEGIN EDIT TRANSACTION AREA -->
             <!-- END EDIT TRANSACTION AREA -->
         }
 
-        if (Model.IsTransactionsListAreaVisible)
+        if (Model.IsListAreaVisible)
         {
             <!-- BEGIN TRANSACTION LIST AREA-->
             <table class="table">
                 <thead>
-                <tr>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Date)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Payee)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Memo)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Type)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Category)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.Amount)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Transaction.UsedCreditCard)
-                    </th>
-                </tr>
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.UsedCreditCard)
+                        </th>
+                    </tr>
                 </thead>
                 <tbody>
-                @foreach (var item in Model.Transactions)
-                {
-                    <tr>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Date)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Payee)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Memo)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Type)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Category)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.Amount)
-                        </td>
-                        <td>
-                            @Html.DisplayFor(modelItem => item.UsedCreditCard)
-                        </td>
-                    </tr>
-                }
+                    @foreach (var item in Model.Entity.Transactions)
+                    {
+                        <tr>
+                            <td class="pdsa-action-button-column">
+                                <a href="#" data-pdsa-action="edit"
+                                   data-pdsa-val="@item.Id"
+                                   class="btn btn-default btn-sm">
+                                    <i class="glyphicon glyphicon-edit"></i>
+                                </a>
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Date)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Payee)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Memo)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Type)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Category)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Amount)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.UsedCreditCard)
+                            </td>
+                            <td class="pdsa-action-button-column">
+                                <a href="#" data-pdsa-action="delete"
+                                   data-pdsa-val="@item.Id"
+                                   class="btn btn-default btn-sm">
+                                    <i class="glyphicon glyphicon-trash"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
                 </tbody>
                 <tfoot>
-                <tr>
-                    <td colspan="2">Total Transaction Cost: $12,334.52</td>
-                    <td colspan="2">Average Transaction Cost: $18.21</td>
-                    <td colspan="2">Largest Transaction: $1382.76</td>
-                    <td colspan="2">Smallest Transaction: $0.21</td>
-                </tr>
+                    <tr>
+                        <td colspan="2">Total Transaction Cost: $12,334.52</td>
+                        <td colspan="2">Average Transaction Cost: $18.21</td>
+                        <td colspan="2">Largest Transaction: $1382.76</td>
+                        <td colspan="2">Smallest Transaction: $0.21</td>
+                    </tr>
                 </tfoot>
             </table>
             <!-- END TRANSACTION LIST AREA-->
@@ -266,28 +280,28 @@
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Income</div>
-                    <div class="panel-body" style="text-align: center">@Model.MonthlyIncome</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.FinancialMetrics.NetIncome</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Mandatory Expenses</div>
-                    <div class="panel-body" style="text-align: center">@Model.MandatoryExpenses</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.FinancialMetrics.MandatoryExpenses</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Discretionary Spending</div>
-                    <div class="panel-body" style="text-align: center">@Model.DiscretionarySpending</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.FinancialMetrics.DiscretionarySpending</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Savings Rate</div>
-                    <div class="panel-body" style="text-align: center">@Model.SavingsRate</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.FinancialMetrics.SavingsRate</div>
                 </div>
             </div>
         </div>
@@ -300,28 +314,28 @@
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">1 Month</div>
-                    <div class="panel-body" style="text-align: center">@Model.OneMonthSavings</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.TimePeriodMetrics.OneMonthSavings</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">3 Months</div>
-                    <div class="panel-body" style="text-align: center">@Model.ThreeMonthsSavings</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.TimePeriodMetrics.ThreeMonthsSavings</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">6 Months</div>
-                    <div class="panel-body" style="text-align: center">@Model.SixMonthsSavings</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.TimePeriodMetrics.SixMonthsSavings</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">1 Year</div>
-                    <div class="panel-body" style="text-align: center">@Model.OneYearSavings</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.TimePeriodMetrics.OneYearSavings</div>
                 </div>
             </div>
         </div>
@@ -338,32 +352,32 @@
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Costliest Expense Category</div>
-                    <div class="panel-body" style="text-align: center">@Model.CostliestCategory<br />@Model.CostliestExpensePercentage</div>
-                    <div class="panel-footer" style="text-align: center">@Model.CostliestExpenseAmount</div>
+                    <div class="panel-body" style="text-align: center">@Model.Entity.FinancialMetrics.CostliestCategory<br />@Model.Entity.FinancialMetrics.CostliestExpensePercentage</div>
+                    <div class="panel-footer" style="text-align: center">@Model.Entity.FinancialMetrics.CostliestExpenseAmount</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Monthly Loan Interest</div>
-                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.LoanInterestPercentOfIncome</div>
-                    <div class="panel-footer" style="text-align: center">@Model.MonthlyLoanInterest</div>
+                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.Entity.FinancialMetrics.LoanInterestPercentOfIncome</div>
+                    <div class="panel-footer" style="text-align: center">@Model.Entity.FinancialMetrics.MonthlyLoanInterest</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Daily Loan Interest</div>
-                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.DailyLoanInterestPercentage</div>
-                    <div class="panel-footer" style="text-align: center">@Model.DailyLoanInterest</div>
+                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.Entity.FinancialMetrics.DailyLoanInterestPercentage</div>
+                    <div class="panel-footer" style="text-align: center">@Model.Entity.FinancialMetrics.DailyLoanInterest</div>
                 </div>
             </div>
 
             <div class="col-md-3">
                 <div class="panel panel-primary">
                     <div class="panel-heading" style="text-align: center">Disposable Income</div>
-                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.DisposableIncomePercentage</div>
-                    <div class="panel-footer" style="text-align: center">@Model.DisposableIncome</div>
+                    <div class="panel-body" style="text-align: center">Percentage of Income<br />@Model.Entity.FinancialMetrics.DisposableIncomePercentage</div>
+                    <div class="panel-footer" style="text-align: center">@Model.Entity.FinancialMetrics.DisposableIncome</div>
                 </div>
             </div>
 

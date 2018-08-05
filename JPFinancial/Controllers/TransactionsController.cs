@@ -1,11 +1,11 @@
-﻿using JPFinancial.ViewModels;
-using System;
+﻿using System;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {

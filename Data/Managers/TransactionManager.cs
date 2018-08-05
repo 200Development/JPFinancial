@@ -27,7 +27,9 @@ namespace JPFData.Managers
         {
             List<Transaction> ret = new List<Transaction>();
 
-            return _db.Transactions.ToList();
+            ret = _db.Transactions.ToList();
+
+            return ret;
         }
 
         public Transaction Get(int transactionId)

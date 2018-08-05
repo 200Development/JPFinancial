@@ -9,11 +9,16 @@ namespace JPFData.DTO
 
         }
 
+
+        [Display(Name = "Net Income")]
+        public virtual decimal NetIncome { get; set; }
+
         [Display(Name = "Savings %"), DataType(DataType.Currency)]
         public string SavingsPercentage { get; set; }
 
         [Display(Name = "Net Worth"), DataType(DataType.Currency)]
         public string NetWorth { get; set; }
+
 
         public string SavedUp { get; set; }
         public string TotalDue { get; set; }

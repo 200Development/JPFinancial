@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
 
-namespace JPFinancial.ViewModels
+namespace JPFData.ViewModels
 {
     public class CreateTransactionViewModel
     {

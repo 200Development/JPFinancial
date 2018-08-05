@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using JPFinancial.ViewModels;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -7,6 +6,7 @@ using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {

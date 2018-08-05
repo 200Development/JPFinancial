@@ -1,43 +1,33 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Base;
-using JPFData.Managers;
-using JPFData.Models;
-using BaseViewModel = JPFData.Base.BaseViewModel;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.ViewModels
 {
-    public class AccountViewModel : BaseViewModel
+    public class AccountViewModel
     {
-        private AccountsManager _mgr;
-
         public AccountViewModel()
         {
+            Balance = decimal.Zero;
+            PaycheckContribution = decimal.Zero;
         }
 
+        [Key] public int Id { get; set; }
 
-        public List<Account> Accounts { get; set; }
-        public Account SearchEntity { get; set; }
-        public Account Entity { get; set; }
+        [Required, StringLength(255)] public string Name { get; set; }
+
+        [Required, DataType(DataType.Currency)]
+        public decimal Balance { get; set; }
+
+        [DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
+        public decimal? PaycheckContribution { get; set; }
+
+        [DataType(DataType.Currency), Display(Name = "Required Savings")]
+        public decimal? RequiredSavings { get; set; }
+
+        [DataType(DataType.Currency), Display(Name = "Surplus/Deficit")]
+        public decimal? BalanceSurplus { get; set; }
+
         public string BalanceFontColor { get; set; }
+
         public string SurplusFontColor { get; set; }
-
-
-        protected override void Init()
-        {
-            _mgr = new AccountsManager();
-            Accounts = new List<Account>();
-            SearchEntity = new Account();
-            Entity = new Account();
-
-            base.Init();
-        }
-
-        protected override void Get()
-        {
-            Accounts = _mgr.Get(SearchEntity);
-
-            base.Get();
-        }
     }
 }
