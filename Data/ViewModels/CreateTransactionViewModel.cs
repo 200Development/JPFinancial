@@ -13,13 +13,14 @@ namespace JPFData.ViewModels
 
         public CreateTransactionViewModel()
         {
+            Date = DateTime.Today;
             Accounts = _db.Accounts.ToList();
             CreditCards = _db.CreditCards.ToList();
         }
 
         public int Id { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
         public string Payee { get; set; }
         public string Memo { get; set; }

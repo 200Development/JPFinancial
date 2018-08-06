@@ -20,10 +20,9 @@ namespace JPFData.ViewModels
         public string EventCommand { get; set; }
         public string EventArgument { get; set; }
 
-        public bool IsDetailAreaVisible { get; set; }
         public bool IsCreateAreaVisible { get; set; }
+        public bool IsDetailAreaVisible { get; set; }
         public bool IsListAreaVisible { get; set; }
-        public bool IsSearchAreaVisible { get; set; }
 
 
 
@@ -33,44 +32,47 @@ namespace JPFData.ViewModels
             EventArgument = string.Empty;
             ValidationErrors = new List<KeyValuePair<string, string>>();
 
+            IsCreateAreaVisible = true;
+            IsListAreaVisible = true;
+
             ListMode();
         }
 
         private void ListMode()
         {
             IsValid = true;
-            IsDetailAreaVisible = false;
-            IsListAreaVisible = true;
-            IsSearchAreaVisible = true;
 
             Mode = "List";
         }
 
         private void AddMode()
         {
-            IsDetailAreaVisible = true;
-            IsListAreaVisible = false;
-            IsSearchAreaVisible = false;
-
             Mode = "Add";
         }
 
         private void Add()
         {
-            IsValid = true;
+            DashboardManager mgr = new DashboardManager();
 
-            // Initialize Entity Object
-            Entity = new DashboardDTO();
+            if (Mode == "Add")
+            {
+                var insertSuccess = mgr.Insert(Entity);
+                if (insertSuccess)
+                    Entity = mgr.Get(Entity);
+            }
+            else
+            {
+                mgr.Update(Entity);
+            }
 
-            // Put ViewModel into Add Mode
-            AddMode();
+            //TODO: Need to clean up navigation, what panels show and when (shouldn't go to ListMode from Add
+            ListMode();
         }
 
         private void EditMode()
         {
-            IsDetailAreaVisible = true;
-            IsListAreaVisible = false;
-            IsSearchAreaVisible = false;
+            //IsListAreaVisible = true;
+            //IsCreateAreaVisible = true;
 
             Mode = "Edit";
         }
@@ -135,10 +137,6 @@ namespace JPFData.ViewModels
 
         private void Get()
         {
-            //TrainingProductManager mgr = new TrainingProductManager();
-
-            //Products = mgr.Get(SearchEntity);
-
             DashboardManager mgr = new DashboardManager();
 
             Entity = mgr.Get(SearchEntity);
@@ -154,6 +152,7 @@ namespace JPFData.ViewModels
                     break;
 
                 case "add":
+                    AddMode();
                     Add();
                     break;
 

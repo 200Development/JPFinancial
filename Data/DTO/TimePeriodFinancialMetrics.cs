@@ -11,25 +11,25 @@ namespace JPFData.DTO
         }
 
         [DataType(DataType.Currency)]
-        public string OneMonthSavings { get; set; }
+        public decimal OneMonthSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public string ThreeMonthsSavings { get; set; }
+        public decimal ThreeMonthsSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public string SixMonthsSavings { get; set; }
+        public decimal SixMonthsSavings { get; set; }
 
         [DataType(DataType.Currency)]
-        public string OneYearSavings { get; set; }
+        public decimal OneYearSavings { get; set; }
 
         [Display(Name = "Monthly Expenses"), DataType(DataType.Currency)]
-        public string MonthlyExpenses { get; set; }
+        public decimal MonthlyExpenses { get; set; }
 
         [Display(Name = "Monthly Income"), DataType(DataType.Currency)]
-        public string MonthlyIncome { get; set; }
+        public decimal MonthlyIncome { get; set; }
 
         [Display(Name = "Monthly Net Savings"), DataType(DataType.Currency)]
-        public string MonthlyNetSavings { get; set; }
+        public decimal MonthlyNetSavings { get; set; }
 
         public string SelectedFVType { get; set; }
 
