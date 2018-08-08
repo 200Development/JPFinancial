@@ -28,62 +28,61 @@
                     <h1 class="panel-title">Add Transaction</h1>
                 </div>
                 <div class="panel-body">
-                    <div class="form-inline">
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label col-md-2" })
+                    <div class="form-horizontal">
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
                             @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
                             @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
                             @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-3  col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
                             @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
                             @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Credit</label>
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
                             @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Debit</label>
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
                             @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-3 col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
                             @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, "Credit?", new { @class = "control-label col-md-2" })
+                        <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
                             @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Credit Card</label>
+                        <div class="form-group col-xs-3 col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
                             @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
                 <div class="panel-footer">
                     <button id="btnAdd" class="btn btn-sm btn-success" data-pdsa-action="add">
-                        <i class="glyphicon-calendar glyphicon-plus"></i>&nbsp;Add
+                        <i class="glyphicon glyphicon-plus"></i>&nbsp;Add
                     </button>
                 </div>
             </div>
@@ -114,66 +113,65 @@
                         </div>
                     </div>
                     <!-- END MESSAGE AREA -->
-                    <div class="form-inline">
-
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Date, new { @class = "control-label col-md-2" })
-                            @Html.EditorFor(model => model.Entity.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                    <div class="form-horizontal">
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Payee, new { @class = "control-label col-md-2" })
-                            @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Memo, new { @class = "control-label col-md-2" })
-                            @Html.EditorFor(model => model.Entity.Transaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group col-xs-4 col-md-4">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Type, new { @class = "control-label col-md-2" })
-                            @Html.EnumDropDownListFor(model => model.Entity.Transaction.Type, new { @class = "form-control" })
+                        <div class="form-group col-xs-3  col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Category, new { @class = "control-label col-md-2" })
-                            @Html.EnumDropDownListFor(model => model.Entity.Transaction.Category, new { @class = "form-control" })
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
+                            @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Credit</label>
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
                             @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Debit</label>
+                        <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
                             @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.Amount, new { @class = "control-label col-md-2" })
-                            @Html.EditorFor(model => model.Entity.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group col-xs-3 col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
+                            @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            @Html.LabelFor(model => model.Entity.Transaction.UsedCreditCard, "Credit?", new { @class = "control-label col-md-2" })
-                            @Html.CheckBoxFor(model => model.Entity.Transaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                        <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
+                            @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
                         </div>
 
-                        <div class="form-group">
-                            <label class="control-label col-md-2">Credit Card</label>
-                            @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
+                        <div class="form-group col-xs-3 col-md-3">
+                            @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
+                            @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
                         </div>
                     </div>
                 </div>
                 <div class="panel-footer">
-                    <button id="btnAdd" class="btn btn-sm btn-success" data-pdsa-action="add">
-                        <i class="glyphicon-calendar glyphicon-plus"></i>&nbsp;Add
+                    <button id="btnSave" class="btn btn-sm btn-success" data-pdsa-action="save" data-pdsa-val="@Model.Entity.CreateTransaction.Id">
+                        <i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Save
                     </button>
                 </div>
             </div>
-            <!-- END EDIT TRANSACTION AREA -->
+                <!-- END EDIT TRANSACTION AREA -->
         }
 
         if (Model.IsListAreaVisible)
@@ -181,31 +179,31 @@
             <!-- BEGIN TRANSACTION LIST AREA-->
             <table class="table">
                 <thead>
-                <tr>
-                    <th></th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
-                    </th>
-                    <th>
-                        @Html.DisplayNameFor(model => model.Entity.Transaction.UsedCreditCard)
-                    </th>
-                    <th></th>
-                </tr>
+                    <tr>
+                        <th></th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.Entity.Transaction.UsedCreditCard)
+                        </th>
+                        <th></th>
+                    </tr>
                 </thead>
                 <tbody>
                     @foreach (var item in Model.Entity.Transactions)
@@ -297,6 +295,10 @@
 
 
 
+
+<!--
+
+    <div id="old">
 
 <!--
 

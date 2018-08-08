@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Web.Mvc;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Models;
@@ -33,8 +34,9 @@ namespace JPFData.Managers
         public DashboardDTO Get(DashboardDTO entity)
         {
             DashboardDTO ret = new DashboardDTO();
+            TransactionManager tManager = new TransactionManager();
 
-            ret.Transactions = _db.Transactions.ToList();
+            ret.Transactions = tManager.Get(new Transaction());
             ret.StaticFinancialMetrics = RefreshFinancialMetrics(ret);
             ret.TimePeriodMetrics = RefreshTimePeriodMetrics(ret);
             return ret;
@@ -149,14 +151,37 @@ namespace JPFData.Managers
 
                 _db.Transactions.Add(newTransaction);
                 _db.SaveChanges();
+                //_db.Entry(newTransaction).State = EntityState.Unchanged;
             }
 
             return ret;
         }
 
+        [ValidateAntiForgeryToken]
         public void Update(DashboardDTO entity)
         {
-            throw new NotImplementedException();
+            Transaction transaction = ConvertViewModelToTransaction(entity.CreateTransaction);
+
+            if (transaction != null)
+            {
+                // AsNoTracking() is essential or EF will throw an error
+                UpdateAccountBalances(transaction, "edit");
+                UpdateCreditCard(transaction, "edit");
+
+                _db.Entry(transaction).State = EntityState.Modified;
+
+                var creditCard = new CreditCard();
+                if (transaction.UsedCreditCard)
+                {
+                    //var creditCards = _db.CreditCards.ToList();
+                    creditCard = entity.CreateTransaction.CreditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
+                    _db.Entry(creditCard).State = EntityState.Modified;
+                }
+
+                _db.SaveChanges();
+                //_db.Entry(transaction).State = EntityState.Unchanged;
+                //_db.Entry(creditCard).State = EntityState.Unchanged;
+            }
         }
 
         private bool Validate(DashboardDTO entity)
@@ -173,7 +198,7 @@ namespace JPFData.Managers
             return (ValidationErrors.Count == 0);
         }
 
-        private Transaction ConvertViewModelToTransaction(CreateTransactionViewModel transactionViewModel)
+        private Transaction ConvertViewModelToTransaction(TransactionViewModel transactionViewModel)
         {
             try
             {
@@ -185,7 +210,9 @@ namespace JPFData.Managers
                 newTransaction.Type = transactionViewModel.Type;
                 newTransaction.Category = transactionViewModel.Category;
                 newTransaction.CreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedCreditAccount);
+                newTransaction.CreditAccountId = transactionViewModel.SelectedCreditAccount;
                 newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
+                newTransaction.DebitAccountId = transactionViewModel.SelectedDebitAccount;
                 newTransaction.Amount = transactionViewModel.Amount;
                 newTransaction.UsedCreditCard = transactionViewModel.UsedCreditCard;
                 newTransaction.SelectedCreditCardAccount = transactionViewModel.SelectedCreditCardAccount;
@@ -233,8 +260,7 @@ namespace JPFData.Managers
                     .Cast<Transaction>()
                     .FirstOrDefault();
                 if (originalTransaction == null) return;
-                var originalCreditAccount =
-                    _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
+                var originalCreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
                 var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.DebitAccountId);
                 var originalAmount = originalTransaction.Amount;
 
@@ -294,7 +320,7 @@ namespace JPFData.Managers
                     .Cast<Transaction>()
                     .FirstOrDefault();
                 if (originalTransaction == null) return;
-                var originalCreditCard = _db.CreditCards.FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccount);
+                var originalCreditCard = _db.CreditCards.AsNoTracking().FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccount);
                 var originalAmount = originalTransaction.Amount;
 
                 // Reassign the credit card Id to Transaction Model

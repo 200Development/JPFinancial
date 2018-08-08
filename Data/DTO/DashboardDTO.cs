@@ -10,7 +10,7 @@ namespace JPFData.DTO
         {
             Accounts = new List<Account>();
             Transactions = new List<Transaction>();
-            CreateTransaction = new CreateTransactionViewModel();
+            CreateTransaction = new TransactionViewModel();
             Transaction = new Transaction();
             StaticFinancialMetrics = new StaticFinancialMetrics();
             TimePeriodMetrics = new TimePeriodFinancialMetrics();
@@ -18,7 +18,7 @@ namespace JPFData.DTO
 
         public List<Account> Accounts { get; set; }
         public List<Transaction> Transactions { get; set; }
-        public CreateTransactionViewModel CreateTransaction { get; set; }
+        public TransactionViewModel CreateTransaction { get; set; }
         public Transaction Transaction { get; set; }
         public StaticFinancialMetrics StaticFinancialMetrics { get; set; }
         public TimePeriodFinancialMetrics TimePeriodMetrics { get; set; }

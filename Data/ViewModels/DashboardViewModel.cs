@@ -1,6 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using JPFData.DTO;
 using JPFData.Managers;
+using JPFData.Models;
 
 namespace JPFData.ViewModels
 {
@@ -33,6 +36,7 @@ namespace JPFData.ViewModels
             ValidationErrors = new List<KeyValuePair<string, string>>();
 
             IsCreateAreaVisible = true;
+            IsDetailAreaVisible = false;
             IsListAreaVisible = true;
 
             ListMode();
@@ -42,11 +46,19 @@ namespace JPFData.ViewModels
         {
             IsValid = true;
 
+            IsCreateAreaVisible = true;
+            IsDetailAreaVisible = false;
+            IsListAreaVisible = true;
+
             Mode = "List";
         }
 
         private void AddMode()
         {
+            IsCreateAreaVisible = true;
+            IsDetailAreaVisible = false;
+            IsListAreaVisible = true;
+
             Mode = "Add";
         }
 
@@ -54,7 +66,7 @@ namespace JPFData.ViewModels
         {
             DashboardManager mgr = new DashboardManager();
 
-            if (Mode == "Add")
+            if (Mode == "Add" || Mode == "List")
             {
                 var insertSuccess = mgr.Insert(Entity);
                 if (insertSuccess)
@@ -71,8 +83,9 @@ namespace JPFData.ViewModels
 
         private void EditMode()
         {
-            //IsListAreaVisible = true;
-            //IsCreateAreaVisible = true;
+            IsCreateAreaVisible = false;
+            IsDetailAreaVisible = true;
+            IsListAreaVisible = true;
 
             Mode = "Edit";
         }
@@ -80,7 +93,29 @@ namespace JPFData.ViewModels
         private void Edit()
         {
             // Get Product Data
+            TransactionManager transactionManager = new TransactionManager();
+            var transactions = transactionManager.Get(new Transaction());
+            var transaction = transactions.FirstOrDefault(t => t.Id == Convert.ToInt32(EventArgument));
+            var transactionViewModel = new TransactionViewModel();
 
+            if (transaction != null)
+            {
+                transactionViewModel.Id = transaction.Id;
+                transactionViewModel.Accounts = transaction.Accounts;
+                transactionViewModel.Amount = transaction.Amount;
+                transactionViewModel.Category = transaction.Category;
+                transactionViewModel.CreditCards = transaction.CreditCards;
+                transactionViewModel.Date = transaction.Date;
+                transactionViewModel.Memo = transaction.Memo;
+                transactionViewModel.Payee = transaction.Payee;
+                transactionViewModel.SelectedCreditAccount = transaction.CreditAccountId;
+                transactionViewModel.SelectedDebitAccount = transaction.DebitAccountId;
+                transactionViewModel.Type = transaction.Type;
+                transactionViewModel.UsedCreditCard = transaction.UsedCreditCard;
+            }
+
+            Entity.CreateTransaction = transactionViewModel;
+            Entity.Transactions = transactions;
             // Put View Model into Edit Mode
             EditMode();
         }
@@ -94,7 +129,11 @@ namespace JPFData.ViewModels
             }
             else
             {
-                //mgr.Update(Entity);
+                Entity.CreateTransaction.Id = Convert.ToInt32(EventArgument);
+
+                DashboardManager mgr = new DashboardManager();
+
+                mgr.Update(Entity);
             }
 
             // Set any validation errors
@@ -152,8 +191,8 @@ namespace JPFData.ViewModels
                     break;
 
                 case "add":
-                    AddMode();
                     Add();
+                    Get();
                     break;
 
                 case "edit":
@@ -164,11 +203,13 @@ namespace JPFData.ViewModels
                 case "delete":
                     //ResetSearch();
                     Delete();
+                    Get();
                     break;
 
                 case "save":
                     Save();
                     Get();
+                    AddMode();
                     break;
 
                 case "cancel":

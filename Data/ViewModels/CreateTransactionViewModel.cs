@@ -7,11 +7,11 @@ using JPFData.Models;
 
 namespace JPFData.ViewModels
 {
-    public class CreateTransactionViewModel
+    public class TransactionViewModel
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
-        public CreateTransactionViewModel()
+        public TransactionViewModel()
         {
             Date = DateTime.Today;
             Accounts = _db.Accounts.ToList();
@@ -27,11 +27,19 @@ namespace JPFData.ViewModels
         public TransactionTypesEnum Type { get; set; }
         public CategoriesEnum Category { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
+
+        [Display(Name = "Credit")]
         public int? SelectedCreditAccount { get; set; }
+
+        [Display(Name = "Debit")]
         public int? SelectedDebitAccount { get; set; }
         public decimal Amount { get; set; }
+
+        [Display(Name = "Credit?")]
         public bool UsedCreditCard { get; set; }
         public IEnumerable<CreditCard> CreditCards { get; set; }
+
+        [Display(Name = "Credit Card")]
         public int? SelectedCreditCardAccount { get; set; }
     }
 }

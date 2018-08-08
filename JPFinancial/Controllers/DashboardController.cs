@@ -52,7 +52,7 @@ namespace JPFinancial.Controllers
         {
             var accounts = _db.Accounts.ToList();
             var creditCards = _db.CreditCards.ToList();
-            var viewModel = new CreateTransactionViewModel();
+            var viewModel = new TransactionViewModel();
             viewModel.Accounts = accounts;
             viewModel.CreditCards = creditCards;
             viewModel.Date = DateTime.Today;

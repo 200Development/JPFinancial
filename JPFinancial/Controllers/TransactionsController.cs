@@ -39,7 +39,7 @@ namespace JPFinancial.Controllers
         {
             var accounts = _db.Accounts.ToList();
             var creditCards = _db.CreditCards.ToList();
-            var viewModel = new CreateTransactionViewModel();
+            var viewModel = new TransactionViewModel();
             viewModel.Accounts = accounts;
             viewModel.CreditCards = creditCards;
             viewModel.Date = DateTime.Today;
@@ -52,7 +52,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Date,Payee,Memo,Type,Category,SelectedCreditAccount,SelectedDebitAccount,Amount, UsedCreditCard, SelectedCreditCardAccount")] CreateTransactionViewModel transaction)
+        public ActionResult Create([Bind(Include = "Id,Date,Payee,Memo,Type,Category,SelectedCreditAccount,SelectedDebitAccount,Amount, UsedCreditCard, SelectedCreditCardAccount")] TransactionViewModel transaction)
         {
             if (ModelState.IsValid)
             {
@@ -154,7 +154,7 @@ namespace JPFinancial.Controllers
             }
         }
 
-        private Transaction ConvertViewModelToTransaction(CreateTransactionViewModel transactionViewModel)
+        private Transaction ConvertViewModelToTransaction(TransactionViewModel transactionViewModel)
         {
             try
             {
