@@ -77,6 +77,10 @@ namespace JPFData.ViewModels
                 mgr.Update(Entity);
             }
 
+
+            //Reload data
+            Get();
+
             //TODO: Need to clean up navigation, what panels show and when (shouldn't go to ListMode from Add
             ListMode();
         }
@@ -154,18 +158,26 @@ namespace JPFData.ViewModels
                     EditMode();
                 }
             }
+
+            // Reload the Data
+            Get();
+
+            // Set back to normal mode
+            ListMode();
         }
 
         private void Delete()
         {
+            DashboardManager mgr = new DashboardManager();
 
             // Create new entity
             Entity = new DashboardDTO();
 
             // Get primary key from EventArgument
+            var id = Convert.ToInt32(EventArgument);
 
             // Call data layer to delete record
-            //mgr.Delete(Entity);
+            mgr.DeleteTransaction(id);
 
             // Reload the Data
             Get();
@@ -192,7 +204,7 @@ namespace JPFData.ViewModels
 
                 case "add":
                     Add();
-                    Get();
+
                     break;
 
                 case "edit":
@@ -203,13 +215,10 @@ namespace JPFData.ViewModels
                 case "delete":
                     //ResetSearch();
                     Delete();
-                    Get();
                     break;
 
                 case "save":
                     Save();
-                    Get();
-                    AddMode();
                     break;
 
                 case "cancel":

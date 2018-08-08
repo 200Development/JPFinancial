@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using JPFData.Models;
 
@@ -57,10 +58,9 @@ namespace JPFData.Managers
             return ret;
         }
 
-        public bool Delete(Transaction entity)
+        public bool Delete(int? id)
         {
-            //todo: add delete code
-            return true;
+            throw new NotImplementedException();
         }
 
         public bool Validate(Transaction entity)

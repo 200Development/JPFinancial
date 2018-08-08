@@ -184,6 +184,31 @@ namespace JPFData.Managers
             }
         }
 
+        public void DeleteTransaction(int? id)
+        {
+            Transaction transaction = _db.Transactions.Find(id);
+            try
+            {
+                _db.Transactions.Remove(transaction);
+                UpdateAccountBalances(transaction, "delete");
+                UpdateCreditCard(transaction, "delete");
+
+                if (transaction.UsedCreditCard)
+                {
+                    var creditCards = _db.CreditCards.ToList();
+                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
+                    _db.Entry(creditCard).State = EntityState.Modified;
+                }
+
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
         private bool Validate(DashboardDTO entity)
         {
             ValidationErrors.Clear();
