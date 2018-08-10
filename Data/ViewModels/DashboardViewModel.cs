@@ -193,6 +193,11 @@ namespace JPFData.ViewModels
             Entity = mgr.Get(SearchEntity);
         }
 
+        private void Reset()
+        {
+            Entity.CreateTransaction = new TransactionViewModel();
+        }
+
         public void HandleRequest()
         {
             switch (EventCommand.ToLower())
@@ -226,8 +231,8 @@ namespace JPFData.ViewModels
                     Get();
                     break;
 
-                case "resetsearch":
-                    //ResetSearch();
+                case "resetadd":
+                    Reset();
                     Get();
                     break;
             }
