@@ -68,16 +68,12 @@ namespace JPFData.Managers
 
             metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
             metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
-            metrics.CostliestExpenseAmount = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
-                .OrderByDescending(t => t.Amount)
-                .Select(t => t.Amount)
-                .Take(1)
-                .FirstOrDefault();
-            metrics.CostliestCategory = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month)
-                .OrderByDescending(t => t.Amount)
-                .Select(t => t.Category)
-                .Take(1)
-                .FirstOrDefault();
+            metrics.Expenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month && b.DueDate.Year == DateTime.Today.Year).Sum(b => b.AmountDue);
+            metrics.LastMonthExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.AddMonths(-1).Month && b.DueDate.Year == DateTime.Today.AddMonths(-1).Year).Sum(b => b.AmountDue);
+            metrics.CostliestExpenseAmount = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
+            metrics.CostliestCategory = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month).OrderByDescending(t => t.Amount).Select(t => t.Category).Take(1).FirstOrDefault();
+
+
 
             metrics.CostliestExpensePercentage = metrics.CostliestExpenseAmount / income;
             metrics.LoanInterestPercentOfIncome = metrics.MonthlyLoanInterest / income;
@@ -99,7 +95,7 @@ namespace JPFData.Managers
             metric.OneYearSavings = _calculations.FutureValue(DateTime.Today.AddYears(1), entity.StaticFinancialMetrics.NetIncome);
             metric.MonthlyExpenses = entity.StaticFinancialMetrics.TotalDue;
             metric.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2);
-           
+
 
             return metric;
         }
@@ -246,7 +242,7 @@ namespace JPFData.Managers
                 return null;
             }
         }
-        
-      
+
+
     }
 }

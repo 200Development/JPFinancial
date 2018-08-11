@@ -306,7 +306,7 @@ namespace JPFData
             }
         }
 
-        private Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
+        public Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
         {
             try
             {
