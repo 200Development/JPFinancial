@@ -363,6 +363,65 @@ namespace JPFData
             }
         }
 
+        public decimal LastMonthsExpenses()
+        {
+            try
+            {
+                var bills = _db.Bills.ToList();
+                var lastMonth = DateTime.Today.AddMonths(-1);
+                var expenses = 0m;
+
+                foreach (var bill in bills)
+                {
+                    //if (bill.DueDate.Date < beginDate) continue;
+
+                    var frequency = bill.PaymentFrequency;
+                    var dueDate = bill.DueDate;
+                    var newDueDate = dueDate;
+                    //TODO: Fix semi-monthly bills being added 3 times (31st, 16th, 1st)
+                    while (newDueDate.Month >= lastMonth.Month)
+                    {
+                        switch (frequency)
+                        {
+                            case FrequencyEnum.Daily:
+                                newDueDate = newDueDate.AddDays(-1);
+                                break;
+                            case FrequencyEnum.Weekly:
+                                newDueDate = newDueDate.AddDays(-7);
+                                break;
+                            case FrequencyEnum.BiWeekly:
+                                newDueDate = newDueDate.AddDays(-14);
+                                break;
+                            case FrequencyEnum.Monthly:
+                                newDueDate = newDueDate.AddMonths(-1);
+                                break;
+                            case FrequencyEnum.SemiMonthly:
+                                newDueDate = newDueDate.AddDays(-15);
+                                break;
+                            case FrequencyEnum.Quarterly:
+                                newDueDate = newDueDate.AddMonths(-3);
+                                break;
+                            case FrequencyEnum.SemiAnnually:
+                                newDueDate = newDueDate.AddMonths(-6);
+                                break;
+                            case FrequencyEnum.Annually:
+                                newDueDate = newDueDate.AddYears(-1);
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        if (newDueDate.Month == lastMonth.Month && newDueDate.Year == lastMonth.Year)
+                            expenses += bill.AmountDue;
+                    }
+                }
+                return expenses;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
         public DateTime SavingsDate(decimal futureValue, decimal netPay)
         {
             try
@@ -875,5 +934,36 @@ namespace JPFData
             return payDate;
         }
 
+        public decimal GetMonthlyIncome()
+        {
+            try
+            {
+                var incomePerPayperiod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
+                var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
+                var monthlyIncome = 0.00m;
+
+                switch (paymentFrequency)
+                {
+                    case FrequencyEnum.Weekly:
+                        monthlyIncome = incomePerPayperiod * 4;
+                        break;
+                    case FrequencyEnum.SemiMonthly:
+                        monthlyIncome = incomePerPayperiod * 2;
+                        break;
+                    case FrequencyEnum.Monthly:
+                        monthlyIncome = incomePerPayperiod;
+                        break;
+                    default:
+                        monthlyIncome = incomePerPayperiod * 2;
+                        break;
+                }
+
+                return monthlyIncome;
+            }
+            catch (Exception e)
+            {
+                return 0.0m;
+            }
+        }
     }
 }

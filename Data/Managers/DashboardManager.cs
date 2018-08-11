@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using JPFData.DTO;
-using JPFData.Enumerations;
 using JPFData.Models;
 using JPFData.ViewModels;
 
@@ -47,10 +46,10 @@ namespace JPFData.Managers
         {
             StaticFinancialMetrics metrics = new StaticFinancialMetrics();
 
-            var firstDayOfMonth = _calculations.FirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
-            var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
-            var lastPaycheck = _calculations.LastDayOfMonth(DateTime.Today);
-            var income = GetMonthlyIncome();
+            //var firstDayOfMonth = _calculations.FirstDayOfMonth(DateTime.Today.Year, DateTime.Today.Month);
+            //var firstPaycheck = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 15); //ToDo: make dynamic
+            //var lastPaycheck = _calculations.LastDayOfMonth(DateTime.Today);
+            var income = _calculations.GetMonthlyIncome();
             var bills = _db.Bills.ToList();
             var loans = _db.Loans.ToList();
 
@@ -63,22 +62,23 @@ namespace JPFData.Managers
             }
 
             //TODO: difference between totalDue and billsDue
-            var billsDue = _calculations.BillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
-            var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
+            //var billsDue = _calculations.BillsDue(firstPaycheck, firstDayOfMonth, new DateTime(DateTime.Today.Year, DateTime.Today.Month, lastPaycheck));
+            //var totalDue = billsDue.Sum(bill => Convert.ToDecimal(bill.AmountDue));
+            var costliestExpense = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
 
             metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
             metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
             metrics.Expenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month && b.DueDate.Year == DateTime.Today.Year).Sum(b => b.AmountDue);
-            metrics.LastMonthExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.AddMonths(-1).Month && b.DueDate.Year == DateTime.Today.AddMonths(-1).Year).Sum(b => b.AmountDue);
-            metrics.CostliestExpenseAmount = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
+            metrics.LastMonthExpenses = _calculations.LastMonthsExpenses();
+            metrics.CostliestExpenseAmount = costliestExpense;
             metrics.CostliestCategory = entity.Transactions.Where(t => t.Date.Month == DateTime.Today.AddMonths(-1).Month).OrderByDescending(t => t.Amount).Select(t => t.Category).Take(1).FirstOrDefault();
 
 
 
-            metrics.CostliestExpensePercentage = metrics.CostliestExpenseAmount / income;
-            metrics.LoanInterestPercentOfIncome = metrics.MonthlyLoanInterest / income;
+            metrics.CostliestExpensePercentage = costliestExpense / income;
+            metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
             metrics.MonthlyLoanInterest = monthlyLoanInterest;
-            metrics.DailyLoanInterestPercentage = (dailyLoanInterest / income);
+            metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
             metrics.DailyLoanInterest = dailyLoanInterest;
 
 
@@ -98,39 +98,6 @@ namespace JPFData.Managers
 
 
             return metric;
-        }
-
-        //TODO: Move to Calculations Class
-        private decimal GetMonthlyIncome()
-        {
-            try
-            {
-                var incomePerPayperiod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
-                var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
-                var monthlyIncome = 0.00m;
-
-                switch (paymentFrequency)
-                {
-                    case FrequencyEnum.Weekly:
-                        monthlyIncome = incomePerPayperiod * 4;
-                        break;
-                    case FrequencyEnum.SemiMonthly:
-                        monthlyIncome = incomePerPayperiod * 2;
-                        break;
-                    case FrequencyEnum.Monthly:
-                        monthlyIncome = incomePerPayperiod;
-                        break;
-                    default:
-                        monthlyIncome = incomePerPayperiod * 2;
-                        break;
-                }
-
-                return monthlyIncome;
-            }
-            catch (Exception e)
-            {
-                return 0.0m;
-            }
         }
 
         public bool Insert(DashboardDTO entity)
