@@ -12,95 +12,8 @@ namespace JPFData
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
-        public void GetRequiredAcctSavings()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-                var bills = _db.Bills.ToList();
-                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
-
-                foreach (var bill in bills)
-                {
-                    var billTotal = bill.AmountDue;
-                    var dueDate = bill.DueDate;
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
-
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
-                            break;
-                        default:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                    }
-                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
-                }
-
-
-                foreach (var account in accounts)
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != account.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-                    if (!valuesFound) continue;
-                    account.RequiredSavings = totalSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        public void GetReqBalanceSurplus()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-
-                foreach (var account in accounts)
-                {
-                    var acctBalance = account.Balance;
-                    var reqbalance = account.RequiredSavings;
-                    account.BalanceSurplus = acctBalance - reqbalance;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
-
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
+       
+     
         //public object GetStockQuote(string ticker, string startDate = null, string endDate = null)
         //{
         //    var request = new QuandlDownloadRequest();
@@ -180,7 +93,7 @@ namespace JPFData
         //    return results;
         //}
 
-        private int PayPeriodsTilDue(DateTime? dueDate)
+        public int PayPeriodsTilDue(DateTime? dueDate)
         {
             try
             {
@@ -214,7 +127,7 @@ namespace JPFData
             }
         }
 
-        public IEnumerable<Bill> GetBillsDue(DateTime firstPaycheck, DateTime firstDayOfMonth, DateTime lastPaycheck)
+        public IEnumerable<Bill> BillsDue(DateTime firstPaycheck, DateTime firstDayOfMonth, DateTime lastPaycheck)
         {
             try
             {
@@ -241,7 +154,7 @@ namespace JPFData
             }
         }
 
-        public int GetLastDayOfMonth(DateTime date)
+        public int LastDayOfMonth(DateTime date)
         {
             try
             {
@@ -254,7 +167,7 @@ namespace JPFData
             }
         }
 
-        public DateTime GetFirstDayOfMonth(int year, int month)
+        public DateTime FirstDayOfMonth(int year, int month)
         {
             try
             {
@@ -266,7 +179,7 @@ namespace JPFData
             }
         }
 
-        public Dictionary<string, decimal> SavingsReqForBills(IEnumerable<Bill> bills, Dictionary<string, decimal> accountBalances)
+        public Dictionary<string, decimal> RequiredSavings(IEnumerable<Bill> bills, Dictionary<string, decimal> accountBalances)
         {
             try
             {
@@ -318,8 +231,8 @@ namespace JPFData
                 throw e;
             }
         }
-
-        public decimal SavingsReqForBills(IEnumerable<Bill> bills)
+        
+        public decimal RequiredSavings(IEnumerable<Bill> bills)
         {
             try
             {
@@ -450,7 +363,7 @@ namespace JPFData
             }
         }
 
-        public DateTime CalculateFvDate(decimal futureValue, decimal netPay)
+        public DateTime SavingsDate(decimal futureValue, decimal netPay)
         {
             try
             {
@@ -464,7 +377,7 @@ namespace JPFData
                         "endDate",
                         DateTime.Today.Day <= 14
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
-                            : new DateTime(date.Year, date.Month, GetLastDayOfMonth(date)).ToShortDateString()
+                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date)).ToShortDateString()
                     },
                     {"periodCosts", "0"},
                     {"totalCosts", "0"},
@@ -480,7 +393,7 @@ namespace JPFData
                 {
                     bills = UpdateBillDueDates(bills);
                     bills = UpdateTotalCosts(bills);
-                    UpdateCurrentAndEndDate(bills);
+                    SetCurrentAndEndDate(bills);
                     var savings = Convert.ToDecimal(bills["totalSavings"]);
                     savings += netPay;
                     bills["totalSavings"] = savings.ToString(CultureInfo.InvariantCulture);
@@ -493,7 +406,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculateFv(DateTime futureDate, decimal netPay)
+        public decimal FutureValue(DateTime futureDate, decimal netPay)
         {
             try
             {
@@ -506,7 +419,7 @@ namespace JPFData
                     {"currentDate", DateTime.Today.ToShortDateString()},
                     {"endDate", DateTime.Today.Day <= 14
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
-                            : new DateTime(date.Year, date.Month, GetLastDayOfMonth(date)).ToShortDateString()
+                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date)).ToShortDateString()
                     },
                     {"periodCosts", "0"},
                     {"totalCosts", "0"},
@@ -522,7 +435,7 @@ namespace JPFData
                 {
                     bills = UpdateBillDueDates(bills);
                     bills = UpdateTotalCosts(bills);
-                    UpdateCurrentAndEndDate(bills);
+                    SetCurrentAndEndDate(bills);
                     var savings = Convert.ToDecimal(bills["totalSavings"]);
                     //var costs = Convert.ToDecimal(bills["totalCosts"]);
                     var periodCosts = Convert.ToDecimal(bills["periodCosts"]);
@@ -575,7 +488,7 @@ namespace JPFData
             }
         }
 
-        private void UpdateCurrentAndEndDate(IDictionary<string, string> billsDictionary)
+        private void SetCurrentAndEndDate(IDictionary<string, string> billsDictionary)
         {
             try
             {
@@ -587,13 +500,13 @@ namespace JPFData
                     billsDictionary["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
                     currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                     billsDictionary["endDate"] =
-                        new DateTime(currentDate.Year, currentDate.Month, GetLastDayOfMonth(currentDate))
+                        new DateTime(currentDate.Year, currentDate.Month, LastDayOfMonth(currentDate))
                             .ToShortDateString();
                 }
                 else
                 {
                     billsDictionary["currentDate"] =
-                        GetFirstDayOfMonth(currentDate.AddMonths(1).Year, currentDate.AddMonths(1).Month)
+                        FirstDayOfMonth(currentDate.AddMonths(1).Year, currentDate.AddMonths(1).Month)
                             .ToString(CultureInfo.InvariantCulture);
                     currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                     billsDictionary["endDate"] =
@@ -617,7 +530,7 @@ namespace JPFData
         /// </summary>
         /// <param name="loan">Loan class that contains all pertinent information for the loan</param>
         /// <returns name="remainingBalance" type="decimal">Remaining balance of the loan</returns>
-        public decimal CalculateRemainingBalance(Loan loan)
+        public decimal RemainingBalance(Loan loan)
         {
             try
             {
@@ -642,7 +555,7 @@ namespace JPFData
             }
         }
 
-        public DateTime CalculatePayoffDate(Loan loan)
+        public DateTime PayoffDate(Loan loan)
         {
             try
             {
@@ -708,7 +621,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculatePayment(Loan loan)
+        public decimal Payment(Loan loan)
         {
             try
             {
@@ -729,7 +642,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculateInterestCost(Loan loan)
+        public decimal Interest(Loan loan)
         {
             try
             {
@@ -749,7 +662,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculatePrincipalCost(Loan loan)
+        public decimal Principal(Loan loan)
         {
             try
             {
@@ -769,7 +682,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculateDailyInterestCost(Loan loan)
+        public decimal DailyInterest(Loan loan)
         {
             try
             {
@@ -783,7 +696,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculateMonthlyInterestCost(Loan loan)
+        public decimal MonthlyInterest(Loan loan)
         {
             try
             {
@@ -797,7 +710,7 @@ namespace JPFData
             }
         }
 
-        public decimal CalculateExpenseRatio()
+        public decimal ExpenseRatio()
         {
             try
             {
@@ -871,7 +784,7 @@ namespace JPFData
         /// </summary>
         /// <param name="salary"></param>
         /// <returns></returns>
-        public DateTime GetLastPaydate(Salary salary)
+        public DateTime PreviousPaydate(Salary salary)
         {
             if (salary == null)
                 return DateTime.MinValue;
@@ -922,7 +835,7 @@ namespace JPFData
                 case FrequencyEnum.SemiMonthly:
                     {
                         var firstPayDate = new DateTime(today.Year, today.Month, Convert.ToInt32(salary.FirstPayday));
-                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, GetLastDayOfMonth(today))
+                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, LastDayOfMonth(today))
                             : new DateTime(today.Year, today.Month, Convert.ToInt32(salary.LastPayday));
 
                         if (today == firstPayDate)
@@ -933,10 +846,10 @@ namespace JPFData
                             payDate = firstPayDate;
                         else if (today < firstPayDate)
                             if (today.Month == 1)
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, GetLastDayOfMonth(today.AddMonths(-1)))
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)))
                                     : new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, lastPayDate.Day);
                             else
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, GetLastDayOfMonth(today.AddMonths(-1)))
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)))
                                     : new DateTime(today.Year, today.AddMonths(-1).Month, today.Day);
                     }
                     break;
@@ -961,5 +874,6 @@ namespace JPFData
 
             return payDate;
         }
+
     }
 }

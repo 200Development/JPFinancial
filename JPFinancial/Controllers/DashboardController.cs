@@ -33,8 +33,7 @@ namespace JPFinancial.Controllers
 
             if (vm.IsValid)
             {
-                // NOTE: Must clear the model state in order to bind
-                //       the @Html helpers to the new model values
+                // NOTE: Must clear the model state in order to bind the @Html helpers to the new model values
                 ModelState.Clear();
             }
             else
@@ -46,48 +45,6 @@ namespace JPFinancial.Controllers
             }
 
             return View(vm);
-        }
-
-        public PartialViewResult CreateTransaction()
-        {
-            var accounts = _db.Accounts.ToList();
-            var creditCards = _db.CreditCards.ToList();
-            var viewModel = new TransactionViewModel();
-            viewModel.Accounts = accounts;
-            viewModel.CreditCards = creditCards;
-            viewModel.Date = DateTime.Today;
-
-            return PartialView("_CreateTransaction", viewModel);
-        }
-
-        public PartialViewResult Transactions()
-        {
-            return PartialView("_Transactions", _db.Transactions.ToList());
-        }
-
-        public PartialViewResult LargestAccounts()
-        {
-            var accounts = _db.Accounts.ToList();
-            var largestAccounts = accounts.OrderByDescending(a => a.Balance).Take(5);
-
-            return PartialView("_AccountsPartial", largestAccounts);
-        }
-
-        public PartialViewResult SmallestAccounts()
-        {
-            var accounts = _db.Accounts.ToList();
-            var smallestAccounts = accounts.OrderBy(a => a.Balance).Take(5);
-
-            return PartialView("_AccountsPartial", smallestAccounts);
-        }
-
-        public PartialViewResult TopTransactions()
-        {
-            var transactions = _db.Transactions.ToList();
-            var last30DaysTransactions = transactions.Where(t => t.Date >= DateTime.Today.AddDays(-30));
-            var largetstTransactions = last30DaysTransactions.OrderByDescending(t => t.Amount).Take(5);
-
-            return PartialView("_TopTransactions", largetstTransactions);
         }
 
         private decimal GetMonthlyIncome()
@@ -238,11 +195,11 @@ namespace JPFinancial.Controllers
         //    if (model.SelectedFVType.Equals("futureValue"))
         //    {
         //        var fv = model.FutureAmount;
-        //        model.FutureDate = _calculations.CalculateFvDate(Convert.ToDecimal(fv), model.NetIncome);
+        //        model.FutureDate = _calculations.SavingsDate(Convert.ToDecimal(fv), model.NetIncome);
         //    }
         //    else if (model.SelectedFVType.Equals("futureDate"))
         //    {
-        //        model.FutureAmount = _calculations.CalculateFv(Convert.ToDateTime(model.FutureDate), model.NetIncome);
+        //        model.FutureAmount = _calculations.FutureValue(Convert.ToDateTime(model.FutureDate), model.NetIncome);
         //    }
         //    return View("Index", model);
         //}

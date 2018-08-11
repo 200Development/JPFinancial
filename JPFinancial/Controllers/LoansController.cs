@@ -32,7 +32,7 @@ namespace JPFinancial.Controllers
                 newLoanVM.OutstandingBalance = loan.OutstandingBalance;
                 newLoanVM.Payment = loan.Payment;
                 newLoanVM.APR = loan.APR;
-                newLoanVM.DailyInterestCost = _calculations.CalculateDailyInterestCost(loan);
+                newLoanVM.DailyInterestCost = _calculations.DailyInterest(loan);
 
                 loansVM.Add(newLoanVM);
             }

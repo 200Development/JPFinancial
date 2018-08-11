@@ -12,13 +12,13 @@ namespace JPFinancial.Controllers
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
+        private readonly DatabaseEditor _dbEditor = new DatabaseEditor();
 
         // GET: Accounts
         public ActionResult Index()
         {
-            _calculations.GetRequiredAcctSavings();
-            _calculations.GetReqBalanceSurplus();
+            _dbEditor.UpdateRequiredBalance();
+            _dbEditor.UpdateRequiredBalanceSurplus();
             var accounts = _db.Accounts.ToList();
             var viewModel = new List<AccountViewModel>();
 

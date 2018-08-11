@@ -91,6 +91,7 @@
     <Compile Include="Base\BaseManager.cs" />
     <Compile Include="Base\BaseViewModel.cs" />
     <Compile Include="Calculations.cs" />
+    <Compile Include="DatabaseEditor.cs" />
     <Compile Include="DTO\StaticFinancialMetrics.cs" />
     <Compile Include="DTO\TimePeriodFinancialMetrics.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
