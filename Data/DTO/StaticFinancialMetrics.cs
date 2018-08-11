@@ -71,5 +71,11 @@ namespace JPFData.DTO
 
         [Display(Name = "Discretionary Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal DiscretionaryExpenses { get; set; }
+
+        [Display(Name = "Last Month's Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal LastMonthExpenses { get; set; }
+
+        [DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal Expenses { get; set; }
     }
 }
