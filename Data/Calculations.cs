@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using JPFData.Enumerations;
@@ -11,9 +10,9 @@ namespace JPFData
     public class Calculations
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        //TODO: Update error handling
 
-       
-     
+
         //public object GetStockQuote(string ticker, string startDate = null, string endDate = null)
         //{
         //    var request = new QuandlDownloadRequest();
@@ -64,32 +63,32 @@ namespace JPFData
         //    var request = new QuandlDownloadRequest();
         //    var connection = new QuandlConnection();
 
-        //    //    request.APIKey = "jujaGvER5aTaVzznmCE8";
-        //    //    request.Datacode = new Datacode("YAHOO", ticker);
-        //    //    request.StartDate = DateTime.Today.AddDays(-1);
-        //    //    request.EndDate = DateTime.Today;
-        //    //    request.Format = FileFormats.JSON;
+        //    request.APIKey = "jujaGvER5aTaVzznmCE8";
+        //    request.Datacode = new Datacode("YAHOO", ticker);
+        //    request.StartDate = DateTime.Today.AddDays(-1);
+        //    request.EndDate = DateTime.Today;
+        //    request.Format = FileFormats.JSON;
         //    request.Frequency = Frequencies.Daily;
-        //    //    request.Headers = true;
-        //    //    request.Sort = SortOrders.Ascending;
-        //    //    request.Transformation = Transformations.None;
-        //    //    request.ToRequestString();
+        //    request.Headers = true;
+        //    request.Sort = SortOrders.Ascending;
+        //    request.Transformation = Transformations.None;
+        //    request.ToRequestString();
 
         //    var data = connection.Request(request);
         //    var yahooDataset = JObject.Parse(data);
         //    IList<JToken> results = yahooDataset["data"].Children().ToList();
 
-        //    //    // serialize JSON results into .NET objects
-        //    //    foreach (JToken result in results)
-        //    //    {
-        //    //        var date = result[0];
-        //    //        var open = result[1];
-        //    //        var high = result[2];
-        //    //        var low = result[3];
-        //    //        var close = result[4];
-        //    //        var volume = result[5];
-        //    //        var adjustedClose = result[6];
-        //    //    }
+        //    // serialize JSON results into .NET objects
+        //    foreach (JToken result in results)
+        //    {
+        //        var date = result[0];
+        //        var open = result[1];
+        //        var high = result[2];
+        //        var low = result[3];
+        //        var close = result[4];
+        //        var volume = result[5];
+        //        var adjustedClose = result[6];
+        //    }
         //    return results;
         //}
 
@@ -154,12 +153,12 @@ namespace JPFData
             }
         }
 
-        public int LastDayOfMonth(DateTime date)
+        public DateTime LastDayOfMonth(DateTime date)
         {
             try
             {
                 //return date.AddMonths(1).AddDays(-date.Day).Day;
-                return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month)).Day;
+                return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
             }
             catch (Exception e)
             {
@@ -231,7 +230,7 @@ namespace JPFData
                 throw e;
             }
         }
-        
+
         public decimal RequiredSavings(IEnumerable<Bill> bills)
         {
             try
@@ -363,12 +362,20 @@ namespace JPFData
             }
         }
 
-        public decimal LastMonthsExpenses()
+        //TODO: Improve date range handling
+        /// <summary>
+        /// Returns summation of bills within the date range of the begin and end parameters  
+        /// </summary>
+        /// <param name="begin">start date of the date range</param>
+        /// <param name="end">end date of the date range</param>
+        /// <param name="onlyMandatory">summates only mandatory expenses</param>
+        /// <returns></returns>
+        public decimal ExpensesByDateRange(DateTime begin, DateTime end, bool onlyMandatory = false)
         {
             try
             {
-                var bills = _db.Bills.ToList();
-                var lastMonth = DateTime.Today.AddMonths(-1);
+                // onlyMandatory sums only mandatory expenses
+                var bills = onlyMandatory ? _db.Bills.Where(b => b.IsMandatory).ToList() : _db.Bills.ToList();
                 var expenses = 0m;
 
                 foreach (var bill in bills)
@@ -378,8 +385,9 @@ namespace JPFData
                     var frequency = bill.PaymentFrequency;
                     var dueDate = bill.DueDate;
                     var newDueDate = dueDate;
+
                     //TODO: Fix semi-monthly bills being added 3 times (31st, 16th, 1st)
-                    while (newDueDate.Month >= lastMonth.Month)
+                    while (newDueDate >= begin)
                     {
                         switch (frequency)
                         {
@@ -410,11 +418,41 @@ namespace JPFData
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
-                        if (newDueDate.Month == lastMonth.Month && newDueDate.Year == lastMonth.Year)
+                        // adds expense only if the bill due date falls within the date range
+                        if (newDueDate >= begin && newDueDate < end)
                             expenses += bill.AmountDue;
                     }
                 }
                 return expenses;
+            }
+            catch (Exception e)
+            {
+                throw e;
+            }
+        }
+
+        public decimal DiscretionarySpendingByDateRange(DateTime begin, DateTime end)
+        {
+            try
+            {
+                var ret = 0m;
+                var transactions = _db.Transactions.Where(t => t.Date >= begin && t.Date < end).ToList();
+                var bills = _db.Bills.ToList();
+                var isBill = false;
+
+                foreach (var transaction in transactions)
+                {
+                    foreach (var bill in bills)
+                    {
+                        // If the bill name matches the transaction payee, count the transaction as a bill (mandatory expense)
+                        if (bill.Name.Equals(transaction.Payee))
+                            isBill = true;
+                    }
+                    // If transaction is not a bill, add to discretionary spending total
+                    if (!isBill)
+                        ret += transaction.Amount;
+                }
+                return ret;
             }
             catch (Exception e)
             {
@@ -436,7 +474,7 @@ namespace JPFData
                         "endDate",
                         DateTime.Today.Day <= 14
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
-                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date)).ToShortDateString()
+                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date).Day).ToShortDateString()
                     },
                     {"periodCosts", "0"},
                     {"totalCosts", "0"},
@@ -465,7 +503,7 @@ namespace JPFData
             }
         }
 
-        public decimal FutureValue(DateTime futureDate, decimal netPay)
+        public decimal FutureValue(DateTime futureDate, decimal? netPay)
         {
             try
             {
@@ -478,7 +516,7 @@ namespace JPFData
                     {"currentDate", DateTime.Today.ToShortDateString()},
                     {"endDate", DateTime.Today.Day <= 14
                             ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
-                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date)).ToShortDateString()
+                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date).Day).ToShortDateString()
                     },
                     {"periodCosts", "0"},
                     {"totalCosts", "0"},
@@ -492,16 +530,15 @@ namespace JPFData
 
                 for (var i = 0; i < payperiods; i++)
                 {
+
                     bills = UpdateBillDueDates(bills);
                     bills = UpdateTotalCosts(bills);
                     SetCurrentAndEndDate(bills);
-                    var savings = Convert.ToDecimal(bills["totalSavings"]);
-                    //var costs = Convert.ToDecimal(bills["totalCosts"]);
-                    var periodCosts = Convert.ToDecimal(bills["periodCosts"]);
+                    decimal? savings = Convert.ToDecimal(bills["totalSavings"].ToString());
+                    var periodCosts = Convert.ToDecimal(bills["periodCosts"].ToString());
 
                     savings += netPay - periodCosts;
-                    //bills["totalCosts"] = (costs + periodCosts).ToString(CultureInfo.InvariantCulture);
-                    bills["totalSavings"] = savings.ToString(CultureInfo.InvariantCulture);
+                    bills["totalSavings"] = savings.ToString();
                 }
                 //var cost = Convert.ToDecimal(bills["periodCosts"]);
                 var save = Convert.ToDecimal(bills["totalSavings"]);
@@ -559,7 +596,7 @@ namespace JPFData
                     billsDictionary["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
                     currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                     billsDictionary["endDate"] =
-                        new DateTime(currentDate.Year, currentDate.Month, LastDayOfMonth(currentDate))
+                        new DateTime(currentDate.Year, currentDate.Month, LastDayOfMonth(currentDate).Day)
                             .ToShortDateString();
                 }
                 else
@@ -894,7 +931,7 @@ namespace JPFData
                 case FrequencyEnum.SemiMonthly:
                     {
                         var firstPayDate = new DateTime(today.Year, today.Month, Convert.ToInt32(salary.FirstPayday));
-                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, LastDayOfMonth(today))
+                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, LastDayOfMonth(today).Day)
                             : new DateTime(today.Year, today.Month, Convert.ToInt32(salary.LastPayday));
 
                         if (today == firstPayDate)
@@ -905,10 +942,10 @@ namespace JPFData
                             payDate = firstPayDate;
                         else if (today < firstPayDate)
                             if (today.Month == 1)
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)))
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)).Day)
                                     : new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, lastPayDate.Day);
                             else
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)))
+                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)).Day)
                                     : new DateTime(today.Year, today.AddMonths(-1).Month, today.Day);
                     }
                     break;

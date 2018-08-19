@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using JPFData.Enumerations;
 
 namespace JPFData.DTO
@@ -77,5 +78,14 @@ namespace JPFData.DTO
 
         [DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal Expenses { get; set; }
+
+        public decimal LastMonthDiscretionarySpending { get; set; }
+        public decimal LastMonthMandatoryExpenses { get; set; }
+        public decimal? PercentageChangeExpenses { get; set; }
+        public Dictionary<string, decimal> ExpensesByMonth { get; set; }
+        public Dictionary<string, decimal> MandatoryExpensesByMonth { get; set; }
+        public Dictionary<string, decimal> DiscretionarySpendingByMonth { get; set; }
+
+        public decimal? AverageMonthlyExpenses3MMA;
     }
 }
