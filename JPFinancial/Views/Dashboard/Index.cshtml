@@ -76,7 +76,7 @@
         <div class="content">
             <div class="container-fluid">
                 <div class="row">
-                    <div class="row" style="margin: 0 0 12px 16px"><p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p></div>
+                    <div class="row" style="margin: 0 0 12px 16px"><p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p><p class="category">Monthly</p></div>
                     <div class="col-lg-3 col-sm-6">
                         <div class="card">
                             <div class="content">
@@ -182,16 +182,16 @@
                     <div class="col-md-12">
                         <div class="card">
                             <div class="header">
-                                <h4 class="title">Income/Expense</h4>
+                                <h4 class="title">Expenses</h4>
                                 <p class="category">Monthly</p>
                             </div>
                             <div class="content">
-                                <div id="chartHours" class="ct-chart"></div>
+                                <div id="chartExpenses" class="ct-chart"></div>
                                 <div class="footer">
                                     <div class="chart-legend">
-                                        <i class="fa fa-circle text-success"></i> Net Income
-                                        <i class="fa fa-circle text-info"></i> Income
-                                        <i class="fa fa-circle text-danger"></i> Expenses
+                                        <i class="fa fa-circle text-success"></i> Total
+                                        <i class="fa fa-circle text-info"></i> Mandatory
+                                        <i class="fa fa-circle text-danger"></i> Discretionary
                                     </div>
                                     <hr />
                                     <div class="stats">
@@ -500,7 +500,7 @@
                     $("form").submit();
                 });
             var model = @Html.Raw(Json.Encode(Model.Entity.StaticFinancialMetrics));
-            chart.initChartist(model);
+            demo.initChartist(model);
         });
     </script>
 }
