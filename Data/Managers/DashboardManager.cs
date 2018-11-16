@@ -62,14 +62,16 @@ namespace JPFData.Managers
                 monthlyLoanInterest += _calculations.MonthlyInterest(loan);
                 dailyLoanInterest += _calculations.DailyInterest(loan);
             }
-            metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
+            if (income > 0)
+                metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
             metrics.MonthlyLoanInterest = monthlyLoanInterest;
-            metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
+            if (income > 0)
+                metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
             metrics.DailyLoanInterest = dailyLoanInterest;
 
             /* CURRENT MONTH'S EXPENSES */
-            //TODO: difference between totalDue and billsDue
-            //TODO: what counts as expenses, mandatory expenses, discretionary spending, etc?
+            //TODO: difference between totalDue and billsDue?
+            //TODO: what counts as expenses, mandatory expenses, discretionary spending?
             metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
             metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
             metrics.Expenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month && b.DueDate.Year == DateTime.Today.Year).Sum(b => b.AmountDue);
@@ -85,7 +87,8 @@ namespace JPFData.Managers
             var costliestExpense = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
             metrics.CostliestExpenseAmount = costliestExpense;
             metrics.CostliestCategory = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Category).Take(1).FirstOrDefault();
-            metrics.CostliestExpensePercentage = costliestExpense / income;
+            if (income > 0)
+                metrics.CostliestExpensePercentage = costliestExpense / income;
 
             /* AVERAGES */
             var transactionSumsByMonth = transactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
@@ -132,7 +135,6 @@ namespace JPFData.Managers
                 mandatoryByMonth.Add(date, amount);
             }
 
-            //TODO: Refactor this to a method call
             foreach (KeyValuePair<DateTime, decimal> expense in expensesByMonth)
             {
                 if (mandatoryByMonth.ContainsKey(expense.Key) == false)
@@ -177,23 +179,26 @@ namespace JPFData.Managers
 
             for (DateTime i = index; i <= DateTime.Today; i = i.AddMonths(1))
             {
-                if (expensesByMonth.ContainsKey(i) == false)
-                {
-                    expensesByMonth.Add(i, 0m);
-                    mandatoryByMonth.Add(i, 0m);
-                    discretionaryByMonth.Add(i, 0m);
-                }
+                if (expensesByMonth.ContainsKey(i)) continue;
+                expensesByMonth.Add(i, 0m);
+                mandatoryByMonth.Add(i, 0m);
+                discretionaryByMonth.Add(i, 0m);
             }
 
-            metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(expense => ConvertToDateString(expense.Key.Month), expense => expense.Value);
-            metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => ConvertToDateString(mandatory.Key.Month), mandatory => mandatory.Value);
-            metrics.DiscretionarySpendingByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => ConvertToDateString(disc.Key.Month), disc => disc.Value);
+            var last12 = expensesByMonth.Take(11);
+            var orderedByYear = last12.OrderBy(expense => expense.Key.Year);
+            var thenOrderByMonth = orderedByYear.OrderBy(expense => expense.Key.Month);
+            var toDict = thenOrderByMonth.ToDictionary(expense => expense.Key, expense => expense.Value);
+
+            metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => ConvertMonthIntToString(expense.Key.Month), expense => expense.Value);
+            metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => ConvertMonthIntToString(mandatory.Key.Month), mandatory => mandatory.Value);
+            metrics.DiscretionarySpendingByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => ConvertMonthIntToString(disc.Key.Month), disc => disc.Value);
 
 
             return metrics;
         }
 
-        private string ConvertToDateString(int month)
+        private string ConvertMonthIntToString(int month)
         {
             switch (month)
             {

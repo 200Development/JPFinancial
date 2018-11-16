@@ -23,10 +23,20 @@ namespace JPFData.ViewModels
         public string EventCommand { get; set; }
         public string EventArgument { get; set; }
 
-        public bool IsCreateAreaVisible { get; set; }
-        public bool IsDetailAreaVisible { get; set; }
-        public bool IsListAreaVisible { get; set; }
+        public bool IsCreateTransactionVisible { get; set; }
+        public bool IsTransactionDetailsVisible { get; set; }
+        public bool IsTransactionListAreaVisible { get; set; }
 
+        public bool IsCreateIncomeVisible { get; set; }
+        public bool IsIncomeDetailsVisible { get; set; }
+        
+        public bool IsCreateAccountVisible { get; set; }
+        public bool IsAccountDetailsVisible { get; set; }
+        public bool IsAccountListAreaVisible { get; set; }
+
+        public bool IsCreateBillVisible { get; set; }
+        public bool IsBillDetailsVisible { get; set; }
+        public bool IsBillListVisible { get; set; }
 
 
         private void Init()
@@ -35,9 +45,9 @@ namespace JPFData.ViewModels
             EventArgument = string.Empty;
             ValidationErrors = new List<KeyValuePair<string, string>>();
 
-            IsCreateAreaVisible = true;
-            IsDetailAreaVisible = false;
-            IsListAreaVisible = true;
+            IsCreateTransactionVisible = true;
+            IsTransactionDetailsVisible = false;
+            IsTransactionListAreaVisible = true;
 
             ListMode();
         }
@@ -46,18 +56,18 @@ namespace JPFData.ViewModels
         {
             IsValid = true;
 
-            IsCreateAreaVisible = true;
-            IsDetailAreaVisible = false;
-            IsListAreaVisible = true;
+            IsCreateTransactionVisible = true;
+            IsTransactionDetailsVisible = false;
+            IsTransactionListAreaVisible = true;
 
             Mode = "List";
         }
 
         private void AddMode()
         {
-            IsCreateAreaVisible = true;
-            IsDetailAreaVisible = false;
-            IsListAreaVisible = true;
+            IsCreateTransactionVisible = true;
+            IsTransactionDetailsVisible = false;
+            IsTransactionListAreaVisible = true;
 
             Mode = "Add";
         }
@@ -87,9 +97,9 @@ namespace JPFData.ViewModels
 
         private void EditMode()
         {
-            IsCreateAreaVisible = false;
-            IsDetailAreaVisible = true;
-            IsListAreaVisible = true;
+            IsCreateTransactionVisible = false;
+            IsTransactionDetailsVisible = true;
+            IsTransactionListAreaVisible = true;
 
             Mode = "Edit";
         }
