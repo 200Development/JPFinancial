@@ -4,54 +4,205 @@
     ViewBag.Title = "Index";
 }
 
-<h2>Index</h2>
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row" style="margin: 0 0 12px 16px">
+                <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+                <p class="category">Monthly</p>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="ti-server"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Avg. Spending</p>
+                                    @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i>
+                                @*@Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-wallet"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Mandatory $</p>
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-calendar"></i>
+                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-danger text-center">
+                                    <i class="ti-pulse"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p style="width: 100%">Discretionary $</p>
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-calendar"></i>
+                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-info text-center">
+                                    <i class="ti-server"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Savings Rate</p>
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)*@
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i> Update now
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Expenses</h4>
+                        <p class="category">Last 30 Days</p>
+                    </div>
+                    <div class="content">
+                        <div id="chartExpenses" class="ct-chart"></div>
+                        <div class="footer">
+                            <div class="chart-legend">
+                                <i class="fa fa-circle text-success"></i> Total
+                                <i class="fa fa-circle text-info"></i> Mandatory
+                                <i class="fa fa-circle text-danger"></i> Discretionary
+                            </div>
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i> Updated 3 minutes ago
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Expenses</h4>
+                    </div>
+                    <div class="content">
+                        @using (Html.BeginForm())
+                        {
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
-<table class="table">
-    <tr>
-        <th>
-            @Html.DisplayNameFor(model => model.Name)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.AmountDue)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.DueDate)
-        </th>
-        <th>
-            @Html.DisplayNameFor(model => model.PaymentFrequency)
-        </th>
-        @*<th>
-            @Html.DisplayNameFor(model => model.IsLate)
-        </th>*@
-        <th></th>
-    </tr>
+                            <p>
+                                @Html.ActionLink("Create New", "Create")
+                            </p>
+                            <table class="table">
+                                <tr>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.Name)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.AmountDue)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.DueDate)
+                                    </th>
+                                    <th>
+                                        @Html.DisplayNameFor(model => model.PaymentFrequency)
+                                    </th>
+                                    @*<th>
+                                            @Html.DisplayNameFor(model => model.IsLate)
+                                        </th>*@
+                                    <th></th>
+                                </tr>
 
-@foreach (var item in Model) {
-    <tr>
-        <td>
-            @Html.DisplayFor(modelItem => item.Name)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.AmountDue)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.DueDate)
-        </td>
-        <td>
-            @Html.DisplayFor(modelItem => item.PaymentFrequency)
-        </td>
-        @*<td>
-            @Html.DisplayFor(modelItem => item.IsLate)
-        </td>*@
-        <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.Id }) |
-            @Html.ActionLink("Details", "Details", new { id=item.Id }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.Id })
-        </td>
-    </tr>
-}
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.AmountDue)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.DueDate)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.PaymentFrequency)
+                                        </td>
+                                        @*<td>
+                                                @Html.DisplayFor(modelItem => item.IsLate)
+                                            </td>*@
+                                        <td>
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                        </td>
+                                    </tr>
+                                }
 
-</table>
+                            </table>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,19 +1,4 @@
-﻿<head>
-    <title>Dashbaord</title>
-
-    <!-- CSS -->
-    <link href="../../Content/paper-bootstrap.min.css" rel="stylesheet" />
-    <link href="../../Content/paper-animate.min.css" rel="stylesheet" />
-    <link href="../../Content/paper-dashboard.css" rel="stylesheet" />
-    <link href="../../Content/custom.css" rel="stylesheet" />
-
-    <!-- Fonts and icons -->
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css" integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-    <link href="https://fonts.googleapis.com/css?family=Muli:400,300" rel="stylesheet" type="text/css">
-    <link href="../../Content/themify-icons.css" rel="stylesheet" />
-</head>
-
-@model JPFData.ViewModels.DashboardViewModel
+﻿@model JPFData.ViewModels.DashboardViewModel
 
 
 @{
@@ -21,581 +6,472 @@
 }
 
 
-<div class="wrapper">
-    @*Left Side Nav Begin*@
-    <div class="sidebar" data-background-color="black" data-active-color="danger">
-        <div class="sidebar-wrapper">
-            <div class="logo">
-                <a href="#" class="simple-text">
-                    J.P. Financial
-                </a>
-            </div>
-            <ul class="nav" id="leftNavId">
-                <li class="active">
-                    <a href="#">
-                        <i class="ti-panel"></i>
-                        <p>Income</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="~/Accounts/Index">
-                        <i class="ti-user"></i>
-                        <p>Accounts</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="ti-user"></i>
-                        <p>Bills</p>
-                    </a>
-                </li>
-                <li>
-                    <a href="#">
-                        <i class="ti-user"></i>
-                        <p>Transactions</p>
-                    </a>
-                </li>
-            </ul>
-            @*<div id="radioType" class="btn-group btn-group-toggle" data-toggle="buttons">
-                    <label class="btn btn-sm btn-secondary active">
-                        <input type="radio" name="btnStatic" id="btnStatic" autocomplete="off" checked>&nbsp;Static
-                    </label>
-                    <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="btnTvm" id="btnTvm" autocomplete="off">&nbsp;Historical
-                    </label>
-                </div>*@
-            <div class="btn-group btn-group-toggle" data-toggle="buttons" id="radioTimeFrame" style="margin: 4px 0 0 0">
-                <label class="btn btn-sm btn-secondary active">
-                    <input type="radio" name="btnLastWeek" id="btnLastWeek" autocomplete="off" checked> Week
-                </label>
-                <label class="btn btn-sm btn-secondary">
-                    <input type="radio" name="btnLastMonth" id="btnLastMonth" autocomplete="off"> Month
-                </label>
-                <label class="btn btn-sm btn-secondary">
-                    <input type="radio" name="btnLastQuarter" id="btnLastQuarter" autocomplete="off"> Quarter
-                </label>
-                <label class="btn btn-sm btn-secondary">
-                    <input type="radio" name="btnLastYear" id="btnLastYear" autocomplete="off"> Year
-                </label>
-            </div>
 
-            <div id="divStaticFinances">
-                <table style="margin: 12px 0 0 12px; width: 100%">
-                    <tr>
-                        <td>Savings Rate</td>
-                        <td>12.51%</td>
-                    </tr>
-                    <tr>
-                        <td>Debt-To-Equity</td>
-                        <td>89.32%</td>
-                    </tr>
-                </table>
-                <h3>Time Metrics</h3>
+<div class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="row" style="margin: 0 0 12px 16px">
+                <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+                <p class="category">Monthly</p>
             </div>
-            <div id="divHistoricalFinances">
-                <table style="margin: 12px 0 0 12px; width: 100%">
-                    <tr>
-                        <td>Savings Rate</td>
-                        <td>12.51%</td>
-                    </tr>
-                    <tr>
-                        <td>Debt-To-Equity</td>
-                        <td>89.32%</td>
-                    </tr>
-                </table>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-warning text-center">
+                                    <i class="ti-server"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Avg. Spending</p>
+                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i> @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-wallet"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Mandatory $</p>
+                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-danger text-center">
+                                    <i class="ti-pulse"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p style="width: 100%">Discretionary $</p>
+                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-info text-center">
+                                    <i class="ti-server"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Savings Rate</p>
+                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i> Update now
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-    @*Left Side Nav End*@
-    <div class="main-panel">
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <div class="navbar-header">
-                    <button type="button" class="navbar-toggle">
-                        <span class="sr-only">Toggle navigation</span>
-                        <span class="icon-bar bar1"></span>
-                        <span class="icon-bar bar2"></span>
-                        <span class="icon-bar bar3"></span>
-                    </button>
-                    <a class="navbar-brand" href="#">Dashboard</a>
-                </div>
-                <div class="collapse navbar-collapse">
-                    <ul class="nav navbar-nav navbar-right">
-                        <li>@Html.ActionLink("Logout", "LogOff", "Identity")</li>
-                        <li>@Html.ActionLink("Login", "Login", "Identity")</li>
-                        <li>@Html.ActionLink("Register", "Register", "Identity")</li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-
-        <div class="content">
-            <div class="container-fluid">
-                <div class="row">
-                    <div class="row" style="margin: 0 0 12px 16px">
-                        <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="header">
+                        <h4 class="title">Expenses</h4>
                         <p class="category">Monthly</p>
                     </div>
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-warning text-center">
-                                            <i class="ti-server"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Avg. Spending</p>
-                                            @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <i class="ti-reload"></i> @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)
-                                    </div>
-                                </div>
+                    <div class="content">
+                        <div id="chartExpenses" class="ct-chart"></div>
+                        <div class="footer">
+                            <div class="chart-legend">
+                                <i class="fa fa-circle text-success"></i> Total
+                                <i class="fa fa-circle text-info"></i> Mandatory
+                                <i class="fa fa-circle text-danger"></i> Discretionary
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-wallet"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Mandatory $</p>
-                                            @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-danger text-center">
-                                            <i class="ti-pulse"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p style="width: 100%">Discretionary $</p>
-                                            @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-info text-center">
-                                            <i class="ti-server"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Savings Rate</p>
-                                            @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <i class="ti-reload"></i> Update now
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="header">
-                                <h4 class="title">Expenses</h4>
-                                <p class="category">Monthly</p>
-                            </div>
-                            <div class="content">
-                                <div id="chartExpenses" class="ct-chart"></div>
-                                <div class="footer">
-                                    <div class="chart-legend">
-                                        <i class="fa fa-circle text-success"></i> Total
-                                        <i class="fa fa-circle text-info"></i> Mandatory
-                                        <i class="fa fa-circle text-danger"></i> Discretionary
-                                    </div>
-                                    <hr />
-                                    <div class="stats">
-                                        <i class="ti-reload"></i> Updated 3 minutes ago
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <div class="card">
-                            <div class="header">
-                                <h4 class="title">Transactions</h4>
-                            </div>
-                            <div class="content">
-                                @using (Html.BeginForm())
-                                {
-                                    <!-- BEGIN HIDDEN FIELDS AREA -->
-                                    @Html.HiddenFor(m => m.EventCommand)
-                                    @Html.HiddenFor(m => m.Mode)
-                                    @Html.HiddenFor(m => m.EventArgument)
-                                    <!-- END HIDDEN FIELDS AREA -->
-
-
-
-                                    // BEGIN CREATE INCOME AREA
-                                    if (Model.IsCreateIncomeVisible)
-                                    {
-                                        <h1>"Model.IsCreateIncomeVisible"</h1>
-                                    }
-                                    // END CREATE INCOME AREA
-
-                                    //BEGIN CREATE ACCOUNT AREA
-                                    if (Model.IsCreateAccountVisible)
-                                    {
-                                        <h1>"Model.IsCreateAccountVisible"</h1>
-                                    }
-                                    // END CREATE ACCOUNT AREA
-
-                                    // BEGIN CREATE BILLS AREA
-                                    if (Model.IsCreateBillVisible)
-                                    {
-                                        <h1>"Model.IsCreateBillVisible"</h1>
-                                    }
-                                    // END CREATE BILLS AREA
-
-                                    // BEGIN CREATE TRANSACTION AREA
-                                    if (Model.IsCreateTransactionVisible)
-                                    {
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                <h1 class="panel-title">Add Transaction</h1>
-                                            </div>
-                                            <div class="panel-body">
-                                                <div class="form-horizontal">
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3  col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
-                                                        @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
-                                                        @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
-                                                        @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-footer">
-                                                <button id="btnAdd" class="btn btn-sm btn-success"
-                                                        data-pdsa-action="add">
-                                                    <i class="glyphicon glyphicon-plus"></i>&nbsp;Add
-                                                </button>
-
-                                            </div>
-                                        </div>
-                                    }
-                                    // END CREATE TRANSACTION AREA
-
-
-
-
-                                    // BEGIN EDIT INCOME
-                                    if (Model.IsIncomeDetailsVisible)
-                                    {
-                                        <h1>"Model.IsIncomeDetailsVisible"</h1>
-                                    }
-                                    // END EDIT INCOME
-
-                                    // BEGIN EDIT ACCOUNT
-                                    if (Model.IsAccountDetailsVisible)
-                                    {
-                                        <h1>"Model.IsAccountDetailsVisible"</h1>
-                                    }
-                                    // END EDIT ACCOUNT
-
-                                    // BEGIN EDIT BILL
-                                    if (Model.IsBillDetailsVisible)
-                                    {
-                                        <h1>"Model.IsBillDetailsVisible"</h1>
-                                    }
-                                    // END EDIT BILL
-
-                                    // BEGIN EDIT TRANSACTION AREA
-                                    if (Model.IsTransactionDetailsVisible)
-                                    {
-                                        <div class="panel panel-primary">
-                                            <div class="panel-heading">
-                                                <h1 class="panel-title">Edit Transaction</h1>
-                                            </div>
-                                            <div class="panel-body">
-                                                <!-- BEGIN MESSAGE AREA -->
-                                                <div class="row">
-                                                    <div class="col-xs-12">
-                                                        @if (!Model.IsValid)
-                                                        {
-                                                            <div class="alert alert-danger alert-dismissable" role="alert">
-                                                                <button type="button" class="close" data-dismiss="alert">
-                                                                    <span aria-hidden="true">&times;</span>
-                                                                    <span class="sr-only">Close</span>
-                                                                </button>
-                                                                @Html.ValidationSummary(false)
-                                                            </div>
-                                                        }
-                                                    </div>
-                                                </div>
-                                                <!-- END MESSAGE AREA -->
-                                                <div class="form-horizontal">
-                                                    <div class="form-group col-xs-4 col-md-4">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-4 col-md-4">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-4 col-md-4">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3  col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
-                                                        @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
-                                                        @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
-                                                        @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
-                                                        @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
-                                                    </div>
-
-                                                    <div class="form-group col-xs-3 col-md-3">
-                                                        @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
-                                                        @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="panel-footer">
-                                                <button id="btnSave" class="btn btn-sm btn-success" data-pdsa-action="save" data-pdsa-val="@Model.Entity.CreateTransaction.Id">
-                                                    <i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Save
-                                                </button>
-                                            </div>
-                                        </div>
-                                    }
-                                    // END EDIT TRANSACTION AREA
-
-
-
-
-                                    // BEGIN ACCOUNT LIST AREA
-                                    if (Model.IsAccountListAreaVisible)
-                                    {
-                                        <h1>"Model.IsAccountListAreaVisible"</h1>
-                                    }
-                                    // END ACCOUNT LIST AREA
-
-                                    // BEGIN BILL LIST AREA
-                                    if (Model.IsBillListVisible)
-                                    {
-                                        <h1>"Model.IsBillListVisible"</h1>
-                                    }
-                                    // END BILL LIST AREA
-
-                                    // BEGIN TRANSACTION LIST AREA
-                                    if (Model.IsTransactionListAreaVisible)
-                                    {
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th></th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
-                                                    </th>
-                                                    <th>
-                                                        @Html.DisplayNameFor(model => model.Entity.Transaction.UsedCreditCard)
-                                                    </th>
-                                                    <th></th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach (var item in Model.Entity.Transactions)
-                                                {
-                                                    <tr>
-                                                        <td class="pdsa-action-button-column">
-                                                            <a href="#" data-pdsa-action="edit"
-                                                               data-pdsa-val="@item.Id"
-                                                               class="btn btn-default btn-sm">
-                                                                <i class="glyphicon glyphicon-edit"></i>
-                                                            </a>
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Date)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Payee)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Memo)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Type)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Category)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.Amount)
-                                                        </td>
-                                                        <td>
-                                                            @Html.DisplayFor(modelItem => item.UsedCreditCard)
-                                                        </td>
-                                                        <td class="pdsa-action-button-column">
-                                                            <a href="#" data-pdsa-action="delete"
-                                                               data-pdsa-val="@item.Id"
-                                                               onclick="return confirm('Delete this Product?');"
-                                                               class="btn btn-default btn-sm">
-                                                                <i class="glyphicon glyphicon-trash"></i>
-                                                            </a>
-                                                        </td>
-                                                    </tr>
-                                                }
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="2">Total Cost: $12,334.52</td>
-                                                    <td colspan="2">Average Cost: $18.21</td>
-                                                    <td colspan="2">Largest Transaction: $1382.76</td>
-                                                    <td colspan="2">Smallest Transaction: $0.21</td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    }
-                                    // END TRANSACTION LIST AREA
-                                }
+                            <hr />
+                            <div class="stats">
+                                <i class="ti-reload"></i> Updated 3 minutes ago
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+        @*<div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Transactions</h4>
+                        </div>
+                        <div class="content">
+                            @using (Html.BeginForm())
+                            {
+                                        <!-- BEGIN HIDDEN FIELDS AREA -->
+                                @Html.HiddenFor(m => m.EventCommand)
+                                @Html.HiddenFor(m => m.Mode)
+                                @Html.HiddenFor(m => m.EventArgument)
+                                        <!-- END HIDDEN FIELDS AREA -->
 
-    <hr />
-    <div class="col-md-12 col-lg-12 row">
-        <footer>
-            <p>&copy; @DateTime.Now.Year - JP Financial</p>
-        </footer>
+
+
+                                // BEGIN CREATE INCOME AREA
+                                if (Model.IsCreateIncomeVisible)
+                                {
+                                    <h1>"Model.IsCreateIncomeVisible"</h1>
+                                }
+                                // END CREATE INCOME AREA
+
+                                //BEGIN CREATE ACCOUNT AREA
+                                if (Model.IsCreateAccountVisible)
+                                {
+                                    <h1>"Model.IsCreateAccountVisible"</h1>
+                                }
+                                // END CREATE ACCOUNT AREA
+
+                                // BEGIN CREATE BILLS AREA
+                                if (Model.IsCreateBillVisible)
+                                {
+                                    <h1>"Model.IsCreateBillVisible"</h1>
+                                }
+                                // END CREATE BILLS AREA
+
+                                // BEGIN CREATE TRANSACTION AREA
+                                if (Model.IsCreateTransactionVisible)
+                                {
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <h1 class="panel-title">Add Transaction</h1>
+                                        </div>
+                                        <div class="panel-body">
+                                            <div class="form-horizontal">
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3  col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
+                                                    @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
+                                                    @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
+                                                    @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <button id="btnAdd" class="btn btn-sm btn-success"
+                                                    data-pdsa-action="add">
+                                                <i class="glyphicon glyphicon-plus"></i>&nbsp;Add
+                                            </button>
+
+                                        </div>
+                                    </div>
+                                }
+                                // END CREATE TRANSACTION AREA
+
+
+
+
+                                // BEGIN EDIT INCOME
+                                if (Model.IsIncomeDetailsVisible)
+                                {
+                                    <h1>"Model.IsIncomeDetailsVisible"</h1>
+                                }
+                                // END EDIT INCOME
+
+                                // BEGIN EDIT ACCOUNT
+                                if (Model.IsAccountDetailsVisible)
+                                {
+                                    <h1>"Model.IsAccountDetailsVisible"</h1>
+                                }
+                                // END EDIT ACCOUNT
+
+                                // BEGIN EDIT BILL
+                                if (Model.IsBillDetailsVisible)
+                                {
+                                    <h1>"Model.IsBillDetailsVisible"</h1>
+                                }
+                                // END EDIT BILL
+
+                                // BEGIN EDIT TRANSACTION AREA
+                                if (Model.IsTransactionDetailsVisible)
+                                {
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading">
+                                            <h1 class="panel-title">Edit Transaction</h1>
+                                        </div>
+                                        <div class="panel-body">
+                                            <!-- BEGIN MESSAGE AREA -->
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    @if (!Model.IsValid)
+                                                    {
+                                                        <div class="alert alert-danger alert-dismissable" role="alert">
+                                                            <button type="button" class="close" data-dismiss="alert">
+                                                                <span aria-hidden="true">&times;</span>
+                                                                <span class="sr-only">Close</span>
+                                                            </button>
+                                                            @Html.ValidationSummary(false)
+                                                        </div>
+                                                    }
+                                                </div>
+                                            </div>
+                                            <!-- END MESSAGE AREA -->
+                                            <div class="form-horizontal">
+                                                <div class="form-group col-xs-4 col-md-4">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Date, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-4 col-md-4">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Payee, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-4 col-md-4">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Memo, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3  col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Type, new { @class = "control-label" })
+                                                    @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Type, new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Category, new { @class = "control-label" })
+                                                    @Html.EnumDropDownListFor(model => model.Entity.CreateTransaction.Category, new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3" style="margin-left: 8px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedDebitAccount, new SelectList(Model.Entity.Transaction.Accounts, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.Amount, new { @class = "control-label" })
+                                                    @Html.EditorFor(model => model.Entity.CreateTransaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-2 col-md-2" style="margin: 24px 0 0 0; padding-left: 55px">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { @class = "control-label" })
+                                                    @Html.CheckBoxFor(model => model.Entity.CreateTransaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                                                </div>
+
+                                                <div class="form-group col-xs-3 col-md-3">
+                                                    @Html.LabelFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new { @class = "control-label" })
+                                                    @Html.DropDownListFor(model => model.Entity.CreateTransaction.SelectedCreditCardAccount, new SelectList(Model.Entity.Transaction.CreditCards, "Id", "Name"), " ", new { @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="panel-footer">
+                                            <button id="btnSave" class="btn btn-sm btn-success" data-pdsa-action="save" data-pdsa-val="@Model.Entity.CreateTransaction.Id">
+                                                <i class="glyphicon glyphicon-floppy-disk"></i>&nbsp;Save
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                // END EDIT TRANSACTION AREA
+
+
+
+
+                                // BEGIN ACCOUNT LIST AREA
+                                if (Model.IsAccountListAreaVisible)
+                                {
+                                    <h1>"Model.IsAccountListAreaVisible"</h1>
+                                }
+                                // END ACCOUNT LIST AREA
+
+                                // BEGIN BILL LIST AREA
+                                if (Model.IsBillListVisible)
+                                {
+                                    <h1>"Model.IsBillListVisible"</h1>
+                                }
+                                // END BILL LIST AREA
+
+                                // BEGIN TRANSACTION LIST AREA
+                                if (Model.IsTransactionListAreaVisible)
+                                {
+                                    <table class="table">
+                                        <thead>
+                                            <tr>
+                                                <th></th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
+                                                </th>
+                                                <th>
+                                                    @Html.DisplayNameFor(model => model.Entity.Transaction.UsedCreditCard)
+                                                </th>
+                                                <th></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Entity.Transactions)
+                                            {
+                                                <tr>
+                                                    <td class="pdsa-action-button-column">
+                                                        <a href="#" data-pdsa-action="edit"
+                                                           data-pdsa-val="@item.Id"
+                                                           class="btn btn-default btn-sm">
+                                                            <i class="glyphicon glyphicon-edit"></i>
+                                                        </a>
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Date)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Payee)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Memo)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Type)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Category)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.Amount)
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(modelItem => item.UsedCreditCard)
+                                                    </td>
+                                                    <td class="pdsa-action-button-column">
+                                                        <a href="#" data-pdsa-action="delete"
+                                                           data-pdsa-val="@item.Id"
+                                                           onclick="return confirm('Delete this Product?');"
+                                                           class="btn btn-default btn-sm">
+                                                            <i class="glyphicon glyphicon-trash"></i>
+                                                        </a>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="2">Total Cost: $12,334.52</td>
+                                                <td colspan="2">Average Cost: $18.21</td>
+                                                <td colspan="2">Largest Transaction: $1382.76</td>
+                                                <td colspan="2">Smallest Transaction: $0.21</td>
+                                            </tr>
+                                        </tfoot>
+                                    </table>
+                                }
+                                // END TRANSACTION LIST AREA
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div> *@
     </div>
+</div>
+
+<hr />
+<div class="col-md-12 col-lg-12 row">
+    <footer>
+        <p>&copy; @DateTime.Now.Year - JP Financial</p>
+    </footer>
 </div>
 
 
@@ -612,43 +488,7 @@
 
 
 
-    <script>
-        $(document).ready(function() {
 
-            $("[data-pdsa-action]").on("click",
-                function(e) {
-                    e.preventDefault();
-
-                    $("#EventCommand").val(
-                        $(this).data("pdsa-action"));
-
-                    $("#EventArgument").val(
-                        $(this).attr("data-pdsa-val"));
-
-                    $("form").submit();
-                });
-            var model = @Html.Raw(Json.Encode(Model.Entity.StaticFinancialMetrics));
-            demo.initChartist(model);
-        });
-
-        //$('#radioType').on('change', function() {
-        //        var btnStatic = $('#btnStatic');
-        //        var staticFinances = $('#divStaticFinances');
-        //        var historicalFinances = $('#divHistoricalFinances');
-        //        if (btnStatic.selected) {
-        //            staticFinances.show();
-        //            historicalFinances.collapse();
-        //        } else {
-        //            staticFinances.collapse();
-        //            historicalFinances.show();
-        //        }
-        //    });
-
-        $('#radioTimeFrame').on('change', function() {
-
-        });
-
-    </script>
 }
 
 
