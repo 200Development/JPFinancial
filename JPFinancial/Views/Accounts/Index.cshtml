@@ -23,7 +23,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Avg. Spending</p>
-                                 @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
+                                    @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
                                 </div>
                             </div>
                         </div>
@@ -49,7 +49,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Mandatory $</p>
-                                  @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
                                 </div>
                             </div>
                         </div>
@@ -75,7 +75,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p style="width: 100%">Discretionary $</p>
-                                  @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
                                 </div>
                             </div>
                         </div>
@@ -101,14 +101,14 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Savings Rate</p>
-                                  @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)*@
+                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)*@
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                               @* <i class="ti-reload"></i> Update now*@
+                                @* <i class="ti-reload"></i> Update now*@
                             </div>
                         </div>
                     </div>
@@ -119,17 +119,12 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">Account Balances</h4>
+                        <h4 class="title">Accounts Balances</h4>
                         <p class="category">Current</p>
                     </div>
                     <div class="content">
                         <div id="chartExpenses" class="ct-chart"></div>
                         <div class="footer">
-                            @*<div class="chart-legend">
-                                <i class="fa fa-circle text-success"></i> Total Balance
-                                <i class="fa fa-circle text-info"></i> Mandatory
-                                <i class="fa fa-circle text-danger"></i> Discretionary
-                            </div>*@
                             <hr />
                             <div class="stats">
                                 <i class="ti-reload"></i> Updated 3 minutes ago
@@ -142,62 +137,22 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="header">
+                    <div class="header" style="margin: 8px 0">
                         <h4 class="title">Accounts</h4>
+                        <p class="category">Current</p>
                     </div>
-                    <div class="content">
-                        @using (Html.BeginForm())
+                    <div class="container-fluid">
+                        @foreach (var item in Model)
                         {
-                            <p>
-                                @Html.ActionLink("Create New", "Create")
-                            </p>
-                            <table class="table">
-                                <tr>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Name)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Balance)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.PaycheckContribution)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.RequiredSavings)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.BalanceSurplus)
-                                    </th>
-                                    <th></th>
-                                </tr>
-
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Name)
-                                        </td>
-                                        <td style="color: @item.BalanceFontColor">
-                                            @Html.DisplayFor(modelItem => item.Balance)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.PaycheckContribution)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.RequiredSavings)
-                                        </td>
-                                        <td style="color: @item.SurplusFontColor">
-                                            @Html.DisplayFor(modelItem => item.BalanceSurplus)
-                                        </td>
-                                        <td>
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                                        </td>
-                                    </tr>
-                                }
-
-                            </table>
+                            <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
+                                <div class="card-header">@item.Name</div>
+                                <div class="card-body">
+                                    <h5 class="card-price">$@item.Balance</h5>
+                                </div>
+                                <div class="card-footer">
+                                    <p class="card-text">Required Savings - $@item.RequiredSavings </p>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>
