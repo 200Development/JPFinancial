@@ -1,4 +1,4 @@
-namespace JPFinancial.Migrations
+namespace JPFData.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
@@ -78,6 +78,24 @@ namespace JPFinancial.Migrations
                 .PrimaryKey(t => t.Id);
             
             CreateTable(
+                "dbo.CreditCards",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(),
+                        Balance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        StatementBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CreditLimit = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        AvailableCredit = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        MinimumPaymentDue = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PurchaseApr = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CashAdvanceApr = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        GracePeriodDays = c.Int(nullable: false),
+                        EndOfCycleDay = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id);
+            
+            CreateTable(
                 "dbo.Expenses",
                 c => new
                     {
@@ -95,13 +113,21 @@ namespace JPFinancial.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
-                        OriginalBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
-                        CurrentBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        LoanOriginationDate = c.DateTime(nullable: false),
+                        NextDueDate = c.DateTime(nullable: false),
+                        Term = c.Int(nullable: false),
+                        TermClassification = c.Int(nullable: false),
+                        OriginalLoanAmount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        PrincipalBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        OutstandingBalance = c.Decimal(nullable: false, precision: 18, scale: 2),
                         APR = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        AccruedInterest = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        CapitalizedInterest = c.Decimal(nullable: false, precision: 18, scale: 2),
                         CompoundFrequency = c.Int(nullable: false),
                         Payment = c.Decimal(nullable: false, precision: 18, scale: 2),
                         Payments = c.Int(nullable: false),
                         PaymentFrequency = c.Int(nullable: false),
+                        DueDayOfMonthEnum = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -136,8 +162,11 @@ namespace JPFinancial.Migrations
                         Payee = c.String(nullable: false),
                         PayTypesEnum = c.Int(nullable: false),
                         PayFrequency = c.Int(nullable: false),
+                        FirstPayday = c.String(),
+                        LastPayday = c.String(),
                         GrossPay = c.Decimal(precision: 18, scale: 2),
                         NetIncome = c.Decimal(precision: 18, scale: 2),
+                        PaydayOfWeek = c.Int(nullable: false),
                     })
                 .PrimaryKey(t => t.Id);
             
@@ -154,6 +183,8 @@ namespace JPFinancial.Migrations
                         CreditAccountId = c.Int(),
                         DebitAccountId = c.Int(),
                         Amount = c.Decimal(nullable: false, precision: 18, scale: 2),
+                        UsedCreditCard = c.Boolean(nullable: false),
+                        SelectedCreditCardAccount = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.Accounts", t => t.CreditAccountId)
@@ -237,6 +268,7 @@ namespace JPFinancial.Migrations
             DropTable("dbo.AspNetRoles");
             DropTable("dbo.Loans");
             DropTable("dbo.Expenses");
+            DropTable("dbo.CreditCards");
             DropTable("dbo.Companies");
             DropTable("dbo.Bills");
             DropTable("dbo.Bonus");

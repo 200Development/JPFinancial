@@ -9,7 +9,7 @@ namespace JPFData
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("ApplicationConnection", throwIfV1Schema: false)
+            : base("JPFinancial", throwIfV1Schema: false)
         {
         }
 

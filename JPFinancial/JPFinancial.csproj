@@ -155,51 +155,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201803181615021_init.cs" />
-    <Compile Include="Migrations\201803181615021_init.Designer.cs">
-      <DependentUpon>201803181615021_init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804211709515_updatePropertiesToLoanModel.cs" />
-    <Compile Include="Migrations\201804211709515_updatePropertiesToLoanModel.Designer.cs">
-      <DependentUpon>201804211709515_updatePropertiesToLoanModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201804211738017_addPropertiesToLoanModel.cs" />
-    <Compile Include="Migrations\201804211738017_addPropertiesToLoanModel.Designer.cs">
-      <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201805060150394_updateLoanModel.cs" />
-    <Compile Include="Migrations\201805060150394_updateLoanModel.Designer.cs">
-      <DependentUpon>201805060150394_updateLoanModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201806050004019_addPaydayOfWeekToSalaryModel.cs" />
-    <Compile Include="Migrations\201806050004019_addPaydayOfWeekToSalaryModel.Designer.cs">
-      <DependentUpon>201806050004019_addPaydayOfWeekToSalaryModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201806162140293_updateLoansSalariesModels.cs" />
-    <Compile Include="Migrations\201806162140293_updateLoansSalariesModels.Designer.cs">
-      <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807140334584_AddCreditCardTable.cs" />
-    <Compile Include="Migrations\201807140334584_AddCreditCardTable.Designer.cs">
-      <DependentUpon>201807140334584_AddCreditCardTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.cs" />
-    <Compile Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.Designer.cs">
-      <DependentUpon>201807140343263_addUseCreditColumnToTransactionTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807142124297_UpdateCreditCard.cs" />
-    <Compile Include="Migrations\201807142124297_UpdateCreditCard.Designer.cs">
-      <DependentUpon>201807142124297_UpdateCreditCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807151623599_AddCreditCardToTransaction.cs" />
-    <Compile Include="Migrations\201807151623599_AddCreditCardToTransaction.Designer.cs">
-      <DependentUpon>201807151623599_AddCreditCardToTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201807151645532_updateTransactionModel.cs" />
-    <Compile Include="Migrations\201807151645532_updateTransactionModel.Designer.cs">
-      <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -337,41 +292,6 @@
   </ItemGroup>
   <ItemGroup>
     <Service Include="{4A0DDDB5-7A95-4FBF-97CC-616D07737A77}" />
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Migrations\201803181615021_init.resx">
-      <DependentUpon>201803181615021_init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804211709515_updatePropertiesToLoanModel.resx">
-      <DependentUpon>201804211709515_updatePropertiesToLoanModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201804211738017_addPropertiesToLoanModel.resx">
-      <DependentUpon>201804211738017_addPropertiesToLoanModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201805060150394_updateLoanModel.resx">
-      <DependentUpon>201805060150394_updateLoanModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201806050004019_addPaydayOfWeekToSalaryModel.resx">
-      <DependentUpon>201806050004019_addPaydayOfWeekToSalaryModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201806162140293_updateLoansSalariesModels.resx">
-      <DependentUpon>201806162140293_updateLoansSalariesModels.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807140334584_AddCreditCardTable.resx">
-      <DependentUpon>201807140334584_AddCreditCardTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807140343263_addUseCreditColumnToTransactionTable.resx">
-      <DependentUpon>201807140343263_addUseCreditColumnToTransactionTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807142124297_UpdateCreditCard.resx">
-      <DependentUpon>201807142124297_UpdateCreditCard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807151623599_AddCreditCardToTransaction.resx">
-      <DependentUpon>201807151623599_AddCreditCardToTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201807151645532_updateTransactionModel.resx">
-      <DependentUpon>201807151645532_updateTransactionModel.cs</DependentUpon>
-    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
