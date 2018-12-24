@@ -190,9 +190,9 @@ namespace JPFData.Managers
             var thenOrderByMonth = orderedByYear.OrderBy(expense => expense.Key.Month);
             var toDict = thenOrderByMonth.ToDictionary(expense => expense.Key, expense => expense.Value);
 
-            metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => ConvertMonthIntToString(expense.Key.Month), expense => expense.Value);
-            metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => ConvertMonthIntToString(mandatory.Key.Month), mandatory => mandatory.Value);
-            metrics.DiscretionarySpendingByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => ConvertMonthIntToString(disc.Key.Month), disc => disc.Value);
+            metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);
+            metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)}{mandatory.Key.Year}", mandatory => mandatory.Value);
+            metrics.DiscretionarySpendingByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
 
 
             return metrics;
