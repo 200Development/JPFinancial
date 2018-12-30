@@ -125,8 +125,15 @@
                     </div>
                 </div>
             </nav>
+            
+                @RenderBody()
 
-            @RenderBody()
+            <hr />
+            <div class="col-md-12 col-lg-12 row">
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - JP Financial</p>
+                </footer>
+            </div>
         </div>
         @RenderSection("scripts", required: false)
         @RenderSection("MyScripts", required: false)
