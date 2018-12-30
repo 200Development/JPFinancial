@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -58,7 +59,7 @@ namespace JPFinancial.Controllers
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new Account());
         }
 
         // POST: Accounts/Create
