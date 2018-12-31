@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
+﻿using System.Data.Entity;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
@@ -18,27 +15,14 @@ namespace JPFinancial.Controllers
         // GET: Accounts
         public ActionResult Index()
         {
+            AccountViewModel vm = new AccountViewModel();
+            vm.HandleRequest();
             _dbEditor.UpdateRequiredBalance();
             _dbEditor.UpdateRequiredBalanceSurplus();
-            var accounts = _db.Accounts.ToList();
-            var viewModel = new List<AccountViewModel>();
+              
 
-            foreach (var account in accounts)
-            {
-                var vm = new AccountViewModel();
-                vm.Name = account.Name;
-                vm.Balance = account.Balance;
-                vm.BalanceSurplus = account.BalanceSurplus;
-                vm.Id = account.Id;
-                vm.PaycheckContribution = account.PaycheckContribution;
-                vm.RequiredSavings = account.RequiredSavings;
-                vm.BalanceFontColor = account.Balance < 0.0m ? "red" : "green";
-                vm.SurplusFontColor = account.BalanceSurplus < 0.0m ? "red" : "green";
-
-                viewModel.Add(vm);
-            }
-
-            return View(viewModel);
+            //TODO: Add ability to show X number of Accounts
+            return View(vm);
         }
 
         // GET: Accounts/Details/5

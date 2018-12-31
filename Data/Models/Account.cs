@@ -27,5 +27,8 @@ namespace JPFData.Models
 
         [DataType(DataType.Currency), Display(Name = "Surplus/Deficit")]
         public decimal? BalanceSurplus { get; set; }
+
+        [Display(Name = "% of Savings")]
+        public decimal PercentageOfSavings { get; set; }
     }
 }

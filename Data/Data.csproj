@@ -92,14 +92,21 @@
     <Compile Include="Base\BaseViewModel.cs" />
     <Compile Include="Calculations.cs" />
     <Compile Include="DatabaseEditor.cs" />
+    <Compile Include="DTO\AccountDTO.cs" />
+    <Compile Include="DTO\AccountsMetrics.cs" />
     <Compile Include="DTO\StaticFinancialMetrics.cs" />
     <Compile Include="DTO\TimePeriodFinancialMetrics.cs" />
     <Compile Include="Enumerations\ExpenseTypeEnum.cs" />
+    <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
     <Compile Include="Managers\TransactionManager.cs" />
     <Compile Include="Migrations\201812232336053_init.cs" />
     <Compile Include="Migrations\201812232336053_init.Designer.cs">
       <DependentUpon>201812232336053_init.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.cs" />
+    <Compile Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.Designer.cs">
+      <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -143,6 +150,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201812232336053_init.resx">
       <DependentUpon>201812232336053_init.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.resx">
+      <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

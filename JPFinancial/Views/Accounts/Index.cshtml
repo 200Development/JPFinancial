@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JPFData.ViewModels.AccountViewModel>
+﻿@model JPFData.ViewModels.AccountViewModel
 
 @{
     ViewBag.Title = "Accounts";
@@ -22,8 +22,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Avg. Spending</p>
-                                    @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
+                                    <p>Largest Account</p>
+                                       @Html.DisplayFor(model => model.Entity.AccountsMetrics.LargestBalance)
                                 </div>
                             </div>
                         </div>
@@ -48,8 +48,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Mandatory $</p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
+                                    <p>Smallest Account</p>
+                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.SmallestBalance)
                                 </div>
                             </div>
                         </div>
@@ -74,8 +74,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Discretionary $</p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
+                                    <p style="width: 100%">Largest Surplus</p>
+                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.LargestSurplus)
                                 </div>
                             </div>
                         </div>
@@ -100,8 +100,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Savings Rate</p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)*@
+                                    <p>Smallest Surplus</p>
+                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.SmallestSurplus)
                                 </div>
                             </div>
                         </div>
@@ -145,25 +145,24 @@
                         </p>
                     </div>
                     <div class="container-fluid">
-                        @foreach (var item in Model.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+                        @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
                         {
                             <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
                                 <div class="card-header">
-                                    <div style="float: left">@item.Name</div>
-                                    <div style="float: right">
-                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                    <div>@item.Name</div>
+                                    <div>
+                                        @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
+                                        @Html.ActionLink("Details", "Details", new {id = item.Id}) |
+                                        @Html.ActionLink("Delete", "Delete", new {id = item.Id})
                                     </div>
                                 </div>
-                                <div class="card-body" style="margin-top: 36px; text-align: center">
-                                    <h5 class="card-price">$@item.Balance</h5>
+                                <div class="card-body" style="margin: 12px 0; text-align: center">
+                                    <div class="card-price"><span style="font-weight: bold">Balance</span> - $@item.Balance</div>
+                                    <div class="card-price"><span style="font-weight: bold">Savings Rate</span> - @item.PercentageOfSavings%</div>
                                 </div>
                                 <div class="card-footer">
-                                    <div class="row">
-                                        <div class="card-text" style="margin-left: 16px">
-                                            <div style="float: left">Balance Surplus - $@item.BalanceSurplus</div>
-                                            <div style="float: right; margin-right: 16px">@Html.ActionLink("Edit", "Edit", new { id = item.Id })</div>
-                                        </div>
+                                    <div class="card-text">
+                                        Per Paycheck - $@item.PaycheckContribution
                                     </div>
                                 </div>
                             </div>
