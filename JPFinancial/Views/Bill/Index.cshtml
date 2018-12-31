@@ -142,91 +142,38 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="header">
+                    <div class="header" style="margin: 8px 0">
                         <h4 class="title">Expenses</h4>
+                        <p class="category">Current</p>
+                        <p>
+                            @Html.ActionLink("Add Expense", "Create")
+                        </p>
                     </div>
-                    <div class="content">
-                        @using (Html.BeginForm())
+                    <div class="container-fluid" style="text-align: center">
+                        @foreach (var item in Model)
                         {
-
-                            <p>
-                                @Html.ActionLink("Create New", "Create")
-                            </p>
-                            <table class="table">
-                                <tr>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.Name)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.AmountDue)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.DueDate)
-                                    </th>
-                                    <th>
-                                        @Html.DisplayNameFor(model => model.PaymentFrequency)
-                                    </th>
-                                    @*<th>
-                                            @Html.DisplayNameFor(model => model.IsLate)
-                                        </th>*@
-                                    <th></th>
-                                </tr>
-
-                                @foreach (var item in Model)
-                                {
-                                    <tr>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.Name)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.AmountDue)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.DueDate)
-                                        </td>
-                                        <td>
-                                            @Html.DisplayFor(modelItem => item.PaymentFrequency)
-                                        </td>
-                                        @*<td>
-                                                @Html.DisplayFor(modelItem => item.IsLate)
-                                            </td>*@
-                                        <td>
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                                        </td>
-                                    </tr>
-                                }
-
-                            </table>
+                            <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
+                                <div class="card-header">
+                                    <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
+                                    <div>
+                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                    </div>
+                                </div>
+                                <div class="card-body" style="margin: 12px 0; text-align: center">
+                                    <div class="card-price">$@item.AmountDue</div>
+                                </div>
+                                <div class="card-footer">
+                                    <div class="card-text">
+                                        <span style="font-weight: bold">Due</span> - @item.DueDate.ToString("D")
+                                    </div>
+                                </div>
+                            </div>
                         }
                     </div>
                 </div>
             </div>
         </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="card">
-                <div class="header" style="margin: 8px 0">
-                    <h4 class="title">Expenses</h4>
-                    <p class="category">Current</p>
-                </div>
-                <div class="container-fluid">
-                    @foreach (var item in Model)
-                    {
-                        <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1.5px">
-                            <div class="card-header">@item.Name</div>
-                            <div class="card-body">
-                                <h5 class="card-price">$@item.AmountDue</h5>
-                            </div>
-                            <div class="card-footer">
-                                <p class="card-text">Next Due - @item.DueDate.ToString("D")</p>
-                            </div>
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-    </div>
     </div>
 </div>

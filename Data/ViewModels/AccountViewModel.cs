@@ -23,40 +23,13 @@ namespace JPFData.ViewModels
 
         private void Init()
         {
+            Entity = new AccountDTO();
+            SearchEntity = new AccountDTO();
         }
 
         public void HandleRequest()
         {
-                    Get();
-
-                //case "add":
-                //    Add();
-
-                //    break;
-
-                //case "edit":
-                //    IsValid = true;
-                //    Edit();
-                //    break;
-
-                //case "delete":
-                //    //ResetSearch();
-                //    Delete();
-                //    break;
-
-                //case "save":
-                //    Save();
-                //    break;
-
-                //case "cancel":
-                //    ListMode();
-                //    Get();
-                //    break;
-
-                //case "resetadd":
-                //    Reset();
-                //    Get();
-                //    break;
+            Get();
         }
 
         private void Get()

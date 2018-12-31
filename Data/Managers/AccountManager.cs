@@ -9,8 +9,6 @@ namespace JPFData.Managers
     public class AccountManager
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
-        private readonly DatabaseEditor _dbEditor = new DatabaseEditor();
 
 
         public AccountManager()
@@ -28,22 +26,20 @@ namespace JPFData.Managers
 
         public AccountDTO Get(AccountDTO entity)
         {
-            AccountDTO ret = new AccountDTO();
-
             try
             {
-                ret.Accounts = _db.Accounts.ToList();
-                ret.AccountsMetrics = RefreshAccountMetrics(ret);
-                ret.Accounts = UpdateSavingsPercentage(ret.Accounts);
+                entity.Accounts = _db.Accounts.ToList();
+                entity.AccountsMetrics = RefreshAccountMetrics(entity);
+                entity.Accounts = UpdateSavingsPercentage(entity.Accounts);
             }
             catch (Exception e)
             {
                 Console.WriteLine(e);
                 throw;
             }
-       
 
-            return ret;
+
+            return entity;
         }
 
         private List<Account> UpdateSavingsPercentage(List<Account> accounts)
@@ -65,7 +61,6 @@ namespace JPFData.Managers
         private AccountsMetrics RefreshAccountMetrics(AccountDTO dto)
         {
             AccountsMetrics metrics = new AccountsMetrics();
-            var income = _calculations.GetMonthlyIncome();
 
             metrics.LargestBalance = dto.Accounts.Max(a => a.Balance);
             metrics.SmallestBalance = dto.Accounts.Min(a => a.Balance);
@@ -75,7 +70,7 @@ namespace JPFData.Managers
             metrics.SmallestSurplus = dto.Accounts.Min(a => a.BalanceSurplus ?? 0m);
             metrics.AverageSurplus = dto.Accounts.Sum(a => a.BalanceSurplus ?? 0) / dto.Accounts
                                          .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
-            
+
 
             return metrics;
         }

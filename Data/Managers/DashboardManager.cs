@@ -43,7 +43,7 @@ namespace JPFData.Managers
             return ret;
         }
 
-        private StaticFinancialMetrics RefreshFinancialMetrics(DashboardDTO entity)
+        private StaticFinancialMetrics RefreshFinancialMetrics(DashboardDTO dto)
         {
             StaticFinancialMetrics metrics = new StaticFinancialMetrics();
             //TODO: create StaticFinancialMetrics manager class 
