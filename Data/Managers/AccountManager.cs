@@ -51,7 +51,7 @@ namespace JPFData.Managers
                 {
                     var accountSavings = account.RequiredSavings ?? decimal.Zero;
                     var savingsPercentage = accountSavings / totalSavings;
-                    account.PercentageOfSavings = savingsPercentage * 100;
+                    account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
                 }
             }
 
