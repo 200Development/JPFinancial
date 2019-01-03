@@ -19,7 +19,7 @@ namespace JPFinancial.Controllers
             vm.HandleRequest();
             _dbEditor.UpdateRequiredBalance();
             _dbEditor.UpdateRequiredBalanceSurplus();
-              
+
 
             //TODO: Add ability to show X number of Accounts
             return View(vm);
@@ -55,6 +55,10 @@ namespace JPFinancial.Controllers
         {
             if (ModelState.IsValid)
             {
+                //Set RequiredSavings to $0.00 if nothing was entered by user
+                if (account.RequiredSavings == null)
+                    account.RequiredSavings = decimal.Zero;
+
                 _db.Accounts.Add(account);
                 _db.SaveChanges();
                 return RedirectToAction("Index");
