@@ -108,11 +108,13 @@ namespace JPFData
             {
                 /* Update paycheck contributions for accounts with assigned bills */
                 var accounts = _db.Accounts.ToList();
+                var bills = _db.Bills.ToList();
+                var transactions = _db.Transactions.ToList();
 
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
                 {
-                    account.BudgetRequiredContribution = decimal.Zero;
+                    account.SuggestedPaycheckContribution = decimal.Zero;
                 }
 
                 foreach (var bill in _db.Bills.ToList())
@@ -123,40 +125,90 @@ namespace JPFData
                     Account account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
 
                     //TODO: Needs to account for all pay frequencies
+                    //TODO: Suggested contribution assumes payday twice a month.  need to update to include other options
+                    if (account == null) continue;
                     switch (bill.PaymentFrequency)
                     {
                         case FrequencyEnum.Annually:
-                            account.BudgetRequiredContribution += billTotal / 24;
+                            account.SuggestedPaycheckContribution += billTotal / 24;
                             break;
                         case FrequencyEnum.SemiAnnually:
-                            account.BudgetRequiredContribution += billTotal / 12;
+                            account.SuggestedPaycheckContribution += billTotal / 12;
                             break;
                         case FrequencyEnum.Quarterly:
-                            account.BudgetRequiredContribution += billTotal / 6;
+                            account.SuggestedPaycheckContribution += billTotal / 6;
                             break;
                         case FrequencyEnum.SemiMonthly: // every 2 months
-                            account.BudgetRequiredContribution += billTotal / 4;
+                            account.SuggestedPaycheckContribution += billTotal / 4;
                             break;
                         case FrequencyEnum.Monthly:
-                            account.BudgetRequiredContribution += billTotal / 2;
+                            account.SuggestedPaycheckContribution += billTotal / 2;
                             break;
                         case FrequencyEnum.Weekly:
-                            account.BudgetRequiredContribution += billTotal * 2;
+                            account.SuggestedPaycheckContribution += billTotal * 2;
+                            break;
+                        case FrequencyEnum.BiWeekly:
+                            account.SuggestedPaycheckContribution = billTotal;
+                            break;
+                        case FrequencyEnum.Daily:
                             break;
                         default:
-                            account.BudgetRequiredContribution += billTotal / 2;
+                            account.SuggestedPaycheckContribution += billTotal / 2;
                             break;
                     }
                 }
 
-                _db.SaveChanges();
 
-                /* Update paycheck contributions for accounts without assigned bills */
-                var last3MonthsOfTransactions = _db.Transactions.Where(t => t.Date > DateTime.Today.AddMonths(-3)).ToList();
-                var accountsWithoutBills = _db.Accounts.Join(_db.Bills, account => account.Id, bill => bill.AccountId,
-                    (account, bill) => new {Account = account, Bill = bill});
+                // SQL that does same calculation as the following code
+                /*   select a.Name, sum(t.Amount)
+                     from Accounts a
+                     left join Transactions t
+                     on t.CreditAccountId = a.Id
+                     where t.Amount is not null
+                     group by a.Name                */
+                var joinAccountsBills = accounts.SelectMany(
+                    account => bills.Where(bill => account.Id == bill.AccountId).DefaultIfEmpty(),
+                    (account, bill) => new
+                    {
+                        Account = account,
+                        Bill = bill
+                    });
+                //Get only Accounts that don't have any association with Bills
+                //Reason: I want all the accounts that don't have regular bills so i can calculate an avg. paycheck contribution suggestion based on past spending
+                var accountsWithoutBills = (from @join in joinAccountsBills where @join.Bill == null select @join.Account).ToList();
+
+                foreach (var transaction in transactions)
+                {
+                    //get transaction account
+                    Account account = accountsWithoutBills.FirstOrDefault(a => a.Id == transaction.CreditAccountId);
+
+                    if (account != null)
+                        account.SuggestedPaycheckContribution += transaction.Amount;
+                }
+
+
+                //Get last 90 days of transactions
+                var filteredTransactions = transactions.Where(t => t.Date > DateTime.Today.AddDays(-90)).ToList();
+
+                //Get oldest transaction within 90 days
+                var earliestTransaction = filteredTransactions.OrderBy(t => t.Date).FirstOrDefault();
+
+                var totalDaysAgo = 0;
+                if (earliestTransaction != null)
+                {
+                    totalDaysAgo = DateTime.Today.Subtract(earliestTransaction.Date).Days;
+                }
+
+                foreach (var account in accountsWithoutBills)
+                {
+                    var cost = filteredTransactions.Where(t => t.CreditAccount != null).Where(t => t.CreditAccount.Name == account.Name).Sum(t => t.Amount);
+                    var costPerDay = cost / totalDaysAgo;
+                    account.SuggestedPaycheckContribution = costPerDay * 15; //rough for paid twice a month todo: add better algorithm to calculate
+                }
+
+                _db.SaveChanges();
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 // ignored
             }
@@ -912,12 +964,12 @@ namespace JPFData
                 if (surplus > 0)
                 {
                     report.AccountsWithSurplus.Add(account);
-                    report.Surplus += surplus ?? 0m;
+                    report.Surplus += (decimal) surplus;
                 }
                 else if (surplus < 0)
                 {
                     report.AccountsWithDeficit.Add(account);
-                    report.Deficit += surplus ?? 0m;
+                    report.Deficit += (decimal) surplus;
                 }
                 if (!account.ExcludeFromSurplus)
                     report.TotalSurplus += surplus ?? 0m;

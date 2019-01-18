@@ -10,7 +10,7 @@ namespace JPFData.Models
             Balance = decimal.Zero;
             PaycheckContribution = decimal.Zero;
             BalanceSurplus = decimal.Zero;
-            BudgetRequiredContribution = decimal.Zero;
+            SuggestedPaycheckContribution = decimal.Zero;
         }
 
         [Key]
@@ -25,8 +25,8 @@ namespace JPFData.Models
         [DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
         public decimal? PaycheckContribution { get; set; }
 
-        [DataType(DataType.Currency), Display(Name = "Budget Required Contribution")]
-        public decimal? BudgetRequiredContribution { get; set; }
+        [DataType(DataType.Currency), Display(Name = "Suggested Paycheck Contribution")]
+        public decimal? SuggestedPaycheckContribution { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Required Savings")]
         public decimal? RequiredSavings { get; set; }

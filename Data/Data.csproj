@@ -144,6 +144,10 @@
     <Compile Include="Migrations\201901172335148_updateMisc.Designer.cs">
       <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.cs" />
+    <Compile Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.Designer.cs">
+      <DependentUpon>201901180334011_changeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="ApplicationDbContext.cs" />
@@ -224,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901172335148_updateMisc.resx">
       <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.resx">
+      <DependentUpon>201901180334011_changeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
