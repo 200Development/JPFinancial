@@ -1,0 +1,298 @@
+﻿@model JPFData.Models.Paycheck
+
+@{
+    ViewBag.Title = "Details";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>Paycheck</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Regular)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Regular)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ElectronicsNontaxable)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ElectronicsNontaxable)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TravelBusinessExpenseNontaxable)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TravelBusinessExpenseNontaxable)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HolidayPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HolidayPay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GrossPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GrossPay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FederalTaxableGross)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FederalTaxableGross)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FederalWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FederalWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDFederalWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDFederalWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.FederalMedicaidWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.FederalMedicaidWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDFederalMedicaidWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDFederalMedicaidWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.SocialSecurityWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.SocialSecurityWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDSocialSecurityWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDSocialSecurityWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.StateTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.StateTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDStateTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDStateTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CityTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CityTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDCityTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDCityTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.IRA401KWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.IRA401KWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDIRA401KWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDIRA401KWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DependentCareFSAWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DependentCareFSAWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDDependentCareFSAWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDDependentCareFSAWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.HealthInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.HealthInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDHealthInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDHealthInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.DentalInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.DentalInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDDentalInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDDentalInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalBeforeTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalBeforeTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDTotalBeforeTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDTotalBeforeTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.ChildSupportWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.ChildSupportWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDChildSupportWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDChildSupportWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalAfterTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalAfterTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDTotalAfterTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDTotalAfterTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.TotalDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.TotalDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.YTDTotalDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.YTDTotalDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NetPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NetPay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.MaritalStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaritalStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Allowances)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Allowances)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -211,3 +211,115 @@
         </div>
     </div>
 </div>
+
+@section scripts {
+    <!--   Core JS Files   -->
+    <script src="../../Scripts/jquery-1.10.2.js" type="text/javascript"></script>
+    <script src="../../Scripts/bootstrap-paper.min.js" type="text/javascript"></script>
+
+    <!--  Charts Plugin -->
+    <script src="../../Scripts/chartist.min.js"></script>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script> ;
+    <script>
+        google.load("visualization",
+            "1",
+            {
+                packages: ["corechart"]
+            });
+
+        $(document).ready(function() { chart(); });
+
+        function chart() {
+            var staticMetrics = @Html.Raw(Json.Encode(@Model));
+            var totalExpenses = staticMetrics.ExpensesByMonth;
+            var mandatoryExpenses = staticMetrics.MandatoryExpensesByMonth;
+            var discretionaryExpenses = staticMetrics.DiscretionarySpendingByMonth;
+
+            var totalLength = Object.keys(totalExpenses).length;
+            var mandatoryLength = Object.keys(mandatoryExpenses).length;
+            var discretionaryLength = Object.keys(discretionaryExpenses).length;
+
+            var monthsArray = new Array(totalLength);
+            var expensesArray = new Array(totalLength);
+            var mandatoryArray = new Array(mandatoryLength);
+            var discretionaryArray = new Array(discretionaryLength);
+            var highestAmount = 0;
+
+            for (prop in totalExpenses) {
+                monthsArray.push(prop);
+                expensesArray.push(totalExpenses[prop]);
+                if (totalExpenses[prop] > highestAmount) {
+                    highestAmount = totalExpenses[prop];
+                }
+            }
+
+            for (prop in mandatoryExpenses) {
+                mandatoryArray.push(mandatoryExpenses[prop]);
+                if (mandatoryExpenses[prop] > highestAmount) {
+                    highestAmount = mandatoryExpenses[prop];
+                }
+            }
+
+            for (prop in discretionaryExpenses) {
+                discretionaryArray.push(discretionaryExpenses[prop]);
+                if (discretionaryExpenses[prop] > highestAmount) {
+                    highestAmount = discretionaryExpenses[prop];
+                }
+            }
+
+            monthsArray = monthsArray.filter(function(n) { return n != undefined });
+            expensesArray = expensesArray.filter(function(n) { return n != undefined });
+            mandatoryArray = mandatoryArray.filter(function(n) { return n != undefined });
+            discretionaryArray = discretionaryArray.filter(function(n) { return n != undefined });
+
+            var dataTable = new google.visualization.DataTable();
+
+            var data = [['Month', 'Expenses', 'Discretionary', 'Mandatory']];
+
+            for (var i = 0; i <= monthsArray.length; i++) {
+                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i]]);
+            };
+
+            var numRows = data.length;
+            var numCols = data[0].length;
+
+            dataTable.addColumn('string', data[0][0]);
+
+            for (var i = 1; i < numCols; i++)
+                dataTable.addColumn('number', data[0][1]);
+
+            for (var i = 1; i < numRows; i++)
+                dataTable.addRow(data[i]);
+
+            var options = {
+                width: "auto",
+                pointSize: 7,
+                lineWidth: 1,
+                height: "200",
+                backgroundColor: "transparent",
+                colors: ["#EB5E28", "#F3BB45", "#F3BB45"],
+                tooltip: {
+                    textStyle: {
+                        color: "#666666",
+                        fontSize: 11
+                    },
+                    showColorCode: false
+                },
+                legend: {
+                    textStyle: {
+                        color: "black",
+                        fontSize: 12
+                    }
+                },
+                chartArea: {
+                    left: 40,
+                    top: 10,
+                    height: "80%"
+                }
+            };
+
+            var chart = new google.visualization.AreaChart(document.getElementById("chartExpenses"));
+            chart.draw(dataTable, options);
+        }
+    </script>
+}

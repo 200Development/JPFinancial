@@ -108,6 +108,42 @@
     <Compile Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.Designer.cs">
       <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901140239100_AddModelsForPaycheck.cs" />
+    <Compile Include="Migrations\201901140239100_AddModelsForPaycheck.Designer.cs">
+      <DependentUpon>201901140239100_AddModelsForPaycheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901150028188_addsMembersToPaycheck.cs" />
+    <Compile Include="Migrations\201901150028188_addsMembersToPaycheck.Designer.cs">
+      <DependentUpon>201901150028188_addsMembersToPaycheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901150116016_removeListsFromPaycheck.cs" />
+    <Compile Include="Migrations\201901150116016_removeListsFromPaycheck.Designer.cs">
+      <DependentUpon>201901150116016_removeListsFromPaycheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901150129071_removeFedWitholding.cs" />
+    <Compile Include="Migrations\201901150129071_removeFedWitholding.Designer.cs">
+      <DependentUpon>201901150129071_removeFedWitholding.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.cs" />
+    <Compile Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.Designer.cs">
+      <DependentUpon>201901150200511_updatesEmployerToStringForPaycheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901150209471_madePaycheckAllowancesNullable.cs" />
+    <Compile Include="Migrations\201901150209471_madePaycheckAllowancesNullable.Designer.cs">
+      <DependentUpon>201901150209471_madePaycheckAllowancesNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901162332499_UpdatePaycheckAndAccount.cs" />
+    <Compile Include="Migrations\201901162332499_UpdatePaycheckAndAccount.Designer.cs">
+      <DependentUpon>201901162332499_UpdatePaycheckAndAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901170041047_addReqPayContributionToAccount.cs" />
+    <Compile Include="Migrations\201901170041047_addReqPayContributionToAccount.Designer.cs">
+      <DependentUpon>201901170041047_addReqPayContributionToAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901172335148_updateMisc.cs" />
+    <Compile Include="Migrations\201901172335148_updateMisc.Designer.cs">
+      <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="ApplicationDbContext.cs" />
@@ -128,8 +164,16 @@
     <Compile Include="Enumerations\TermClassification.cs" />
     <Compile Include="Enumerations\TransactionTypesEnum.cs" />
     <Compile Include="DTO\DashboardDTO.cs" />
+    <Compile Include="Models\Deduction.cs" />
+    <Compile Include="Models\DeductionsEnum.cs" />
+    <Compile Include="Models\Earning.cs" />
+    <Compile Include="Models\EarningsType.cs" />
     <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Loan.cs" />
+    <Compile Include="Models\MaritalStatus.cs" />
+    <Compile Include="Models\Paycheck.cs" />
+    <Compile Include="Models\Tax.cs" />
+    <Compile Include="Models\TaxesEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Models\Salary.cs" />
     <Compile Include="SortedTransactions.cs" />
@@ -153,6 +197,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.resx">
       <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901140239100_AddModelsForPaycheck.resx">
+      <DependentUpon>201901140239100_AddModelsForPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901150028188_addsMembersToPaycheck.resx">
+      <DependentUpon>201901150028188_addsMembersToPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901150116016_removeListsFromPaycheck.resx">
+      <DependentUpon>201901150116016_removeListsFromPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901150129071_removeFedWitholding.resx">
+      <DependentUpon>201901150129071_removeFedWitholding.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.resx">
+      <DependentUpon>201901150200511_updatesEmployerToStringForPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901150209471_madePaycheckAllowancesNullable.resx">
+      <DependentUpon>201901150209471_madePaycheckAllowancesNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901162332499_UpdatePaycheckAndAccount.resx">
+      <DependentUpon>201901162332499_UpdatePaycheckAndAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901170041047_addReqPayContributionToAccount.resx">
+      <DependentUpon>201901170041047_addReqPayContributionToAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901172335148_updateMisc.resx">
+      <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.Models
 {
@@ -8,6 +9,8 @@ namespace JPFData.Models
         {
             Balance = decimal.Zero;
             PaycheckContribution = decimal.Zero;
+            BalanceSurplus = decimal.Zero;
+            BudgetRequiredContribution = decimal.Zero;
         }
 
         [Key]
@@ -22,11 +25,17 @@ namespace JPFData.Models
         [DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
         public decimal? PaycheckContribution { get; set; }
 
+        [DataType(DataType.Currency), Display(Name = "Budget Required Contribution")]
+        public decimal? BudgetRequiredContribution { get; set; }
+
         [DataType(DataType.Currency), Display(Name = "Required Savings")]
         public decimal? RequiredSavings { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Surplus/Deficit")]
         public decimal? BalanceSurplus { get; set; }
+
+        [Display(Name = "Exclude From Surplus")]
+        public bool ExcludeFromSurplus { get; set; }
 
         [Display(Name = "% of Savings")]
         public decimal PercentageOfSavings { get; set; }

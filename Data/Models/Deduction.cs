@@ -1,14 +1,21 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.Models
 {
-    public class Benefit
+    public class Deduction
     {
+        public Deduction()
+        {
+            Amount = decimal.Zero;
+            BeforeTax = false;
+        }
+
         [Key]
         public int Id { get; set; }
 
-        [Required, Display(Name = "Benefit")]
-        public string Name { get; set; }
+        [Required, Display(Name = "Deduction")]
+        public DeductionsEnum Name { get; set; }
 
         [Required, DataType(DataType.Currency), Display(Name = "Amount")]
         public decimal Amount { get; set; }
@@ -17,6 +24,6 @@ namespace JPFData.Models
         public decimal? YTDAmount { get; set; }
 
         [Required, Display(Name = "Before-Tax")]
-        public bool Taxable { get; set; }
+        public bool BeforeTax { get; set; }
     }
 }

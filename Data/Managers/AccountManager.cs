@@ -31,6 +31,7 @@ namespace JPFData.Managers
                 entity.Accounts = _db.Accounts.ToList();
                 entity.AccountsMetrics = RefreshAccountMetrics(entity);
                 entity.Accounts = UpdateSavingsPercentage(entity.Accounts);
+                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
             }
             catch (Exception e)
             {

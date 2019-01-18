@@ -32,3 +32,4 @@ namespace JPFData.Models
         public DayEnum PaydayOfWeek { get; set; }
     }
 }
+

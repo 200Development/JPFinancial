@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
+using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Models;
 
@@ -9,88 +12,9 @@ namespace JPFData
 {
     public class Calculations
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
         //TODO: Update error handling
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
-
-        //public object GetStockQuote(string ticker, string startDate = null, string endDate = null)
-        //{
-        //    var request = new QuandlDownloadRequest();
-        //    var connection = new QuandlConnection();
-        //    var newStartDate = new DateTime();
-        //    var newEndDate = new DateTime();
-
-        //    if (startDate == null || startDate.Trim().Equals(""))
-        //    {
-        //        newStartDate = DateTime.Today.AddDays(-1);
-        //    }
-        //    else
-        //    {
-        //        newStartDate = Convert.ToDateTime(startDate);
-        //    }
-
-        //    if (endDate == null || endDate.Trim().Equals(""))
-        //    {
-        //        newEndDate = DateTime.Today;
-        //    }
-        //    else
-        //    {
-        //        newEndDate = Convert.ToDateTime(endDate);
-        //    }
-
-        //    request.APIKey = "jujaGvER5aTaVzznmCE8";
-        //    request.Datacode = new Datacode("YAHOO", ticker);
-        //    request.StartDate = newStartDate;
-        //    request.EndDate = newEndDate;
-        //    request.Format = FileFormats.JSON;
-        //    request.Frequency = Frequencies.Daily;
-        //    request.Headers = true;
-        //    request.Sort = SortOrders.Ascending;
-        //    request.Transformation = Transformations.None;
-        //    request.ToRequestString();
-
-
-
-        //    var data = connection.Request(request);
-        //    JObject yahooDataset = JObject.Parse(data);
-        //    IList<JToken> results = yahooDataset["data"].Children().ToList();
-
-        //    return results;
-        //}
-
-        //public object GetStockQuote(string ticker)
-        //{
-        //    var request = new QuandlDownloadRequest();
-        //    var connection = new QuandlConnection();
-
-        //    request.APIKey = "jujaGvER5aTaVzznmCE8";
-        //    request.Datacode = new Datacode("YAHOO", ticker);
-        //    request.StartDate = DateTime.Today.AddDays(-1);
-        //    request.EndDate = DateTime.Today;
-        //    request.Format = FileFormats.JSON;
-        //    request.Frequency = Frequencies.Daily;
-        //    request.Headers = true;
-        //    request.Sort = SortOrders.Ascending;
-        //    request.Transformation = Transformations.None;
-        //    request.ToRequestString();
-
-        //    var data = connection.Request(request);
-        //    var yahooDataset = JObject.Parse(data);
-        //    IList<JToken> results = yahooDataset["data"].Children().ToList();
-
-        //    // serialize JSON results into .NET objects
-        //    foreach (JToken result in results)
-        //    {
-        //        var date = result[0];
-        //        var open = result[1];
-        //        var high = result[2];
-        //        var low = result[3];
-        //        var close = result[4];
-        //        var volume = result[5];
-        //        var adjustedClose = result[6];
-        //    }
-        //    return results;
-        //}
 
         public int PayPeriodsTilDue(DateTime? dueDate)
         {
@@ -118,7 +42,7 @@ namespace JPFData
                         today = firstDayOfMonth;
                     }
                 }
-                return payPeriods;
+                return payPeriods - 1 < 0 ? 0 : payPeriods - 1;
             }
             catch (Exception e)
             {
@@ -178,103 +102,63 @@ namespace JPFData
             }
         }
 
-        public Dictionary<string, decimal> RequiredSavings(IEnumerable<Bill> bills, Dictionary<string, decimal> accountBalances)
+        private void UpdatePaycheckContributions()
         {
             try
             {
-                foreach (var bill in bills)
+                /* Update paycheck contributions for accounts with assigned bills */
+                var accounts = _db.Accounts.ToList();
+
+                //Zeros out all accounts req paycheck contributions
+                foreach (var account in accounts)
+                {
+                    account.BudgetRequiredContribution = decimal.Zero;
+                }
+
+                foreach (var bill in _db.Bills.ToList())
                 {
                     var billTotal = bill.AmountDue;
-                    var dueDate = bill.DueDate;
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
 
+                    // get the account assigned to the bill
+                    Account account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+
+                    //TODO: Needs to account for all pay frequencies
                     switch (bill.PaymentFrequency)
                     {
                         case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
+                            account.BudgetRequiredContribution += billTotal / 24;
                             break;
                         case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
+                            account.BudgetRequiredContribution += billTotal / 12;
                             break;
                         case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
+                            account.BudgetRequiredContribution += billTotal / 6;
                             break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
-                            break;
-                        default:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                    }
-                    decimal save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    if (accountBalances.ContainsKey(bill.Account.Name))
-                    {
-                        accountBalances[bill.Account.Name] = save;
-                    }
-                    else
-                    {
-                        accountBalances.Add(bill.Account.Name, save);
-                    }
-                }
-                return accountBalances;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        public decimal RequiredSavings(IEnumerable<Bill> bills)
-        {
-            try
-            {
-                decimal savedup = 0;
-                foreach (var bill in bills)
-                {
-                    var billTotal = bill.AmountDue;
-                    var dueDate = bill.DueDate;
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
-
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
+                        case FrequencyEnum.SemiMonthly: // every 2 months
+                            account.BudgetRequiredContribution += billTotal / 4;
                             break;
                         case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
+                            account.BudgetRequiredContribution += billTotal / 2;
                             break;
                         case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
+                            account.BudgetRequiredContribution += billTotal * 2;
                             break;
                         default:
-                            savePerPaycheck = billTotal / 2;
+                            account.BudgetRequiredContribution += billTotal / 2;
                             break;
                     }
-
-                    savedup += billTotal - payPeriodsLeft * savePerPaycheck;
                 }
-                return savedup;
+
+                _db.SaveChanges();
+
+                /* Update paycheck contributions for accounts without assigned bills */
+                var last3MonthsOfTransactions = _db.Transactions.Where(t => t.Date > DateTime.Today.AddMonths(-3)).ToList();
+                var accountsWithoutBills = _db.Accounts.Join(_db.Bills, account => account.Id, bill => bill.AccountId,
+                    (account, bill) => new {Account = account, Bill = bill});
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                throw e;
+                // ignored
             }
         }
 
@@ -1002,5 +886,72 @@ namespace JPFData
                 return 0.0m;
             }
         }
+
+        public void CalculateRequiredPaycheckContributions()
+        {
+            try
+            {
+
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+        }
+
+        public AccountRebalanceReport GetRebalancingAccountsReport(AccountDTO accounts)
+        {
+            AccountRebalanceReport report = accounts.RebalanceReport;
+            UpdatePaycheckContributions();
+
+            foreach (var account in accounts.Accounts)
+            {
+                var surplus = account.Balance - account.RequiredSavings;
+                if (surplus == 0) continue;
+                if (surplus > 0)
+                {
+                    report.AccountsWithSurplus.Add(account);
+                    report.Surplus += surplus ?? 0m;
+                }
+                else if (surplus < 0)
+                {
+                    report.AccountsWithDeficit.Add(account);
+                    report.Deficit += surplus ?? 0m;
+                }
+                if (!account.ExcludeFromSurplus)
+                    report.TotalSurplus += surplus ?? 0m;
+            }
+
+            report.newReport = true;
+            return report;
+        }
+    }
+
+    public class AccountRebalanceReport
+    {
+        public AccountRebalanceReport()
+        {
+            newReport = false;
+            Surplus = decimal.Zero;
+            Deficit = decimal.Zero;
+            TotalSurplus = decimal.Zero;
+            AccountsWithSurplus = new List<Account>();
+            AccountsWithDeficit = new List<Account>();
+        }
+
+        public bool newReport { get; set; }
+
+        [DataType(DataType.Currency)]
+        public decimal Surplus { get; set; }
+
+        [DataType(DataType.Currency)]
+        public decimal Deficit { get; set; }
+
+        [DataType(DataType.Currency)]
+        public decimal TotalSurplus { get; set; }
+
+        public List<Account> AccountsWithSurplus { get; set; }
+        public List<Account> AccountsWithDeficit { get; set; }
     }
 }

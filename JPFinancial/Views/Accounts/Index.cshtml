@@ -4,176 +4,206 @@
     ViewBag.Title = "Accounts";
 }
 
-<div class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="row" style="margin: 0 0 12px 16px">
-                <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
-                <p class="category">Monthly</p>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="ti-server"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Largest Account</p>
-                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.LargestBalance)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i>
-                                @*@Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)*@
-                            </div>
-                        </div>
-                    </div>
+@using (Html.BeginForm( FormMethod.Post))
+{
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="row" style="margin: 0 0 12px 16px">
+                    <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+                    <p class="category">Monthly</p>
                 </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-wallet"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Smallest Account</p>
-                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.SmallestBalance)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i>
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-danger text-center">
-                                    <i class="ti-pulse"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p style="width: 100%">Largest Surplus</p>
-                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.LargestSurplus)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i>
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-info text-center">
-                                    <i class="ti-server"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Smallest Surplus</p>
-                                    @Html.DisplayFor(model => model.Entity.AccountsMetrics.SmallestSurplus)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                @* <i class="ti-reload"></i> Update now*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="header">
-                        <h4 class="title">Accounts Balances</h4>
-                        <p class="category">Current</p>
-                    </div>
-                    <div class="content">
-                        <div id="chartAccounts" class="ct-chart"></div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i> Updated 3 minutes ago
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="header" style="margin: 8px 0">
-                        <h4 class="title">Accounts</h4>
-                        <p class="category">Current</p>
-                        <p>
-                            @Html.ActionLink("Add Account", "Create")
-                        </p>
-                    </div>
-                    <div class="container-fluid" style="text-align: center">
-                        @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
-                        {
-                            <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
-                                <div class="card-header">
-                                    <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
-                                    <div>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="icon-big icon-warning text-center">
+                                        <i class="ti-server"></i>
                                     </div>
                                 </div>
-                                <div class="card-body" style="margin: 12px 0; text-align: center">
-                                    <div class="card-price"><span style="font-weight: bold">Balance</span> - $@item.Balance</div>
-                                    <div class="card-price"><span style="font-weight: bold">Required Savings</span> - $@item.RequiredSavings</div>
-                                    <div class="card-price"><span style="font-weight: bold">% of Savings</span> - @item.PercentageOfSavings%</div>
-                                </div>
-                                <div class="card-footer">
-                                    <div class="card-text">
-                                        <span style="font-weight: bold">Per Paycheck Contribution</span> - $@item.PaycheckContribution
+                                <div class="col-xs-7">
+                                    <div class="numbers">
+                                        <p>Largest Account</p>
+                                        @Html.DisplayFor(model => model.Entity.AccountsMetrics.LargestBalance)
                                     </div>
                                 </div>
                             </div>
-                        }
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    <i class="ti-reload"></i>
+                                    @*@Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="icon-big icon-success text-center">
+                                        <i class="ti-wallet"></i>
+                                    </div>
+                                </div>
+                                <div class="col-xs-7">
+                                    <div class="numbers">
+                                        <p>Surplus Accounts</p>
+                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithSurplus.Count)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    <i class="ti-calendar"></i>
+                                    @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="icon-big icon-danger text-center">
+                                        <i class="ti-pulse"></i>
+                                    </div>
+                                </div>
+                                <div class="col-xs-7">
+                                    <div class="numbers">
+                                        <p style="width: 100%">Deficit Accounts</p>
+                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    <i class="ti-calendar"></i>
+                                    @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-3 col-sm-6">
+                    <div class="card">
+                        <div class="content">
+                            <div class="row">
+                                <div class="col-xs-5">
+                                    <div class="icon-big icon-info text-center">
+                                        <i class="ti-server"></i>
+                                    </div>
+                                </div>
+                                <div class="col-xs-7">
+                                    <div class="numbers">
+                                        <p>Total Surplus</p>
+                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    @* <i class="ti-reload"></i> Update now*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header">
+                            <h4 class="title">Accounts Balances</h4>
+                            <p class="category">Current</p>
+                        </div>
+                        <div class="content">
+                            <div id="chartAccounts" class="ct-chart"></div>
+                            <div class="footer">
+                                <hr />
+                                <div class="stats">
+                                    <i class="ti-reload"></i> Updated 3 minutes ago
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="header" style="margin: 8px 0">
+                            <h4 class="title">Accounts</h4>
+                            <p class="category">Current</p>
+                            <button class="btn btn-sm">
+                                @Html.ActionLink("Add Account", "Create")
+                            </button>
+                            <input type="submit" class="btn btn-sm" value="Rebalance" />
+
+                        </div>
+                        <div class="container-fluid" style="text-align: center">
+                            @*@if (Model.Entity.RebalanceReport.newReport)
+                            {
+                                <div title="Rebalancing Report" style="float: left">
+                                    <h6>@Model.Entity.RebalanceReport.AccountsWithSurplus.Count Accounts with a surplus totaling $@Model.Entity.RebalanceReport.Surplus</h6>
+                                    <h6>@Model.Entity.RebalanceReport.AccountsWithDeficit.Count Accounts with a deficit totaling $@Model.Entity.RebalanceReport.Deficit</h6>
+                                    <h6>Total surplus - $@Model.Entity.RebalanceReport.TotalSurplus</h6>
+                                    <hr/>
+                                    @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
+                                    {
+                                        <h6>Would you like to rebalance your accounts?</h6>
+                                        <input type="submit" class="btn btn-sm" value='@Model.EventArgument = "Yes"' />
+                                        <input type="submit" class="btn btn-sm" value="No" name="rebalance" />
+                                    }
+                                    else
+                                    {
+                                        <h6>You need to have a total surplus greater than $0.00 to rebalance.  Get your shit together and come back</h6>
+                                    }
+                                    <h6></h6>
+                                </div>
+                            }*@
+                            @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+                            {
+                                <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
+                                    <div class="card-header">
+                                        <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
+                                        <div>
+                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                        </div>
+                                    </div>
+                                    <div class="card-body" style="margin: 12px 0; text-align: center">
+                                        <div class="card-price"><span style="font-weight: bold">Balance</span> - $@item.Balance</div>
+                                        <div class="card-price"><span style="font-weight: bold">Required Savings</span> - $@item.RequiredSavings</div>
+                                        <div class="card-price"><span style="font-weight: bold">Surplus</span> - $@item.BalanceSurplus</div>
+                                    </div>
+                                    <div class="card-footer">
+                                        <div class="card-text">
+                                            <div style="float: left">
+                                                <span style="font-weight: bold">Paycheck</span> - $@item.PaycheckContribution
+                                            </div>
+                                            <div style="float: right">
+                                                <span style="font-weight: bold">Recommended</span> - $@item.BudgetRequiredContribution
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+}
 
 @section scripts {
     <!--   Core JS Files   -->
@@ -189,6 +219,10 @@
             {
                 packages: ["corechart"]
             });
+
+        //function Rebalance(btn) {
+        //    var test = "";
+        //}
 
         $(document).ready(function() { chart(); });
 
@@ -206,10 +240,10 @@
             //Remove any undefined Accounts
             accountsArray = accountsArray.filter(function(n) { return n != undefined });
 
-            //Set the graph X (Account) and Y (Balance) values 
+            //Set the graph X (Account) and Y (Balance) values
             var data = [['Account', 'Balance']];
 
-            //Iterate through Accounts array to add each account to the graph. 
+            //Iterate through Accounts array to add each account to the graph.
             for (var i = 0; i < accountsArray.length; i++) {
                 if(accountsArray[i]['Balance'] === 0)continue; //Exclude any Accounts with a balance of $0.00
                 data.push([accountsArray[i]['Name'], accountsArray[i]['Balance']]);
@@ -256,5 +290,6 @@
             var chart = new google.visualization.ColumnChart(document.getElementById("chartAccounts"));
             chart.draw(dataTable, options);
         }
+
     </script>
 }

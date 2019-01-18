@@ -7,10 +7,13 @@ namespace JPFData.DTO
     {
         public AccountDTO()
         {
-
+            Accounts = new List<Account>();
+            AccountsMetrics = new AccountsMetrics();
+            RebalanceReport = new AccountRebalanceReport();
         }
 
         public List<Account> Accounts { get; set; }
         public AccountsMetrics AccountsMetrics { get; set; }
+        public AccountRebalanceReport RebalanceReport { get; set; }
     }
 }
