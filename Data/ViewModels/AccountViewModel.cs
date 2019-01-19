@@ -40,7 +40,7 @@ namespace JPFData.ViewModels
         }
         //public AccountViewModel()
         //{
-        //    Balance = decimal.Zero;
+        //    CurrentBalance = decimal.Zero;
         //    PaycheckContribution = decimal.Zero;
         //}
 
@@ -49,7 +49,7 @@ namespace JPFData.ViewModels
         //[Required, StringLength(255)] public string Name { get; set; }
 
         //[Required, DataType(DataType.Currency)]
-        //public decimal Balance { get; set; }
+        //public decimal CurrentBalance { get; set; }
 
         //[DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
         //public decimal? PaycheckContribution { get; set; }

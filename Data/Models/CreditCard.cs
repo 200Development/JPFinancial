@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System;
+using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.Models
 {
@@ -8,20 +9,14 @@ namespace JPFData.Models
 
         public string Name { get; set; }
         
-        [Display(Name = "Current Balance")]
-        public decimal Balance { get; set; }
+        [DataType(DataType.Currency), Display(Name = "Current Balance")]
+        public decimal CurrentBalance { get; set; }
 
-        [Display(Name = "Statement Balance")]
-        public decimal StatementBalance { get; set; }
+        [DataType(DataType.Currency), Display(Name = "Remaining Statement Balance")]
+        public decimal RemainingStatementBalance { get; set; }
 
-        [Display(Name = "Credit Limit")]
+        [DataType(DataType.Currency), Display(Name = "Credit Limit")]
         public decimal CreditLimit { get; set; }
-
-        [Display(Name = "Available Credit")]
-        public decimal AvailableCredit { get; set; }
-
-        [Display(Name = "Minimum Payment Due")]
-        public decimal MinimumPaymentDue { get; set; }
 
         [Display(Name = "Purchase APR")]
         public decimal PurchaseApr { get; set; }
@@ -31,6 +26,16 @@ namespace JPFData.Models
 
         public int GracePeriodDays { get; set; }
 
+        [Display(Name = "Due Day Each Bill")]
         public int EndOfCycleDay { get; set; }
+
+        [Display(Name = "Next Payment Due")]
+        public DateTime NextPaymentDue { get; set; }
+
+        [DataType(DataType.Currency), Display(Name = "Cash Advance Balance")]
+        public decimal? CashAdvanceBalance  { get; set; }
+
+        [DataType(DataType.Currency), Display(Name = "Cash Advance Limit")]
+        public decimal? CashAdvanceLimit { get; set; }
     }
 }

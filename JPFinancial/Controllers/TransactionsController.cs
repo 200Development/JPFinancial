@@ -264,7 +264,7 @@ namespace JPFinancial.Controllers
 
             if (type == "create")
             {
-                if (creditCard != null) creditCard.Balance += transaction.Amount;
+                if (creditCard != null) creditCard.CurrentBalance += transaction.Amount;
                 _db.Entry(creditCard).State = EntityState.Modified;
             }
             else if (type == "delete" || type == "edit")
@@ -284,14 +284,14 @@ namespace JPFinancial.Controllers
                 if (type == "delete")
                 {
                     if (originalCreditCard == null) return;
-                    originalCreditCard.Balance -= transaction.Amount;
+                    originalCreditCard.CurrentBalance -= transaction.Amount;
                     _db.Entry(originalCreditCard).State = EntityState.Modified;
                 }
                 else if (type == "edit")
                 {
                     var amountDifference = transaction.Amount - originalAmount;
                     if (creditCard == null) return;
-                    creditCard.Balance += amountDifference;
+                    creditCard.CurrentBalance += amountDifference;
                     _db.Entry(creditCard).State = EntityState.Modified;
                 }
             }

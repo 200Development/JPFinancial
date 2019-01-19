@@ -123,6 +123,7 @@ namespace JPFData
 
                     // get the account assigned to the bill
                     Account account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+                    if (account != null && account.ExcludeFromSurplus) continue;
 
                     //TODO: Needs to account for all pay frequencies
                     //TODO: Suggested contribution assumes payday twice a month.  need to update to include other options
@@ -959,20 +960,30 @@ namespace JPFData
 
             foreach (var account in accounts.Accounts)
             {
-                var surplus = account.Balance - account.RequiredSavings;
-                if (surplus == 0) continue;
-                if (surplus > 0)
+                // Get Accounts' Total Surplus/Deficit
+                var accountSurplus = account.Balance - account.RequiredSavings;
+                if (accountSurplus == 0) continue;
+                if (accountSurplus > 0)
                 {
                     report.AccountsWithSurplus.Add(account);
-                    report.Surplus += (decimal) surplus;
+                    report.Surplus += (decimal)accountSurplus;
                 }
-                else if (surplus < 0)
+                else if (accountSurplus < 0)
                 {
                     report.AccountsWithDeficit.Add(account);
-                    report.Deficit += (decimal) surplus;
+                    report.Deficit += (decimal)accountSurplus;
                 }
                 if (!account.ExcludeFromSurplus)
-                    report.TotalSurplus += surplus ?? 0m;
+                    report.TotalSurplus += accountSurplus ?? 0m;
+
+                // Get Paycheck's Total Surplus/Deficit
+                if(account.ExcludeFromSurplus) continue;
+
+                var paycheckSurplus = account.PaycheckContribution - account.SuggestedPaycheckContribution;
+                if (paycheckSurplus == 0) continue;
+
+                if (paycheckSurplus != null)
+                    report.PaycheckSurplus += (decimal) paycheckSurplus;
             }
 
             report.newReport = true;
@@ -1002,6 +1013,9 @@ namespace JPFData
 
         [DataType(DataType.Currency)]
         public decimal TotalSurplus { get; set; }
+
+        [DataType(DataType.Currency)]
+        public decimal PaycheckSurplus { get; set; }
 
         public List<Account> AccountsWithSurplus { get; set; }
         public List<Account> AccountsWithDeficit { get; set; }

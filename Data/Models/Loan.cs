@@ -24,13 +24,13 @@ namespace JPFData.Models
         [Display(Name = "Term Classification")]
         public TermClassification TermClassification { get; set; }
 
-        [Display(Name = "Original Balance"), DataType(DataType.Currency)]
+        [Display(Name = "Original CurrentBalance"), DataType(DataType.Currency)]
         public decimal OriginalLoanAmount { get; set; }
 
-        [Display(Name = "Principal Balance"), DataType(DataType.Currency)]
+        [Display(Name = "Principal CurrentBalance"), DataType(DataType.Currency)]
         public decimal PrincipalBalance { get; set; }
 
-        [Display(Name = "Outstanding Balance"), DataType(DataType.Currency)]
+        [Display(Name = "Outstanding CurrentBalance"), DataType(DataType.Currency)]
         public decimal OutstandingBalance { get; set; }
 
         public decimal APR { get; set; }
