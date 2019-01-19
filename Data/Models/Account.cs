@@ -39,5 +39,8 @@ namespace JPFData.Models
 
         [Display(Name = "% of Savings")]
         public decimal PercentageOfSavings { get; set; }
+
+        [Display(Name = "Pool Account")]
+        public bool IsPoolAccount { get; set; }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Models;

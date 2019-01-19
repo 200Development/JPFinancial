@@ -152,6 +152,10 @@
     <Compile Include="Migrations\201901181526419_UpdateCreditCard.Designer.cs">
       <DependentUpon>201901181526419_UpdateCreditCard.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901190335406_cleanUp.cs" />
+    <Compile Include="Migrations\201901190335406_cleanUp.Designer.cs">
+      <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="ApplicationDbContext.cs" />
@@ -238,6 +242,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901181526419_UpdateCreditCard.resx">
       <DependentUpon>201901181526419_UpdateCreditCard.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901190335406_cleanUp.resx">
+      <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

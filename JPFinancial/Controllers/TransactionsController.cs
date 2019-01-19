@@ -184,15 +184,15 @@ namespace JPFinancial.Controllers
         {
             if (type == "create")
             {
-                var newTransaction = new Transaction();
-                newTransaction.Date = transaction.Date;
-                newTransaction.Payee = transaction.Payee;
-                newTransaction.Category = transaction.Category;
-                newTransaction.Memo = transaction.Memo;
-                newTransaction.Type = transaction.Type;
-                newTransaction.DebitAccount = transaction.DebitAccount;
-                newTransaction.CreditAccount = transaction.CreditAccount;
-                newTransaction.Amount = transaction.Amount;
+                //var newTransaction = new Transaction();
+                //newTransaction.Date = transaction.Date;
+                //newTransaction.Payee = transaction.Payee;
+                //newTransaction.Category = transaction.Category;
+                //newTransaction.Memo = transaction.Memo;
+                //newTransaction.Type = transaction.Type;
+                //newTransaction.DebitAccount = transaction.DebitAccount;
+                //newTransaction.CreditAccount = transaction.CreditAccount;
+                //newTransaction.Amount = transaction.Amount;
 
                 if (transaction.DebitAccount != null)
                 {
