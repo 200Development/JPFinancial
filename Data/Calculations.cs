@@ -177,18 +177,6 @@ namespace JPFData
                 //Reason: I want all the accounts that don't have regular bills so i can calculate an avg. paycheck contribution suggestion based on past spending
                 var accountsWithoutBills = (from @join in joinAccountsBills where @join.Bill == null select @join.Account).ToList();
 
-                ////Only use expenses to calculate suggested paycheck contribution
-                //foreach (var transaction in transactions.Where(t => t.Type == TransactionTypesEnum.Expense))
-                //{
-                //    //get transaction account
-                //    Account account = accountsWithoutBills.FirstOrDefault(a => a.Id == transaction.CreditAccountId);
-
-                //    //Skip if transaction is for a bill
-                //    if (account != null)
-                //        account.SuggestedPaycheckContribution += transaction.Amount;
-                //}
-
-
                 //Get last 90 days of transactions
                 var filteredTransactions = transactions.Where(t => t.Date > DateTime.Today.AddDays(-90)).ToList();
 

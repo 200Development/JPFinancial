@@ -29,6 +29,10 @@ namespace JPFData.ViewModels
 
         public void HandleRequest()
         {
+            //if(EventArgument == "Get")
+            //Get();
+            //if (EventArgument == "Rebalance")
+            //    Rebalance();
             Get();
         }
 
@@ -37,6 +41,13 @@ namespace JPFData.ViewModels
             AccountManager mgr = new AccountManager();
 
             Entity = mgr.Get(SearchEntity);
+        }
+
+        private void Rebalance()
+        {
+            AccountManager mgr = new AccountManager();
+
+            Entity = mgr.Rebalance(SearchEntity);
         }
         //public AccountViewModel()
         //{

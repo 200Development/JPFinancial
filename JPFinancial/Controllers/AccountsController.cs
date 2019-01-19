@@ -18,8 +18,8 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             AccountViewModel vm = new AccountViewModel();
-            vm.HandleRequest();
             vm.EventArgument = "Get";
+            vm.HandleRequest();
             _dbEditor.UpdateRequiredBalance();
             _dbEditor.UpdateRequiredBalanceSurplus();
 
@@ -113,10 +113,11 @@ namespace JPFinancial.Controllers
             return View(account);
         }
 
-        [HttpPost]
+        [HttpPost, ActionName("Rebalance")]
         public ActionResult Rebalance(AccountViewModel dto)
         {
             AccountViewModel vm = new AccountViewModel();
+            vm.EventArgument = "Rebalance";
             vm.HandleRequest();
             vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
 

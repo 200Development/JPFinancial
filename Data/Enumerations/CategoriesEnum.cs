@@ -148,6 +148,7 @@ namespace JPFData.Enumerations
         PublicTransportation,
         [Display(Name = "Books & Magazines")]
         ReadingMaterial,
+        Rebalance,
         Rent,
         [Display(Name = "Rental Car")]
         RentalCar,
