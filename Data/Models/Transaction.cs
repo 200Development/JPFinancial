@@ -34,5 +34,7 @@ namespace JPFData.Models
         public bool UsedCreditCard { get; set; }
         public int? SelectedCreditCardAccount { get; set; }
         public IEnumerable<CreditCard> CreditCards { get; set; }
+        public Paycheck Paycheck { get; set; }
+        public int? PaycheckId { get; set; }
     }
 }

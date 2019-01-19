@@ -156,6 +156,14 @@
     <Compile Include="Migrations\201901190335406_cleanUp.Designer.cs">
       <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201901191339408_AddPaycheckIdToTransaction.cs" />
+    <Compile Include="Migrations\201901191339408_AddPaycheckIdToTransaction.Designer.cs">
+      <DependentUpon>201901191339408_AddPaycheckIdToTransaction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201901191353574_UpdatesPaycheckNullables.cs" />
+    <Compile Include="Migrations\201901191353574_UpdatesPaycheckNullables.Designer.cs">
+      <DependentUpon>201901191353574_UpdatesPaycheckNullables.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
     <Compile Include="ApplicationDbContext.cs" />
@@ -245,6 +253,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201901190335406_cleanUp.resx">
       <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901191339408_AddPaycheckIdToTransaction.resx">
+      <DependentUpon>201901191339408_AddPaycheckIdToTransaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201901191353574_UpdatesPaycheckNullables.resx">
+      <DependentUpon>201901191353574_UpdatesPaycheckNullables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

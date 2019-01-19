@@ -360,7 +360,7 @@
         $(document).ready(function() { chart(); });
 
         function chart() {
-            var accounts = @Html.Raw(Json.Encode(@Model.Entity.Accounts));
+            var accounts = @Html.Raw(Json.Encode(@Model.Entity.Accounts.OrderByDescending(a => a.Balance).Take(8)));
             var dataTable = new google.visualization.DataTable();
             var accountsLength = Object.keys(accounts).length;
             var accountsArray = new Array(accountsLength);

@@ -45,10 +45,11 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Regular,Employer,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay")] Paycheck paycheck)
+        //public ActionResult Create([Bind(Include = "Id,Date,Regular,Employer,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay")] Paycheck paycheck)
+        public ActionResult Create([Bind(Include = "Id,Date,Employer,GrossPay,NetPay")] Paycheck paycheck)
         {
             if (!ModelState.IsValid) return View(paycheck);
-            if (!AddIncomeToPool(paycheck)) return View(paycheck);
+            if (!UpdatePoolAccount(paycheck, "create")) return View(paycheck);
             if (!AddIncomeTransactionToDb(paycheck)) return View(paycheck);
             if (!TransferPaycheckContributions(paycheck, "create")) return View(paycheck);
 
@@ -80,15 +81,13 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Regular,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,FedWithholding,YTDFedWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay,MaritalStatus,Allowances")] Paycheck paycheck)
+        //public ActionResult Edit([Bind(Include = "Id,Date,Regular,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,FedWithholding,YTDFedWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay,MaritalStatus,Allowances")] Paycheck paycheck)
+        public ActionResult Edit([Bind(Include = "Id,Date,Employer,GrossPay,NetPay")] Paycheck paycheck)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Entry(paycheck).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(paycheck);
+            if (!ModelState.IsValid) return View(paycheck);
+            _db.Entry(paycheck).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Paychecks/Delete/5
@@ -113,17 +112,34 @@ namespace JPFinancial.Controllers
         {
             Paycheck paycheck = _db.Paychecks.Find(id);
             _db.Paychecks.Remove(paycheck);
+            TransferPaycheckContributions(paycheck, "delete");
+            UpdatePoolAccount(paycheck, "delete");
+
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        private bool AddIncomeToPool(Paycheck paycheck)
+        private bool UpdatePoolAccount(Paycheck paycheck, string type)
         {
-            var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-            if (poolAccount == null) return false;
-            poolAccount.Balance += paycheck.NetPay;
-            _db.Entry(poolAccount).State = EntityState.Modified;
-
+            switch (type)
+            {
+                case "create":
+                    {
+                        var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                        if (poolAccount == null) return false;
+                        poolAccount.Balance += paycheck.NetPay;
+                        _db.Entry(poolAccount).State = EntityState.Modified;
+                        break;
+                    }
+                case "delete":
+                    {
+                        var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                        if (poolAccount == null) return false;
+                        poolAccount.Balance -= paycheck.NetPay;
+                        _db.Entry(poolAccount).State = EntityState.Modified;
+                        break;
+                    }
+            }
 
             return true;
         }
@@ -150,43 +166,72 @@ namespace JPFinancial.Controllers
             }
         }
 
+        /// <summary>
+        /// Update all Accounts with Payroll contributions
+        /// </summary>
+        /// <param name="paycheck"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
         private bool TransferPaycheckContributions(Paycheck paycheck, string type)
         {
-            if (type != "create") return true;
-
             var accounts = _db.Accounts.Where(a => a.PaycheckContribution > 0).ToList();
             var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-            if (poolAccount == null) throw new InvalidOperationException("No Pool Account is Assigned");
 
-            foreach (var account in accounts)
+            if (type != "create")
             {
-                decimal paycheckContribution;
-                if (account.PaycheckContribution != null)
-                    paycheckContribution = (decimal)account.PaycheckContribution;
-                else
-                    continue; //Don't enter the transaction if there's no Paycheck Contribution set for the Account
+                if (poolAccount == null) throw new InvalidOperationException("No Pool Account is Assigned");
+
+                foreach (var account in accounts)
+                {
+                    decimal paycheckContribution;
+                    if (account.PaycheckContribution != null)
+                        paycheckContribution = (decimal)account.PaycheckContribution;
+                    else
+                        continue; //Don't enter the transaction if there's no Paycheck Contribution set for the Account
 
 
-                var newTransaction = new Transaction();
-                newTransaction.Date = paycheck.Date;
-                newTransaction.Payee = $"Transfer to {account.Name}";
-                newTransaction.Category = CategoriesEnum.Transfer;
-                newTransaction.Memo = string.Empty;
-                newTransaction.Type = TransactionTypesEnum.Transfer;
-                newTransaction.DebitAccount = account;
-                newTransaction.CreditAccount = poolAccount;
-                newTransaction.Amount = paycheckContribution;
+                    var newTransaction = new Transaction();
+                    newTransaction.Date = paycheck.Date;
+                    newTransaction.Payee = $"Transfer to {account.Name}";
+                    newTransaction.Category = CategoriesEnum.Transfer;
+                    newTransaction.Memo = string.Empty;
+                    newTransaction.Type = TransactionTypesEnum.Transfer;
+                    newTransaction.DebitAccount = account;
+                    newTransaction.CreditAccount = poolAccount;
+                    newTransaction.Amount = paycheckContribution;
 
 
-                //Update Account Balances
-                account.Balance += paycheckContribution;
-                poolAccount.Balance -= paycheckContribution;
+                    //Update Account Balances
+                    account.Balance += paycheckContribution;
+                    poolAccount.Balance -= paycheckContribution;
 
-                _db.Transactions.Add(newTransaction);
-                _db.Entry(account).State = EntityState.Modified;
-                _db.Entry(poolAccount).State = EntityState.Modified;
+                    _db.Transactions.Add(newTransaction);
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.Entry(poolAccount).State = EntityState.Modified;
+                }
+
             }
+            else if (type == "delete" || type == "edit")
+            {
+                var originalPaycheck = _db.Paychecks
+                    .AsNoTracking()
+                    .Where(p => p.Id == paycheck.Id)
+                    .Cast<Paycheck>()
+                    .FirstOrDefault();
 
+                if (originalPaycheck == null) return false;
+                var originalTransactions =
+                    _db.Transactions.Where(t => t.PaycheckId == paycheck.Id).ToList();
+
+                foreach (var transaction in originalTransactions)
+                {
+                    if (type != "delete") continue;
+                    transaction.DebitAccount.Balance += transaction.Amount;
+                    transaction.CreditAccount.Balance -= transaction.Amount;
+                    _db.Entry(transaction).State = EntityState.Modified;
+                }
+
+            }
             return true;
         }
 

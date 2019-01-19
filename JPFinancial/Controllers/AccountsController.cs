@@ -34,7 +34,7 @@ namespace JPFinancial.Controllers
         {
             AccountViewModel vm = new AccountViewModel();
             vm.HandleRequest();
-            vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
             ModelState.Clear();
 
             return View(vm);

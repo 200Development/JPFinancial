@@ -166,6 +166,9 @@ namespace JPFData
                         case FrequencyEnum.Monthly:
                             savePerPaycheck = billTotal / 2;
                             break;
+                        case FrequencyEnum.BiWeekly:
+                            savePerPaycheck = billTotal;
+                            break;
                         case FrequencyEnum.Weekly:
                             savePerPaycheck = billTotal * 2;
                             break;

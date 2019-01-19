@@ -177,14 +177,16 @@ namespace JPFData
                 //Reason: I want all the accounts that don't have regular bills so i can calculate an avg. paycheck contribution suggestion based on past spending
                 var accountsWithoutBills = (from @join in joinAccountsBills where @join.Bill == null select @join.Account).ToList();
 
-                foreach (var transaction in transactions)
-                {
-                    //get transaction account
-                    Account account = accountsWithoutBills.FirstOrDefault(a => a.Id == transaction.CreditAccountId);
+                ////Only use expenses to calculate suggested paycheck contribution
+                //foreach (var transaction in transactions.Where(t => t.Type == TransactionTypesEnum.Expense))
+                //{
+                //    //get transaction account
+                //    Account account = accountsWithoutBills.FirstOrDefault(a => a.Id == transaction.CreditAccountId);
 
-                    if (account != null)
-                        account.SuggestedPaycheckContribution += transaction.Amount;
-                }
+                //    //Skip if transaction is for a bill
+                //    if (account != null)
+                //        account.SuggestedPaycheckContribution += transaction.Amount;
+                //}
 
 
                 //Get last 90 days of transactions
@@ -201,8 +203,9 @@ namespace JPFData
 
                 foreach (var account in accountsWithoutBills)
                 {
-                    var cost = filteredTransactions.Where(t => t.CreditAccount != null).Where(t => t.CreditAccount.Name == account.Name).Sum(t => t.Amount);
+                    var cost = filteredTransactions.Where(t => t.CreditAccount != null).Where(t => t.Type == TransactionTypesEnum.Expense).Where(t => t.CreditAccount.Name == account.Name).Sum(t => t.Amount);
                     var costPerDay = cost / totalDaysAgo;
+                    var cpd = costPerDay * 15;
                     account.SuggestedPaycheckContribution = costPerDay * 15; //rough for paid twice a month todo: add better algorithm to calculate
                 }
 
