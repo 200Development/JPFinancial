@@ -1,0 +1,112 @@
+﻿@model JPFData.Models.CreditCard
+
+@{
+    ViewBag.Title = "Delete";
+}
+
+<h2>Delete</h2>
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>CreditCard</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CurrentBalance)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CurrentBalance)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.RemainingStatementBalance)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.RemainingStatementBalance)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreditLimit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreditLimit)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.PurchaseApr)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.PurchaseApr)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CashAdvanceApr)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CashAdvanceApr)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.GracePeriodDays)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.GracePeriodDays)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.EndOfCycleDay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.EndOfCycleDay)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.NextPaymentDue)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.NextPaymentDue)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CashAdvanceBalance)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CashAdvanceBalance)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CashAdvanceLimit)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CashAdvanceLimit)
+        </dd>
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <input type="submit" value="Delete" class="btn btn-default" /> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

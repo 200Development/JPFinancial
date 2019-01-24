@@ -73,7 +73,7 @@ namespace JPFinancial.Controllers
 
                 return monthlyIncome;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return 0.0m;
             }
@@ -150,27 +150,57 @@ namespace JPFinancial.Controllers
                     var newBalance = Convert.ToDecimal(transaction.Amount + currentBalance);
                     previousYearBalancesByMonth[monthKey] = newBalance;
 
-                    if (transactMonth == 1 || transactMonth == 2 || transactMonth == 3)
-                        previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 4 || transactMonth == 5 || transactMonth == 6)
-                        previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 7 || transactMonth == 8 || transactMonth == 9)
-                        previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 10 || transactMonth == 11 || transactMonth == 12)
-                        previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                    switch (transactMonth)
+                    {
+                        case 1:
+                        case 2:
+                        case 3:
+                            previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 7:
+                        case 8:
+                        case 9:
+                            previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 10:
+                        case 11:
+                        case 12:
+                            previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] += Convert.ToDecimal(transaction.Amount);
+                            break;
+                    }
                 }
                 else
                 {
                     previousYearBalancesByMonth.Add(monthKey, Convert.ToDecimal(transaction.Amount));
 
-                    if (transactMonth == 1 || transactMonth == 2 || transactMonth == 3)
-                        previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 4 || transactMonth == 5 || transactMonth == 6)
-                        previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 7 || transactMonth == 8 || transactMonth == 9)
-                        previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
-                    if (transactMonth == 10 || transactMonth == 11 || transactMonth == 12)
-                        previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                    switch (transactMonth)
+                    {
+                        case 1:
+                        case 2:
+                        case 3:
+                            previousYearBalancesByQuarter[$"firstQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 4:
+                        case 5:
+                        case 6:
+                            previousYearBalancesByQuarter[$"secondQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 7:
+                        case 8:
+                        case 9:
+                            previousYearBalancesByQuarter[$"thirdQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                            break;
+                        case 10:
+                        case 11:
+                        case 12:
+                            previousYearBalancesByQuarter[$"forthQuarter{transactYear}"] = Convert.ToDecimal(transaction.Amount);
+                            break;
+                    }
                 }
             }
 
@@ -188,21 +218,6 @@ namespace JPFinancial.Controllers
             return sortedTransactions;
         }
 
-
-        //public ActionResult GetFutureValue(DashboardViewModel model)
-        //{
-        //    if (!ModelState.IsValid) return View("Index", model);
-        //    if (model.SelectedFVType.Equals("futureValue"))
-        //    {
-        //        var fv = model.FutureAmount;
-        //        model.FutureDate = _calculations.SavingsDate(Convert.ToDecimal(fv), model.NetIncome);
-        //    }
-        //    else if (model.SelectedFVType.Equals("futureDate"))
-        //    {
-        //        model.FutureAmount = _calculations.FutureValue(Convert.ToDateTime(model.FutureDate), model.NetIncome);
-        //    }
-        //    return View("Index", model);
-        //}
 
         protected override void Dispose(bool disposing)
         {

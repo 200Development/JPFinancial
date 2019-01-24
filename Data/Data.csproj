@@ -88,81 +88,91 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AccountRebalanceReport.cs" />
     <Compile Include="Base\BaseManager.cs" />
     <Compile Include="Base\BaseViewModel.cs" />
     <Compile Include="Calculations.cs" />
-    <Compile Include="DatabaseEditor.cs" />
     <Compile Include="DTO\AccountDTO.cs" />
-    <Compile Include="DTO\AccountsMetrics.cs" />
-    <Compile Include="DTO\StaticFinancialMetrics.cs" />
-    <Compile Include="DTO\TimePeriodFinancialMetrics.cs" />
+    <Compile Include="DTO\BillDTO.cs" />
+    <Compile Include="DTO\CreditCardDTO.cs" />
+    <Compile Include="DTO\IncomeDTO.cs" />
+    <Compile Include="Managers\BillManager.cs" />
+    <Compile Include="Managers\IncomeManager.cs" />
+    <Compile Include="Metrics\AccountMetrics.cs" />
+    <Compile Include="Metrics\BillMetrics.cs" />
+    <Compile Include="Metrics\CreditCardMetrics.cs" />
+    <Compile Include="Metrics\IncomeMetrics.cs" />
+    <Compile Include="Metrics\StaticFinancialMetrics.cs" />
+    <Compile Include="Metrics\TimePeriodFinancialMetrics.cs" />
+    <Compile Include="DTO\TransactionDTO.cs" />
+    <Compile Include="Metrics\TransactionMetrics.cs" />
     <Compile Include="Enumerations\ExpenseTypeEnum.cs" />
     <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
     <Compile Include="Managers\TransactionManager.cs" />
-    <Compile Include="Migrations\201812232336053_init.cs" />
-    <Compile Include="Migrations\201812232336053_init.Designer.cs">
-      <DependentUpon>201812232336053_init.cs</DependentUpon>
+    <Compile Include="Migrations\init.cs" />
+    <Compile Include="Migrations\init.Designer.cs">
+      <DependentUpon>init.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.cs" />
-    <Compile Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.Designer.cs">
-      <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
+    <Compile Include="Migrations\addsPercentageOfSavingsToAccounts.cs" />
+    <Compile Include="Migrations\addsPercentageOfSavingsToAccounts.Designer.cs">
+      <DependentUpon>addsPercentageOfSavingsToAccounts.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901140239100_AddModelsForPaycheck.cs" />
-    <Compile Include="Migrations\201901140239100_AddModelsForPaycheck.Designer.cs">
-      <DependentUpon>201901140239100_AddModelsForPaycheck.cs</DependentUpon>
+    <Compile Include="Migrations\AddModelsForPaycheck.cs" />
+    <Compile Include="Migrations\AddModelsForPaycheck.Designer.cs">
+      <DependentUpon>AddModelsForPaycheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901150028188_addsMembersToPaycheck.cs" />
-    <Compile Include="Migrations\201901150028188_addsMembersToPaycheck.Designer.cs">
-      <DependentUpon>201901150028188_addsMembersToPaycheck.cs</DependentUpon>
+    <Compile Include="Migrations\addsMembersToPaycheck.cs" />
+    <Compile Include="Migrations\addsMembersToPaycheck.Designer.cs">
+      <DependentUpon>addsMembersToPaycheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901150116016_removeListsFromPaycheck.cs" />
-    <Compile Include="Migrations\201901150116016_removeListsFromPaycheck.Designer.cs">
-      <DependentUpon>201901150116016_removeListsFromPaycheck.cs</DependentUpon>
+    <Compile Include="Migrations\removeListsFromPaycheck.cs" />
+    <Compile Include="Migrations\removeListsFromPaycheck.Designer.cs">
+      <DependentUpon>removeListsFromPaycheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901150129071_removeFedWitholding.cs" />
-    <Compile Include="Migrations\201901150129071_removeFedWitholding.Designer.cs">
-      <DependentUpon>201901150129071_removeFedWitholding.cs</DependentUpon>
+    <Compile Include="Migrations\removeFedWitholding.cs" />
+    <Compile Include="Migrations\removeFedWitholding.Designer.cs">
+      <DependentUpon>removeFedWitholding.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.cs" />
-    <Compile Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.Designer.cs">
-      <DependentUpon>201901150200511_updatesEmployerToStringForPaycheck.cs</DependentUpon>
+    <Compile Include="Migrations\updatesEmployerToStringForPaycheck.cs" />
+    <Compile Include="Migrations\updatesEmployerToStringForPaycheck.Designer.cs">
+      <DependentUpon>updatesEmployerToStringForPaycheck.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901150209471_madePaycheckAllowancesNullable.cs" />
-    <Compile Include="Migrations\201901150209471_madePaycheckAllowancesNullable.Designer.cs">
-      <DependentUpon>201901150209471_madePaycheckAllowancesNullable.cs</DependentUpon>
+    <Compile Include="Migrations\madePaycheckAllowancesNullable.cs" />
+    <Compile Include="Migrations\madePaycheckAllowancesNullable.Designer.cs">
+      <DependentUpon>madePaycheckAllowancesNullable.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901162332499_UpdatePaycheckAndAccount.cs" />
-    <Compile Include="Migrations\201901162332499_UpdatePaycheckAndAccount.Designer.cs">
-      <DependentUpon>201901162332499_UpdatePaycheckAndAccount.cs</DependentUpon>
+    <Compile Include="Migrations\UpdatePaycheckAndAccount.cs" />
+    <Compile Include="Migrations\UpdatePaycheckAndAccount.Designer.cs">
+      <DependentUpon>UpdatePaycheckAndAccount.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901170041047_addReqPayContributionToAccount.cs" />
-    <Compile Include="Migrations\201901170041047_addReqPayContributionToAccount.Designer.cs">
-      <DependentUpon>201901170041047_addReqPayContributionToAccount.cs</DependentUpon>
+    <Compile Include="Migrations\addReqPayContributionToAccount.cs" />
+    <Compile Include="Migrations\addReqPayContributionToAccount.Designer.cs">
+      <DependentUpon>addReqPayContributionToAccount.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901172335148_updateMisc.cs" />
-    <Compile Include="Migrations\201901172335148_updateMisc.Designer.cs">
-      <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
+    <Compile Include="Migrations\updateMisc.cs" />
+    <Compile Include="Migrations\updateMisc.Designer.cs">
+      <DependentUpon>updateMisc.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.cs" />
-    <Compile Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.Designer.cs">
-      <DependentUpon>201901180334011_changeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
+    <Compile Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.cs" />
+    <Compile Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.Designer.cs">
+      <DependentUpon>ChangeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901181526419_UpdateCreditCard.cs" />
-    <Compile Include="Migrations\201901181526419_UpdateCreditCard.Designer.cs">
-      <DependentUpon>201901181526419_UpdateCreditCard.cs</DependentUpon>
+    <Compile Include="Migrations\UpdateCreditCard.cs" />
+    <Compile Include="Migrations\UpdateCreditCard.Designer.cs">
+      <DependentUpon>UpdateCreditCard.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901190335406_cleanUp.cs" />
-    <Compile Include="Migrations\201901190335406_cleanUp.Designer.cs">
-      <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
+    <Compile Include="Migrations\cleanUp.cs" />
+    <Compile Include="Migrations\cleanUp.Designer.cs">
+      <DependentUpon>cleanUp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901191339408_AddPaycheckIdToTransaction.cs" />
-    <Compile Include="Migrations\201901191339408_AddPaycheckIdToTransaction.Designer.cs">
-      <DependentUpon>201901191339408_AddPaycheckIdToTransaction.cs</DependentUpon>
+    <Compile Include="Migrations\AddPaycheckIdToTransaction.cs" />
+    <Compile Include="Migrations\AddPaycheckIdToTransaction.Designer.cs">
+      <DependentUpon>AddPaycheckIdToTransaction.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201901191353574_UpdatesPaycheckNullables.cs" />
-    <Compile Include="Migrations\201901191353574_UpdatesPaycheckNullables.Designer.cs">
-      <DependentUpon>201901191353574_UpdatesPaycheckNullables.cs</DependentUpon>
+    <Compile Include="Migrations\UpdatesPaycheckNullables.cs" />
+    <Compile Include="Migrations\UpdatesPaycheckNullables.Designer.cs">
+      <DependentUpon>UpdatesPaycheckNullables.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Account.cs" />
@@ -199,66 +209,81 @@
     <Compile Include="SortedTransactions.cs" />
     <Compile Include="Models\Transaction.cs" />
     <Compile Include="ViewModels\AccountViewModel.cs" />
+    <Compile Include="ViewModels\AddPhoneNumberViewModel.cs" />
+    <Compile Include="ViewModels\ChangePasswordViewModel.cs" />
+    <Compile Include="ViewModels\ConfigureTwoFactorViewModel.cs" />
     <Compile Include="ViewModels\CreateBillViewModel.cs" />
     <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
+    <Compile Include="ViewModels\ExternalLoginListViewModel.cs" />
+    <Compile Include="ViewModels\FactorViewModel.cs" />
+    <Compile Include="ViewModels\ForgotPasswordViewModel.cs" />
+    <Compile Include="ViewModels\ForgotViewModel.cs" />
+    <Compile Include="ViewModels\LoginViewModel.cs" />
+    <Compile Include="ViewModels\ManageLoginsViewModel.cs" />
+    <Compile Include="ViewModels\RegisterViewModel.cs" />
+    <Compile Include="ViewModels\ResetPasswordViewModel.cs" />
+    <Compile Include="ViewModels\SendCodeViewModel.cs" />
+    <Compile Include="ViewModels\SetPasswordViewModel.cs" />
     <Compile Include="ViewModels\TransactionViewModel.cs" />
     <Compile Include="ViewModels\DashboardViewModel.cs" />
-    <Compile Include="ViewModels\IdentityViewModels.cs" />
+    <Compile Include="ViewModels\ExternalLoginConfirmationViewModel.cs" />
     <Compile Include="ViewModels\LoanViewModel.cs" />
-    <Compile Include="ViewModels\ManageViewModels.cs" />
+    <Compile Include="ViewModels\IndexViewModel.cs" />
+    <Compile Include="ViewModels\VerifyCodeViewModel.cs" />
+    <Compile Include="ViewModels\VerifyPhoneNumberViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201812232336053_init.resx">
-      <DependentUpon>201812232336053_init.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\init.resx">
+      <DependentUpon>init.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201812312004367_addsPercentageOfSavingsToAccounts.resx">
-      <DependentUpon>201812312004367_addsPercentageOfSavingsToAccounts.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\addsPercentageOfSavingsToAccounts.resx">
+      <DependentUpon>addsPercentageOfSavingsToAccounts.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901140239100_AddModelsForPaycheck.resx">
-      <DependentUpon>201901140239100_AddModelsForPaycheck.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\AddModelsForPaycheck.resx">
+      <DependentUpon>AddModelsForPaycheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901150028188_addsMembersToPaycheck.resx">
-      <DependentUpon>201901150028188_addsMembersToPaycheck.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\addsMembersToPaycheck.resx">
+      <DependentUpon>addsMembersToPaycheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901150116016_removeListsFromPaycheck.resx">
-      <DependentUpon>201901150116016_removeListsFromPaycheck.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\removeListsFromPaycheck.resx">
+      <DependentUpon>removeListsFromPaycheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901150129071_removeFedWitholding.resx">
-      <DependentUpon>201901150129071_removeFedWitholding.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\removeFedWitholding.resx">
+      <DependentUpon>removeFedWitholding.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901150200511_updatesEmployerToStringForPaycheck.resx">
-      <DependentUpon>201901150200511_updatesEmployerToStringForPaycheck.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\updatesEmployerToStringForPaycheck.resx">
+      <DependentUpon>updatesEmployerToStringForPaycheck.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901150209471_madePaycheckAllowancesNullable.resx">
-      <DependentUpon>201901150209471_madePaycheckAllowancesNullable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\madePaycheckAllowancesNullable.resx">
+      <DependentUpon>madePaycheckAllowancesNullable.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901162332499_UpdatePaycheckAndAccount.resx">
-      <DependentUpon>201901162332499_UpdatePaycheckAndAccount.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\UpdatePaycheckAndAccount.resx">
+      <DependentUpon>UpdatePaycheckAndAccount.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901170041047_addReqPayContributionToAccount.resx">
-      <DependentUpon>201901170041047_addReqPayContributionToAccount.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\addReqPayContributionToAccount.resx">
+      <DependentUpon>addReqPayContributionToAccount.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901172335148_updateMisc.resx">
-      <DependentUpon>201901172335148_updateMisc.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\updateMisc.resx">
+      <DependentUpon>updateMisc.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901180334011_changeFieldToSuggestedPaycheckContribution.resx">
-      <DependentUpon>201901180334011_changeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.resx">
+      <DependentUpon>ChangeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901181526419_UpdateCreditCard.resx">
-      <DependentUpon>201901181526419_UpdateCreditCard.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\UpdateCreditCard.resx">
+      <DependentUpon>UpdateCreditCard.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901190335406_cleanUp.resx">
-      <DependentUpon>201901190335406_cleanUp.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\cleanUp.resx">
+      <DependentUpon>cleanUp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901191339408_AddPaycheckIdToTransaction.resx">
-      <DependentUpon>201901191339408_AddPaycheckIdToTransaction.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\AddPaycheckIdToTransaction.resx">
+      <DependentUpon>AddPaycheckIdToTransaction.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201901191353574_UpdatesPaycheckNullables.resx">
-      <DependentUpon>201901191353574_UpdatesPaycheckNullables.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\UpdatesPaycheckNullables.resx">
+      <DependentUpon>UpdatesPaycheckNullables.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

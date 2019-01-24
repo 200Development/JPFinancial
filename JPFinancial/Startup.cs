@@ -1,4 +1,5 @@
 ﻿using JPFData;
+using JPFData.Managers;
 using Microsoft.Owin;
 using Owin;
 
@@ -7,14 +8,17 @@ namespace JPFinancial
 {
     public partial class Startup
     {
-        private readonly DatabaseEditor _dbEditor = new DatabaseEditor();
+        private AccountManager accountManager = new AccountManager();
+        private BillManager billManager = new BillManager();
+
 
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-            _dbEditor.UpdateRequiredBalance();
-            _dbEditor.UpdateRequiredBalanceSurplus();
-            _dbEditor.UpdateBillDueDates();
+
+            accountManager.UpdateRequiredBalance();
+            accountManager.UpdateRequiredBalanceSurplus();
+            billManager.UpdateBillDueDates();
         }
     }
 }

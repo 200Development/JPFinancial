@@ -51,24 +51,22 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Payee,PayType,PayFrequency,NetIncome,GrossPay")] CreateSalaryViewModel salary)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(salary);
+
+
+            var newSalary = new Salary()
             {
-                var company = _db.Companies.FirstOrDefault(c => c.Name == salary.Payee);
-                var newSalary = new Salary()
-                {
-                    NetIncome = salary.NetIncome,
-                    PayFrequency = salary.PayFrequency,
-                    Payee = salary.Payee,
-                    GrossPay = salary.GrossPay,
-                    PayTypesEnum = salary.PayTypesEnum
-                };
+                NetIncome = salary.NetIncome,
+                PayFrequency = salary.PayFrequency,
+                Payee = salary.Payee,
+                GrossPay = salary.GrossPay,
+                PayTypesEnum = salary.PayTypesEnum
+            };
 
-                _db.Salaries.Add(newSalary);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            _db.Salaries.Add(newSalary);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
 
-            return View(salary);
         }
 
         // GET: Salary/Edit/5
@@ -93,13 +91,12 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,PayType,PayFrequency,GrossPay")] Salary salary)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Entry(salary).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(salary);
+            if (!ModelState.IsValid) return View(salary);
+
+
+            _db.Entry(salary).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Salary/Delete/5

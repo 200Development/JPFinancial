@@ -18,13 +18,20 @@
                             <div class="row">
                                 <div class="col-xs-5">
                                     <div class="icon-big icon-success text-center">
-                                        <i class="ti-thumb-up"></i>
+                                        @if (Model.Entity.Metrics.TotalBalance > 0)
+                                        {
+                                            <i class="ti-face-smile"></i>
+                                        }
+                                        @if (Model.Entity.Metrics.TotalBalance <= 0)
+                                        {
+                                            <i class="ti-face-sad"></i>
+                                        }
                                     </div>
                                 </div>
                                 <div class="col-xs-7">
                                     <div class="numbers">
-                                        <p>Surplus Accounts</p>
-                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithSurplus.Count)
+                                        <p>Total Balance</p>
+                                        @Html.DisplayFor(model => model.Entity.Metrics.TotalBalance)
                                     </div>
                                 </div>
                             </div>
@@ -242,8 +249,8 @@
                 <div class="col-md-12">
                     <div class="card">
                         <div class="header">
-                            <h4 class="title">Accounts CurrentBalances</h4>
-                            <p class="category">Current</p>
+                            <h4 class="title">Balances</h4>
+                            @*<p class="category">Current</p>*@
                         </div>
                         <div class="content">
                             <div id="chartAccounts" class="ct-chart"></div>
@@ -262,33 +269,13 @@
                     <div class="card">
                         <div class="header" style="margin: 8px 0">
                             <h4 class="title">Accounts</h4>
-                            <p class="category">Current</p>
+                            @*<p class="category">Current</p>*@
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Add Account", "Create")
                             </button>
 
                         </div>
                         <div class="container-fluid" style="text-align: center">
-                            @*@if (Model.Entity.RebalanceReport.newReport)
-                                {
-                                    <div title="Rebalancing Report" style="float: left">
-                                        <h6>@Model.Entity.RebalanceReport.AccountsWithSurplus.Count Accounts with a surplus totaling $@Model.Entity.RebalanceReport.Surplus</h6>
-                                        <h6>@Model.Entity.RebalanceReport.AccountsWithDeficit.Count Accounts with a deficit totaling $@Model.Entity.RebalanceReport.Deficit</h6>
-                                        <h6>Total surplus - $@Model.Entity.RebalanceReport.TotalSurplus</h6>
-                                        <hr/>
-                                        @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
-                                        {
-                                            <h6>Would you like to rebalance your accounts?</h6>
-                                            <input type="submit" class="btn btn-sm" value='@Model.EventArgument = "Yes"' />
-                                            <input type="submit" class="btn btn-sm" value="No" name="rebalance" />
-                                        }
-                                        else
-                                        {
-                                            <h6>You need to have a total surplus greater than $0.00 to rebalance.  Get your shit together and come back</h6>
-                                        }
-                                        <h6></h6>
-                                    </div>
-                                }*@
                             @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
                             {
                                 <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
@@ -318,10 +305,10 @@
                                     </div>
                                     <div class="card-footer">
                                         <div class="card-text">
-                                            <div style="float: left">
+                                            <div style="float: left; font-size: .9em">
                                                 <span style="font-weight: bold">Paycheck</span> - $@item.PaycheckContribution
                                             </div>
-                                            <div style="float: right">
+                                            <div style="float: right; font-size: .9em">
                                                 <span style="font-weight: bold">Suggested</span> - $@item.SuggestedPaycheckContribution
                                             </div>
                                         </div>

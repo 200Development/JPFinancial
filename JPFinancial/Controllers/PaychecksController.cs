@@ -160,7 +160,7 @@ namespace JPFinancial.Controllers
                 _db.Entry(newTransaction).State = EntityState.Added;
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

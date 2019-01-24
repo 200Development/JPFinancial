@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JPFData.Models.Transaction>
+﻿@model JPFData.ViewModels.TransactionViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -23,7 +23,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Avg. Spending</p>
+                                    <p>Total Accounts' Balance</p>
                                     @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
                                 </div>
                             </div>
@@ -49,7 +49,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Mandatory $</p>
+                                    <p>Credit Card Balance</p>
                                     @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
                                 </div>
                             </div>
@@ -75,7 +75,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Discretionary $</p>
+                                    <p style="width: 100%"></p>
                                     @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
                                 </div>
                             </div>
@@ -175,7 +175,7 @@
                                     <th></th>
                                 </tr>
 
-                                @foreach (var item in Model.OrderByDescending(m => m.Date))
+                                @foreach (var item in Model.Entity.Transactions.OrderByDescending(m => m.Date))
                                 {
                                     <tr>
                                         <td>

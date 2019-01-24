@@ -18,7 +18,7 @@ namespace JPFinancial.Controllers
         // GET: Loans
         public ActionResult Index()
         {
-            var months = 12;
+            //var months = 12;
             var loansVM = new List<LoanViewModel>();
             var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
 
@@ -68,16 +68,15 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,LoanOriginationDate,Term,DueDayOfMonth,TermClassification,OriginalLoanAmount,OutstandingBalance,APR,Payment,PaymentFrequency")] Loan loan)
         {
-            if (ModelState.IsValid)
-            {
-                loan.LoanOriginationDate = Convert.ToDateTime(loan.LoanOriginationDate);
-                loan.NextDueDate = DateTime.MinValue;
-                _db.Loans.Add(loan);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            if (!ModelState.IsValid) return View(loan);
 
-            return View(loan);
+
+            loan.LoanOriginationDate = Convert.ToDateTime(loan.LoanOriginationDate);
+            loan.NextDueDate = DateTime.MinValue;
+            _db.Loans.Add(loan);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+
         }
 
         // GET: Loans/Edit/5
@@ -102,13 +101,12 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,LoanOriginationDate,Term,TermClassification,DueDayOfMonth,OriginalLoanAmount,PrincipalBalance,OutstandingBalance,APR,AccruedInterest,CapitalizedInterest,CompoundFrequency,Payment,Fees,Payments,PaymentFrequency")] Loan loan)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Entry(loan).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(loan);
+            if (!ModelState.IsValid) return View(loan);
+
+
+            _db.Entry(loan).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Loans/Delete/5

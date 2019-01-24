@@ -21,6 +21,7 @@ namespace JPFData.ViewModels
         public string EventCommand { get; set; }
         public string EventArgument { get; set; }
 
+
         private void Init()
         {
             Entity = new AccountDTO();

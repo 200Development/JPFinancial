@@ -130,16 +130,15 @@ namespace JPFData.Base
                 IsValid = false;
             }
 
-            if (!IsValid)
+            if (IsValid) return;
+
+            if (Mode == "Add")
             {
-                if (Mode == "Add")
-                {
-                    AddMode();
-                }
-                else
-                {
-                    EditMode();
-                }
+                AddMode();
+            }
+            else
+            {
+                EditMode();
             }
         }
 

@@ -1,21 +1,24 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
+using JPFData.Metrics;
 using JPFData.Models;
 
 namespace JPFData.Managers
 {
     public class AccountManager
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db;
+        private readonly Calculations _calc;
 
 
         public AccountManager()
         {
+            _db = new ApplicationDbContext();
+            _calc = new Calculations();
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
@@ -32,7 +35,7 @@ namespace JPFData.Managers
             try
             {
                 entity.Accounts = _db.Accounts.ToList();
-                entity.AccountsMetrics = RefreshAccountMetrics(entity);
+                entity.Metrics = RefreshAccountMetrics(entity);
                 entity.Accounts = UpdateSavingsPercentage(entity.Accounts);
 
                 // TODO: Change to manually run rebalancing
@@ -44,44 +47,48 @@ namespace JPFData.Managers
                 _db.SaveChanges();
                 entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
-                throw;
+                //ignore
             }
 
 
             return entity;
         }
 
+
+
+        #region DTO Model Updating
+
         private List<Account> UpdateSavingsPercentage(List<Account> accounts)
         {
-            if (accounts != null && accounts.Count > 0)
+            if (accounts == null || accounts.Count <= 0) return accounts;
+
+
+            var totalSavings = accounts.Sum(a => a.RequiredSavings) ?? decimal.Zero; ;
+            foreach (Account account in accounts)
             {
-                var totalSavings = accounts.Sum(a => a.RequiredSavings) ?? decimal.Zero; ;
-                foreach (Account account in accounts)
-                {
-                    var accountSavings = account.RequiredSavings ?? decimal.Zero;
-                    var savingsPercentage = accountSavings / totalSavings;
-                    account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
-                }
+                var accountSavings = account.RequiredSavings ?? decimal.Zero;
+                var savingsPercentage = accountSavings / totalSavings;
+                account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
             }
 
             return accounts;
         }
 
-        private AccountsMetrics RefreshAccountMetrics(AccountDTO dto)
+        private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
         {
-            AccountsMetrics metrics = new AccountsMetrics();
+            AccountMetrics metrics = new AccountMetrics();
 
-            metrics.LargestBalance = dto.Accounts.Max(a => a.Balance);
-            metrics.SmallestBalance = dto.Accounts.Min(a => a.Balance);
-            metrics.AverageBalance = dto.Accounts.Sum(a => a.Balance) / dto.Accounts.Count;
+            metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
+            metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
+            metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
 
-            metrics.LargestSurplus = dto.Accounts.Max(a => a.BalanceSurplus ?? 0m);
-            metrics.SmallestSurplus = dto.Accounts.Min(a => a.BalanceSurplus ?? 0m);
-            metrics.AverageSurplus = dto.Accounts.Sum(a => a.BalanceSurplus ?? 0) / dto.Accounts
+            metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
+            metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
+            metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / entity.Accounts
                                          .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
+            metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 
 
             return metrics;
@@ -98,10 +105,9 @@ namespace JPFData.Managers
 
                 _db.SaveChanges();
             }
-            catch (Exception e)
+            catch (Exception)
             {
-                Console.WriteLine(e);
-                throw;
+                //ignore
             }
 
 
@@ -140,7 +146,7 @@ namespace JPFData.Managers
                 //_db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -201,7 +207,7 @@ namespace JPFData.Managers
                 //_db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -221,7 +227,7 @@ namespace JPFData.Managers
                 //_db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
@@ -238,10 +244,105 @@ namespace JPFData.Managers
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
         }
+
+        //TODO: research access modifiers 
+        public void UpdateRequiredBalance()
+        {
+            try
+            {
+                var accounts = _db.Accounts.ToList();
+                var bills = _db.Bills.ToList();
+                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
+
+                foreach (var bill in bills)
+                {
+                    var billTotal = bill.AmountDue;
+                    var dueDate = bill.DueDate;
+                    var payPeriodsLeft = _calc.PayPeriodsTilDue(dueDate);
+                    decimal savePerPaycheck = 0;
+
+                    switch (bill.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Annually:
+                            savePerPaycheck = billTotal / 24;
+                            break;
+                        case FrequencyEnum.SemiAnnually:
+                            savePerPaycheck = billTotal / 12;
+                            break;
+                        case FrequencyEnum.Quarterly:
+                            savePerPaycheck = billTotal / 6;
+                            break;
+                        case FrequencyEnum.SemiMonthly:
+                            savePerPaycheck = billTotal / 4;
+                            break;
+                        case FrequencyEnum.Monthly:
+                            savePerPaycheck = billTotal / 2;
+                            break;
+                        case FrequencyEnum.BiWeekly:
+                            savePerPaycheck = billTotal;
+                            break;
+                        case FrequencyEnum.Weekly:
+                            savePerPaycheck = billTotal * 2;
+                            break;
+                        default:
+                            savePerPaycheck = billTotal / 2;
+                            break;
+                    }
+                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
+                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
+                }
+
+
+                foreach (var account in accounts)
+                {
+                    var valuesFound = false;
+                    decimal totalSavings = 0;
+
+                    foreach (var savings in savingsAccountBalances)
+                    {
+                        if (savings.Key != account.Name) continue;
+                        totalSavings += savings.Value;
+                        valuesFound = true;
+                    }
+                    if (!valuesFound) continue;
+                    account.RequiredSavings = totalSavings;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+        }
+
+        public void UpdateRequiredBalanceSurplus()
+        {
+            try
+            {
+                var accounts = _db.Accounts.ToList();
+
+                foreach (var account in accounts)
+                {
+                    var acctBalance = account.Balance;
+                    var reqbalance = account.RequiredSavings;
+                    account.BalanceSurplus = acctBalance - reqbalance;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.SaveChanges();
+
+                }
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+        }
+
+        #endregion
     }
 }

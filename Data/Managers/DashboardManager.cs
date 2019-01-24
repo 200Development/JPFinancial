@@ -1,12 +1,8 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Web.Mvc;
 using JPFData.DTO;
-using JPFData.Models;
-using JPFData.ViewModels;
+using JPFData.Metrics;
 
 
 namespace JPFData.Managers
@@ -15,7 +11,6 @@ namespace JPFData.Managers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly Calculations _calculations = new Calculations();
-        private readonly DatabaseEditor _dbEditor = new DatabaseEditor();
 
 
         public DashboardManager()
@@ -37,7 +32,7 @@ namespace JPFData.Managers
             DashboardDTO ret = new DashboardDTO();
             TransactionManager tManager = new TransactionManager();
 
-            ret.Transactions = tManager.Get(new Transaction());
+ 
             ret.StaticFinancialMetrics = RefreshFinancialMetrics(ret);
             ret.TimePeriodMetrics = RefreshTimePeriodMetrics(ret);
             return ret;
@@ -246,114 +241,20 @@ namespace JPFData.Managers
             return metric;
         }
 
-        public bool Insert(DashboardDTO entity)
-        {
-            var ret = false;
-
-            ret = Validate(entity);
-
-            if (ret)
-            {
-                var newTransaction = ConvertViewModelToTransaction(entity.CreateTransaction);
-                _dbEditor.UpdateAccountBalances(newTransaction, "create");
-                if (entity.CreateTransaction.UsedCreditCard)
-                    _dbEditor.UpdateCreditCardBalances(newTransaction, "create");
-
-                _db.Transactions.Add(newTransaction);
-                _db.SaveChanges();
-            }
-
-            return ret;
-        }
-
-        [ValidateAntiForgeryToken]
-        public void Update(DashboardDTO entity)
-        {
-            Transaction transaction = ConvertViewModelToTransaction(entity.CreateTransaction);
-
-            if (transaction != null)
-            {
-                _dbEditor.UpdateAccountBalances(transaction, "edit");
-                _dbEditor.UpdateCreditCardBalances(transaction, "edit");
-
-                _db.Entry(transaction).State = EntityState.Modified;
-
-                var creditCard = new CreditCard();
-                if (transaction.UsedCreditCard)
-                {
-                    creditCard = entity.CreateTransaction.CreditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
-                    _db.Entry(creditCard).State = EntityState.Modified;
-                }
-
-                _db.SaveChanges();
-            }
-        }
-
-        public void DeleteTransaction(int? id)
-        {
-            Transaction transaction = _db.Transactions.Find(id);
-            try
-            {
-                _db.Transactions.Remove(transaction);
-                _dbEditor.UpdateAccountBalances(transaction, "delete");
-                _dbEditor.UpdateCreditCardBalances(transaction, "delete");
-
-                if (transaction.UsedCreditCard)
-                {
-                    var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
-                    _db.Entry(creditCard).State = EntityState.Modified;
-                }
-
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine(e);
-                throw;
-            }
-        }
 
         private bool Validate(DashboardDTO entity)
         {
             ValidationErrors.Clear();
 
-            if (entity.CreateTransaction.Amount <= 0)
-            {
-                ValidationErrors.Add(new
-                    KeyValuePair<string, string>("Transaction",
-                        "Transaction amount must be greater than 0."));
-            }
+            // EXAMPLE
+            //if (entity.CreateTransaction.Amount <= 0)
+            //{
+            //    ValidationErrors.Add(new
+            //        KeyValuePair<string, string>("Transaction",
+            //            "Transaction amount must be greater than 0."));
+            //}
 
             return (ValidationErrors.Count == 0);
-        }
-
-        private Transaction ConvertViewModelToTransaction(TransactionViewModel transactionViewModel)
-        {
-            try
-            {
-                var newTransaction = new Transaction();
-                newTransaction.Id = transactionViewModel.Id;
-                newTransaction.Date = transactionViewModel.Date;
-                newTransaction.Payee = transactionViewModel.Payee;
-                newTransaction.Memo = transactionViewModel.Memo;
-                newTransaction.Type = transactionViewModel.Type;
-                newTransaction.Category = transactionViewModel.Category;
-                newTransaction.CreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedCreditAccount);
-                newTransaction.CreditAccountId = transactionViewModel.SelectedCreditAccount;
-                newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
-                newTransaction.DebitAccountId = transactionViewModel.SelectedDebitAccount;
-                newTransaction.Amount = transactionViewModel.Amount;
-                newTransaction.UsedCreditCard = transactionViewModel.UsedCreditCard;
-                newTransaction.SelectedCreditCardAccount = transactionViewModel.SelectedCreditCardAccount;
-
-
-                return newTransaction;
-            }
-            catch (Exception)
-            {
-                return null;
-            }
         }
     }
 }

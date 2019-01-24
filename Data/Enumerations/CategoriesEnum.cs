@@ -91,6 +91,7 @@ namespace JPFData.Enumerations
         [Display(Name = "Home Supplies")]
         HomeSupplies,
         Hotel,
+        Insurance,
         Interest,
         Internet,
         Investment,
@@ -116,6 +117,8 @@ namespace JPFData.Enumerations
         Lyft,
         Massage,
         Medical,
+        [Display(Name = "Membership Fee")]
+        MembershipFee,
         Mortgage,
         [Display(Name = "Net Salary")]
         NetSalary,

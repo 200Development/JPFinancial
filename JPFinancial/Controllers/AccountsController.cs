@@ -12,7 +12,7 @@ namespace JPFinancial.Controllers
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly DatabaseEditor _dbEditor = new DatabaseEditor();
+
 
         // GET: Accounts
         public ActionResult Index()
@@ -20,8 +20,8 @@ namespace JPFinancial.Controllers
             AccountViewModel vm = new AccountViewModel();
             vm.EventArgument = "Get";
             vm.HandleRequest();
-            _dbEditor.UpdateRequiredBalance();
-            _dbEditor.UpdateRequiredBalanceSurplus();
+            //_dbEditor.UpdateRequiredBalance();
+            //_dbEditor.UpdateRequiredBalanceSurplus();
 
 
             //TODO: Add ability to show X number of Accounts
@@ -68,18 +68,17 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] Account account)
         {
-            if (ModelState.IsValid)
-            {
-                //Set RequiredSavings to $0.00 if nothing was entered by user
-                if (account.RequiredSavings == null)
-                    account.RequiredSavings = decimal.Zero;
+            if (!ModelState.IsValid) return View(account);
 
-                _db.Accounts.Add(account);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
 
-            return View(account);
+            //Set RequiredSavings to $0.00 if nothing was entered by user
+            if (account.RequiredSavings == null)
+                account.RequiredSavings = decimal.Zero;
+
+            _db.Accounts.Add(account);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+
         }
 
         // GET: Accounts/Edit/5
@@ -104,13 +103,12 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] Account account)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Entry(account).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(account);
+            if (!ModelState.IsValid) return View(account);
+
+
+            _db.Entry(account).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         [HttpPost, ActionName("Rebalance")]
