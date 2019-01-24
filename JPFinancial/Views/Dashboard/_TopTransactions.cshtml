@@ -1,0 +1,40 @@
+﻿@model IEnumerable<JPFData.Models.Transaction>
+
+<h4 style="text-align: left; float: left; margin: 0; vertical-align: bottom">Most Expensive Transactions (Past 30 Days)</h4>
+<h4 style="text-align: right; float: right; margin: 0; vertical-align: bottom">@Html.ActionLink("All Transactions", "Index", "Transactions")</h4>
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Date)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Payee)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Amount)
+        </th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Date)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Payee)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Category)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Amount)
+            </td>
+            <td></td>
+        </tr>
+    }
+</table>
+<h4 class="col-md-12" style="-moz-align-content: center; -o-align-content: center; -webkit-align-content: center; align-content: center; margin: 12px 0 0 24px">@Html.ActionLink("All Transactions", "Index", "Transactions")</h4>

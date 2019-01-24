@@ -1,4 +1,4 @@
-﻿@model JPFinancial.Models.Account
+﻿@model JPFData.Models.Account
 
 @{
     ViewBag.Title = "Edit";
@@ -24,7 +24,7 @@
                 @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
             </div>
         </div>
-
+        
         <div class="form-group">
             @Html.LabelFor(model => model.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -46,14 +46,6 @@
             <div class="col-md-10">
                 @Html.EditorFor(model => model.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.RequiredSavings, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.BalanceSurplus, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EditorFor(model => model.BalanceSurplus, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.BalanceSurplus, "", new { @class = "text-danger" })
             </div>
         </div>
 

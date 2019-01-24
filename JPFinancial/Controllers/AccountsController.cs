@@ -1,19 +1,43 @@
-﻿using JPFinancial.Models;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using JPFData;
+using JPFData.DTO;
+using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
     public class AccountsController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+
 
         // GET: Accounts
         public ActionResult Index()
         {
-            return View(db.Accounts.ToList());
+            AccountViewModel vm = new AccountViewModel();
+            vm.EventArgument = "Get";
+            vm.HandleRequest();
+            //_dbEditor.UpdateRequiredBalance();
+            //_dbEditor.UpdateRequiredBalanceSurplus();
+
+
+            //TODO: Add ability to show X number of Accounts
+            return View(vm);
+        }
+
+        //TODO: figure out a better way to update the ViewModel
+        [HttpPost]
+        public ActionResult Index(AccountViewModel model)
+        {
+            AccountViewModel vm = new AccountViewModel();
+            vm.HandleRequest();
+            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+            ModelState.Clear();
+
+            return View(vm);
         }
 
         // GET: Accounts/Details/5
@@ -23,7 +47,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -34,7 +58,7 @@ namespace JPFinancial.Controllers
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            return View();
+            return View(new Account());
         }
 
         // POST: Accounts/Create
@@ -42,16 +66,19 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,Balance,PaycheckContribution,RequiredSavings")] Account account)
+        public ActionResult Create([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] Account account)
         {
-            if (ModelState.IsValid)
-            {
-                db.Accounts.Add(account);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            if (!ModelState.IsValid) return View(account);
 
-            return View(account);
+
+            //Set RequiredSavings to $0.00 if nothing was entered by user
+            if (account.RequiredSavings == null)
+                account.RequiredSavings = decimal.Zero;
+
+            _db.Accounts.Add(account);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
+
         }
 
         // GET: Accounts/Edit/5
@@ -61,7 +88,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -74,25 +101,35 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,Balance,PaycheckContribution,RequiredSavings")] Account account)
+        public ActionResult Edit([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] Account account)
         {
-            if (ModelState.IsValid)
-            {
-                db.Entry(account).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(account);
+            if (!ModelState.IsValid) return View(account);
+
+
+            _db.Entry(account).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
-        // GET: Accounts/Delete/5
+        [HttpPost, ActionName("Rebalance")]
+        public ActionResult Rebalance(AccountViewModel dto)
+        {
+            AccountViewModel vm = new AccountViewModel();
+            vm.EventArgument = "Rebalance";
+            vm.HandleRequest();
+            vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+
+            return RedirectToAction("Index", vm);
+        }
+
+        //GET: Accounts/Delete/5
         public ActionResult Delete(int? id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Account account = db.Accounts.Find(id);
+            Account account = _db.Accounts.Find(id);
             if (account == null)
             {
                 return HttpNotFound();
@@ -105,9 +142,9 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Account account = db.Accounts.Find(id);
-            db.Accounts.Remove(account);
-            db.SaveChanges();
+            Account account = _db.Accounts.Find(id);
+            _db.Accounts.Remove(account);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -115,7 +152,7 @@ namespace JPFinancial.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

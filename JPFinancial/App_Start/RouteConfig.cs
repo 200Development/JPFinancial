@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
 
 namespace JPFinancial
@@ -17,6 +13,12 @@ namespace JPFinancial
                 name: "Default",
                 url: "{controller}/{action}/{id}",
                 defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Dashboard",
+                url: "{controller}/{action}/{id}",
+                defaults: new { controller = "Dashboard", action = "AccountsPartial", id = UrlParameter.Optional }
             );
         }
     }

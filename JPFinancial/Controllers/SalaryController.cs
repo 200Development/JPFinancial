@@ -1,20 +1,23 @@
-﻿using JPFinancial.Models;
-using JPFinancial.ViewModels;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using JPFData;
+using JPFData.Enumerations;
+using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
     public class SalaryController : Controller
     {
-        private ApplicationDbContext db = new ApplicationDbContext();
+        private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
         // GET: Salary
         public ActionResult Index()
         {
-            return View(db.Salaries.ToList());
+            return View(_db.Salaries.ToList());
         }
 
         // GET: Salary/Details/5
@@ -24,7 +27,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Salary salary = db.Salaries.Find(id);
+            Salary salary = _db.Salaries.Find(id);
             if (salary == null)
             {
                 return HttpNotFound();
@@ -35,7 +38,10 @@ namespace JPFinancial.Controllers
         // GET: Salary/Create
         public ActionResult Create()
         {
-            return View();
+            CreateSalaryViewModel viewModel = new CreateSalaryViewModel();
+            viewModel.Paydays = new DaysOfMonthEnum();
+
+            return View(viewModel);
         }
 
         // POST: Salary/Create
@@ -45,24 +51,22 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create([Bind(Include = "Id,Payee,PayType,PayFrequency,NetIncome,GrossPay")] CreateSalaryViewModel salary)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(salary);
+
+
+            var newSalary = new Salary()
             {
-                var company = db.Companies.FirstOrDefault(c => c.Name == salary.Payee);
-                var newSalary = new Salary()
-                {
-                    NetIncome = salary.NetIncome,
-                    PayFrequency = salary.PayFrequency,
-                    Payee = salary.Payee,
-                    GrossPay = salary.GrossPay,
-                    PayTypesEnum = salary.PayTypesEnum
-                };
+                NetIncome = salary.NetIncome,
+                PayFrequency = salary.PayFrequency,
+                Payee = salary.Payee,
+                GrossPay = salary.GrossPay,
+                PayTypesEnum = salary.PayTypesEnum
+            };
 
-                db.Salaries.Add(newSalary);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
+            _db.Salaries.Add(newSalary);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
 
-            return View(salary);
         }
 
         // GET: Salary/Edit/5
@@ -72,7 +76,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Salary salary = db.Salaries.Find(id);
+            Salary salary = _db.Salaries.Find(id);
             if (salary == null)
             {
                 return HttpNotFound();
@@ -87,13 +91,12 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit([Bind(Include = "Id,PayType,PayFrequency,GrossPay")] Salary salary)
         {
-            if (ModelState.IsValid)
-            {
-                db.Entry(salary).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(salary);
+            if (!ModelState.IsValid) return View(salary);
+
+
+            _db.Entry(salary).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Salary/Delete/5
@@ -103,7 +106,7 @@ namespace JPFinancial.Controllers
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Salary salary = db.Salaries.Find(id);
+            Salary salary = _db.Salaries.Find(id);
             if (salary == null)
             {
                 return HttpNotFound();
@@ -116,9 +119,9 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Salary salary = db.Salaries.Find(id);
-            db.Salaries.Remove(salary);
-            db.SaveChanges();
+            Salary salary = _db.Salaries.Find(id);
+            _db.Salaries.Remove(salary);
+            _db.SaveChanges();
             return RedirectToAction("Index");
         }
 
@@ -126,7 +129,7 @@ namespace JPFinancial.Controllers
         {
             if (disposing)
             {
-                db.Dispose();
+                _db.Dispose();
             }
             base.Dispose(disposing);
         }

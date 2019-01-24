@@ -1,11 +1,11 @@
-﻿using JPFinancial.ViewModels;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
@@ -117,15 +117,17 @@ namespace JPFinancial.Controllers
             }
             // Generate the token and send it
             var code = await UserManager.GenerateChangePhoneNumberTokenAsync(User.Identity.GetUserId(), model.Number);
-            if (UserManager.SmsService != null)
+
+            if (UserManager.SmsService == null)
+                return RedirectToAction("VerifyPhoneNumber", new {PhoneNumber = model.Number});
+
+
+            var message = new IdentityMessage
             {
-                var message = new IdentityMessage
-                {
-                    Destination = model.Number,
-                    Body = "Your security code is: " + code
-                };
-                await UserManager.SmsService.SendAsync(message);
-            }
+                Destination = model.Number,
+                Body = "Your security code is: " + code
+            };
+            await UserManager.SmsService.SendAsync(message);
             return RedirectToAction("VerifyPhoneNumber", new { PhoneNumber = model.Number });
         }
 
@@ -256,20 +258,20 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> SetPassword(SetPasswordViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+
+            var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
+            if (result.Succeeded)
             {
-                var result = await UserManager.AddPasswordAsync(User.Identity.GetUserId(), model.NewPassword);
-                if (result.Succeeded)
+                var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
+                if (user != null)
                 {
-                    var user = await UserManager.FindByIdAsync(User.Identity.GetUserId());
-                    if (user != null)
-                    {
-                        await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-                    }
-                    return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
+                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
                 }
-                AddErrors(result);
+                return RedirectToAction("Index", new { Message = ManageMessageId.SetPasswordSuccess });
             }
+            AddErrors(result);
 
             // If we got this far, something failed, redisplay form
             return View(model);

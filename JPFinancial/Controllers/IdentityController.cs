@@ -1,12 +1,13 @@
-﻿using JPFinancial.Models;
-using JPFinancial.ViewModels;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using JPFData;
+using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
@@ -147,24 +148,24 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Register(RegisterViewModel model)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View(model);
+
+
+            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var result = await UserManager.CreateAsync(user, model.Password);
+            if (result.Succeeded)
             {
-                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
-                if (result.Succeeded)
-                {
-                    await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
 
-                    // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                    // Send an email with this link
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirm your UserAccount", "Please confirm your UserAccount by clicking <a href=\"" + callbackUrl + "\">here</a>");
+                // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+                // Send an email with this link
+                // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+                // var callbackUrl = Url.Action("ConfirmEmail", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+                // await UserManager.SendEmailAsync(user.Id, "Confirm your UserAccount", "Please confirm your UserAccount by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                    return RedirectToAction("Index", "Home");
-                }
-                AddErrors(result);
+                return RedirectToAction("Index", "Home");
             }
+            AddErrors(result);
 
             // If we got this far, something failed, redisplay form
             return View(model);
@@ -198,22 +199,22 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> ForgotPassword(ForgotPasswordViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var user = await UserManager.FindByNameAsync(model.Email);
-                if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
-                {
-                    // Don't reveal that the user does not exist or is not confirmed
-                    return View("ForgotPasswordConfirmation");
-                }
+            if (!ModelState.IsValid) return View(model);
 
-                // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-                // Send an email with this link
-                // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-                // var callbackUrl = Url.Action("ResetPassword", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-                // return RedirectToAction("ForgotPasswordConfirmation", "UserAccount");
+
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user == null || !(await UserManager.IsEmailConfirmedAsync(user.Id)))
+            {
+                // Don't reveal that the user does not exist or is not confirmed
+                return View("ForgotPasswordConfirmation");
             }
+
+            // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
+            // Send an email with this link
+            // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            // var callbackUrl = Url.Action("ResetPassword", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+            // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+            // return RedirectToAction("ForgotPasswordConfirmation", "UserAccount");
 
             // If we got this far, something failed, redisplay form
             return View(model);

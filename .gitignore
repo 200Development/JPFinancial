@@ -240,3 +240,6 @@ ModelManifest.xml
 
 # FAKE - F# Make
 .fake/
+/SQL/sum Bill balances by associated Account.sql
+/SQL/total cost for last 90 days of transactions by account.sql
+/Data/Calculations.cs

@@ -1,11 +1,11 @@
-﻿using JPFinancial.Models;
-using JPFinancial.ViewModels;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
+using JPFData;
+using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
@@ -53,28 +53,27 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(CreateBillViewModel viewModel)
         {
-            if (ModelState.IsValid)
+            if (!ModelState.IsValid) return View();
+
+
+            var account = _db.Accounts.Single(a => a.Id == viewModel.AccountId);
+            var accountId = account.Id;
+
+            var bill = new Bill
             {
-                var account = _db.Accounts.Single(a => a.Id == viewModel.AccountId);
-                var accountId = account.Id;
+                Name = viewModel.Name,
+                IsMandatory = viewModel.IsMandatory,
+                AmountDue = viewModel.AmountDue,
+                DueDate = viewModel.DueDate,
+                PaymentFrequency = viewModel.PaymentFrequency,
+                AccountId = accountId,
+                Account = account
+            };
 
-                var bill = new Bill
-                {
-                    Name = viewModel.Name,
-                    IsMandatory = viewModel.IsMandatory,
-                    AmountDue = viewModel.AmountDue,
-                    DueDate = Convert.ToDateTime(viewModel.DueDate),
-                    PaymentFrequency = viewModel.PaymentFrequency,
-                    AccountId = accountId,
-                    Account = account
-                };
+            _db.Bills.Add(bill);
+            _db.SaveChanges();
+            return RedirectToAction("Index");
 
-                _db.Bills.Add(bill);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View();
         }
 
         public static IEnumerable<SelectListItem> ToSelectListItems(IEnumerable<Account> accounts, int selectedId)
@@ -95,11 +94,26 @@ namespace JPFinancial.Controllers
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             Bill bill = _db.Bills.Find(id);
+
             if (bill == null)
             {
                 return HttpNotFound();
             }
-            return View(bill);
+            CreateBillViewModel viewModel = new CreateBillViewModel();
+            var account = _db.Accounts.Single(a => a.Id == bill.AccountId);
+            //var accountId = account.Id;
+
+            viewModel.Name = bill.Name;
+            viewModel.AccountId = bill.AccountId;
+            viewModel.Account = account;
+            viewModel.AmountDue = bill.AmountDue;
+            viewModel.DueDate = bill.DueDate;
+            viewModel.Id = bill.Id;
+            viewModel.IsMandatory = bill.IsMandatory;
+            viewModel.PaymentFrequency = bill.PaymentFrequency;
+            viewModel.Accounts = _db.Accounts.ToList();
+
+            return View(viewModel);
         }
 
         // POST: Bills/Edit/5
@@ -107,15 +121,24 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "BillId,Name,IsMandatory,AccountNumber,Balance,DueDate,PaymentFrequency,IsLate")] Bill bill)
+        public ActionResult Edit(CreateBillViewModel viewModel)
         {
-            if (ModelState.IsValid)
-            {
-                _db.Entry(bill).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(bill);
+            if (!ModelState.IsValid) return View(viewModel);
+
+
+            var bill = new Bill();
+            bill.Name = viewModel.Name;
+            bill.Account = viewModel.Account;
+            bill.AccountId = viewModel.AccountId;
+            bill.AmountDue = viewModel.AmountDue;
+            bill.DueDate = viewModel.DueDate;
+            bill.Id = viewModel.Id;
+            bill.IsMandatory = viewModel.IsMandatory;
+            bill.PaymentFrequency = viewModel.PaymentFrequency;
+                
+            _db.Entry(bill).State = EntityState.Modified;
+            _db.SaveChanges();
+            return RedirectToAction("Index");
         }
 
         // GET: Bills/Delete/5
