@@ -40,9 +40,6 @@ namespace JPFData.Managers
             {
                 entity.Accounts = _db.Accounts.ToList();
                 entity.Metrics = RefreshAccountMetrics(entity);
-
-
-                _db.SaveChanges();
                 entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
             }
             catch (Exception)
