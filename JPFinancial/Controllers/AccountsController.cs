@@ -34,7 +34,8 @@ namespace JPFinancial.Controllers
         [HttpPost]
         public ActionResult Index(AccountViewModel accountVM)
         {
-
+            accountVM.EventArgument = EventArgumentEnum.Read;
+            accountVM.EventCommand = EventCommandEnum.Get;
             accountVM.HandleRequest();
             ModelState.Clear();
 
@@ -154,11 +155,10 @@ namespace JPFinancial.Controllers
         [ActionName("Rebalance")]
         public ActionResult Rebalance(AccountViewModel vm)
         {
-            //AccountViewModel vm = new AccountViewModel();
             vm.EventArgument = EventArgumentEnum.Update;
             vm.EventCommand = EventCommandEnum.Rebalance;
             vm.HandleRequest();
-            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+
 
             return RedirectToAction("Index", vm);
         }

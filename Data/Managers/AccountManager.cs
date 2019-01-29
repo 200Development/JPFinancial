@@ -299,8 +299,8 @@ namespace JPFData.Managers
         {
             try
             {
-                if (!PoolSurplus(entity)) return entity;
-                if (!RebalanceAccountSavings(entity)) return entity;
+                if (!PoolSurplus()) return entity;
+                if (!RebalanceAccountSavings()) return entity;
                 //if (!UpdatePaycheckContributions(entity)) return entity;
                 entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
 
@@ -322,19 +322,20 @@ namespace JPFData.Managers
         /// Pool Account balance += Accounts' surplus
         /// </summary>
         /// <param name="entity"></param>
-        /// <returns></returns>
-        private bool PoolSurplus(AccountDTO entity)
+        /// <returns>If Account balances updated and transactions added to db successfully</returns>
+        private bool PoolSurplus()
         {
             try
             {
-                var poolAccount = entity.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                var accounts = _db.Accounts.ToList();
+                var poolAccount = accounts.FirstOrDefault(a => a.IsPoolAccount);
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                foreach (var account in entity.Accounts)
+                foreach (var account in accounts)
                 {
                     var surplus = account.Balance - account.RequiredSavings;
-                    if (account.ExcludeFromSurplus || !(surplus > 0)) continue;
+                    if (account.Id == poolAccount.Id || account.ExcludeFromSurplus || surplus <= 0) continue;
 
                     account.Balance -= (decimal)surplus;
                     poolAccount.Balance += (decimal)surplus;
@@ -349,6 +350,10 @@ namespace JPFData.Managers
                     newTransaction.CreditAccount = account;
                     newTransaction.Amount = (decimal)surplus;
                     _db.Entry(newTransaction).State = EntityState.Added;
+
+
+                    _db.Entry(account).State = EntityState.Modified;
+                    _db.Entry(poolAccount).State = EntityState.Modified;
                 }
 
 
@@ -367,15 +372,16 @@ namespace JPFData.Managers
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private bool RebalanceAccountSavings(AccountDTO entity)
+        private bool RebalanceAccountSavings()
         {
             try
             {
-                var poolAccount = entity.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                var accounts = _db.Accounts.ToList();
+                var poolAccount = accounts.FirstOrDefault(a => a.IsPoolAccount);
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                foreach (var account in entity.Accounts)
+                foreach (var account in accounts)
                 {
                     if (poolAccount.Balance <= 0) break;
                     if (account.ExcludeFromSurplus || account.BalanceSurplus >= 0) continue;
