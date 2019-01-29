@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Web.Razor.Editor;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Managers;
@@ -7,6 +8,9 @@ using JPFData.Migrations;
 
 namespace JPFData.ViewModels
 {
+    /// <summary>
+    /// Container that holds Account data and business logic 
+    /// </summary>
     public class AccountViewModel
     {
         private AccountManager _manager;
@@ -33,7 +37,7 @@ namespace JPFData.ViewModels
             _manager = new AccountManager();
         }
 
-        public void HandleRequest()
+        public bool HandleRequest()
         {
             switch (EventArgument)
             {
@@ -44,25 +48,25 @@ namespace JPFData.ViewModels
                     {
                         case EventCommandEnum.Get:
                         case EventCommandEnum.Search:
-                            Get();
-                            break;
+                            Entity = _manager.Get(Entity);
+                            return true;
                         case EventCommandEnum.Details:
-                            Details();
-                            break;
+                            Entity.Account = _manager.Details(Entity);
+                            return true;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                    break;
                 case EventArgumentEnum.Update:
                     switch (EventCommand)
                     {
                         case EventCommandEnum.Edit:
+                            return _manager.Edit(Entity);
                         case EventCommandEnum.Rebalance:
-                            Rebalance();
-                            break;
+                            Entity = _manager.Rebalance(Entity);
+                            return true;
                         case EventCommandEnum.Update:
-                            Update();
-                            break;
+                            Entity = _manager.Update(Entity);
+                            return true;
                         case EventCommandEnum.Pool:
                             break;
                     }
@@ -72,26 +76,7 @@ namespace JPFData.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException();
             }
-        }
-
-        private void Details()
-        {
-            Entity.Account = _manager.Details(Entity);
-        }
-
-        private void Get()
-        {
-            Entity = _manager.Get(Entity);
-        }
-
-        private void Rebalance()
-        {
-            Entity = _manager.Rebalance(Entity);
-        }
-
-        private void Update()
-        {
-            Entity = _manager.Update(Entity);
+            return true;
         }
     }
 }

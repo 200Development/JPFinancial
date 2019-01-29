@@ -9,6 +9,9 @@ using JPFData.Models;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Handles all Account interactions with the database
+    /// </summary>
     public class AccountManager
     {
         private readonly ApplicationDbContext _db;
@@ -56,6 +59,19 @@ namespace JPFData.Managers
             return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
         }
 
+        public bool Edit(AccountDTO entity)
+        {
+            try
+            {
+                _db.Entry(entity.Account).State = EntityState.Modified;
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
 
         private List<Account> UpdateSavingsPercentage(List<Account> accounts)
         {
@@ -241,7 +257,7 @@ namespace JPFData.Managers
 
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }

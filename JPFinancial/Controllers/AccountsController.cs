@@ -1,5 +1,4 @@
-﻿using System.Data.Entity;
-using System.Net;
+﻿using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
@@ -8,6 +7,9 @@ using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
+    /// <summary>
+    /// Handles all Account interactions with Views
+    /// </summary>
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
@@ -76,7 +78,6 @@ namespace JPFinancial.Controllers
             _db.Accounts.Add(accountVM.Entity.Account);
             _db.SaveChanges();
             return RedirectToAction("Index");
-
         }
 
         // GET: Accounts/Edit/5
@@ -100,16 +101,18 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] AccountViewModel accountVM)
+        public ActionResult Edit(AccountViewModel accountVM)
         {
             if (!ModelState.IsValid) return View(accountVM);
+            accountVM.EventArgument = EventArgumentEnum.Update;
+            accountVM.EventCommand = EventCommandEnum.Edit;
+            if (accountVM.HandleRequest())
+                return RedirectToAction("Index");
 
 
-            _db.Entry(accountVM.Entity.Account).State = EntityState.Modified;
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            return View(accountVM);
         }
-        
+
         //GET: Accounts/Delete/5
         public ActionResult Delete(int? id)
         {
@@ -135,7 +138,7 @@ namespace JPFinancial.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
-        
+
         [ActionName("Update")]
         public ActionResult Update()
         {
