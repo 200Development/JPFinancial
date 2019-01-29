@@ -7,14 +7,4 @@
         Update,
         Delete,
     }
-
-    public enum EventCommandEnum
-    {
-        Get,
-        Search,
-        Edit,
-        Rebalance,
-        Pool,
-        Update,
-    }
 }

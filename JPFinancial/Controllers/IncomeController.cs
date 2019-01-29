@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
@@ -10,7 +9,7 @@ using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
-    public class SalaryController : Controller
+    public class IncomeController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
 
