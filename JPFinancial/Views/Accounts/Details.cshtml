@@ -1,4 +1,4 @@
-﻿@model JPFData.Models.Account
+﻿@model JPFData.ViewModels.AccountViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -11,48 +11,48 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Entity.Account.Name)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Entity.Account.Name)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.Balance)
+            @Html.DisplayNameFor(model => model.Entity.Account.Balance)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Balance)
+            @Html.DisplayFor(model => model.Entity.Account.Balance)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PaycheckContribution)
+            @Html.DisplayNameFor(model => model.Entity.Account.PaycheckContribution)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PaycheckContribution)
+            @Html.DisplayFor(model => model.Entity.Account.PaycheckContribution)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.RequiredSavings)
+            @Html.DisplayNameFor(model => model.Entity.Account.RequiredSavings)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.RequiredSavings)
+            @Html.DisplayFor(model => model.Entity.Account.RequiredSavings)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.BalanceSurplus)
+            @Html.DisplayNameFor(model => model.Entity.Account.BalanceSurplus)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.BalanceSurplus)
+            @Html.DisplayFor(model => model.Entity.Account.BalanceSurplus)
         </dd>
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Entity.Account.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
