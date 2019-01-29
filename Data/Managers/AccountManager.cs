@@ -13,6 +13,7 @@ namespace JPFData.Managers
     {
         private readonly ApplicationDbContext _db;
         private readonly Calculations _calc;
+        private int _dbTransactions;
 
 
         public AccountManager()
@@ -50,6 +51,10 @@ namespace JPFData.Managers
             return entity;
         }
 
+        public Account Details(AccountDTO entity)
+        {
+            return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
+        }
 
 
         private List<Account> UpdateSavingsPercentage(List<Account> accounts)
@@ -87,28 +92,7 @@ namespace JPFData.Managers
         }
 
 
-
-
-        public AccountDTO Rebalance(AccountDTO entity)
-        {
-            try
-            {
-                if (!PoolSurplus(entity)) return entity;
-                if (!RebalanceAccountSavings(entity)) return entity;
-                if (!RebalancePaycheckContributions(entity)) return entity;
-                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
-
-                _db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-
-
-            return entity;
-        }
-
+        #region Update
 
         /// <summary>
         /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
@@ -120,14 +104,190 @@ namespace JPFData.Managers
             try
             {
                 entity.Accounts = _db.Accounts.ToList();
-                // pool Account surplus balances
-                if (!PoolSurplus(entity)) return entity;
+                // Refresh Account surpluses
+                if (!UpdateBalanceSurplus()) return entity;
 
                 // pay off Account deficits with pool
-                if (!RebalanceAccountSavings(entity)) return entity;
+                if (!UpdateRequiredBalance()) return entity;
 
                 // update paycheck contributions to be suggested contributions
-                if (!RebalancePaycheckContributions(entity)) return entity;
+                if (!UpdatePaycheckContributions()) return entity;
+
+
+                // Save changes to the database if all Account updates ran successfully
+                _db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+
+
+            return entity;
+        }
+
+        /// <summary>
+        /// Database update if dbSave = true, else EntityState.Modified.
+        /// Update the balance surplus for each Account.
+        /// Balance surplus = balance - required savings.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdateBalanceSurplus(bool dbSave = false)
+        {
+            // public because runs on startup with dbSave = true
+            try
+            {
+                foreach (var account in _db.Accounts.ToList())
+                {
+                    account.BalanceSurplus = account.Balance - account.RequiredSavings;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _dbTransactions += 1;
+                }
+
+
+                if (!dbSave) return true;
+                _db.SaveChanges();
+                _dbTransactions = 0;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        //TODO: research access modifiers 
+        /// <summary>
+        /// Database update if dbSave = true, else EntityState.Modified.
+        /// Update the required savings for each Account.
+        /// Required savings = 
+        /// </summary>
+        public bool UpdateRequiredBalance(bool dbSave = false)
+        {
+            // public because runs on startup with dbSave = true
+            try
+            {
+                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
+
+                foreach (var bill in _db.Bills.ToList())
+                {
+                    bill.Account = _db.Accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+                    if (bill.Account == null) continue;
+                    var billTotal = bill.AmountDue;
+                    // Next due date
+                    var dueDate = bill.DueDate;
+                    // How many pay periods to save until next due date
+                    var payPeriodsLeft = _calc.PayPeriodsTilDue(dueDate);
+                    decimal savePerPaycheck = 0;
+
+                    // Calculate how much to save from each pay period
+                    switch (bill.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Annually:
+                            savePerPaycheck = billTotal / 24;
+                            break;
+                        case FrequencyEnum.SemiAnnually:
+                            savePerPaycheck = billTotal / 12;
+                            break;
+                        case FrequencyEnum.Quarterly:
+                            savePerPaycheck = billTotal / 6;
+                            break;
+                        case FrequencyEnum.SemiMonthly:
+                            savePerPaycheck = billTotal / 4;
+                            break;
+                        case FrequencyEnum.Monthly:
+                            savePerPaycheck = billTotal / 2;
+                            break;
+                        case FrequencyEnum.BiWeekly:
+                            savePerPaycheck = billTotal;
+                            break;
+                        case FrequencyEnum.Weekly:
+                            savePerPaycheck = billTotal * 2;
+                            break;
+                        default:
+                            savePerPaycheck = billTotal / 2;
+                            break;
+                    }
+                    // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
+                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
+                    // add kvp (account that bill is credited to, amount to save) 
+
+                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
+                }
+
+                // update each account that has a bill credited to it 
+                foreach (var account in _db.Accounts.ToList())
+                {
+                    var valuesFound = false;
+                    decimal totalSavings = 0;
+
+                    foreach (var savings in savingsAccountBalances)
+                    {
+                        if (savings.Key != account.Name) continue;
+                        totalSavings += savings.Value;
+                        valuesFound = true;
+                    }
+                    if (!valuesFound) continue;
+                    account.RequiredSavings = totalSavings;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _dbTransactions += 1;
+                }
+                if (!dbSave) return true;
+                _db.SaveChanges();
+                _dbTransactions = 0;
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Entity update.
+        /// Update the paycheck contributions for each account.
+        /// Paycheck contribution = suggested paycheck contribution.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        private bool UpdatePaycheckContributions()
+        {
+            try
+            {
+                foreach (var account in _db.Accounts.Where(a => !a.ExcludeFromSurplus)
+                    .Where(a => a.SuggestedPaycheckContribution > 0))
+                {
+                    account.PaycheckContribution = account.SuggestedPaycheckContribution;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _dbTransactions += 1;
+                }
+
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        #endregion
+
+        #region Rebalance
+
+        public AccountDTO Rebalance(AccountDTO entity)
+        {
+            try
+            {
+                if (!PoolSurplus(entity)) return entity;
+                if (!RebalanceAccountSavings(entity)) return entity;
+                //if (!UpdatePaycheckContributions(entity)) return entity;
+                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
+
 
                 _db.SaveChanges();
             }
@@ -140,6 +300,13 @@ namespace JPFData.Managers
             return entity;
         }
 
+        /// <summary>
+        /// Entity update.
+        /// Move all Account surpluses to the designated pool Account.
+        /// Pool Account balance += Accounts' surplus
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         private bool PoolSurplus(AccountDTO entity)
         {
             try
@@ -178,7 +345,9 @@ namespace JPFData.Managers
         }
 
         /// <summary>
-        /// Uses Pool account balance surplus to pay off other accounts' deficits
+        /// Entity update.
+        /// Update balance for Accounts with deficits.
+        /// While (pool.balance > 0) take deficit amount from pool and add to deficit Account balance.
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
@@ -190,7 +359,7 @@ namespace JPFData.Managers
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                 foreach (var account in entity.Accounts)
+                foreach (var account in entity.Accounts)
                 {
                     if (poolAccount.Balance <= 0) break;
                     if (account.ExcludeFromSurplus || account.BalanceSurplus >= 0) continue;
@@ -214,7 +383,10 @@ namespace JPFData.Managers
                         newTransaction.DebitAccount = account;
                         newTransaction.CreditAccount = poolAccount;
                         newTransaction.Amount = balance;
+                        // DB add transaction
                         _db.Entry(newTransaction).State = EntityState.Added;
+                        // DB update deficit Account balance
+                        _db.Entry(account).State = EntityState.Modified;
                     }
                     else // Make account whole
                     {
@@ -230,9 +402,14 @@ namespace JPFData.Managers
                         newTransaction.DebitAccount = account;
                         newTransaction.CreditAccount = poolAccount;
                         newTransaction.Amount = deficit;
+                        // DB add transaction
                         _db.Entry(newTransaction).State = EntityState.Added;
+                        // DB update deficit Account balance
+                        _db.Entry(account).State = EntityState.Modified;
                     }
                 }
+                // DB update pool Account 
+                _db.Entry(poolAccount).State = EntityState.Modified;
 
 
                 //_db.SaveChanges();
@@ -244,135 +421,6 @@ namespace JPFData.Managers
             }
         }
 
-        private bool RebalancePaycheckContributions(AccountDTO entity)
-        {
-            try
-            {
-                foreach (var account in entity.Accounts.Where(a => !a.ExcludeFromSurplus)
-                    .Where(a => a.SuggestedPaycheckContribution > 0))
-                {
-                    account.PaycheckContribution = account.SuggestedPaycheckContribution;
-                }
-
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private bool RebalanceAccountSurplus(AccountDTO entity)
-        {
-            try
-            {
-                foreach (var account in entity.Accounts)
-                {
-                    account.BalanceSurplus = account.Balance - account.RequiredSavings;
-                }
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        //TODO: research access modifiers 
-        public void UpdateRequiredBalance()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-                var bills = _db.Bills.ToList();
-                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
-
-                foreach (var bill in bills)
-                {
-                    var billTotal = bill.AmountDue;
-                    var dueDate = bill.DueDate;
-                    var payPeriodsLeft = _calc.PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
-
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                        case FrequencyEnum.BiWeekly:
-                            savePerPaycheck = billTotal;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
-                            break;
-                        default:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                    }
-                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
-                }
-
-
-                foreach (var account in accounts)
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != account.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-                    if (!valuesFound) continue;
-                    account.RequiredSavings = totalSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
-                }
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-        }
-
-        public void UpdateRequiredBalanceSurplus()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-
-                foreach (var account in accounts)
-                {
-                    var acctBalance = account.Balance;
-                    var reqbalance = account.RequiredSavings;
-                    account.BalanceSurplus = acctBalance - reqbalance;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.SaveChanges();
-
-                }
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-        }
-
-
+        #endregion
     }
 }

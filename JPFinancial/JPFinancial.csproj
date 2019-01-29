@@ -152,7 +152,7 @@
     <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\PaychecksController.cs" />
-    <Compile Include="Controllers\SalaryController.cs" />
+    <Compile Include="Controllers\IncomeController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -264,11 +264,11 @@
     <Content Include="Views\Bill\Edit.cshtml" />
     <Content Include="Views\Bill\Index.cshtml" />
     <Content Include="Views\Bill\_Bills.cshtml" />
-    <Content Include="Views\Salary\Create.cshtml" />
-    <Content Include="Views\Salary\Delete.cshtml" />
-    <Content Include="Views\Salary\Details.cshtml" />
-    <Content Include="Views\Salary\Edit.cshtml" />
-    <Content Include="Views\Salary\Index.cshtml" />
+    <Content Include="Views\Income\Create.cshtml" />
+    <Content Include="Views\Income\Delete.cshtml" />
+    <Content Include="Views\Income\Details.cshtml" />
+    <Content Include="Views\Income\Edit.cshtml" />
+    <Content Include="Views\Income\Index.cshtml" />
     <Content Include="Views\Accounts\Create.cshtml" />
     <Content Include="Views\Accounts\Delete.cshtml" />
     <Content Include="Views\Accounts\Details.cshtml" />

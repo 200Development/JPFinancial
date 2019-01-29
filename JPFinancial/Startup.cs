@@ -16,8 +16,8 @@ namespace JPFinancial
         {
             ConfigureAuth(app);
 
-            accountManager.UpdateRequiredBalance();
-            accountManager.UpdateRequiredBalanceSurplus();
+            accountManager.UpdateRequiredBalance(true);
+            accountManager.UpdateBalanceSurplus(true);
             billManager.UpdateBillDueDates();
         }
     }
