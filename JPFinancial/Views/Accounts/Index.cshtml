@@ -20,17 +20,17 @@
                                     <div class="icon-big icon-success text-center">
                                         @if (Model.Entity.Metrics.TotalBalance > 0)
                                         {
-                                            <i class="ti-face-smile"></i>
+                                        <i class="ti-face-smile"></i>
                                         }
                                         @if (Model.Entity.Metrics.TotalBalance <= 0)
                                         {
-                                            <i class="ti-face-sad"></i>
+                                        <i class="ti-face-sad"></i>
                                         }
                                     </div>
                                 </div>
                                 <div class="col-xs-7">
                                     <div class="numbers">
-                                        <p>Total Balance</p>
+                                        <p>Cash Balance</p>
                                         @Html.DisplayFor(model => model.Entity.Metrics.TotalBalance)
                                     </div>
                                 </div>
@@ -45,32 +45,66 @@
                         </div>
                     </div>
                 </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="card">
-                        <div class="content">
-                            <div class="row">
-                                <div class="col-xs-5">
-                                    <div class="icon-big icon-danger text-center">
-                                        <i class="ti-thumb-down"></i>
+
+                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count >= 0)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <div class="icon-big icon-success text-center">
+                                            <i class="ti-thumb-up"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <div class="numbers">
+                                            <p>Account Deficits</p>
+                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-7">
-                                    <div class="numbers">
-                                        <p>Deficits Accounts</p>
-                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                <div class="footer">
+                                    <hr />
+                                    <div class="stats">
+                                        <span style="margin-right: 12px">Total Deficit</span>
+                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
                                     </div>
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <hr />
-                                <div class="stats">
-                                    <span style="margin-right: 12px">Total Deficit</span>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
+
+                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count < 0)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <div class="icon-big icon-danger text-center">
+                                            <i class="ti-thumb-down"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <div class="numbers">
+                                            <p>Account Deficits</p>
+                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="footer">
+                                    <hr />
+                                    <div class="stats">
+                                        <span style="margin-right: 12px">Total Deficit</span>
+                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
 
                 @if (Model.Entity.RebalanceReport.PaycheckSurplus > 0)
                 {
@@ -188,62 +222,62 @@
                         </div>
                     </div>
                 }
-            @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
-            {
-                <div class="col-lg-3 col-sm-6">
-                    <div class="card">
-                        <div class="content">
-                            <div class="row">
-                                <div class="col-xs-5">
-                                    <div class="icon-big icon-danger text-center">
-                                        <i class="ti-envelope"></i>
+                @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <div class="icon-big icon-danger text-center">
+                                            <i class="ti-envelope"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <div class="numbers">
+                                            <p>Accounts Deficit</p>
+                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-7">
-                                    <div class="numbers">
-                                        <p>Accounts Deficit</p>
-                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                <div class="footer">
+                                    <hr />
+                                    <div class="stats">
+                                        @* <i class="ti-reload"></i> Update now*@
                                     </div>
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <hr />
-                                <div class="stats">
-                                    @* <i class="ti-reload"></i> Update now*@
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
-            @if (Model.Entity.RebalanceReport.TotalSurplus == 0)
-            {
-                <div class="col-lg-3 col-sm-6">
-                    <div class="card">
-                        <div class="content">
-                            <div class="row">
-                                <div class="col-xs-5">
-                                    <div class="icon-big icon-success text-center">
-                                        <i class="ti-envelope"></i>
+                }
+                @if (Model.Entity.RebalanceReport.TotalSurplus == 0)
+                {
+                    <div class="col-lg-3 col-sm-6">
+                        <div class="card">
+                            <div class="content">
+                                <div class="row">
+                                    <div class="col-xs-5">
+                                        <div class="icon-big icon-success text-center">
+                                            <i class="ti-envelope"></i>
+                                        </div>
+                                    </div>
+                                    <div class="col-xs-7">
+                                        <div class="numbers">
+                                            <p>Accounts Surplus</p>
+                                            Balanced
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="col-xs-7">
-                                    <div class="numbers">
-                                        <p>Accounts Surplus</p>
-                                        Balanced
+                                <div class="footer">
+                                    <hr />
+                                    <div class="stats">
+                                        @* <i class="ti-reload"></i> Update now*@
                                     </div>
-                                </div>
-                            </div>
-                            <div class="footer">
-                                <hr />
-                                <div class="stats">
-                                    @* <i class="ti-reload"></i> Update now*@
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
             </div>
             <div class="row">
                 <div class="col-md-12">

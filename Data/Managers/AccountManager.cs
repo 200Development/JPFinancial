@@ -67,7 +67,7 @@ namespace JPFData.Managers
                 _db.SaveChanges();
                 return true;
             }
-            catch (Exception e)
+            catch (Exception)
             {
                 return false;
             }
