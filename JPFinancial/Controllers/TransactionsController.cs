@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
+using JPFData.Enumerations;
 using JPFData.Models;
 using JPFData.ViewModels;
 
@@ -17,7 +18,9 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             TransactionViewModel vm = new TransactionViewModel();
-            vm.EventArgument = "Get";
+            vm.EventArgument = EventArgumentEnum.Read;
+            vm.EventCommand = EventCommandEnum.Get;
+            vm.HandleRequest();
             return View(vm);
         }
 

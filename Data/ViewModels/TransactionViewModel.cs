@@ -24,8 +24,8 @@ namespace JPFData.ViewModels
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public string Mode { get; set; }
         public bool IsValid { get; set; }
-        public string EventCommand { get; set; }
-        public string EventArgument { get; set; }
+        public EventCommandEnum EventCommand { get; set; }
+        public EventArgumentEnum EventArgument { get; set; }
 
 
         private void Init()
@@ -36,7 +36,28 @@ namespace JPFData.ViewModels
 
         public void HandleRequest()
         {
-            Get();
+            switch (EventArgument)
+            {
+                case EventArgumentEnum.Create:
+                    break;
+                case EventArgumentEnum.Read:
+                    switch (EventCommand)
+                    {
+                        case EventCommandEnum.Search:
+                        case EventCommandEnum.Get:
+                            Get();
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                    break;
+                case EventArgumentEnum.Update:
+                    break;
+                case EventArgumentEnum.Delete:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private void Get()
