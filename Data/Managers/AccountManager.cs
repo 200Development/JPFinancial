@@ -36,13 +36,7 @@ namespace JPFData.Managers
             {
                 entity.Accounts = _db.Accounts.ToList();
                 entity.Metrics = RefreshAccountMetrics(entity);
-                entity.Accounts = UpdateSavingsPercentage(entity.Accounts);
 
-                // TODO: Change to manually run rebalancing
-                if (!PoolSurplus(entity)) return entity;
-                if (!RebalanceAccountSavings(entity)) return entity;
-                if (!RebalancePaycheckContributions(entity)) return entity;
-                if (!RebalanceAccountSurplus(entity)) return entity;
 
                 _db.SaveChanges();
                 entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
@@ -57,8 +51,6 @@ namespace JPFData.Managers
         }
 
 
-
-        #region DTO Model Updating
 
         private List<Account> UpdateSavingsPercentage(List<Account> accounts)
         {
@@ -94,6 +86,9 @@ namespace JPFData.Managers
             return metrics;
         }
 
+
+
+
         public AccountDTO Rebalance(AccountDTO entity)
         {
             try
@@ -102,6 +97,37 @@ namespace JPFData.Managers
                 if (!RebalanceAccountSavings(entity)) return entity;
                 if (!RebalancePaycheckContributions(entity)) return entity;
                 entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
+
+                _db.SaveChanges();
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
+
+
+            return entity;
+        }
+
+
+        /// <summary>
+        /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public AccountDTO Update(AccountDTO entity)
+        {
+            try
+            {
+                entity.Accounts = _db.Accounts.ToList();
+                // pool Account surplus balances
+                if (!PoolSurplus(entity)) return entity;
+
+                // pay off Account deficits with pool
+                if (!RebalanceAccountSavings(entity)) return entity;
+
+                // update paycheck contributions to be suggested contributions
+                if (!RebalancePaycheckContributions(entity)) return entity;
 
                 _db.SaveChanges();
             }
@@ -143,7 +169,6 @@ namespace JPFData.Managers
                 }
 
 
-                //_db.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -152,6 +177,11 @@ namespace JPFData.Managers
             }
         }
 
+        /// <summary>
+        /// Uses Pool account balance surplus to pay off other accounts' deficits
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
         private bool RebalanceAccountSavings(AccountDTO entity)
         {
             try
@@ -160,10 +190,11 @@ namespace JPFData.Managers
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                foreach (var account in entity.Accounts)
+                 foreach (var account in entity.Accounts)
                 {
                     if (poolAccount.Balance <= 0) break;
-                    if (account.ExcludeFromSurplus || !(account.BalanceSurplus < 0)) continue;
+                    if (account.ExcludeFromSurplus || account.BalanceSurplus >= 0) continue;
+                    if (account.BalanceSurplus == null) continue;
                     var deficit = (decimal)account.BalanceSurplus * -1;
 
 
@@ -224,7 +255,6 @@ namespace JPFData.Managers
                 }
 
 
-                //_db.SaveChanges();
                 return true;
             }
             catch (Exception)
@@ -343,6 +373,6 @@ namespace JPFData.Managers
             }
         }
 
-        #endregion
+
     }
 }

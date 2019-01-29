@@ -4,6 +4,7 @@ using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.DTO;
+using JPFData.Enumerations;
 using JPFData.Models;
 using JPFData.ViewModels;
 
@@ -18,7 +19,8 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             AccountViewModel vm = new AccountViewModel();
-            vm.EventArgument = "Get";
+            vm.EventArgument = EventArgumentEnum.Read;
+            vm.EventCommand = EventCommandEnum.Get;
             vm.HandleRequest();
             //_dbEditor.UpdateRequiredBalance();
             //_dbEditor.UpdateRequiredBalanceSurplus();
@@ -110,18 +112,7 @@ namespace JPFinancial.Controllers
             _db.SaveChanges();
             return RedirectToAction("Index");
         }
-
-        [HttpPost, ActionName("Rebalance")]
-        public ActionResult Rebalance(AccountViewModel dto)
-        {
-            AccountViewModel vm = new AccountViewModel();
-            vm.EventArgument = "Rebalance";
-            vm.HandleRequest();
-            vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
-
-            return RedirectToAction("Index", vm);
-        }
-
+        
         //GET: Accounts/Delete/5
         public ActionResult Delete(int? id)
         {
@@ -146,6 +137,30 @@ namespace JPFinancial.Controllers
             _db.Accounts.Remove(account);
             _db.SaveChanges();
             return RedirectToAction("Index");
+        }
+        
+        [ActionName("Update")]
+        public ActionResult Update()
+        {
+            AccountViewModel vm = new AccountViewModel();
+            vm.EventArgument = EventArgumentEnum.Update;
+            vm.EventCommand = EventCommandEnum.Update;
+            vm.HandleRequest();
+            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+
+            return RedirectToAction("Index", vm);
+        }
+
+        [ActionName("Rebalance")]
+        public ActionResult Rebalance(AccountViewModel vm)
+        {
+            //AccountViewModel vm = new AccountViewModel();
+            vm.EventArgument = EventArgumentEnum.Update;
+            vm.EventCommand = EventCommandEnum.Rebalance;
+            vm.HandleRequest();
+            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+
+            return RedirectToAction("Index", vm);
         }
 
         protected override void Dispose(bool disposing)
