@@ -46,6 +46,9 @@ namespace JPFData.ViewModels
                         case EventCommandEnum.Search:
                             Get();
                             break;
+                        case EventCommandEnum.Details:
+                            Details();
+                            break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
@@ -69,6 +72,11 @@ namespace JPFData.ViewModels
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private void Details()
+        {
+            Entity.Account = _manager.Details(Entity);
         }
 
         private void Get()
