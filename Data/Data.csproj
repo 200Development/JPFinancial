@@ -99,6 +99,7 @@
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
     <Compile Include="Enumerations\EventCommandEnum.cs" />
     <Compile Include="Managers\BillManager.cs" />
+    <Compile Include="Managers\CreditCardManager.cs" />
     <Compile Include="Managers\IncomeManager.cs" />
     <Compile Include="Metrics\AccountMetrics.cs" />
     <Compile Include="Metrics\BillMetrics.cs" />
