@@ -6,15 +6,15 @@
     <table class="table table-condensed table-responsive">
         <thead>
             <tr>
-                <th scope="col">@Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })</th>
-                <th scope="col">@Html.LabelFor(model => model.Payee, htmlAttributes: new { @class = "control-label col-md-2" })</th>
-                <th scope="col">@Html.LabelFor(model => model.Memo, htmlAttributes: new { @class = "control-label col-md-2" })</th>
-                <th scope="col">@Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })</th>
-                <th scope="col">@Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label col-md-2 dropdown-toggle" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Date, htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Payee, htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Memo, htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Type, htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Category, htmlAttributes: new { @class = "control-label col-md-2 dropdown-toggle" })</th>
                 <th scope="col"><label class="control-label">Credit</label></th>
                 <th scope="col"><label class="control-label">Debit</label></th>
-                <th scope="col">@Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-2" })</th>
-                <th scope="col">@Html.LabelFor(model => model.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.Amount, htmlAttributes: new { @class = "control-label col-md-2" })</th>
+                <th scope="col">@Html.LabelFor(model => model.Entity.Transaction.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })</th>
                 <th scope="col"><label class="control-label">Credit Card</label></th>
             </tr>
         </thead>
@@ -23,61 +23,61 @@
                 <td>
 
                     <div class="form-group">
-                        @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Entity.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Date, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.EditorFor(model => model.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Payee, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Payee, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.EditorFor(model => model.Memo, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Memo, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Entity.Transaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Memo, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                        @Html.EnumDropDownListFor(model => model.Entity.Transaction.Type, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Type, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.EnumDropDownListFor(model => model.Category, htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                        @Html.EnumDropDownListFor(model => model.Entity.Transaction.Category, htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Category, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.DropDownListFor(model => model.SelectedCreditAccount, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
+                        @Html.DropDownListFor(model => model.Entity.Transaction.CreditAccount, new SelectList(Model.Entity.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => Model.Entity.Accounts, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.DropDownListFor(model => model.SelectedDebitAccount, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
+                        @Html.DropDownListFor(model => model.Entity.Transaction.DebitAccount, new SelectList(Model.Entity.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => Model.Entity.Accounts, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.EditorFor(model => model.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                        @Html.EditorFor(model => model.Entity.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => model.Entity.Transaction.Amount, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.CheckBoxFor(model => model.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.CheckBoxFor(model => model.Entity.Transaction.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
                     </div>
                 </td>
                 <td>
                     <div class="form-group">
-                        @Html.DropDownListFor(model => model.SelectedCreditCardAccount, new SelectList(Model.CreditCards, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                        @Html.ValidationMessageFor(model => model.SelectedCreditCardAccount, "", new { @class = "text-danger" })
+                        @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccount, new SelectList(Model.Entity.CreditCards, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                        @Html.ValidationMessageFor(model => Model.Entity.CreditCards, "", new { @class = "text-danger" })
                     </div>
                 </td>
                 <td>

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using JPFData.Managers;
 using JPFData.Metrics;
 using JPFData.Models;
 
@@ -8,11 +10,25 @@ namespace JPFData.DTO
     {
         public TransactionDTO()
         {
+            Transaction = new Transaction();
             Transactions = new List<Transaction>();
             Metrics = new TransactionMetrics();
+            try
+            {
+                Accounts = new AccountManager().Get(new AccountDTO()).Accounts;
+                CreditCards = new CreditCardManager().Get(new CreditCardDTO()).CreditCards;
+            }
+            catch (Exception)
+            {
+                Accounts = new List<Account>();
+                CreditCards = new List<CreditCard>();
+            }
         }
 
-        public List<Transaction> Transactions { get; set; }
         public TransactionMetrics Metrics { get; set; }
+        public Transaction Transaction { get; set; }
+        public List<Transaction> Transactions { get; set; }
+        public IEnumerable<Account> Accounts { get; set; }
+        public IEnumerable<CreditCard> CreditCards { get; set; }
     }
 }

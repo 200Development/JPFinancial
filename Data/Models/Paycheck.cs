@@ -7,6 +7,7 @@ namespace JPFData.Models
     {
         public Paycheck()
         {
+            Employer = string.Empty;
             Regular = decimal.Zero;
             ElectronicsNontaxable = decimal.Zero;
             TravelBusinessExpenseNontaxable = decimal.Zero;

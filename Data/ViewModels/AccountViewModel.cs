@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Web.Razor.Editor;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Managers;
-using JPFData.Migrations;
 
 namespace JPFData.ViewModels
 {

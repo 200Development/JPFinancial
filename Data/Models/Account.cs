@@ -7,6 +7,7 @@ namespace JPFData.Models
     {
         public Account()
         {
+            Name = string.Empty;
             Balance = decimal.Zero;
             PaycheckContribution = decimal.Zero;
             SuggestedPaycheckContribution = decimal.Zero;
