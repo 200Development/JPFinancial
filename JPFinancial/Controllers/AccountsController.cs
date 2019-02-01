@@ -22,7 +22,7 @@ namespace JPFinancial.Controllers
             accountVM.EventArgument = EventArgumentEnum.Read;
             accountVM.EventCommand = EventCommandEnum.Get;
             accountVM.HandleRequest();
-            //_dbEditor.UpdateRequiredBalance();
+            //_dbEditor.UpdateRequiredBalanceForBills();
             //_dbEditor.UpdateRequiredBalanceSurplus();
 
 
@@ -71,7 +71,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "Id,Name,CurrentBalance,PaycheckContribution,RequiredSavings")] AccountViewModel accountVM)
+        public ActionResult Create(AccountViewModel accountVM)
         {
             if (!ModelState.IsValid) return View(accountVM);
 
@@ -141,9 +141,9 @@ namespace JPFinancial.Controllers
         }
 
         [ActionName("Update")]
-        public ActionResult Update()
+        public ActionResult Update(AccountViewModel vm)
         {
-            AccountViewModel vm = new AccountViewModel();
+            //AccountViewModel vm = new AccountViewModel();
             vm.EventArgument = EventArgumentEnum.Update;
             vm.EventCommand = EventCommandEnum.Update;
             vm.HandleRequest();

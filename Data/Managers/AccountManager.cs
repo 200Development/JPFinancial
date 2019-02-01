@@ -117,11 +117,11 @@ namespace JPFData.Managers
             try
             {
                 entity.Accounts = _db.Accounts.ToList();
+                // pay off Account deficits with pool
+                if (!UpdateRequiredBalanceForBills()) return entity;
+
                 // Refresh Account surpluses
                 if (!UpdateBalanceSurplus()) return entity;
-
-                // pay off Account deficits with pool
-                if (!UpdateRequiredBalance()) return entity;
 
                 // update paycheck contributions to be suggested contributions
                 if (!UpdatePaycheckContributions()) return entity;
@@ -141,43 +141,10 @@ namespace JPFData.Managers
 
         /// <summary>
         /// Database update if dbSave = true, else EntityState.Modified.
-        /// Update the balance surplus for each Account.
-        /// Balance surplus = balance - required savings.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public bool UpdateBalanceSurplus(bool dbSave = false)
-        {
-            // public because runs on startup with dbSave = true
-            try
-            {
-                foreach (var account in _db.Accounts.ToList())
-                {
-                    account.BalanceSurplus = account.Balance - account.RequiredSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _dbTransactions += 1;
-                }
-
-
-                if (!dbSave) return true;
-                _db.SaveChanges();
-                _dbTransactions = 0;
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        //TODO: research access modifiers 
-        /// <summary>
-        /// Database update if dbSave = true, else EntityState.Modified.
         /// Update the required savings for each Account.
         /// Required savings = 
         /// </summary>
-        public bool UpdateRequiredBalance(bool dbSave = false)
+        public bool UpdateRequiredBalanceForBills(bool dbSave = false)
         {
             // public because runs on startup with dbSave = true
             try
@@ -261,6 +228,39 @@ namespace JPFData.Managers
         }
 
         /// <summary>
+        /// Database update if dbSave = true, else EntityState.Modified.
+        /// Update the balance surplus for each Account.
+        /// Balance surplus = balance - required savings.
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool UpdateBalanceSurplus(bool dbSave = false)
+        {
+            // public because runs on startup with dbSave = true
+            try
+            {
+                foreach (var account in _db.Accounts.ToList())
+                {
+                    account.BalanceSurplus = account.Balance - account.RequiredSavings;
+                    _db.Entry(account).State = EntityState.Modified;
+                    _dbTransactions += 1;
+                }
+
+
+                if (!dbSave) return true;
+                _db.SaveChanges();
+                _dbTransactions = 0;
+
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+       
+        /// <summary>
         /// Entity update.
         /// Update the paycheck contributions for each account.
         /// Paycheck contribution = suggested paycheck contribution.
@@ -299,12 +299,13 @@ namespace JPFData.Managers
                 if (!PoolSurplus()) return entity;
                 if (!RebalanceAccountSavings()) return entity;
                 //if (!UpdatePaycheckContributions(entity)) return entity;
-                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
+                //entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
 
 
                 _db.SaveChanges();
+                Update(entity); //refreshes the account metrics like surplus after rebalancing
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 //ignore
             }
@@ -346,6 +347,7 @@ namespace JPFData.Managers
                     newTransaction.DebitAccount = poolAccount;
                     newTransaction.CreditAccount = account;
                     newTransaction.Amount = (decimal)surplus;
+                    newTransaction.PaycheckId = null;
                     _db.Entry(newTransaction).State = EntityState.Added;
 
 
@@ -353,10 +355,12 @@ namespace JPFData.Managers
                     _db.Entry(poolAccount).State = EntityState.Modified;
                 }
 
+                _db.SaveChanges();
+
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
                 return false;
             }
@@ -402,6 +406,7 @@ namespace JPFData.Managers
                         newTransaction.DebitAccount = account;
                         newTransaction.CreditAccount = poolAccount;
                         newTransaction.Amount = balance;
+                        newTransaction.PaycheckId = null;
                         // DB add transaction
                         _db.Entry(newTransaction).State = EntityState.Added;
                         // DB update deficit Account balance
@@ -421,6 +426,7 @@ namespace JPFData.Managers
                         newTransaction.DebitAccount = account;
                         newTransaction.CreditAccount = poolAccount;
                         newTransaction.Amount = deficit;
+                        newTransaction.PaycheckId = null;
                         // DB add transaction
                         _db.Entry(newTransaction).State = EntityState.Added;
                         // DB update deficit Account balance

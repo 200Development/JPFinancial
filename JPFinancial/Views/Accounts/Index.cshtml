@@ -46,7 +46,7 @@
                     </div>
                 </div>
 
-                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count >= 0)
+                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count == 0)
                 {
                     <div class="col-lg-3 col-sm-6">
                         <div class="card">
@@ -76,7 +76,7 @@
                     </div>
                 }
 
-                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count < 0)
+                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count > 0)
                 {
                     <div class="col-lg-3 col-sm-6">
                         <div class="card">
