@@ -92,6 +92,7 @@
     <Compile Include="Base\BaseManager.cs" />
     <Compile Include="Base\BaseViewModel.cs" />
     <Compile Include="Calculations.cs" />
+    <Compile Include="CalculationsArchive.cs" />
     <Compile Include="DTO\AccountDTO.cs" />
     <Compile Include="DTO\BillDTO.cs" />
     <Compile Include="DTO\CreditCardDTO.cs" />

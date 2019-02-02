@@ -18,7 +18,7 @@ namespace JPFinancial
 
             _calc.UpdateRequiredBalanceForBills(true);
             _calc.UpdateBalanceSurplus(true);
-            billManager.UpdateBillDueDates();
+            _calc.UpdateBillDueDates();
         }
     }
 }
