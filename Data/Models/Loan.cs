@@ -22,7 +22,7 @@ namespace JPFData.Models
         public int Term { get; set; }
 
         [Display(Name = "Term Classification")]
-        public TermClassification TermClassification { get; set; }
+        public TermClassificationEnum TermClassification { get; set; }
 
         [Display(Name = "Original CurrentBalance"), DataType(DataType.Currency)]
         public decimal OriginalLoanAmount { get; set; }

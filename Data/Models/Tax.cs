@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JPFData.Enumerations;
 
 namespace JPFData.Models
 {

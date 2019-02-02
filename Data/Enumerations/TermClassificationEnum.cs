@@ -1,6 +1,6 @@
 ﻿namespace JPFData.Enumerations
 {
-    public enum TermClassification
+    public enum TermClassificationEnum
     {
         Days = 1,
         Months = 2,

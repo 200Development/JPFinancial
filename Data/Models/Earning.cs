@@ -7,8 +7,6 @@ namespace JPFData.Models
         [Key]
         public int Id { get; set; }
 
-        public EarningsType Description { get; set; }
-
         [DataType(DataType.Currency)]
         public decimal? Rate { get; set; }
 

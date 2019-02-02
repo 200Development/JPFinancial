@@ -1,5 +1,4 @@
 ﻿using JPFData;
-using JPFData.Managers;
 using Microsoft.Owin;
 using Owin;
 
@@ -9,7 +8,6 @@ namespace JPFinancial
     public partial class Startup
     {
         private readonly Calculations _calc = new Calculations();
-        private BillManager billManager = new BillManager();
 
 
         public void Configuration(IAppBuilder app)

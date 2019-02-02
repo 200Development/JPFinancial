@@ -145,7 +145,7 @@ namespace JPFData.Models
         [DataType(DataType.Currency), Display(Name = "Net Pay")]
         public decimal NetPay { get; set; }
 
-        //public MaritalStatus MaritalStatus { get; set; }
+        //public MaritalStatusEnum MaritalStatus { get; set; }
 
         //public int Allowances { get; set; }
     }

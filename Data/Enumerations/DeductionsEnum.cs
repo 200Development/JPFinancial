@@ -1,4 +1,4 @@
-﻿namespace JPFData.Models
+﻿namespace JPFData.Enumerations
 {
     public enum DeductionsEnum
     {
