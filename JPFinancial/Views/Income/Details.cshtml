@@ -1,4 +1,4 @@
-﻿@model JPFData.Models.Salary
+﻿@model JPFData.ViewModels.IncomeViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -7,36 +7,292 @@
 <h2>Details</h2>
 
 <div>
-    <h4>Salary</h4>
+    <h4>Paycheck</h4>
     <hr />
     <dl class="dl-horizontal">
-        <dt>
-            @Html.DisplayNameFor(model => model.PayTypesEnum)
+        @*<dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.Regular)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PayTypesEnum)
+            @Html.DisplayFor(model => model.Entity.Paycheck.Regular)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PayFrequency)
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.ElectronicsNontaxable)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PayFrequency)
+            @Html.DisplayFor(model => model.Entity.Paycheck.ElectronicsNontaxable)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.GrossPay)
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.TravelBusinessExpenseNontaxable)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.GrossPay)
+            @Html.DisplayFor(model => model.Entity.Paycheck.TravelBusinessExpenseNontaxable)
         </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.HolidayPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.HolidayPay)
+        </dd>*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.GrossPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.GrossPay)
+        </dd>
+
+        @*<dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.FederalTaxableGross)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.FederalTaxableGross)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.FederalWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.FederalWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDFederalWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDFederalWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.FederalMedicaidWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.FederalMedicaidWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDFederalMedicaidWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDFederalMedicaidWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.SocialSecurityWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.SocialSecurityWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDSocialSecurityWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDSocialSecurityWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.StateTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.StateTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDStateTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDStateTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.CityTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.CityTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDCityTaxWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDCityTaxWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.IRA401KWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.IRA401KWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDIRA401KWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDIRA401KWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.DependentCareFSAWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.DependentCareFSAWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDDependentCareFSAWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDDependentCareFSAWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.HealthInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.HealthInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDHealthInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDHealthInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.DentalInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.DentalInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDDentalInsuranceWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDDentalInsuranceWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.TotalBeforeTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.TotalBeforeTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDTotalBeforeTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDTotalBeforeTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.ChildSupportWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.ChildSupportWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDChildSupportWithholding)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDChildSupportWithholding)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.TotalAfterTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.TotalAfterTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDTotalAfterTaxDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDTotalAfterTaxDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.TotalDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.TotalDeductions)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.YTDTotalDeductions)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.YTDTotalDeductions)
+        </dd>*@
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.NetPay)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.NetPay)
+        </dd>
+
+        @*<dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.MaritalStatus)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.MaritalStatus)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Entity.Paycheck.Allowances)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Entity.Paycheck.Allowances)
+        </dd>*@
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Entity.Paycheck.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

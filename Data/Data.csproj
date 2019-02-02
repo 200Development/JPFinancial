@@ -117,6 +117,10 @@
     <Compile Include="Migrations\201901261931452_addTotalTaxesToPaycheck.Designer.cs">
       <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.cs" />
+    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.Designer.cs">
+      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -228,6 +232,7 @@
     <Compile Include="ViewModels\IncomeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageLoginsViewModel.cs" />
+    <Compile Include="ViewModels\PaycheckViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ResetPasswordViewModel.cs" />
     <Compile Include="ViewModels\SendCodeViewModel.cs" />
@@ -247,6 +252,9 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201901261931452_addTotalTaxesToPaycheck.resx">
       <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902012103242_removeUnusedPaycheckFields.resx">
+      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>
