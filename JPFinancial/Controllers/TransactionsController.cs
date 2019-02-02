@@ -17,11 +17,11 @@ namespace JPFinancial.Controllers
         // GET: Transactions
         public ActionResult Index()
         {
-            TransactionViewModel vm = new TransactionViewModel();
-            vm.EventArgument = EventArgumentEnum.Read;
-            vm.EventCommand = EventCommandEnum.Get;
-            vm.HandleRequest();
-            return View(vm);
+            TransactionViewModel transactionVM = new TransactionViewModel();
+            transactionVM.EventArgument = EventArgumentEnum.Read;
+            transactionVM.EventCommand = EventCommandEnum.Get;
+            transactionVM.HandleRequest();
+            return View(transactionVM);
         }
 
         // GET: Transactions/Details/5
@@ -52,13 +52,7 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
-            if (!ModelState.IsValid)
-            {
-                var errors = ModelState.Where(x => x.Value.Errors.Any())
-                    .Select(x => new { x.Key, x.Value.Errors });
-
-                return View(transactionVM);
-            }
+            if (!ModelState.IsValid) return View(transactionVM);
 
             if (transactionVM.Entity.Transaction.CreditAccountId != null)
                 transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
@@ -92,6 +86,8 @@ namespace JPFinancial.Controllers
             {
                 return HttpNotFound();
             }
+
+
             return View(transactionVM);
         }
 

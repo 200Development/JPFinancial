@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
@@ -11,13 +10,25 @@ using JPFData.Models;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Manages all Transaction communication between the application and the database
+    /// </summary>
     public class TransactionManager
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        /*
+        MANAGER STRUCTURE
+        private fields
+        constructors
+        public fields
+        public methods
+        private methods
+        */
+        private readonly ApplicationDbContext _db;
 
 
         public TransactionManager()
         {
+            _db = new ApplicationDbContext();
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
@@ -53,6 +64,30 @@ namespace JPFData.Managers
             catch (Exception)
             {
                 return null;
+            }
+        }
+
+        public bool Create(TransactionDTO entity)
+        {
+            try
+            {
+                //if (!entity.Transaction.UsedCreditCard)
+                if (entity.Transaction.Type != TransactionTypesEnum.Income)
+                    entity.Transaction.PaycheckId = null;
+                UpdateAccountBalances(entity.Transaction, "create");
+                //else
+                if (entity.Transaction.UsedCreditCard)
+                    UpdateCreditCard(entity.Transaction, "create");
+
+                if (!AddTransaction(entity)) return false;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                return false;
             }
         }
 
@@ -98,10 +133,19 @@ namespace JPFData.Managers
             return ret;
         }
 
-        public bool Delete(int? id)
+        public bool Delete(Transaction entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
+
 
         private TransactionMetrics RefreshTransactionMetrics(TransactionDTO entity)
         {
@@ -126,31 +170,7 @@ namespace JPFData.Managers
 
             return ValidationErrors.Count == 0;
         }
-
-        public bool Create(TransactionDTO entity)
-        {
-            try
-            {
-                //if (!entity.Transaction.UsedCreditCard)
-                if (entity.Transaction.Type != TransactionTypesEnum.Income)
-                    entity.Transaction.PaycheckId = null;
-                UpdateAccountBalances(entity.Transaction, "create");
-                //else
-                if (entity.Transaction.UsedCreditCard)
-                    UpdateCreditCard(entity.Transaction, "create");
-
-                if (!AddTransaction(entity)) return false;
-                _db.SaveChanges();
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                return false;
-            }
-        }
-
+      
         private bool AddTransaction(TransactionDTO entity)
         {
             try
