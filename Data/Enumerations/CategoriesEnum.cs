@@ -133,6 +133,8 @@ namespace JPFData.Enumerations
         [Display(Name = "Other Tax")]
         OtherTax,
         Parking,
+        [Display(Name = "Paycheck Contribution")]
+        PaycheckContribution,
         [Display(Name = "Personal Care")]
         PersonalCare,
         [Display(Name = "Pet Food")]

@@ -1,11 +1,17 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using JPFData.DTO;
+using JPFData.Enumerations;
 using JPFData.Managers;
 
 namespace JPFData.ViewModels
 {
+    /// <summary>
+    /// Container that holds Account data and business logic 
+    /// </summary>
     public class AccountViewModel
     {
+        private AccountManager _manager;
 
         public AccountViewModel()
         {
@@ -18,62 +24,57 @@ namespace JPFData.ViewModels
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public string Mode { get; set; }
         public bool IsValid { get; set; }
-        public string EventCommand { get; set; }
-        public string EventArgument { get; set; }
+        public EventCommandEnum EventCommand { get; set; }
+        public EventArgumentEnum EventArgument { get; set; }
 
 
         private void Init()
         {
             Entity = new AccountDTO();
             SearchEntity = new AccountDTO();
+            _manager = new AccountManager();
         }
 
-        public void HandleRequest()
+        public bool HandleRequest()
         {
-            //if(EventArgument == "Get")
-            //Get();
-            //if (EventArgument == "Rebalance")
-            //    Rebalance();
-            Get();
+            switch (EventArgument)
+            {
+                case EventArgumentEnum.Create:
+                    break;
+                case EventArgumentEnum.Read:
+                    switch (EventCommand)
+                    {
+                        case EventCommandEnum.Get:
+                        case EventCommandEnum.Search:
+                            Entity = _manager.Get(Entity);
+                            return true;
+                        case EventCommandEnum.Details:
+                            Entity.Account = _manager.Details(Entity);
+                            return true;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                case EventArgumentEnum.Update:
+                    switch (EventCommand)
+                    {
+                        case EventCommandEnum.Edit:
+                            return _manager.Edit(Entity);
+                        case EventCommandEnum.Rebalance:
+                            Entity = _manager.Rebalance(Entity);
+                            return true;
+                        case EventCommandEnum.Update:
+                            Entity = _manager.Update(Entity);
+                            return true;
+                        case EventCommandEnum.Pool:
+                            break;
+                    }
+                    break;
+                case EventArgumentEnum.Delete:
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return true;
         }
-
-        private void Get()
-        {
-            AccountManager mgr = new AccountManager();
-
-            Entity = mgr.Get(SearchEntity);
-        }
-
-        private void Rebalance()
-        {
-            AccountManager mgr = new AccountManager();
-
-            Entity = mgr.Rebalance(SearchEntity);
-        }
-        //public AccountViewModel()
-        //{
-        //    CurrentBalance = decimal.Zero;
-        //    PaycheckContribution = decimal.Zero;
-        //}
-
-        //[Key] public int Id { get; set; }
-
-        //[Required, StringLength(255)] public string Name { get; set; }
-
-        //[Required, DataType(DataType.Currency)]
-        //public decimal CurrentBalance { get; set; }
-
-        //[DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
-        //public decimal? PaycheckContribution { get; set; }
-
-        //[DataType(DataType.Currency), Display(Name = "Required Savings")]
-        //public decimal? RequiredSavings { get; set; }
-
-        //[DataType(DataType.Currency), Display(Name = "Surplus/Deficit")]
-        //public decimal? BalanceSurplus { get; set; }
-
-        //public string BalanceFontColor { get; set; }
-
-        //public string SurplusFontColor { get; set; }
     }
 }

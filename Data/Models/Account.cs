@@ -1,5 +1,5 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+
 
 namespace JPFData.Models
 {
@@ -7,10 +7,15 @@ namespace JPFData.Models
     {
         public Account()
         {
+            Name = string.Empty;
             Balance = decimal.Zero;
             PaycheckContribution = decimal.Zero;
-            BalanceSurplus = decimal.Zero;
             SuggestedPaycheckContribution = decimal.Zero;
+            RequiredSavings = decimal.Zero;
+            BalanceSurplus = decimal.Zero;
+            ExcludeFromSurplus = false;
+            PercentageOfSavings = decimal.Zero;
+            IsPoolAccount = false;
         }
 
         [Key]

@@ -96,7 +96,10 @@
     <Compile Include="DTO\BillDTO.cs" />
     <Compile Include="DTO\CreditCardDTO.cs" />
     <Compile Include="DTO\IncomeDTO.cs" />
+    <Compile Include="Enumerations\EventArgumentEnum.cs" />
+    <Compile Include="Enumerations\EventCommandEnum.cs" />
     <Compile Include="Managers\BillManager.cs" />
+    <Compile Include="Managers\CreditCardManager.cs" />
     <Compile Include="Managers\IncomeManager.cs" />
     <Compile Include="Metrics\AccountMetrics.cs" />
     <Compile Include="Metrics\BillMetrics.cs" />
@@ -110,6 +113,14 @@
     <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
     <Compile Include="Managers\TransactionManager.cs" />
+    <Compile Include="Migrations\201901261931452_addTotalTaxesToPaycheck.cs" />
+    <Compile Include="Migrations\201901261931452_addTotalTaxesToPaycheck.Designer.cs">
+      <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.cs" />
+    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.Designer.cs">
+      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -218,8 +229,10 @@
     <Compile Include="ViewModels\FactorViewModel.cs" />
     <Compile Include="ViewModels\ForgotPasswordViewModel.cs" />
     <Compile Include="ViewModels\ForgotViewModel.cs" />
+    <Compile Include="ViewModels\IncomeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageLoginsViewModel.cs" />
+    <Compile Include="ViewModels\PaycheckViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ResetPasswordViewModel.cs" />
     <Compile Include="ViewModels\SendCodeViewModel.cs" />
@@ -237,6 +250,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201901261931452_addTotalTaxesToPaycheck.resx">
+      <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902012103242_removeUnusedPaycheckFields.resx">
+      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>
     </EmbeddedResource>

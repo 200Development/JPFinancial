@@ -1,4 +1,4 @@
-﻿@model JPFData.Models.Account
+﻿@model JPFData.ViewModels.AccountViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -15,37 +15,44 @@
         <h4>Account</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.Entity.Account.Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Entity.Account.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Entity.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Entity.Account.Name, "", new { @class = "text-danger" })
             </div>
         </div>
         
         <div class="form-group">
-            @Html.LabelFor(model => model.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Entity.Account.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Balance, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Entity.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Entity.Account.Balance, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.PaycheckContribution, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Entity.Account.PaycheckContribution, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.PaycheckContribution, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.PaycheckContribution, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Entity.Account.PaycheckContribution, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Entity.Account.PaycheckContribution, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.RequiredSavings, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Entity.Account.RequiredSavings, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.RequiredSavings, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Entity.Account.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Entity.Account.RequiredSavings, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div class="form-group">
+            @Html.LabelFor(model => model.Entity.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.Entity.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 

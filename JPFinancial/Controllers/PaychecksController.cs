@@ -6,6 +6,7 @@ using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
 using JPFData.Models;
+using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
@@ -46,16 +47,19 @@ namespace JPFinancial.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         //public ActionResult Create([Bind(Include = "Id,Date,Regular,Employer,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay")] Paycheck paycheck)
-        public ActionResult Create([Bind(Include = "Id,Date,Employer,GrossPay,NetPay")] Paycheck paycheck)
+        public ActionResult Create([Bind(Include = "Id,Date,Employer,GrossPay,NetPay")] IncomeViewModel incomeVM)
         {
-            if (!ModelState.IsValid) return View(paycheck);
-            if (!UpdatePoolAccount(paycheck, "create")) return View(paycheck);
-            if (!AddIncomeTransactionToDb(paycheck)) return View(paycheck);
-            if (!TransferPaycheckContributions(paycheck, "create")) return View(paycheck);
+            if (!ModelState.IsValid) return View(incomeVM);
+            incomeVM.EventArgument = EventArgumentEnum.Create;
+            incomeVM.HandleRequest();
+
+            //if (!UpdatePoolAccount(paycheck, "create")) return View(paycheck);
+            //if (!AddIncomeTransactionToDb(paycheck)) return View(paycheck);
+            //if (!TransferPaycheckContributions(paycheck, "create")) return View(paycheck);
 
 
-            _db.Paychecks.Add(paycheck);
-            _db.SaveChanges();
+            //_db.Paychecks.Add(paycheck);
+            //_db.SaveChanges();
 
 
             return RedirectToAction("Index");

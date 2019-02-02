@@ -7,35 +7,34 @@ using JPFData.Managers;
 
 namespace JPFData.ViewModels
 {
-    public class TransactionViewModel
+    public class IncomeViewModel
     {
-        private TransactionManager _manager;
+        private IncomeManager _manager;
 
-
-        public TransactionViewModel()
+        public IncomeViewModel()
         {
             Init();
         }
 
 
-        public TransactionDTO Entity { get; set; }
-        public TransactionDTO SearchEntity { get; set; }
+        public IncomeDTO Entity { get; set; }
+        public IncomeDTO SearchEntity { get; set; }
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
-        public EventCommandEnum EventCommand { get; set; }
         public EventArgumentEnum EventArgument { get; set; }
-        // Type needs to be in VM or javascript will break.  todo: research this
-        public TransactionTypesEnum Type { get; set; }
+        public EventCommandEnum EventCommand { get; set; }
         public string Date { get; set; }
-        public bool UsedCreditCard { get; set; }
+        public bool AutoTransferPaycheckContributions { get; set; }
+
 
 
         private void Init()
         {
-            Entity = new TransactionDTO();
-            SearchEntity = new TransactionDTO();
+            Entity = new IncomeDTO();
+            SearchEntity = new IncomeDTO();
             ValidationErrors = new List<KeyValuePair<string, string>>();
-            _manager = new TransactionManager();
+            _manager = new IncomeManager();
             Date = DateTime.Today.ToString("d", CultureInfo.CurrentCulture);
+            AutoTransferPaycheckContributions = false;
         }
 
         public bool HandleRequest()
@@ -47,39 +46,39 @@ namespace JPFData.ViewModels
                 case EventArgumentEnum.Read:
                     switch (EventCommand)
                     {
-                        case EventCommandEnum.Search:
                         case EventCommandEnum.Get:
                             Entity = _manager.Get(Entity);
                             return true;
-                        default:
-                            throw new ArgumentOutOfRangeException();
+                        case EventCommandEnum.Details:
+                            Entity.Paycheck = _manager.GetPaycheck(Entity);
+                            return true;
                     }
+                    break;
                 case EventArgumentEnum.Update:
                     switch (EventCommand)
                     {
                         case EventCommandEnum.Get:
-                            Entity.Transaction = _manager.GetTransaction(Entity);
-                            break;
+                            Entity.Paycheck = _manager.GetPaycheck(Entity);
+                            return true;
                         case EventCommandEnum.Edit:
                             return _manager.Edit(Entity);
-                        case EventCommandEnum.Rebalance:
-                            break;
-                        case EventCommandEnum.Pool:
-                            break;
-                        case EventCommandEnum.Update:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
                     }
                     break;
                 case EventArgumentEnum.Delete:
-                    return _manager.Delete(Entity.Transaction);
-
+                    switch (EventCommand)
+                    {
+                        case EventCommandEnum.Get:
+                            Entity.Paycheck = _manager.GetPaycheck(Entity);
+                            return true;
+                        case EventCommandEnum.Delete:
+                            return _manager.Delete(Entity.Paycheck);
+                    }
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+
             return false;
         }
-
     }
 }
