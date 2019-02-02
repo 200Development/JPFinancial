@@ -8,6 +8,7 @@
         Rebalance,
         Pool,
         Update,
-        Details
+        Details,
+        Delete
     }
 }
