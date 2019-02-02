@@ -8,7 +8,7 @@ namespace JPFinancial
 {
     public partial class Startup
     {
-        private AccountManager accountManager = new AccountManager();
+        private readonly Calculations _calc = new Calculations();
         private BillManager billManager = new BillManager();
 
 
@@ -16,8 +16,8 @@ namespace JPFinancial
         {
             ConfigureAuth(app);
 
-            accountManager.UpdateRequiredBalanceForBills(true);
-            accountManager.UpdateBalanceSurplus(true);
+            _calc.UpdateRequiredBalanceForBills(true);
+            _calc.UpdateBalanceSurplus(true);
             billManager.UpdateBillDueDates();
         }
     }
