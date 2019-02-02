@@ -123,6 +123,10 @@
     <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.Designer.cs">
       <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902021640479_removeDescriptionFromEarnings.cs" />
+    <Compile Include="Migrations\201902021640479_removeDescriptionFromEarnings.Designer.cs">
+      <DependentUpon>201902021640479_removeDescriptionFromEarnings.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -255,6 +259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902012103242_removeUnusedPaycheckFields.resx">
       <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902021640479_removeDescriptionFromEarnings.resx">
+      <DependentUpon>201902021640479_removeDescriptionFromEarnings.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>
