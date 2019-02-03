@@ -6,7 +6,6 @@ using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models;
-using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
@@ -35,24 +34,19 @@ namespace JPFData.Managers
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public IncomeDTO Get()
-        {
-            return Get(new IncomeDTO());
-        }
-
         public IncomeDTO Get(IncomeDTO entity)
         {
             try
             {
                 entity.Paychecks = _db.Paychecks.ToList();
                 entity.Metrics = RefreshIncomeMetrics(entity);
+                return entity;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
+                return null;
             }
-
-            return entity;
         }
 
         //TODO: look into making dynamic instead of specific to paychecks
@@ -64,6 +58,7 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return null;
             }
         }
@@ -76,8 +71,8 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.Instance.Error(e);
+                return null;
             }
         }
 
@@ -92,7 +87,7 @@ namespace JPFData.Managers
                     if (!AutoTransferPaycheckContributions(paycheck)) return false;
 
                 AddIncomeToPoolAccount(paycheck);
-               
+
                 _db.SaveChanges();
 
 
@@ -100,18 +95,35 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
 
         public bool Edit(IncomeDTO entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
         }
 
         public bool Update(Paycheck entity)
         {
-            throw new NotImplementedException();
+            try
+            {
+                throw new NotImplementedException();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
         }
 
         public bool Delete(Paycheck entity)
@@ -120,8 +132,9 @@ namespace JPFData.Managers
             {
                 throw new NotImplementedException();
             }
-            catch
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
@@ -148,6 +161,7 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
@@ -175,12 +189,12 @@ namespace JPFData.Managers
                 newTransaction.Amount = contribution;
                 newTransaction.PaycheckId = null;
                 _db.Transactions.Add(newTransaction);
-                //_db.SaveChanges(); 
 
                 return true;
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
@@ -197,22 +211,31 @@ namespace JPFData.Managers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
 
         private static IncomeMetrics RefreshIncomeMetrics(IncomeDTO entity)
         {
-            IncomeMetrics metrics = new IncomeMetrics();
+            try
+            {
+                IncomeMetrics metrics = new IncomeMetrics();
 
-            var monthlyIncome = entity.Paychecks.GroupBy(p => p.Date.Month).Select(m => new { m.Key, Sum = m.Sum(i => i.NetPay) });
-            metrics.AverageMonthlyIncome = monthlyIncome.Sum(m => m.Sum) / monthlyIncome.Count();
-            metrics.AverageWeeklyIncome = metrics.AverageMonthlyIncome / 4;
-            metrics.ProjectedAnnualIncome = metrics.AverageMonthlyIncome *= 12;
+                var monthlyIncome = entity.Paychecks.GroupBy(p => p.Date.Month).Select(m => new { m.Key, Sum = m.Sum(i => i.NetPay) }).ToList();
+                metrics.AverageMonthlyIncome = monthlyIncome.Sum(m => m.Sum) / monthlyIncome.Count;
+                metrics.AverageWeeklyIncome = metrics.AverageMonthlyIncome / 4;
+                metrics.ProjectedAnnualIncome = metrics.AverageMonthlyIncome *= 12;
 
-            return metrics;
+                return metrics;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
         }
     }
 }
