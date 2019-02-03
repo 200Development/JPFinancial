@@ -33,11 +33,11 @@ namespace JPFData.Managers
             {
                 entity.Accounts = _db.Accounts.ToList();
                 entity.Metrics = RefreshAccountMetrics(entity);
-                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
+                entity.RebalanceReport = Calculations.GetRebalancingAccountsReport(entity);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
             }
 
 
@@ -46,7 +46,15 @@ namespace JPFData.Managers
 
         public Account Details(AccountDTO entity)
         {
-            return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
+            try
+            {
+                return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
         }
 
         public bool Edit(AccountDTO entity)
@@ -57,8 +65,9 @@ namespace JPFData.Managers
                 _db.SaveChanges();
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
@@ -83,14 +92,13 @@ namespace JPFData.Managers
 
 
                 _db.SaveChanges();
+                return entity;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
+                return null;
             }
-
-
-            return entity;
         }
 
         public AccountDTO Rebalance(AccountDTO entity)
@@ -103,33 +111,40 @@ namespace JPFData.Managers
 
                 _db.SaveChanges();
                 Update(entity);  //is this necessary or overkill?
+                return entity;
             }
             catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
+                return null;
             }
-
-
-            return entity;
         }
 
 
         private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
         {
-            AccountMetrics metrics = new AccountMetrics();
+            try
+            {
+                AccountMetrics metrics = new AccountMetrics();
 
-            metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
-            metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
-            metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
+                metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
+                metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
+                metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
 
-            metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
-            metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
-            metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / entity.Accounts
-                                         .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
-            metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
+                metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
+                metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
+                metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / entity.Accounts
+                                             .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
+                metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 
 
-            return metrics;
+                return metrics;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
         }
     }
 }

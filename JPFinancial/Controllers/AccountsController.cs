@@ -47,6 +47,7 @@ namespace JPFinancial.Controllers
         {
             if (id == null)
             {
+                Logger.Instance.Debug("Account ID is null");
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
             AccountViewModel accountVM = new AccountViewModel();
@@ -55,6 +56,7 @@ namespace JPFinancial.Controllers
             accountVM.Entity.Account = _db.Accounts.Find(id);
             if (accountVM.Entity.Account == null)
             {
+                Logger.Instance.Debug("Returned Account is null");
                 return HttpNotFound();
             }
             return View(accountVM);
