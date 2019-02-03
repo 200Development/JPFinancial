@@ -19,10 +19,12 @@ namespace JPFinancial.Controllers
         {
             try
             {
+                Logger.Instance.DataFlow($"Index");
                 TransactionViewModel transactionVM = new TransactionViewModel();
                 transactionVM.EventArgument = EventArgumentEnum.Read;
                 transactionVM.EventCommand = EventCommandEnum.Get;
                 transactionVM.HandleRequest();
+                Logger.Instance.DataFlow($"To View");
                 return View(transactionVM);
             }
             catch (Exception e)

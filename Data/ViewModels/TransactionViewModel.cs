@@ -40,6 +40,7 @@ namespace JPFData.ViewModels
 
         public bool HandleRequest()
         {
+            Logger.Instance.DataFlow($"ViewModel Handle Request.  EventArgument: {EventArgument.ToString()}, EventCommand: {EventCommand.ToString()}");
             switch (EventArgument)
             {
                 case EventArgumentEnum.Create:

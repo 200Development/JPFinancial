@@ -40,7 +40,9 @@ namespace JPFData.Managers
             try
             {
                 entity.Transactions = _db.Transactions.ToList();
+                Logger.Instance.DataFlow($"Selected all transactions from DB");
                 entity.Metrics = RefreshTransactionMetrics(entity);
+                Logger.Instance.DataFlow($"Refreshed transaction metrics");
                 return entity;
             }
             catch (Exception e)
@@ -54,6 +56,7 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Get transaction with Id: {entity.Transaction.Id}");
                 return _db.Transactions.Find(entity.Transaction.Id);
             }
             catch (Exception e)
@@ -67,15 +70,22 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"If transaction is not for income, set paycheckId to null");
                 if (entity.Transaction.Type != TransactionTypesEnum.Income)
                     entity.Transaction.PaycheckId = null;
                 UpdateAccountBalances(entity.Transaction, "create");
+                Logger.Instance.DataFlow($"Account balances updated in data context");
 
                 if (entity.Transaction.UsedCreditCard)
+                {
                     UpdateCreditCard(entity.Transaction, "create");
+                    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
+                }
 
                 if (!AddTransaction(entity)) return false;
+                Logger.Instance.DataFlow($"Transaction added to database context");
                 _db.SaveChanges();
+                Logger.Instance.DataFlow($"Database context saved to database");
 
 
                 return true;
@@ -93,16 +103,20 @@ namespace JPFData.Managers
             {
                 //AsNoTracking() is essential or EF will throw an error
                 UpdateAccountBalances(entity.Transaction, "edit");
+                Logger.Instance.DataFlow($"Account balances updated in data context");
                 UpdateCreditCard(entity.Transaction, "edit");
+                Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
 
 
                 _db.Entry(entity.Transaction).State = EntityState.Modified;
+                Logger.Instance.DataFlow($"Transaction updated in data context");
 
                 if (entity.Transaction.UsedCreditCard)
                 {
                     var creditCards = _db.CreditCards.ToList();
                     var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccount);
                     _db.Entry(creditCard).State = EntityState.Modified;
+                    Logger.Instance.DataFlow($"Credit card updated in data context");
                 }
                 _db.SaveChanges();
 
