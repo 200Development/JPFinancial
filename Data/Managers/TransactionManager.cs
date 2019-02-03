@@ -35,24 +35,19 @@ namespace JPFData.Managers
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public TransactionDTO Get()
-        {
-            return Get(new TransactionDTO());
-        }
-
         public TransactionDTO Get(TransactionDTO entity)
         {
             try
             {
                 entity.Transactions = _db.Transactions.ToList();
                 entity.Metrics = RefreshTransactionMetrics(entity);
+                return entity;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
+                return null;
             }
-
-            return entity;
         }
 
         public Transaction GetTransaction(TransactionDTO entity)
@@ -61,8 +56,9 @@ namespace JPFData.Managers
             {
                 return _db.Transactions.Find(entity.Transaction.Id);
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return null;
             }
         }
@@ -71,11 +67,10 @@ namespace JPFData.Managers
         {
             try
             {
-                //if (!entity.Transaction.UsedCreditCard)
                 if (entity.Transaction.Type != TransactionTypesEnum.Income)
                     entity.Transaction.PaycheckId = null;
                 UpdateAccountBalances(entity.Transaction, "create");
-                //else
+
                 if (entity.Transaction.UsedCreditCard)
                     UpdateCreditCard(entity.Transaction, "create");
 
@@ -87,6 +82,7 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
@@ -113,24 +109,31 @@ namespace JPFData.Managers
 
                 return true;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
 
         public bool Update(Transaction entity)
         {
-            bool ret = false;
-
-            ret = Validate(entity);
-
-            if (ret)
+            try
             {
-                //todo: add update code
-            }
+                var ret = Validate(entity);
 
-            return ret;
+                if (ret)
+                {
+                    //todo: add update code
+                }
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
         }
 
         public bool Delete(Transaction entity)
@@ -141,21 +144,29 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.Instance.Error(e);
+                return false;
             }
         }
 
 
         private TransactionMetrics RefreshTransactionMetrics(TransactionDTO entity)
         {
-            TransactionMetrics metrics = new TransactionMetrics();
+            try
+            {
+                TransactionMetrics metrics = new TransactionMetrics();
 
-            metrics.AccountMetrics = new AccountMetrics();
-            metrics.CreditCardMetrics = new CreditCardMetrics();
+                metrics.AccountMetrics = new AccountMetrics();
+                metrics.CreditCardMetrics = new CreditCardMetrics();
 
 
-            return metrics;
+                return metrics;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
         }
 
         private bool Validate(Transaction entity)
@@ -194,6 +205,7 @@ namespace JPFData.Managers
             }
             catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return false;
             }
         }
