@@ -54,8 +54,8 @@ namespace JPFData.Managers
             var dailyLoanInterest = 0.0m;
             foreach (var loan in loans)
             {
-                monthlyLoanInterest += _calculations.MonthlyInterest(loan);
-                dailyLoanInterest += _calculations.DailyInterest(loan);
+                monthlyLoanInterest += Calculations.MonthlyInterest(loan);
+                dailyLoanInterest += Calculations.DailyInterest(loan);
             }
             if (income > 0)
                 metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
