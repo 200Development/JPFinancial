@@ -21,11 +21,6 @@ namespace JPFData.Managers
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public BillDTO Get()
-        {
-            return Get(new BillDTO());
-        }
-
         public BillDTO Get(BillDTO entity)
         {
             try
