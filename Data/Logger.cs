@@ -14,7 +14,7 @@ namespace JPFData
         private static readonly object Locker = new object();
 
 
-        protected Logger()
+        private Logger()
         {
             _fileName = Assembly.GetExecutingAssembly().GetName().Name;
             _folderPath = Path.Combine(Path.GetTempPath(), $"JP Financial Logs/{_fileName}");
