@@ -31,9 +31,13 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Get");
                 entity.Accounts = _db.Accounts.ToList();
+                Logger.Instance.DataFlow($"Pull list of Accounts from DB");
                 entity.Metrics = RefreshAccountMetrics(entity);
+                Logger.Instance.DataFlow($"Refresh Account metrics");
                 entity.RebalanceReport = Calculations.GetRebalancingAccountsReport(entity);
+                Logger.Instance.DataFlow($"Get rebalancing accounts report");
             }
             catch (Exception e)
             {
@@ -48,6 +52,8 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Details");
+                Logger.Instance.DataFlow($"Pull Account with Id of {entity.Account.Id} from DB");
                 return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
             }
             catch (Exception e)
@@ -61,8 +67,11 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Edit");
                 _db.Entry(entity.Account).State = EntityState.Modified;
+                Logger.Instance.DataFlow($"Save Account changes to data context");
                 _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
                 return true;
             }
             catch (Exception e)
@@ -81,17 +90,22 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Update");
                 // set paycheck contributions to suggested contributions
                 if (!_calc.UpdatePaycheckContributions()) return entity;
-
+                Logger.Instance.DataFlow($"Update paycheck contributions");
                 entity.Accounts = _db.Accounts.ToList();
+                Logger.Instance.DataFlow($"Pull list of Accounts from DB");
 
                 if (!_calc.UpdateRequiredBalanceForBills()) return entity;
+                Logger.Instance.DataFlow($"Update required balance for Bills");
 
                 if (!_calc.UpdateBalanceSurplus()) return entity;
+                Logger.Instance.DataFlow($"Update Account balance surplus");
 
 
                 _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
                 return entity;
             }
             catch (Exception e)
@@ -105,11 +119,15 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Rebalance");
                 if (!_calc.PoolSurplus()) return entity;
+                Logger.Instance.DataFlow($"Pool Account surpluses");
                 if (!_calc.RebalanceAccounts()) return entity;
+                Logger.Instance.DataFlow($"Rebalance Accounts (use pool Account to balance Accounts with deficits");
 
 
                 _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
                 Update(entity);  //is this necessary or overkill?
                 return entity;
             }
@@ -125,6 +143,7 @@ namespace JPFData.Managers
         {
             try
             {
+                Logger.Instance.DataFlow($"Refresh Account metrics");
                 AccountMetrics metrics = new AccountMetrics();
 
                 metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
@@ -137,7 +156,7 @@ namespace JPFData.Managers
                                              .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
                 metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 
-
+                Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;
             }
             catch (Exception e)

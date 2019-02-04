@@ -218,6 +218,7 @@
     <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Loan.cs" />
     <Compile Include="Models\Paycheck.cs" />
+    <Compile Include="Models\Rebalance.cs" />
     <Compile Include="Models\Tax.cs" />
     <Compile Include="Enumerations\TaxesEnum.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
