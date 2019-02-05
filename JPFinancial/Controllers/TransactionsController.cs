@@ -24,7 +24,7 @@ namespace JPFinancial.Controllers
                 transactionVM.EventArgument = EventArgumentEnum.Read;
                 transactionVM.EventCommand = EventCommandEnum.Get;
                 transactionVM.HandleRequest();
-                Logger.Instance.DataFlow($"To View");
+                Logger.Instance.DataFlow($"TransactionViewModel returned to View");
                 return View(transactionVM);
             }
             catch (Exception e)
@@ -39,6 +39,7 @@ namespace JPFinancial.Controllers
         {
             try
             {
+                Logger.Instance.DataFlow($"Details");
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -46,8 +47,10 @@ namespace JPFinancial.Controllers
                 Transaction transaction = _db.Transactions.Find(id);
                 if (transaction == null)
                 {
+                    Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
                     return HttpNotFound();
                 }
+                Logger.Instance.DataFlow($"Transaction returned to View");
                 return View(transaction);
             }
             catch (Exception e)
@@ -70,24 +73,31 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
-
             try
             {
+                Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(transactionVM);
 
                 if (transactionVM.Entity.Transaction.CreditAccountId != null)
+                {
                     transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
+                    Logger.Instance.DataFlow($"Credit card set");
+                }
+
                 if (transactionVM.Entity.Transaction.DebitAccountId != null)
+                {
                     transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
+                    Logger.Instance.DataFlow($"Debit account set");
+                }
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
                 transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
                 transactionVM.EventArgument = EventArgumentEnum.Create;
-                if (transactionVM.HandleRequest())
-                    return RedirectToAction("Index");
 
-                return View(transactionVM);
+                if (!transactionVM.HandleRequest()) return View(transactionVM);
+                Logger.Instance.DataFlow($"Return to index View");
+                return RedirectToAction("Index");
             }
             catch (Exception e)
             {
@@ -101,6 +111,7 @@ namespace JPFinancial.Controllers
         {
             try
             {
+                Logger.Instance.DataFlow($"Edit");
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
@@ -110,13 +121,10 @@ namespace JPFinancial.Controllers
                 transactionVM.EventCommand = EventCommandEnum.Get;
                 transactionVM.Entity.Transaction.Id = (int)id;
                 transactionVM.HandleRequest();
-                if (transactionVM.Entity.Transaction == null)
-                {
-                    return HttpNotFound();
-                }
 
-
-                return View(transactionVM);
+                if (transactionVM.Entity.Transaction != null) return View(transactionVM);
+                Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
+                return HttpNotFound();
             }
             catch (Exception e)
             {
@@ -134,14 +142,15 @@ namespace JPFinancial.Controllers
         {
             try
             {
+                Logger.Instance.DataFlow($"Edit");
                 if (!ModelState.IsValid) return View(transactionVM);
                 transactionVM.EventArgument = EventArgumentEnum.Update;
                 transactionVM.EventCommand = EventCommandEnum.Edit;
-                if (transactionVM.HandleRequest())
-                    return RedirectToAction("Index");
 
+                if (!transactionVM.HandleRequest()) return View(transactionVM);
+                Logger.Instance.DataFlow($"Redirected to Index");
+                return RedirectToAction("Index");
 
-                return View(transactionVM);
             }
             catch (Exception e)
             {
