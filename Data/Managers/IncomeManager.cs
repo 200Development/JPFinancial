@@ -213,7 +213,9 @@ namespace JPFData.Managers
             {
                 if (paycheck.NetPay <= 0) return true; //only return false when exception is thrown
                 var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-                if (poolAccount != null) poolAccount.Balance += paycheck.NetPay;
+
+                if (poolAccount == null) return true;
+                poolAccount.Balance += paycheck.NetPay;
                 _db.Entry(poolAccount).State = EntityState.Modified;
 
 
@@ -233,6 +235,8 @@ namespace JPFData.Managers
                 IncomeMetrics metrics = new IncomeMetrics();
 
                 var monthlyIncome = entity.Paychecks.GroupBy(p => p.Date.Month).Select(m => new { m.Key, Sum = m.Sum(i => i.NetPay) }).ToList();
+
+                if (monthlyIncome.Count == 0) return null;
                 metrics.AverageMonthlyIncome = monthlyIncome.Sum(m => m.Sum) / monthlyIncome.Count;
                 metrics.AverageWeeklyIncome = metrics.AverageMonthlyIncome / 4;
                 metrics.ProjectedAnnualIncome = metrics.AverageMonthlyIncome *= 12;

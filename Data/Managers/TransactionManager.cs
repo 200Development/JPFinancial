@@ -118,9 +118,9 @@ namespace JPFData.Managers
                     _db.Entry(creditCard).State = EntityState.Modified;
                     Logger.Instance.DataFlow($"Credit card updated in data context");
                 }
+
+
                 _db.SaveChanges();
-
-
                 return true;
             }
             catch (Exception e)
