@@ -130,7 +130,15 @@ namespace JPFData.Managers
         {
             try
             {
-                throw new NotImplementedException();
+                var paycheck = _db.Paychecks.Find(entity.Id);
+                var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                if (poolAccount != null) poolAccount.Balance -= paycheck.NetPay;
+                _db.Entry(poolAccount).State = EntityState.Modified;
+                _db.Paychecks.Remove(paycheck);
+                _db.SaveChanges();
+
+
+                return true;
             }
             catch (Exception e)
             {
