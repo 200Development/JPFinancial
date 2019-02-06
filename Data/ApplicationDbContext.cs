@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using JPFData.Enumerations;
 using JPFData.Models;
 using Microsoft.AspNet.Identity.EntityFramework;
 
@@ -22,6 +21,7 @@ namespace JPFData
         public IDbSet<Loan> Loans { get; set; }
         public IDbSet<CreditCard> CreditCards { get; set; }
         public IDbSet<Paycheck> Paychecks { get; set; }
+        public IDbSet<Rebalance> Rebalance { get; set; }
         //Keeping for now since migration is already made. 
         public IDbSet<Tax> Taxes { get; set; }
         public IDbSet<Deduction> Deductions { get; set; }

@@ -20,11 +20,15 @@
                                     <div class="icon-big icon-success text-center">
                                         @if (Model.Entity.Metrics.TotalBalance > 0)
                                         {
-                                        <i class="ti-face-smile"></i>
+                                            <i class="ti-face-smile icon-success"></i>
                                         }
-                                        @if (Model.Entity.Metrics.TotalBalance <= 0)
+                                        @if (Model.Entity.Metrics.TotalBalance == 0)
                                         {
-                                        <i class="ti-face-sad"></i>
+                                            <i class="ti-face-smile icon-warning"></i>
+                                        }
+                                        @if (Model.Entity.Metrics.TotalBalance < 0)
+                                        {
+                                            <i class="ti-face-sad icon-danger"></i>
                                         }
                                     </div>
                                 </div>

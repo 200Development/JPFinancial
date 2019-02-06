@@ -14,11 +14,8 @@ namespace JPFData.Models
             CreditAccountId = 0;
             DebitAccountId = 0;
             SelectedCreditCardAccount = 0;
-            //CreditAccount = new Account();
-            //DebitAccount = new Account();
             Amount = decimal.Zero;
             UsedCreditCard = false;
-            //Paycheck = new Paycheck();
             PaycheckId = 0;
         }
 
