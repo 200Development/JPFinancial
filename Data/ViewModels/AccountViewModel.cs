@@ -60,11 +60,11 @@ namespace JPFData.ViewModels
                         case EventCommandEnum.Edit:
                             return _manager.Edit(Entity);
                         case EventCommandEnum.Rebalance:
-                            Entity = _manager.Rebalance(Entity);
-                            return true;
+                            return new Calculations().Rebalance();
+                            //return true;
                         case EventCommandEnum.Update:
-                            Entity = _manager.Update(Entity);
-                            return true;
+                            return new Calculations().Update();
+                            //return true;
                         case EventCommandEnum.Pool:
                             break;
                     }
