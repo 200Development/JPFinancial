@@ -81,64 +81,6 @@ namespace JPFData.Managers
             }
         }
         
-        /// <summary>
-        /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public AccountDTO Update(AccountDTO entity)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Update");
-                // set paycheck contributions to suggested contributions
-                if (!_calc.UpdatePaycheckContributions()) return entity;
-                Logger.Instance.DataFlow($"Update paycheck contributions");
-                entity.Accounts = _db.Accounts.ToList();
-                Logger.Instance.DataFlow($"Pull list of Accounts from DB");
-
-                if (!_calc.UpdateRequiredBalanceForBills()) return entity;
-                Logger.Instance.DataFlow($"Update required balance for Bills");
-
-                if (!_calc.UpdateBalanceSurplus()) return entity;
-                Logger.Instance.DataFlow($"Update Account balance surplus");
-
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Save changes to DB");
-                return entity;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return null;
-            }
-        }
-
-        public AccountDTO Rebalance(AccountDTO entity)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Rebalance");
-                if (!_calc.PoolSurplus()) return entity;
-                Logger.Instance.DataFlow($"Pool Account surpluses");
-                if (!_calc.RebalanceAccounts()) return entity;
-                Logger.Instance.DataFlow($"Rebalance Accounts (use pool Account to balance Accounts with deficits");
-
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Save changes to DB");
-                Update(entity);  //is this necessary or overkill?
-                return entity;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return null;
-            }
-        }
-
-
         private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
         {
             try
