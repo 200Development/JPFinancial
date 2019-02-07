@@ -13,7 +13,8 @@ namespace JPFData.Models
             Memo = string.Empty;
             CreditAccountId = 0;
             DebitAccountId = 0;
-            SelectedCreditCardAccount = 0;
+            SelectedCreditCardAccountId = 0;
+            SelectedBillId = 0;
             Amount = decimal.Zero;
             UsedCreditCard = false;
             PaycheckId = 0;
@@ -27,7 +28,8 @@ namespace JPFData.Models
         public CategoriesEnum Category { get; set; }
         public int? CreditAccountId { get; set; }
         public int? DebitAccountId { get; set; }
-        public int? SelectedCreditCardAccount { get; set; }
+        public int? SelectedCreditCardAccountId { get; set; }
+        public int? SelectedBillId { get; set; }
         public Paycheck Paycheck { get; set; }
         public int? PaycheckId { get; set; }
 
