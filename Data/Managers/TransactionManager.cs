@@ -82,18 +82,42 @@ namespace JPFData.Managers
                     Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
                 }
 
+                if (entity.Transaction.SelectedBillId != null)
+                {
+                    SetBillAsPaid(entity.Transaction.SelectedBillId);
+                    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
+                }
+
                 if (!AddTransaction(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Database context saved to database");
 
 
-                return true;
+                //Testing to Update accounts after each transaction
+                return new Calculations().Rebalance();
+                //return true;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
                 return false;
+            }
+        }
+
+        private void SetBillAsPaid(int? id)
+        {
+            try
+            {
+                var selectedBill = _db.Bills.FirstOrDefault(b => b.Id == id);
+                if (selectedBill == null || selectedBill.IsPaid) return;
+                selectedBill.IsPaid = true;
+
+
+                _db.Entry(selectedBill).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
             }
         }
 
@@ -114,7 +138,7 @@ namespace JPFData.Managers
                 if (entity.Transaction.UsedCreditCard)
                 {
                     var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccount);
+                    var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccountId);
                     _db.Entry(creditCard).State = EntityState.Modified;
                     Logger.Instance.DataFlow($"Credit card updated in data context");
                 }
@@ -195,26 +219,31 @@ namespace JPFData.Managers
 
             return ValidationErrors.Count == 0;
         }
-      
+
         private bool AddTransaction(TransactionDTO entity)
         {
             try
             {
                 var newTransaction = new Transaction();
                 newTransaction.Date = entity.Transaction.Date;
-                newTransaction.Payee = entity.Transaction.Payee;
+                newTransaction.Payee = entity.Transaction.SelectedBillId != null 
+                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name 
+                    : entity.Transaction.Payee;
                 newTransaction.Category = entity.Transaction.Category;
                 newTransaction.Memo = entity.Transaction.Memo;
                 newTransaction.Type = entity.Transaction.Type;
                 newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
                 newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
                 newTransaction.Amount = entity.Transaction.Amount;
-                newTransaction.SelectedCreditCardAccount = entity.Transaction.SelectedCreditCardAccount;
+                newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
                 newTransaction.PaycheckId = null;
                 newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
+                if (entity.Transaction.SelectedBillId != null)
+                    newTransaction.SelectedBillId = entity.Transaction.SelectedBillId;
                 _db.Transactions.Add(newTransaction);
 
 
+                _db.SaveChanges();
                 return true;
             }
             catch (Exception e)
@@ -313,6 +342,8 @@ namespace JPFData.Managers
                     default:
                         throw new NotImplementedException($"{type} is not an accepted type for TransactionController.UpdateAccountBalances method");
                 }
+
+                _db.SaveChanges();
             }
             catch (Exception e)
             {
@@ -335,7 +366,7 @@ namespace JPFData.Managers
 
         private void UpdateCreditCard(Transaction transaction, string type)
         {
-            var creditCardId = transaction?.SelectedCreditCardAccount;
+            var creditCardId = transaction?.SelectedCreditCardAccountId;
             if (creditCardId == null) return;
             var creditCards = _db.CreditCards.ToList();
             var creditCard = creditCards.FirstOrDefault(c => c.Id == creditCardId);
@@ -357,11 +388,11 @@ namespace JPFData.Managers
                             .Cast<Transaction>()
                             .FirstOrDefault();
                         if (originalTransaction == null) return;
-                        var originalCreditCard = _db.CreditCards.FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccount);
+                        var originalCreditCard = _db.CreditCards.FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccountId);
                         var originalAmount = originalTransaction.Amount;
 
                         // Reassign the credit card Id to Transaction Model
-                        transaction.SelectedCreditCardAccount = originalTransaction.SelectedCreditCardAccount;
+                        transaction.SelectedCreditCardAccountId = originalTransaction.SelectedCreditCardAccountId;
 
                         switch (type)
                         {
@@ -388,6 +419,8 @@ namespace JPFData.Managers
                 default:
                     throw new NotImplementedException($"{type} is not an accepted type for TransactionController.UpdateCreditCard method");
             }
+
+            _db.SaveChanges();
         }
     }
 }

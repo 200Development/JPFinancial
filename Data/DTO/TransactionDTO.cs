@@ -17,6 +17,7 @@ namespace JPFData.DTO
             {
                 Accounts = new AccountManager().Get(new AccountDTO()).Accounts;
                 CreditCards = new CreditCardManager().Get(new CreditCardDTO()).CreditCards;
+                BillsOutstanding = new BillManager().GetOutstandingBills();
             }
             catch (Exception)
             {
@@ -30,5 +31,6 @@ namespace JPFData.DTO
         public List<Transaction> Transactions { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
         public IEnumerable<CreditCard> CreditCards { get; set; }
+        public IEnumerable<OutstandingBill> BillsOutstanding { get; set; }
     }
 }

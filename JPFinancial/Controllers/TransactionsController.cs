@@ -90,6 +90,12 @@ namespace JPFinancial.Controllers
                     Logger.Instance.DataFlow($"Debit account set");
                 }
 
+                if (transactionVM.IsBill)
+                {
+                    transactionVM.Entity.Transaction.SelectedBillId = transactionVM.Entity.Transaction.SelectedBillId;
+                    Logger.Instance.DataFlow($"Bill set");
+                }
+
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
                 transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
@@ -195,7 +201,7 @@ namespace JPFinancial.Controllers
                 if (transaction.UsedCreditCard)
                 {
                     var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
+                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccountId);
                     _db.Entry(creditCard).State = EntityState.Modified;
                 }
 

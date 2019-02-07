@@ -1,5 +1,4 @@
-﻿@using System.Globalization
-@model JPFData.ViewModels.TransactionViewModel
+﻿@model JPFData.ViewModels.TransactionViewModel
 
 @{
     ViewBag.Title = "Create";
@@ -12,7 +11,7 @@
 {
     @Html.AntiForgeryToken()
 
-    <div class="form-horizontal">
+    <div class="form-horizontal col-lg-11 col-md-11 col-sm-11">
         <h4>Transaction</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
@@ -24,11 +23,31 @@
             </div>
         </div>
 
+
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Transaction.Payee, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.IsBill, "Paying a Bill?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Entity.Transaction.Payee, "", new { @class = "text-danger" })
+                @Html.CheckBoxFor(model => model.IsBill, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div id="divPayBill">
+            <div class="form-group">
+                <label class="control-label col-md-2">Bill</label>
+                <div class="col-md-10">
+                    @Html.DropDownListFor(model => model.Entity.Transaction.SelectedBillId, new SelectList(Model.Entity.BillsOutstanding, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => Model.Entity.BillsOutstanding, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div id="divPayee">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Entity.Transaction.Payee, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Entity.Transaction.Payee, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
@@ -55,7 +74,7 @@
                 @Html.ValidationMessageFor(model => model.Entity.Transaction.Category, "", new { @class = "text-danger" })
             </div>
         </div>
-        
+
         <div id="divCreditAccount">
             <div class="form-group">
                 <label class="control-label col-md-2">Credit</label>
@@ -65,7 +84,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div id="divDebitAccount">
             <div class="form-group">
                 <label class="control-label col-md-2">Debit</label>
@@ -95,7 +114,7 @@
             <div class="form-group">
                 <label class="control-label col-md-2">Credit Card</label>
                 <div class="col-md-10">
-                    @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccount, new SelectList(Model.Entity.CreditCards, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                    @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccountId, new SelectList(Model.Entity.CreditCards, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => Model.Entity.CreditCards, "", new { @class = "text-danger" })
                 </div>
             </div>
@@ -119,6 +138,9 @@
 
     <script>
         var checkbox = document.getElementById('UsedCreditCard');
+        var bill = document.getElementById('IsBill');
+        var payBillDiv = document.getElementById('divPayBill');
+        var payeeDiv = document.getElementById('divPayee');
         var creditCardDiv = document.getElementById('divCreditCard');
         var transactionType = document.getElementById('Type');
         var creditAccountDiv = document.getElementById('divCreditAccount');
@@ -129,6 +151,16 @@
                 creditCardDiv.style.display = "block";
             } else {
                 creditCardDiv.style.display = "none";
+            }
+        };
+
+        function isBill() {
+            if (bill.checked) {
+                payBillDiv.style.display = "block";
+                payeeDiv.style.display = "none";
+            } else {
+                payBillDiv.style.display = "none";
+                payeeDiv.style.display = "block";
             }
         };
 
@@ -145,18 +177,23 @@
             }
         };
 
-        document.addEventListener("DOMContentLoaded", function() {
+        document.addEventListener("DOMContentLoaded", function () {
             updateType();
+            isCredit();
+            isBill();
+        });
+
+        transactionType.addEventListener('change', (event) => {
+            updateType();
+        });
+
+        checkbox.addEventListener('change', (event) => {
             isCredit();
         });
 
-            transactionType.addEventListener('change', (event) => {
-                updateType();
-            });
+        bill.addEventListener('change', (event) => {
+            isBill();
+        });
 
-            checkbox.addEventListener('change', (event) => {
-                isCredit();
-            });
-       
     </script>
 }

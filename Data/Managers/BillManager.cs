@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using JPFData.DTO;
-using JPFData.Enumerations;
 using JPFData.Metrics;
+using JPFData.Models;
 
 namespace JPFData.Managers
 {
@@ -57,6 +56,35 @@ namespace JPFData.Managers
             }
 
             return metrics;
+        }
+
+        public IEnumerable<OutstandingBill> GetOutstandingBills()
+        {
+            try
+            {
+                var ret = new List<OutstandingBill>();
+                Logger.Instance.DataFlow($"Get");
+                var bills = _db.Bills.ToList();
+                Logger.Instance.DataFlow($"Pulled list of Bills from DB");
+                var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
+                Logger.Instance.DataFlow($"Sorted Bills to only return ones that are outstanding");
+
+                foreach (var bill in outstandingBills)
+                {
+                    var newBill = new OutstandingBill();
+                    newBill.Id = bill.Id;
+                    newBill.Name = $"{bill.Name} - {bill.AmountDue} Due {bill.DueDate.ToShortDateString()}";
+
+                    ret.Add(newBill);
+                }
+
+                return ret;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return new List<OutstandingBill>();
+            }
         }
     }
 }

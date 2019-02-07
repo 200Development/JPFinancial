@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using JPFData.DTO;
 using JPFData.Enumerations;
@@ -26,7 +27,11 @@ namespace JPFData.ViewModels
         // Type needs to be in VM or javascript will break.  todo: research this
         public TransactionTypesEnum Type { get; set; }
         public string Date { get; set; }
+
+        //TODO: research method to move this to Transaction Class.  Javascript won't fire when referencing from Transaction
+        [Display(Name = "Charged to Credit Card?")]
         public bool UsedCreditCard { get; set; }
+        public bool IsBill { get; set; }
 
 
         private void Init()
