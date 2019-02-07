@@ -132,6 +132,14 @@
     <Compile Include="Migrations\201902061335243_addsRebalanceTable.Designer.cs">
       <DependentUpon>201902061335243_addsRebalanceTable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902071441459_addIsPaidToBills.cs" />
+    <Compile Include="Migrations\201902071441459_addIsPaidToBills.Designer.cs">
+      <DependentUpon>201902071441459_addIsPaidToBills.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.cs" />
+    <Compile Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.Designer.cs">
+      <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -271,6 +279,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902061335243_addsRebalanceTable.resx">
       <DependentUpon>201902061335243_addsRebalanceTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902071441459_addIsPaidToBills.resx">
+      <DependentUpon>201902071441459_addIsPaidToBills.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.resx">
+      <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>
