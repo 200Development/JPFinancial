@@ -50,6 +50,13 @@
         </div>
         
         <div class="form-group">
+            @Html.LabelFor(model => model.Entity.Account.IsPoolAccount, "Is this the account where you want to pool your money?", htmlAttributes: new { @class = "control-label col-md-2" })
+            <div class="col-md-10">
+                @Html.CheckBoxFor(model => model.Entity.Account.IsPoolAccount, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+        
+        <div class="form-group">
             @Html.LabelFor(model => model.Entity.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.CheckBoxFor(model => model.Entity.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
