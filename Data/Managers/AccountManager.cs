@@ -80,7 +80,7 @@ namespace JPFData.Managers
                 return false;
             }
         }
-        
+
         private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
         {
             try
@@ -90,12 +90,15 @@ namespace JPFData.Managers
 
                 metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
                 metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
-                metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
+                if (entity.Accounts.Count > 0)
+                    metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
+                else
+                    metrics.AverageBalance = 0;
 
                 metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
                 metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
-                metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / entity.Accounts
-                                             .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
+                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus != null && a.BalanceSurplus > 0).ToList().Count;if (surplusAccounts > 0)
+                    metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / surplusAccounts;
                 metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 
                 Logger.Instance.DataFlow($"Return Account metrics");
