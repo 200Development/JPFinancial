@@ -226,8 +226,8 @@ namespace JPFData.Managers
             {
                 var newTransaction = new Transaction();
                 newTransaction.Date = entity.Transaction.Date;
-                newTransaction.Payee = entity.Transaction.SelectedBillId != null 
-                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name 
+                newTransaction.Payee = entity.Transaction.SelectedBillId != null
+                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name
                     : entity.Transaction.Payee;
                 newTransaction.Category = entity.Transaction.Category;
                 newTransaction.Memo = entity.Transaction.Memo;
@@ -263,14 +263,24 @@ namespace JPFData.Managers
                         {
                             if (transaction.DebitAccount != null && transaction.DebitAccount.Id != 0)
                             {
+                                var originalBalance = transaction.DebitAccount.Balance; // logs beginning balance
                                 transaction.DebitAccount.Balance += transaction.Amount;
+                                Logger.Instance.Calculation($"{transaction.DebitAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.DebitAccount.Balance}");
                                 transaction.DebitAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.DebitAccount);
                                 _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
                             }
 
                             if (transaction.CreditAccount != null && transaction.CreditAccount.Id != 0)
                             {
+                                var originalBalance = transaction.CreditAccount.Balance; // logs beginning balance
                                 transaction.CreditAccount.Balance -= transaction.Amount;
+                                if (transaction.SelectedBillId != null)
+                                {
+                                    var originalRequiredBalance = transaction.CreditAccount.RequiredSavings; // logs beginning balance
+                                    transaction.CreditAccount.RequiredSavings -= transaction.Amount;
+                                    Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.RequiredSavings ({originalRequiredBalance}) - {transaction.Amount} = {transaction.CreditAccount.RequiredSavings}");
+                                }
+                                Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.CreditAccount.Balance}");
                                 transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
                                 _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
                             }
@@ -309,6 +319,8 @@ namespace JPFData.Managers
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance += transaction.Amount;
+                                            if (transaction.SelectedBillId != null)
+                                                originalCreditAccount.RequiredSavings -= transaction.Amount;
                                             originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
