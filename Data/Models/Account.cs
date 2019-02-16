@@ -16,6 +16,8 @@ namespace JPFData.Models
             ExcludeFromSurplus = false;
             PercentageOfSavings = decimal.Zero;
             IsPoolAccount = false;
+            IsMandatory = false;
+            BalanceLimit = decimal.Zero;
         }
 
         [Key]
@@ -47,5 +49,11 @@ namespace JPFData.Models
 
         [Display(Name = "Pool Account")]
         public bool IsPoolAccount { get; set; }
+
+        [Display(Name = "Mandatory Account?")]
+        public bool IsMandatory { get; set; }
+
+        [Display(Name = "Balance Limit")]
+        public decimal BalanceLimit { get; set; }
     }
 }

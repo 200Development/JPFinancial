@@ -36,7 +36,7 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Pull list of Accounts from DB");
                 entity.Metrics = RefreshAccountMetrics(entity);
                 Logger.Instance.DataFlow($"Refresh Account metrics");
-                entity.RebalanceReport = Calculations.GetRebalancingAccountsReport(entity);
+                entity.RebalanceReport = _calc.GetRebalancingAccountsReport(entity);
                 Logger.Instance.DataFlow($"Get rebalancing accounts report");
             }
             catch (Exception e)
@@ -72,6 +72,7 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Save Account changes to data context");
                 _db.SaveChanges();
                 Logger.Instance.DataFlow($"Save changes to DB");
+                _calc.Update();
                 return true;
             }
             catch (Exception e)
@@ -109,6 +110,16 @@ namespace JPFData.Managers
                 Logger.Instance.Error(e);
                 return null;
             }
+        }
+
+        public bool Update()
+        {
+            return _calc.Update();
+        }
+
+        public bool Rebalance()
+        {
+            return _calc.Rebalance();
         }
     }
 }

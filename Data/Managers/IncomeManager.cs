@@ -161,7 +161,7 @@ namespace JPFData.Managers
 
                 foreach (var account in accountsWithContributions)
                 {
-                    if (!AddContributionTransaction(paycheck, account)) continue;
+                    AddContributionTransaction(paycheck, account);
                 }
 
 

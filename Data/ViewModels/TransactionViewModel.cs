@@ -24,9 +24,10 @@ namespace JPFData.ViewModels
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public EventCommandEnum EventCommand { get; set; }
         public EventArgumentEnum EventArgument { get; set; }
-        // Type needs to be in VM or javascript will break.  todo: research this
+        // Type needs to be in VM or javascript will break.  Would normally put in the DTO (https://www.codeproject.com/articles/1050468/data-transfer-object-design-pattern-in-csharp)  todo: research this
         public TransactionTypesEnum Type { get; set; }
         public string Date { get; set; }
+        public bool AutoTransferPaycheckContributions { get; set; }
 
         //TODO: research method to move this to Transaction Class.  Javascript won't fire when referencing from Transaction
         [Display(Name = "Charged to Credit Card?")]
@@ -41,6 +42,7 @@ namespace JPFData.ViewModels
             ValidationErrors = new List<KeyValuePair<string, string>>();
             _manager = new TransactionManager();
             Date = DateTime.Today.ToString("d", CultureInfo.CurrentCulture);
+            AutoTransferPaycheckContributions = false;
         }
 
         public bool HandleRequest()
@@ -49,6 +51,8 @@ namespace JPFData.ViewModels
             switch (EventArgument)
             {
                 case EventArgumentEnum.Create:
+                    if (!AutoTransferPaycheckContributions) return _manager.Create(Entity);
+                    if(!_manager.AutoTransferPaycheckContributions(Entity.Transaction)) return false;
                     return _manager.Create(Entity);
                 case EventArgumentEnum.Read:
                     switch (EventCommand)

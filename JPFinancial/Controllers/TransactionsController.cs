@@ -150,6 +150,21 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Edit");
                 if (!ModelState.IsValid) return View(transactionVM);
+
+
+                if (transactionVM.Entity.Transaction.CreditAccountId != null)
+                {
+                    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
+                    Logger.Instance.DataFlow($"Credit card set");
+                }
+
+                if (transactionVM.Entity.Transaction.DebitAccountId != null)
+                {
+                    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
+                    Logger.Instance.DataFlow($"Debit account set");
+                }
+
+
                 transactionVM.EventArgument = EventArgumentEnum.Update;
                 transactionVM.EventCommand = EventCommandEnum.Edit;
 
@@ -193,20 +208,17 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Transaction transaction = _db.Transactions.Find(id);
             try
             {
-                _db.Transactions.Remove(transaction);
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                transactionVM.Entity.Transaction.Id = id;
+                transactionVM.EventArgument = EventArgumentEnum.Delete;
+                transactionVM.EventCommand = EventCommandEnum.Delete;
+                if (!transactionVM.HandleRequest())
+                    return RedirectToAction("Index");
 
-                if (transaction.UsedCreditCard)
-                {
-                    var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccountId);
-                    _db.Entry(creditCard).State = EntityState.Modified;
-                }
 
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                return View(new Transaction());
             }
             catch (Exception e)
             {
