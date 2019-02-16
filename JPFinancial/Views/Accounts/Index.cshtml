@@ -317,7 +317,7 @@
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Rebalance", "Rebalance")
                             </button>
-                            <button class="btn btn-sm">
+                            @*<button class="btn btn-sm">
                                 @Html.ActionLink("Pool Account Surpluses", "")
                             </button>
                             <button class="btn btn-sm">
@@ -328,7 +328,7 @@
                             </button>
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Update Contributions to Suggested", "")
-                            </button>
+                            </button>*@
 
                         </div>
                         <div class="container-fluid" style="text-align: center">
@@ -344,15 +344,15 @@
                                         </div>
                                     </div>
                                     <div class="card-body" style="margin: 12px 0; text-align: center">
-                                        <div class="card-price"><span style="font-weight: bold">CurrentBalance</span> - $@item.Balance</div>
-                                        <div class="card-price"><span style="font-weight: bold">Required Savings</span> - $@item.RequiredSavings</div>
+                                        <div class="card-price"><span style="font-weight: bold">CurrentBalance:</span>&nbsp;$@item.Balance</div> 
+                                        @*<div class="card-price"><span style="font-weight: bold">Savings</span> - $@item.RequiredSavings</div>*@
                                         @if (@item.BalanceSurplus > 0)
                                         {
-                                            <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>  $@item.BalanceSurplus</div>
+                                            <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
                                         }
                                         @if (@item.BalanceSurplus < 0)
                                         {
-                                            <div class="card-price"><span style="font-weight: bold; color: rgb(186, 18, 18)">Deficit:</span>  $@item.BalanceSurplus</div>
+                                            <div class="card-price"><span style="font-weight: bold; color: rgb(186, 18, 18)">Deficit:</span>&nbsp;$@item.BalanceSurplus</div>
                                         }
                                         @if (@item.BalanceSurplus == 0)
                                         {
@@ -362,10 +362,10 @@
                                     <div class="card-footer">
                                         <div class="card-text">
                                             <div style="float: left; font-size: .9em">
-                                                <span style="font-weight: bold">Paycheck</span> - $@item.PaycheckContribution
+                                                <span style="font-weight: bold">Paycheck:</span>&nbsp;$@item.PaycheckContribution
                                             </div>
                                             <div style="float: right; font-size: .9em">
-                                                <span style="font-weight: bold">Suggested</span> - $@item.SuggestedPaycheckContribution
+                                                <span style="font-weight: bold">Suggested:</span>&nbsp;$@item.SuggestedPaycheckContribution
                                             </div>
                                         </div>
                                     </div>
