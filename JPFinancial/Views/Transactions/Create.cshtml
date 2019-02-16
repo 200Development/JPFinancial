@@ -22,12 +22,21 @@
                 @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
             </div>
         </div>
-
-
+        
         <div class="form-group">
-            @Html.LabelFor(model => model.IsBill, "Paying a Bill?", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.CheckBoxFor(model => model.IsBill, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        
+        <div id="divIsBill">
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsBill, "Paying a Bill?", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.IsBill, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
             </div>
         </div>
 
@@ -58,15 +67,7 @@
                 @Html.ValidationMessageFor(model => model.Entity.Transaction.Memo, "", new { @class = "text-danger" })
             </div>
         </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
+        
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Transaction.Category, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -103,10 +104,13 @@
             </div>
         </div>
 
-        <div class="form-group">
-            @Html.LabelFor(model => model.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
-                @Html.CheckBoxFor(model => model.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+
+        <div id="divIsCredit">
+            <div class="form-group">
+                @Html.LabelFor(model => model.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
             </div>
         </div>
 
@@ -119,6 +123,16 @@
                 </div>
             </div>
         </div>
+
+        <div id="divAutoTransferPaycheckContributions">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AutoTransferPaycheckContributions, "Auto Transfer Paycheck Contributions?", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.AutoTransferPaycheckContributions, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -145,6 +159,9 @@
         var transactionType = document.getElementById('Type');
         var creditAccountDiv = document.getElementById('divCreditAccount');
         var debitAccountDiv = document.getElementById('divDebitAccount');
+        var autoTransferDiv = document.getElementById('divAutoTransferPaycheckContributions');
+        var isCreditDiv = document.getElementById('divIsCredit');
+        var isBillDiv = document.getElementById('divIsBill');
 
         function isCredit() {
             if (checkbox.checked) {
@@ -164,16 +181,27 @@
             }
         };
 
+
         function updateType() {
+            // 0 - Income, 1 - Expense, 2 - Transfer
             if (transactionType.value === "0") {
                 creditAccountDiv.style.display = "none";
                 debitAccountDiv.style.display = "block";
+                autoTransferDiv.style.display = "block";
+                isCreditDiv.style.display = "none";
+                isBillDiv.style.display = "none";
             } else if (transactionType.value === "1") {
                 creditAccountDiv.style.display = "block";
                 debitAccountDiv.style.display = "none";
+                autoTransferDiv.style.display = "none";
+                isCreditDiv.style.display = "block";
+                isBillDiv.style.display = "block";
             } else if (transactionType.value === "2") {
                 creditAccountDiv.style.display = "block";
                 debitAccountDiv.style.display = "block";
+                autoTransferDiv.style.display = "none";
+                isCreditDiv.style.display = "none";
+                isBillDiv.style.display = "block";
             }
         };
 
