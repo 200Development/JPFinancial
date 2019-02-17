@@ -54,6 +54,6 @@ namespace JPFData.Models
         public bool IsMandatory { get; set; }
 
         [Display(Name = "Balance Limit")]
-        public decimal BalanceLimit { get; set; }
+        public decimal? BalanceLimit { get; set; }
     }
 }

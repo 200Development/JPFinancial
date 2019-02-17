@@ -140,6 +140,22 @@
     <Compile Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.Designer.cs">
       <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs" />
+    <Compile Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.Designer.cs">
+      <DependentUpon>201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.cs" />
+    <Compile Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.Designer.cs">
+      <DependentUpon>201902162332515_removesDefaultFromAccountBalanceLimit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902170249372_AddsPropertiesToAccounts.cs" />
+    <Compile Include="Migrations\201902170249372_AddsPropertiesToAccounts.Designer.cs">
+      <DependentUpon>201902170249372_AddsPropertiesToAccounts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201902171628267_removePaycheckFromTransaction.cs" />
+    <Compile Include="Migrations\201902171628267_removePaycheckFromTransaction.Designer.cs">
+      <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -285,6 +301,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.resx">
       <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.resx">
+      <DependentUpon>201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.resx">
+      <DependentUpon>201902162332515_removesDefaultFromAccountBalanceLimit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902170249372_AddsPropertiesToAccounts.resx">
+      <DependentUpon>201902170249372_AddsPropertiesToAccounts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902171628267_removePaycheckFromTransaction.resx">
+      <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>

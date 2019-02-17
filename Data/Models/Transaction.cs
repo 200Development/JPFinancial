@@ -17,7 +17,7 @@ namespace JPFData.Models
             SelectedBillId = 0;
             Amount = decimal.Zero;
             UsedCreditCard = false;
-            PaycheckId = 0;
+            //PaycheckId = 0;
         }
 
         [Key]
@@ -30,8 +30,8 @@ namespace JPFData.Models
         public int? DebitAccountId { get; set; }
         public int? SelectedCreditCardAccountId { get; set; }
         public int? SelectedBillId { get; set; }
-        public Paycheck Paycheck { get; set; }
-        public int? PaycheckId { get; set; }
+        //public Paycheck Paycheck { get; set; }
+        //public int? PaycheckId { get; set; }
 
         [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public DateTime Date { get; set; }
