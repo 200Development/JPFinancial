@@ -23,7 +23,9 @@ namespace JPFData.ViewModels
         public TransactionDTO SearchEntity { get; set; }
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public EventCommandEnum EventCommand { get; set; }
+
         public EventArgumentEnum EventArgument { get; set; }
+
         // Type needs to be in VM or javascript will break.  Would normally put in the DTO (https://www.codeproject.com/articles/1050468/data-transfer-object-design-pattern-in-csharp)  todo: research this
         public TransactionTypesEnum Type { get; set; }
         public string Date { get; set; }
@@ -32,6 +34,7 @@ namespace JPFData.ViewModels
         //TODO: research method to move this to Transaction Class.  Javascript won't fire when referencing from Transaction
         [Display(Name = "Charged to Credit Card?")]
         public bool UsedCreditCard { get; set; }
+
         public bool IsBill { get; set; }
 
 
@@ -48,48 +51,98 @@ namespace JPFData.ViewModels
         public bool HandleRequest()
         {
             Logger.Instance.DataFlow($"ViewModel Handle Request.  EventArgument: {EventArgument.ToString()}, EventCommand: {EventCommand.ToString()}");
-            switch (EventArgument)
+
+
+            try
             {
-                case EventArgumentEnum.Create:
-                    if (!AutoTransferPaycheckContributions) return _manager.Create(Entity);
-                    if(!_manager.HandlePaycheckContributions(Entity.Transaction)) return false;
-                    return _manager.Create(Entity);
-                case EventArgumentEnum.Read:
-                    switch (EventCommand)
-                    {
-                        case EventCommandEnum.Search:
-                        case EventCommandEnum.Get:
-                            Entity = _manager.Get(Entity);
-                            return true;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                case EventArgumentEnum.Update:
-                    switch (EventCommand)
-                    {
-                        case EventCommandEnum.Get:
-                            Entity.Transaction = _manager.GetTransaction(Entity);
-                            break;
-                        case EventCommandEnum.Edit:
-                            return _manager.Edit(Entity);
-                        case EventCommandEnum.Rebalance:
-                            break;
-                        case EventCommandEnum.Pool:
-                            break;
-                        case EventCommandEnum.Update:
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                    break;
-                case EventArgumentEnum.Delete:
-                    return _manager.Delete(Entity.Transaction);
+                switch (EventArgument)
+                {
+                    case EventArgumentEnum.Create:
+                        if (!AutoTransferPaycheckContributions) return _manager.Create(Entity);
+                        if (!_manager.HandlePaycheckContributions(Entity.Transaction)) return false;
+                        return _manager.Create(Entity);
+                    case EventArgumentEnum.Read:
+                        switch (EventCommand)
+                        {
+                            case EventCommandEnum.Search:
+                            case EventCommandEnum.Get:
+                                Entity = _manager.Get(Entity);
+                                return true;
+                            case EventCommandEnum.Edit:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Rebalance:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Pool:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Update:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Details:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Delete:
+                                throw new NotImplementedException();
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    case EventArgumentEnum.Update:
+                        switch (EventCommand)
+                        {
+                            case EventCommandEnum.Get:
+                                Entity.Transaction = _manager.GetTransaction(Entity);
+                                break;
+                            case EventCommandEnum.Edit:
+                                return _manager.Edit(Entity);
+                            case EventCommandEnum.Rebalance:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Pool:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Update:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Search:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Details:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Delete:
+                                throw new NotImplementedException();
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
 
-                default:
-                    throw new ArgumentOutOfRangeException();
+                        break;
+                    case EventArgumentEnum.Delete:
+                        switch (EventCommand)
+                        {
+                            case EventCommandEnum.Get:
+                                Entity.Transaction = _manager.GetTransaction(Entity);
+                                break;
+                            case EventCommandEnum.Delete:
+                                return _manager.Delete(Entity.Transaction);
+                            case EventCommandEnum.Search:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Edit:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Rebalance:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Pool:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Update:
+                                throw new NotImplementedException();
+                            case EventCommandEnum.Details:
+                                throw new NotImplementedException();
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+
+                return true;
             }
-            return false;
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
         }
-
     }
 }

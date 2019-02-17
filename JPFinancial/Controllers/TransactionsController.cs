@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
@@ -79,24 +77,6 @@ namespace JPFinancial.Controllers
                 Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(transactionVM);
 
-                //if (transactionVM.Entity.Transaction.CreditAccountId != null)
-                //{
-                //    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
-                //    Logger.Instance.DataFlow($"Credit card set");
-                //}
-
-                //if (transactionVM.Entity.Transaction.DebitAccountId != null)
-                //{
-                //    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
-                //    Logger.Instance.DataFlow($"Debit account set");
-                //}
-
-                //if (transactionVM.IsBill)
-                //{
-                //    transactionVM.Entity.Transaction.SelectedBillId = transactionVM.Entity.Transaction.SelectedBillId;
-                //    Logger.Instance.DataFlow($"Bill set");
-                //}
-
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
                 transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
@@ -153,19 +133,6 @@ namespace JPFinancial.Controllers
                 if (!ModelState.IsValid) return View(transactionVM);
 
 
-                //if (transactionVM.Entity.Transaction.CreditAccountId != null)
-                //{
-                //    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
-                //    Logger.Instance.DataFlow($"Credit card set");
-                //}
-
-                //if (transactionVM.Entity.Transaction.DebitAccountId != null)
-                //{
-                //    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
-                //    Logger.Instance.DataFlow($"Debit account set");
-                //}
-
-
                 transactionVM.EventArgument = EventArgumentEnum.Update;
                 transactionVM.EventCommand = EventCommandEnum.Edit;
 
@@ -187,15 +154,17 @@ namespace JPFinancial.Controllers
             try
             {
                 if (id == null)
-                {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                Transaction transaction = _db.Transactions.Find(id);
-                if (transaction == null)
-                {
-                    return HttpNotFound();
-                }
-                return View(transaction);
+
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                transactionVM.Entity.Transaction.Id = (int) id;
+                transactionVM.EventArgument = EventArgumentEnum.Delete;
+                transactionVM.EventCommand = EventCommandEnum.Get;
+
+
+                return View(!transactionVM.HandleRequest() 
+                    ? new Transaction() 
+                    : transactionVM.Entity.Transaction);
             }
             catch (Exception e)
             {
