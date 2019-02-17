@@ -224,16 +224,16 @@ namespace JPFinancial.Controllers
                     .FirstOrDefault();
 
                 if (originalPaycheck == null) return false;
-                var originalTransactions =
-                    _db.Transactions.Where(t => t.PaycheckId == paycheck.Id).ToList();
+                //var originalTransactions =
+                //    _db.Transactions.Where(t => t.PaycheckId == paycheck.Id).ToList();
 
-                foreach (var transaction in originalTransactions)
-                {
-                    if (type != "delete") continue;
-                    transaction.DebitAccount.Balance += transaction.Amount;
-                    transaction.CreditAccount.Balance -= transaction.Amount;
-                    _db.Entry(transaction).State = EntityState.Modified;
-                }
+                //foreach (var transaction in originalTransactions)
+                //{
+                //    if (type != "delete") continue;
+                //    transaction.DebitAccount.Balance += transaction.Amount;
+                //    transaction.CreditAccount.Balance -= transaction.Amount;
+                //    _db.Entry(transaction).State = EntityState.Modified;
+                //}
 
             }
             return true;

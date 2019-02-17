@@ -195,7 +195,6 @@ namespace JPFData.Managers
                 newTransaction.DebitAccountId = account.Id;
                 newTransaction.CreditAccountId = null;
                 newTransaction.Amount = contribution;
-                newTransaction.PaycheckId = null;
                 _db.Transactions.Add(newTransaction);
 
                 return true;
