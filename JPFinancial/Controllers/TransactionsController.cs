@@ -35,32 +35,33 @@ namespace JPFinancial.Controllers
         }
 
         // GET: Transactions/Details/5
-        public ActionResult Details(int? id)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Details");
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                Transaction transaction = _db.Transactions.Find(id);
-                if (transaction == null)
-                {
-                    Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
-                    return HttpNotFound();
-                }
-                Logger.Instance.DataFlow($"Transaction returned to View");
-                return View(transaction);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new Transaction());
-            }
-        }
+        //public ActionResult Details(int? id)
+        //{
+        //    try
+        //    {
+        //        Logger.Instance.DataFlow($"Details");
+        //        if (id == null)
+        //        {
+        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //        }
+        //        Transaction transaction = _db.Transactions.Find(id);
+        //        if (transaction == null)
+        //        {
+        //            Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
+        //            return HttpNotFound();
+        //        }
+        //        Logger.Instance.DataFlow($"Transaction returned to View");
+        //        return View(transaction);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Logger.Instance.Error(e);
+        //        return View(new Transaction());
+        //    }
+        //}
 
         // GET: Transactions/Create
+
         public ActionResult Create()
         {
             return View(new TransactionViewModel());
@@ -78,23 +79,23 @@ namespace JPFinancial.Controllers
                 Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(transactionVM);
 
-                if (transactionVM.Entity.Transaction.CreditAccountId != null)
-                {
-                    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
-                    Logger.Instance.DataFlow($"Credit card set");
-                }
+                //if (transactionVM.Entity.Transaction.CreditAccountId != null)
+                //{
+                //    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
+                //    Logger.Instance.DataFlow($"Credit card set");
+                //}
 
-                if (transactionVM.Entity.Transaction.DebitAccountId != null)
-                {
-                    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
-                    Logger.Instance.DataFlow($"Debit account set");
-                }
+                //if (transactionVM.Entity.Transaction.DebitAccountId != null)
+                //{
+                //    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
+                //    Logger.Instance.DataFlow($"Debit account set");
+                //}
 
-                if (transactionVM.IsBill)
-                {
-                    transactionVM.Entity.Transaction.SelectedBillId = transactionVM.Entity.Transaction.SelectedBillId;
-                    Logger.Instance.DataFlow($"Bill set");
-                }
+                //if (transactionVM.IsBill)
+                //{
+                //    transactionVM.Entity.Transaction.SelectedBillId = transactionVM.Entity.Transaction.SelectedBillId;
+                //    Logger.Instance.DataFlow($"Bill set");
+                //}
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
@@ -152,17 +153,17 @@ namespace JPFinancial.Controllers
                 if (!ModelState.IsValid) return View(transactionVM);
 
 
-                if (transactionVM.Entity.Transaction.CreditAccountId != null)
-                {
-                    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
-                    Logger.Instance.DataFlow($"Credit card set");
-                }
+                //if (transactionVM.Entity.Transaction.CreditAccountId != null)
+                //{
+                //    transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
+                //    Logger.Instance.DataFlow($"Credit card set");
+                //}
 
-                if (transactionVM.Entity.Transaction.DebitAccountId != null)
-                {
-                    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
-                    Logger.Instance.DataFlow($"Debit account set");
-                }
+                //if (transactionVM.Entity.Transaction.DebitAccountId != null)
+                //{
+                //    transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
+                //    Logger.Instance.DataFlow($"Debit account set");
+                //}
 
 
                 transactionVM.EventArgument = EventArgumentEnum.Update;
@@ -215,10 +216,10 @@ namespace JPFinancial.Controllers
                 transactionVM.EventArgument = EventArgumentEnum.Delete;
                 transactionVM.EventCommand = EventCommandEnum.Delete;
                 if (!transactionVM.HandleRequest())
-                    return RedirectToAction("Index");
+                    return View(transactionVM.Entity.Transaction);
 
 
-                return View(new Transaction());
+                return RedirectToAction("Index");
             }
             catch (Exception e)
             {

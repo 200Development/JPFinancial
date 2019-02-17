@@ -17,13 +17,14 @@ namespace JPFData.Managers
     {
         /*
         MANAGER STRUCTURE
-        private fields
+        private properties
         constructors
-        public fields
+        public properties
         public methods
         private methods
         */
         private readonly ApplicationDbContext _db;
+        private List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
 
         public TransactionManager()
@@ -32,8 +33,6 @@ namespace JPFData.Managers
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
-
-        public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
         public TransactionDTO Get(TransactionDTO entity)
         {
@@ -70,15 +69,12 @@ namespace JPFData.Managers
         {
             try
             {
-                Logger.Instance.DataFlow($"If transaction is not for income, set paycheckId to null");
-                if (entity.Transaction.Type != TransactionTypesEnum.Income)
-                    entity.Transaction.PaycheckId = null;
-                UpdateAccountBalances(entity.Transaction, EventArgumentEnum.Create);
+                UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
                 if (entity.Transaction.UsedCreditCard)
                 {
-                    UpdateCreditCard(entity.Transaction, "create");
+                    UpdateDbCreditCard(entity.Transaction, "create");
                     Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
                 }
 
@@ -88,7 +84,7 @@ namespace JPFData.Managers
                     Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
                 }
 
-                if (!AddTransaction(entity)) return false;
+                if (!AddTransactionToDb(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
 
 
@@ -102,34 +98,17 @@ namespace JPFData.Managers
             }
         }
 
-        private void SetBillAsPaid(int? id)
-        {
-            try
-            {
-                var selectedBill = _db.Bills.FirstOrDefault(b => b.Id == id);
-                if (selectedBill == null || selectedBill.IsPaid) return;
-                selectedBill.IsPaid = true;
-
-
-                _db.Entry(selectedBill).State = EntityState.Modified;
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-            }
-        }
-
         public bool Edit(TransactionDTO entity)
         {
             try
             {
+                GetUsedAccounts(entity);
                 //AsNoTracking() is essential or EF will throw an error
-                UpdateAccountBalances(entity.Transaction, EventArgumentEnum.Update);
+                UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Update);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
                 if (entity.Transaction.UsedCreditCard)
                 {
-                    UpdateCreditCard(entity.Transaction, "edit");
+                    UpdateDbCreditCard(entity.Transaction, "edit");
                     Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
                 }
 
@@ -156,33 +135,13 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Update(Transaction entity)
-        {
-            try
-            {
-                var ret = Validate(entity);
-
-                if (ret)
-                {
-                    //todo: add update code
-                }
-
-                return ret;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
         public bool Delete(Transaction entity)
         {
             try
             {
                 Transaction transaction = _db.Transactions.Find(entity.Id);
 
-                if (UpdateAccountBalances(transaction, EventArgumentEnum.Delete))
+                if (UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete))
                     _db.Transactions.Remove(transaction);
 
                 if (transaction.UsedCreditCard)
@@ -204,72 +163,29 @@ namespace JPFData.Managers
         }
 
 
-        private TransactionMetrics RefreshTransactionMetrics(TransactionDTO entity)
+        private void GetUsedAccounts(TransactionDTO entity)
         {
             try
             {
-                TransactionMetrics metrics = new TransactionMetrics();
+                if (entity.Transaction.CreditAccountId != null)
+                {
+                    entity.Transaction.CreditAccount = _db.Accounts.Find(entity.Transaction.CreditAccountId);
+                    Logger.Instance.DataFlow($"Credit card set");
+                }
 
-                metrics.AccountMetrics = new AccountMetrics();
-                metrics.CreditCardMetrics = new CreditCardMetrics();
-
-
-                return metrics;
+                if (entity.Transaction.DebitAccountId != null)
+                {
+                    entity.Transaction.DebitAccount = _db.Accounts.Find(entity.Transaction.DebitAccountId);
+                    Logger.Instance.DataFlow($"Debit account set");
+                }
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return null;
             }
         }
 
-        private bool Validate(Transaction entity)
-        {
-            ValidationErrors.Clear();
-
-            if (string.IsNullOrEmpty(entity.Payee)) return ValidationErrors.Count == 0;
-            if (entity.Payee.ToLower() == entity.Payee)
-            {
-                ValidationErrors.Add(new KeyValuePair<string, string>("Payee", "Payee must not be all lower case."));
-            }
-
-            return ValidationErrors.Count == 0;
-        }
-
-        private bool AddTransaction(TransactionDTO entity)
-        {
-            try
-            {
-                var newTransaction = new Transaction();
-                newTransaction.Date = entity.Transaction.Date;
-                newTransaction.Payee = entity.Transaction.SelectedBillId != null
-                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name
-                    : entity.Transaction.Payee;
-                newTransaction.Category = entity.Transaction.Category;
-                newTransaction.Memo = entity.Transaction.Memo;
-                newTransaction.Type = entity.Transaction.Type;
-                newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
-                newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
-                newTransaction.Amount = entity.Transaction.Amount;
-                newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
-                newTransaction.PaycheckId = null;
-                newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
-                if (entity.Transaction.SelectedBillId != null)
-                    newTransaction.SelectedBillId = entity.Transaction.SelectedBillId;
-                _db.Transactions.Add(newTransaction);
-
-
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        private bool UpdateAccountBalances(Transaction transaction, EventArgumentEnum eventArgument)
+        private bool UpdateDbAccountBalances(Transaction transaction, EventArgumentEnum eventArgument)
         {
             try
             {
@@ -373,7 +289,7 @@ namespace JPFData.Managers
                             }
                         }
                     default:
-                        throw new NotImplementedException($"{eventArgument} is not an accepted type for TransactionController.UpdateAccountBalances method");
+                        throw new NotImplementedException($"{eventArgument} is not an accepted type for TransactionController.UpdateDbAccountBalances method");
                 }
             }
             catch (Exception e)
@@ -383,11 +299,49 @@ namespace JPFData.Managers
             }
         }
 
+        private bool AddTransactionToDb(TransactionDTO entity)
+        {
+            try
+            {
+                var newTransaction = new Transaction();
+                newTransaction.Date = entity.Transaction.Date;
+                newTransaction.Payee = entity.Transaction.SelectedBillId != null
+                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name
+                    : entity.Transaction.Payee;
+                newTransaction.Category = entity.Transaction.Category;
+                newTransaction.Memo = entity.Transaction.Memo;
+                newTransaction.Type = entity.Transaction.Type;
+                newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
+                newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
+                newTransaction.Amount = entity.Transaction.Amount;
+                newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
+                newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
+                if (entity.Transaction.SelectedBillId != null)
+                    newTransaction.SelectedBillId = entity.Transaction.SelectedBillId;
+                _db.Transactions.Add(newTransaction);
+
+
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        //TODO: move to Calculations and replace existing Calculations.UpdateBalanceSurplus Method
         private decimal? UpdateBalanceSurplus(Account account)
         {
             try
             {
-                return account.Balance - account.RequiredSavings;
+                if (account.IsMandatory || account.IsPoolAccount)
+                    return account.Balance - account.RequiredSavings;
+
+                return account.BalanceSurplus = account.Balance > account.BalanceLimit
+                        ? account.Balance - account.BalanceLimit
+                        : decimal.Zero;
             }
             catch (Exception)
             {
@@ -395,7 +349,7 @@ namespace JPFData.Managers
             }
         }
 
-        private void UpdateCreditCard(Transaction transaction, string type)
+        private void UpdateDbCreditCard(Transaction transaction, string type)
         {
             var creditCardId = transaction?.SelectedCreditCardAccountId;
             if (creditCardId == null) return;
@@ -448,13 +402,13 @@ namespace JPFData.Managers
                         break;
                     }
                 default:
-                    throw new NotImplementedException($"{type} is not an accepted type for TransactionController.UpdateCreditCard method");
+                    throw new NotImplementedException($"{type} is not an accepted type for TransactionController.UpdateDbCreditCard method");
             }
 
             _db.SaveChanges();
         }
 
-        public bool AutoTransferPaycheckContributions(Transaction transaction)
+        public bool HandlePaycheckContributions(Transaction transaction)
         {
             try
             {
@@ -467,8 +421,8 @@ namespace JPFData.Managers
 
                 foreach (var account in accountsWithContributions)
                 {
-                    if (!TransferPaycheckContributions(transaction, account)) return false;
-                    if (!AddContributionTransaction(transaction, account)) return false;
+                    if (!TransferPaycheckContribution(transaction, account)) return false;
+                    if (!AddContributionTransactionToDb(transaction, account)) return false;
                 }
 
                 var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
@@ -488,7 +442,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool TransferPaycheckContributions(Transaction transaction, Account account)
+        private bool TransferPaycheckContribution(Transaction transaction, Account account)
         {
             try
             {
@@ -511,7 +465,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddContributionTransaction(Transaction transaction, Account account)
+        private bool AddContributionTransactionToDb(Transaction transaction, Account account)
         {
             try
             {
@@ -526,7 +480,6 @@ namespace JPFData.Managers
                 newTransaction.DebitAccountId = account.Id;
                 newTransaction.CreditAccountId = null;
                 newTransaction.Amount = (decimal)account.PaycheckContribution;
-                newTransaction.PaycheckId = null;
                 _db.Transactions.Add(newTransaction);
 
 
@@ -537,6 +490,56 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return false;
+            }
+        }
+
+        private void SetBillAsPaid(int? id)
+        {
+            try
+            {
+                var selectedBill = _db.Bills.FirstOrDefault(b => b.Id == id);
+                if (selectedBill == null || selectedBill.IsPaid) return;
+                selectedBill.IsPaid = true;
+
+
+                _db.Entry(selectedBill).State = EntityState.Modified;
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+            }
+        }
+
+        private bool Validate(Transaction entity)
+        {
+            ValidationErrors.Clear();
+
+            if (string.IsNullOrEmpty(entity.Payee)) return ValidationErrors.Count == 0;
+            if (entity.Payee.ToLower() == entity.Payee)
+            {
+                ValidationErrors.Add(new KeyValuePair<string, string>("Payee", "Payee must not be all lower case."));
+            }
+
+            return ValidationErrors.Count == 0;
+        }
+
+        private TransactionMetrics RefreshTransactionMetrics(TransactionDTO entity)
+        {
+            try
+            {
+                TransactionMetrics metrics = new TransactionMetrics();
+
+                metrics.AccountMetrics = new AccountMetrics();
+                metrics.CreditCardMetrics = new CreditCardMetrics();
+
+
+                return metrics;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
             }
         }
     }
