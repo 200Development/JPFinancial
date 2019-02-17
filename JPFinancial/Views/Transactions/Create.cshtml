@@ -4,7 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
+<h2>Add Transaction</h2>
 
 
 @using (Html.BeginForm())
@@ -151,8 +151,8 @@
 
 
     <script>
-        var checkbox = document.getElementById('UsedCreditCard');
-        var bill = document.getElementById('IsBill');
+        var usedCreditCardCb = document.getElementById('UsedCreditCard');
+        var isBillCb = document.getElementById('IsBill');
         var payBillDiv = document.getElementById('divPayBill');
         var payeeDiv = document.getElementById('divPayee');
         var creditCardDiv = document.getElementById('divCreditCard');
@@ -164,7 +164,7 @@
         var isBillDiv = document.getElementById('divIsBill');
 
         function isCredit() {
-            if (checkbox.checked) {
+            if (usedCreditCardCb.checked) {
                 creditCardDiv.style.display = "block";
             } else {
                 creditCardDiv.style.display = "none";
@@ -172,7 +172,7 @@
         };
 
         function isBill() {
-            if (bill.checked) {
+            if (isBillCb.checked) {
                 payBillDiv.style.display = "block";
                 payeeDiv.style.display = "none";
             } else {
@@ -215,11 +215,11 @@
             updateType();
         });
 
-        checkbox.addEventListener('change', (event) => {
+        usedCreditCardCb.addEventListener('change', (event) => {
             isCredit();
         });
 
-        bill.addEventListener('change', (event) => {
+        isBillCb.addEventListener('change', (event) => {
             isBill();
         });
 

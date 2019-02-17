@@ -10,7 +10,7 @@
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Account</h4>
         <hr />
@@ -24,7 +24,7 @@
                 @Html.ValidationMessageFor(model => model.Entity.Account.Name, "", new { @class = "text-danger" })
             </div>
         </div>
-        
+
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Account.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
@@ -48,18 +48,37 @@
                 @Html.ValidationMessageFor(model => model.Entity.Account.RequiredSavings, "", new { @class = "text-danger" })
             </div>
         </div>
-        
+
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Account.IsPoolAccount, "Is this the account where you want to pool your money?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.CheckBoxFor(model => model.Entity.Account.IsPoolAccount, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
-        
+
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.CheckBoxFor(model => model.Entity.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
+            </div>
+        </div>
+
+        <div id="divMandatoryAccount">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Entity.Account.IsMandatory, "Mandatory Account?", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.Entity.Account.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
+        <div id="divBalanceLimit">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Entity.Account.BalanceLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Entity.Account.BalanceLimit, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Entity.Account.BalanceLimit, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
 
@@ -77,4 +96,26 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    
+    
+    <script>
+        var mandatoryAccountCb = document.getElementById('IsMandatory');
+        var balanceLimitDiv = document.getElementById('divBalanceLimit');
+
+        function UpdateDivDisplay() {
+            if (mandatoryAccountCb.checked) {
+                balanceLimitDiv.style.display = "block";
+            } else {
+                balanceLimitDiv.style.display = "none";
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            UpdateDivDisplay();
+        });
+
+        mandatoryAccountCb.addEventListener('change', (event) => {
+            UpdateDivDisplay();
+        });
+    </script>
 }

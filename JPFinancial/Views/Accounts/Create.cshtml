@@ -4,7 +4,7 @@
     ViewBag.Title = "Create";
 }
 
-<h2>Create</h2>
+<h2>Add Account</h2>
 
 
 @using (Html.BeginForm())
@@ -45,6 +45,25 @@
                 @Html.CheckBoxFor(model => model.Entity.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
+        
+        <div id="divMandatoryAccount">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Entity.Account.IsMandatory, "Mandatory Account?", htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.CheckBoxFor(model => model.Entity.Account.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
+                </div>
+            </div>
+        </div>
+
+        <div id="divBalanceLimit">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Entity.Account.BalanceLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+                <div class="col-md-10">
+                    @Html.EditorFor(model => model.Entity.Account.BalanceLimit, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Entity.Account.BalanceLimit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
@@ -60,4 +79,26 @@
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
+    
+    
+    <script>
+        var mandatoryAccountCb = document.getElementById('divMandatoryAccount');
+        var balanceLimitDiv = document.getElementById('divBalanceLimit');
+
+        function UpdateDivDisplay() {
+            if (mandatoryAccountCb.checked) {
+                balanceLimitDiv.style.display = "block";
+            } else {
+                balanceLimitDiv.style.display = "none";
+            }
+        };
+
+        document.addEventListener("DOMContentLoaded", function() {
+            UpdateDivDisplay();
+        });
+
+        mandatoryAccountCb.addEventListener('change', (event) => {
+            UpdateDivDisplay();
+        });
+    </script>
 }
