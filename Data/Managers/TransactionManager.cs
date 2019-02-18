@@ -69,6 +69,7 @@ namespace JPFData.Managers
         {
             try
             {
+                GetUsedAccounts(entity);
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
@@ -163,6 +164,10 @@ namespace JPFData.Managers
         }
 
 
+        /// <summary>
+        /// Sets the Credit & Debit Accounts from passed Id's
+        /// </summary>
+        /// <param name="entity"></param>
         private void GetUsedAccounts(TransactionDTO entity)
         {
             try
@@ -170,13 +175,13 @@ namespace JPFData.Managers
                 if (entity.Transaction.CreditAccountId != null)
                 {
                     entity.Transaction.CreditAccount = _db.Accounts.Find(entity.Transaction.CreditAccountId);
-                    Logger.Instance.DataFlow($"Credit card set");
+                    Logger.Instance.DataFlow($"Credit Account set");
                 }
 
                 if (entity.Transaction.DebitAccountId != null)
                 {
                     entity.Transaction.DebitAccount = _db.Accounts.Find(entity.Transaction.DebitAccountId);
-                    Logger.Instance.DataFlow($"Debit account set");
+                    Logger.Instance.DataFlow($"Debit Account set");
                 }
             }
             catch (Exception e)
@@ -338,6 +343,9 @@ namespace JPFData.Managers
             {
                 if (account.IsMandatory || account.IsPoolAccount)
                     return account.Balance - account.RequiredSavings;
+
+                if (account.Balance < 0.0m)
+                    return account.BalanceSurplus = account.Balance;
 
                 return account.BalanceSurplus = account.Balance > account.BalanceLimit
                         ? account.Balance - account.BalanceLimit
