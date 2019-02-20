@@ -8,281 +8,283 @@
 {
     <div class="content">
         <div class="container-fluid">
-            <div class="row">
-                <div class="row" style="margin: 0 0 12px 16px">
-                    <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+        <div class="row">
+        <div class="row" style="margin: 0 0 12px 16px">
+            <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
+        </div>
+        <div class="col-lg-3 col-sm-6">
+            <div class="card">
+                <div class="content">
+                    <div class="row">
+                        <div class="col-xs-5">
+                            <div class="icon-big icon-success text-center">
+                                @if (Model.Entity.Metrics.TotalBalance > 0)
+                                {
+                                    <i class="ti-face-smile icon-success"></i>
+                                }
+                                @if (Model.Entity.Metrics.TotalBalance == 0)
+                                {
+                                    <i class="ti-face-smile icon-warning"></i>
+                                }
+                                @if (Model.Entity.Metrics.TotalBalance < 0)
+                                {
+                                    <i class="ti-face-sad icon-danger"></i>
+                                }
+                            </div>
+                        </div>
+                        <div class="col-xs-7">
+                            <div class="numbers">
+                                <p>Cash Balance</p>
+                                @Html.DisplayFor(model => model.Entity.Metrics.TotalBalance)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer">
+                        <hr />
+                        <div class="stats">
+                            <span style="margin-right: 8px">Surplus:</span>
+                            @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                        </div>
+                    </div>
                 </div>
-                <div class="col-lg-3 col-sm-6">
-                    <div class="card">
-                        <div class="content">
-                            <div class="row">
-                                <div class="col-xs-5">
-                                    <div class="icon-big icon-success text-center">
-                                        @if (Model.Entity.Metrics.TotalBalance > 0)
-                                        {
-                                            <i class="ti-face-smile icon-success"></i>
-                                        }
-                                        @if (Model.Entity.Metrics.TotalBalance == 0)
-                                        {
-                                            <i class="ti-face-smile icon-warning"></i>
-                                        }
-                                        @if (Model.Entity.Metrics.TotalBalance < 0)
-                                        {
-                                            <i class="ti-face-sad icon-danger"></i>
-                                        }
-                                    </div>
-                                </div>
-                                <div class="col-xs-7">
-                                    <div class="numbers">
-                                        <p>Cash Balance</p>
-                                        @Html.DisplayFor(model => model.Entity.Metrics.TotalBalance)
-                                    </div>
+            </div>
+        </div>
+
+        @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count == 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-thumb-up"></i>
                                 </div>
                             </div>
-                            <div class="footer">
-                                <hr />
-                                <div class="stats">
-                                    <span style="margin-right: 8px">Surplus:</span>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Account Deficits</p>
+                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <span style="margin-right: 12px">Total Deficit</span>
+                                @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count > 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-danger text-center">
+                                    <i class="ti-thumb-down"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Account Deficits</p>
+                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                <span style="margin-right: 12px">Total Deficit</span>
+                                @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        @if (Model.Entity.RebalanceReport.PaycheckSurplus > 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p style="width: 100%">Paycheck Surplus</p>
+                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @*  <i class="ti-calendar"></i>*@
+                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Entity.RebalanceReport.PaycheckSurplus < 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-danger text-center">
+                                    <i class="ti-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p style="width: 100%">Paycheck Deficit</p>
+                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @*  <i class="ti-calendar"></i>*@
+                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Entity.RebalanceReport.PaycheckSurplus == 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-receipt"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p style="width: 100%">Paycheck Surplus</p>
+                                    Balanced
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @*  <i class="ti-calendar"></i>*@
+                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+
+        @if (Model.Entity.RebalanceReport.TotalSurplus > 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-envelope"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Discretionary Surplus</p>
                                     @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
                                 </div>
                             </div>
                         </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @* <i class="ti-reload"></i> Update now*@
+                            </div>
+                        </div>
                     </div>
                 </div>
-
-                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count == 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-thumb-up"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Account Deficits</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <span style="margin-right: 12px">Total Deficit</span>
-                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count > 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-danger text-center">
-                                            <i class="ti-thumb-down"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Account Deficits</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        <span style="margin-right: 12px">Total Deficit</span>
-                                        @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                @if (Model.Entity.RebalanceReport.PaycheckSurplus > 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-receipt"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p style="width: 100%">Paycheck Surplus</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @*  <i class="ti-calendar"></i>*@
-                                        @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Entity.RebalanceReport.PaycheckSurplus < 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-danger text-center">
-                                            <i class="ti-receipt"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p style="width: 100%">Paycheck Deficit</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @*  <i class="ti-calendar"></i>*@
-                                        @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Entity.RebalanceReport.PaycheckSurplus == 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-receipt"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p style="width: 100%">Paycheck Surplus</p>
-                                            Balanced
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @*  <i class="ti-calendar"></i>*@
-                                        @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-
-                @if (Model.Entity.RebalanceReport.TotalSurplus > 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-envelope"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Accounts Surplus</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @* <i class="ti-reload"></i> Update now*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-danger text-center">
-                                            <i class="ti-envelope"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Accounts Deficit</p>
-                                            @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @* <i class="ti-reload"></i> Update now*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
-                @if (Model.Entity.RebalanceReport.TotalSurplus == 0)
-                {
-                    <div class="col-lg-3 col-sm-6">
-                        <div class="card">
-                            <div class="content">
-                                <div class="row">
-                                    <div class="col-xs-5">
-                                        <div class="icon-big icon-success text-center">
-                                            <i class="ti-envelope"></i>
-                                        </div>
-                                    </div>
-                                    <div class="col-xs-7">
-                                        <div class="numbers">
-                                            <p>Accounts Surplus</p>
-                                            Balanced
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="footer">
-                                    <hr />
-                                    <div class="stats">
-                                        @* <i class="ti-reload"></i> Update now*@
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                }
             </div>
+        }
+        @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-danger text-center">
+                                    <i class="ti-envelope"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Discretionary Deficit</p>
+                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @* <i class="ti-reload"></i> Update now*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        @if (Model.Entity.RebalanceReport.TotalSurplus == 0)
+        {
+            <div class="col-lg-3 col-sm-6">
+                <div class="card">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xs-5">
+                                <div class="icon-big icon-success text-center">
+                                    <i class="ti-envelope"></i>
+                                </div>
+                            </div>
+                            <div class="col-xs-7">
+                                <div class="numbers">
+                                    <p>Discretionary Surplus</p>
+                                    Balanced
+                                </div>
+                            </div>
+                        </div>
+                        <div class="footer">
+                            <hr />
+                            <div class="stats">
+                                @* <i class="ti-reload"></i> Update now*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        </div>
+        
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -318,58 +320,58 @@
                                 @Html.ActionLink("Rebalance", "Rebalance")
                             </button>
                             @*<button class="btn btn-sm">
-                                @Html.ActionLink("Pool Account Surpluses", "")
-                            </button>
-                            <button class="btn btn-sm">
-                                @Html.ActionLink("Pool Account Surpluses", "")
-                            </button>
-                            <button class="btn btn-sm">
-                                @Html.ActionLink("Payoff Account Deficits", "")
-                            </button>
-                            <button class="btn btn-sm">
-                                @Html.ActionLink("Update Contributions to Suggested", "")
-                            </button>*@
+                                    @Html.ActionLink("Pool Account Surpluses", "")
+                                </button>
+                                <button class="btn btn-sm">
+                                    @Html.ActionLink("Pool Account Surpluses", "")
+                                </button>
+                                <button class="btn btn-sm">
+                                    @Html.ActionLink("Payoff Account Deficits", "")
+                                </button>
+                                <button class="btn btn-sm">
+                                    @Html.ActionLink("Update Contributions to Suggested", "")
+                                </button>*@
 
                         </div>
                         <div class="container-fluid" style="text-align: center">
                             @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
                             {
-                                <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
-                                    <div class="card-header">
-                                        <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
-                                        <div>
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                            <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
+                                <div class="card-header">
+                                    <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
+                                    <div>
+                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
+                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
+                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                    </div>
+                                </div>
+                                <div class="card-body" style="margin: 12px 0; text-align: center">
+                                    <div class="card-price"><span style="font-weight: bold">CurrentBalance:</span>&nbsp;$@item.Balance</div>
+                                    @*<div class="card-price"><span style="font-weight: bold">Savings</span> - $@item.RequiredSavings</div>*@
+                                    @if (@item.BalanceSurplus > 0)
+                                        {
+                                        <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
+                                        }
+                                    @if (@item.BalanceSurplus < 0)
+                                        {
+                                        <div class="card-price"><span style="font-weight: bold; color: rgb(186, 18, 18)">Deficit:</span>&nbsp;$@item.BalanceSurplus</div>
+                                        }
+                                    @if (@item.BalanceSurplus == 0)
+                                        {
+                                        <div class="card-price"><span style="font-weight: bold">Balanced</span></div>
+                                        }
+                                </div>
+                                <div class="card-footer">
+                                    <div class="card-text">
+                                        <div style="float: left; font-size: .9em">
+                                            <span style="font-weight: bold">Paycheck:</span>&nbsp;$@item.PaycheckContribution
                                         </div>
-                                    </div>
-                                    <div class="card-body" style="margin: 12px 0; text-align: center">
-                                        <div class="card-price"><span style="font-weight: bold">CurrentBalance:</span>&nbsp;$@item.Balance</div> 
-                                        @*<div class="card-price"><span style="font-weight: bold">Savings</span> - $@item.RequiredSavings</div>*@
-                                        @if (@item.BalanceSurplus > 0)
-                                        {
-                                            <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
-                                        }
-                                        @if (@item.BalanceSurplus < 0)
-                                        {
-                                            <div class="card-price"><span style="font-weight: bold; color: rgb(186, 18, 18)">Deficit:</span>&nbsp;$@item.BalanceSurplus</div>
-                                        }
-                                        @if (@item.BalanceSurplus == 0)
-                                        {
-                                            <div class="card-price"><span style="font-weight: bold">Balanced</span></div>
-                                        }
-                                    </div>
-                                    <div class="card-footer">
-                                        <div class="card-text">
-                                            <div style="float: left; font-size: .9em">
-                                                <span style="font-weight: bold">Paycheck:</span>&nbsp;$@item.PaycheckContribution
-                                            </div>
-                                            <div style="float: right; font-size: .9em">
-                                                <span style="font-weight: bold">Suggested:</span>&nbsp;$@item.SuggestedPaycheckContribution
-                                            </div>
+                                        <div style="float: right; font-size: .9em">
+                                            <span style="font-weight: bold">Suggested:</span>&nbsp;$@item.SuggestedPaycheckContribution
                                         </div>
                                     </div>
                                 </div>
+                            </div>
                             }
                         </div>
                     </div>
