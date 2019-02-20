@@ -258,8 +258,12 @@ namespace JPFData.Managers
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance += transaction.Amount;
-                                            if (transaction.SelectedBillId != null)
+                                            if ((transaction.SelectedBillId ?? 0) > 0)
+                                            {
                                                 originalCreditAccount.RequiredSavings -= transaction.Amount;
+                                                var bill = _db.Bills.Find(transaction.SelectedBillId);
+                                                _db.Entry(bill).State = EntityState.Modified;
+                                            }
                                             originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
@@ -341,15 +345,15 @@ namespace JPFData.Managers
         {
             try
             {
-                if (account.IsMandatory || account.IsPoolAccount)
-                    return account.Balance - account.RequiredSavings;
-
                 if (account.Balance < 0.0m)
                     return account.BalanceSurplus = account.Balance;
 
-                return account.BalanceSurplus = account.Balance > account.BalanceLimit
+                if (account.BalanceLimit > 0)
+                    return account.BalanceSurplus = account.Balance > account.BalanceLimit
                         ? account.Balance - account.BalanceLimit
                         : decimal.Zero;
+
+                return account.BalanceSurplus = account.Balance - (account.RequiredSavings ?? 0.0m);
             }
             catch (Exception)
             {
