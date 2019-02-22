@@ -545,6 +545,153 @@ namespace JPFData.Managers
                 metrics.AccountMetrics = new AccountMetrics();
                 metrics.CreditCardMetrics = new CreditCardMetrics();
 
+                
+                var transactions = _db.Transactions.ToList();
+                var bills = _db.Bills.ToList();
+                var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();
+                var expenseTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Expense).ToList();
+                var transferTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Transfer).ToList();
+
+                var discretionaryExpenseTransactions = expenseTransactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory == false);
+                var discretionarySpendingSumsByMonth = discretionaryExpenseTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
+                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+
+                var mandatoryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory);
+                var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
+                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+
+                var incomeTransactionsByMonth = incomeTransactions.Select(t => new {t.Date.Year, t.Date.Month, t.Amount})
+                    .GroupBy(x => new {x.Year, x.Month}, (key, group) => new {year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount)}).ToList();
+
+                var transferTransactionsByMonth = transferTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
+                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+
+                var expensesByMonth = new Dictionary<DateTime, decimal>();
+                var mandatoryByMonth = new Dictionary<DateTime, decimal>();
+                var discretionaryByMonth = new Dictionary<DateTime, decimal>();
+                var incomeByMonth = new Dictionary<DateTime, decimal>();
+                var transfersByMonth = new Dictionary<DateTime, decimal>();
+
+                foreach (var transaction in discretionarySpendingSumsByMonth)
+                {
+                    var date = new DateTime(transaction.year, transaction.month, 1);
+                    var amount = transaction.expenses;
+                    discretionaryByMonth.Add(date, amount);
+                    expensesByMonth.Add(date, amount);
+                }
+
+                foreach (var transaction in mandatoryExpensesByMonth)
+                {
+                    var date = new DateTime(transaction.year, transaction.month, 1);
+                    var amount = transaction.expenses;
+                    mandatoryByMonth.Add(date, amount);
+                    expensesByMonth[date] += amount;
+                }
+
+                foreach (var transaction in incomeTransactionsByMonth)
+                {
+                    var date = new DateTime(transaction.year, transaction.month, 1);
+                    var amount = transaction.expenses;
+                    incomeByMonth.Add(date, amount);
+                }
+
+                foreach (var transaction in transferTransactionsByMonth)
+                {
+                    var date = new DateTime(transaction.year, transaction.month, 1);
+                    var amount = transaction.expenses;
+                    transfersByMonth.Add(date, amount);
+                }
+
+                foreach (KeyValuePair<DateTime, decimal> transaction in mandatoryByMonth)
+                {
+                    if (mandatoryByMonth.ContainsKey(transaction.Key) == false)
+                    {
+                        mandatoryByMonth.Add(transaction.Key, 0m);
+                    }
+
+                    //if (discretionaryByMonth.ContainsKey(expense.Key) == false)
+                    //{
+                    //    discretionaryByMonth.Add(expense.Key, 0m);
+                    //}
+                }
+
+                foreach (KeyValuePair<DateTime, decimal> transaction in discretionaryByMonth)
+                {
+                    if (discretionaryByMonth.ContainsKey(transaction.Key) == false)
+                    {
+                        discretionaryByMonth.Add(transaction.Key, 0m);
+                    }
+
+                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
+                    //{
+                    //    mandatoryByMonth.Add(expense.Key, 0m);
+                    //}
+                }
+
+                foreach (KeyValuePair<DateTime, decimal> transaction in expensesByMonth)
+                {
+                    if (expensesByMonth.ContainsKey(transaction.Key) == false)
+                    {
+                        expensesByMonth.Add(transaction.Key, 0m);
+                    }
+
+                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
+                    //{
+                    //    mandatoryByMonth.Add(expense.Key, 0m);
+                    //}
+                }
+
+                foreach (KeyValuePair<DateTime, decimal> transaction in incomeByMonth)
+                {
+                    if (incomeByMonth.ContainsKey(transaction.Key) == false)
+                    {
+                        incomeByMonth.Add(transaction.Key, 0m);
+                    }
+
+                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
+                    //{
+                    //    mandatoryByMonth.Add(expense.Key, 0m);
+                    //}
+                }
+
+                foreach (KeyValuePair<DateTime, decimal> transaction in transfersByMonth)
+                {
+                    if (transfersByMonth.ContainsKey(transaction.Key) == false)
+                    {
+                        transfersByMonth.Add(transaction.Key, 0m);
+                    }
+
+                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
+                    //{
+                    //    mandatoryByMonth.Add(expense.Key, 0m);
+                    //}
+                }
+
+
+                var oneYearAgo = DateTime.Today.AddYears(-1);
+                var index = new DateTime(oneYearAgo.Year, oneYearAgo.Month, 1);
+
+                for (DateTime i = index; i <= DateTime.Today; i = i.AddMonths(1))
+                {
+                    if (expensesByMonth.ContainsKey(i)) continue;
+                    mandatoryByMonth.Add(i, 0m);
+                    discretionaryByMonth.Add(i, 0m);
+                    expensesByMonth.Add(i, 0m);
+                    incomeByMonth.Add(i, 0m);
+                    transfersByMonth.Add(i, 0m);
+                }
+
+                //var last12 = expensesByMonth.Take(11);
+                //var orderedByYear = last12.OrderBy(expense => expense.Key.Year);
+                //var thenOrderByMonth = orderedByYear.OrderBy(expense => expense.Key.Month);
+                //var toDict = thenOrderByMonth.ToDictionary(expense => expense.Key, expense => expense.Value);
+
+                metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);
+                metrics.DiscretionaryExpensesByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)}{mandatory.Key.Year}", mandatory => mandatory.Value);
+                metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
+                metrics.IncomeByMonth = incomeByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
+                metrics.TransfersByMonth = transfersByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
+
 
                 return metrics;
             }
@@ -552,6 +699,39 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return null;
+            }
+        }
+
+        private string ConvertMonthIntToString(int month)
+        {
+            switch (month)
+            {
+                case 1:
+                    return $"Jan";
+                case 2:
+                    return "Feb";
+                case 3:
+                    return "Mar";
+                case 4:
+                    return "Apr";
+                case 5:
+                    return "May";
+                case 6:
+                    return "Jun";
+                case 7:
+                    return "Jul";
+                case 8:
+                    return "Aug";
+                case 9:
+                    return "Sep";
+                case 10:
+                    return "Oct";
+                case 11:
+                    return "Nov";
+                case 12:
+                    return "Dec";
+                default:
+                    throw new NotImplementedException();
             }
         }
     }

@@ -121,40 +121,60 @@
         $(document).ready(function() { chart(); });
 
         function chart() {
-            var staticMetrics = @Html.Raw(Json.Encode(@Model));
-            var totalExpenses = staticMetrics.ExpensesByMonth;
-            var mandatoryExpenses = staticMetrics.MandatoryExpensesByMonth;
-            var discretionaryExpenses = staticMetrics.DiscretionarySpendingByMonth;
+            var metrics = @Html.Raw(Json.Encode(@Model.Entity.Metrics));
+            var mandatoryExpensesByMonth = metrics.MandatoryExpensesByMonth;
+            var discretionaryExpensesByMonth = metrics.DiscretionaryExpensesByMonth;
+            var expensesByMonth = metrics.ExpensesByMonth;
+            var incomeByMonth = metrics.IncomeByMonth;
+            var transfersByMonth = metrics.TransfersByMonth;
 
-            var totalLength = Object.keys(totalExpenses).length;
-            var mandatoryLength = Object.keys(mandatoryExpenses).length;
-            var discretionaryLength = Object.keys(discretionaryExpenses).length;
+            var expensesLength = Object.keys(expensesByMonth).length;
+            var mandatoryLength = Object.keys(mandatoryExpensesByMonth).length;
+            var discretionaryLength = Object.keys(discretionaryExpensesByMonth).length;
+            var incomeLength = Object.keys(incomeByMonth).length;
+            var transferLength = Object.keys(transfersByMonth).length;
 
-            var monthsArray = new Array(totalLength);
-            var expensesArray = new Array(totalLength);
+            var monthsArray = new Array(expensesLength);
+            var expensesArray = new Array(expensesLength);
             var mandatoryArray = new Array(mandatoryLength);
             var discretionaryArray = new Array(discretionaryLength);
+            var incomeArray = new Array(incomeLength);
+            var transferArray = new Array(transferLength);
             var highestAmount = 0;
 
-            for (prop in totalExpenses) {
+            for (prop in expensesByMonth) {
                 monthsArray.push(prop);
-                expensesArray.push(totalExpenses[prop]);
-                if (totalExpenses[prop] > highestAmount) {
-                    highestAmount = totalExpenses[prop];
+                expensesArray.push(expensesByMonth[prop]);
+                if (expensesByMonth[prop] > highestAmount) {
+                    highestAmount = expensesByMonth[prop];
                 }
             }
 
-            for (prop in mandatoryExpenses) {
-                mandatoryArray.push(mandatoryExpenses[prop]);
-                if (mandatoryExpenses[prop] > highestAmount) {
-                    highestAmount = mandatoryExpenses[prop];
+            for (prop in mandatoryExpensesByMonth) {
+                mandatoryArray.push(mandatoryExpensesByMonth[prop]);
+                if (mandatoryExpensesByMonth[prop] > highestAmount) {
+                    highestAmount = mandatoryExpensesByMonth[prop];
                 }
             }
 
-            for (prop in discretionaryExpenses) {
-                discretionaryArray.push(discretionaryExpenses[prop]);
-                if (discretionaryExpenses[prop] > highestAmount) {
-                    highestAmount = discretionaryExpenses[prop];
+            for (prop in discretionaryExpensesByMonth) {
+                discretionaryArray.push(discretionaryExpensesByMonth[prop]);
+                if (discretionaryExpensesByMonth[prop] > highestAmount) {
+                    highestAmount = discretionaryExpensesByMonth[prop];
+                }
+            }
+
+            for (prop in expensesByMonth) {
+                incomeArray.push(expensesByMonth[prop]);
+                if (expensesByMonth[prop] > highestAmount) {
+                    highestAmount = expensesByMonth[prop];
+                }
+            }
+
+            for (prop in transfersByMonth) {
+                transferArray.push(transfersByMonth[prop]);
+                if (transfersByMonth[prop] > highestAmount) {
+                    highestAmount = transfersByMonth[prop];
                 }
             }
 
@@ -162,13 +182,15 @@
             expensesArray = expensesArray.filter(function(n) { return n != undefined });
             mandatoryArray = mandatoryArray.filter(function(n) { return n != undefined });
             discretionaryArray = discretionaryArray.filter(function(n) { return n != undefined });
+            incomeArray = incomeArray.filter(function(n) { return n != undefined });
+            transferArray = transferArray.filter(function(n) { return n != undefined });
 
             var dataTable = new google.visualization.DataTable();
 
-            var data = [['Month', 'Expenses', 'Discretionary', 'Mandatory']];
+            var data = [['Month', 'Total Expenses', 'Discretionary', 'Mandatory', 'Income', 'Transfers']];
 
             for (var i = 0; i <= monthsArray.length; i++) {
-                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i]]);
+                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i], incomeArray[i], transferArray[i]]);
             };
 
             var numRows = data.length;
@@ -188,7 +210,7 @@
                 lineWidth: 1,
                 height: "200",
                 backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#F3BB45"],
+                colors: ["#EB5E28", "#F3BB45", "#F3BB45", "#F7CC89", "#F2BC11"],
                 tooltip: {
                     textStyle: {
                         color: "#666666",
