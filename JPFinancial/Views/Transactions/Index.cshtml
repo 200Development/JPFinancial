@@ -17,11 +17,11 @@
                     <div class="content">
                         <div id="chartExpenses" class="ct-chart"></div>
                         <div class="footer">
-                            <div class="chart-legend">
+                            @*<div class="chart-legend">
                                 <i class="fa fa-circle text-success"></i> Total
                                 <i class="fa fa-circle text-info"></i> Income
                                 <i class="fa fa-circle text-danger"></i> Expense
-                            </div>
+                            </div>*@
                             <hr />
                             <div class="stats">
                                 <i class="ti-reload"></i> Updated 3 minutes ago
@@ -187,10 +187,10 @@
 
             var dataTable = new google.visualization.DataTable();
 
-            var data = [['Month', 'Total Expenses', 'Discretionary', 'Mandatory', 'Income', 'Transfers']];
+            var data = [['Month', 'Discretionary Spending', 'Mandatory Spending', 'Income']];
 
             for (var i = 0; i <= monthsArray.length; i++) {
-                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i], incomeArray[i], transferArray[i]]);
+                data.push([monthsArray[i], discretionaryArray[i], mandatoryArray[i], incomeArray[i]]);
             };
 
             var numRows = data.length;
@@ -199,33 +199,34 @@
             dataTable.addColumn('string', data[0][0]);
 
             for (var i = 1; i < numCols; i++)
-                dataTable.addColumn('number', data[0][1]);
+                dataTable.addColumn('number', data[0][i]);
 
             for (var i = 1; i < numRows; i++)
                 dataTable.addRow(data[i]);
 
             var options = {
                 width: "auto",
-                pointSize: 7,
-                lineWidth: 1,
-                height: "200",
+                pointSize: 8,
+                lineWidth: 2,
+                height: "225",
                 backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#F3BB45", "#F7CC89", "#F2BC11"],
+                colors: ["#EB5E28", "#F3BB45", "#32CA0A"],
                 tooltip: {
                     textStyle: {
                         color: "#666666",
-                        fontSize: 11
+                        fontSize: 12
                     },
-                    showColorCode: false
+                    showColorCode: true
                 },
                 legend: {
                     textStyle: {
                         color: "black",
+                        border: 2,
                         fontSize: 12
                     }
                 },
                 chartArea: {
-                    left: 40,
+                    left: 60,
                     top: 10,
                     height: "80%"
                 }
