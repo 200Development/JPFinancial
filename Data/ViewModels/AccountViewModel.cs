@@ -40,7 +40,7 @@ namespace JPFData.ViewModels
             switch (EventArgument)
             {
                 case EventArgumentEnum.Create:
-                    break;
+                    return _manager.Create(Entity);
                 case EventArgumentEnum.Read:
                     switch (EventCommand)
                     {

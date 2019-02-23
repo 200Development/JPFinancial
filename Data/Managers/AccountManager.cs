@@ -47,7 +47,7 @@ namespace JPFData.Managers
 
             return entity;
         }
-
+        
         public Account Details(AccountDTO entity)
         {
             try
@@ -60,6 +60,30 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return null;
+            }
+        }
+
+        public bool Create(AccountDTO entity)
+        {
+            try
+            {
+                entity.Account.BalanceLimit = entity.Account.BalanceLimit ?? 0.0m;
+                entity.Account.BalanceSurplus = entity.Account.BalanceSurplus ?? 0.0m;
+                entity.Account.RequiredSavings = entity.Account.RequiredSavings ?? 0.0m;
+
+                _db.Accounts.Add(entity.Account);
+                Logger.Instance.DataFlow($"New Account added to data context");
+
+                _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
             }
         }
 

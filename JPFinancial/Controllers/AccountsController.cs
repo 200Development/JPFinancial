@@ -113,12 +113,8 @@ namespace JPFinancial.Controllers
                 Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(accountVM);
 
-
-                _db.Accounts.Add(accountVM.Entity.Account);
-                Logger.Instance.DataFlow($"New Account added to data context");
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Save changes to DB");
+                accountVM.EventArgument = EventArgumentEnum.Create;
+                if(!accountVM.HandleRequest()) return View(accountVM);
 
 
                 Logger.Instance.DataFlow($"Redirect to Account.Index View");
