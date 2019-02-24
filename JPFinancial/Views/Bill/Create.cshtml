@@ -1,11 +1,8 @@
 ﻿@model JPFData.ViewModels.CreateBillViewModel
 
 @{
-    ViewBag.Title = "Add Liabilities";
+    ViewBag.Title = "Add Expenses";
 }
-
-<h2>Add Liabilities</h2>
-
 @using (Html.BeginForm())
 {
     @Html.AntiForgeryToken()
@@ -16,7 +13,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.Name, "Expense", htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
+            <div class="col-md-4">
                 @Html.EditorFor(model => model.Name, new {htmlAttributes = new {@class = "form-control"}})
                 @Html.ValidationMessageFor(model => model.Name, "", new {@class = "text-danger"})
             </div>
@@ -24,14 +21,14 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.IsMandatory, "Mandatory Expense?", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.CheckBoxFor(model => model.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
             @Html.LabelFor(model => model.AmountDue, "Payment Due", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EditorFor(model => model.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.AmountDue, "", new { @class = "text-danger" })
             </div>
@@ -39,7 +36,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.DueDate, "Next Payment Due", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EditorFor(model => model.DueDate, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
             </div>
@@ -47,7 +44,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EnumDropDownListFor(model => model.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.PaymentFrequency, "", new { @class = "text-danger" })
             </div>
@@ -55,7 +52,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.AccountId, "Linked Account", htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-3">
                 @Html.DropDownListFor(model => model.AccountId,new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.AccountId, "", new { @class = "text-danger" })
             </div>

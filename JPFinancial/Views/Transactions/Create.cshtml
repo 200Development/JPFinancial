@@ -17,7 +17,7 @@
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
         <div class="form-group">
             @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10 col-lg-10">
+            <div class="col-md-2 col-lg-2">
                 @Html.EditorFor(model => model.Date, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
             </div>
@@ -25,7 +25,7 @@
         
         <div class="form-group">
             @Html.LabelFor(model => model.Type, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
             </div>
@@ -34,7 +34,7 @@
         <div id="divIsBill">
             <div class="form-group">
                 @Html.LabelFor(model => model.IsBill, "Paying a Bill?", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.CheckBoxFor(model => model.IsBill, new { htmlAttributes = new { @class = "form-control" } })
                 </div>
             </div>
@@ -43,7 +43,7 @@
         <div id="divPayBill">
             <div class="form-group">
                 <label class="control-label col-md-2">Bill</label>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.DropDownListFor(model => model.Entity.Transaction.SelectedBillId, new SelectList(Model.Entity.BillsOutstanding, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => Model.Entity.BillsOutstanding, "", new { @class = "text-danger" })
                 </div>
@@ -53,7 +53,7 @@
         <div id="divPayee">
             <div class="form-group">
                 @Html.LabelFor(model => model.Entity.Transaction.Payee, htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.EditorFor(model => model.Entity.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
                     @Html.ValidationMessageFor(model => model.Entity.Transaction.Payee, "", new { @class = "text-danger" })
                 </div>
@@ -62,7 +62,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Transaction.Memo, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-4">
                 @Html.EditorFor(model => model.Entity.Transaction.Memo, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Entity.Transaction.Memo, "", new { @class = "text-danger" })
             </div>
@@ -70,7 +70,7 @@
         
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Transaction.Category, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-3">
                 @Html.EnumDropDownListFor(model => model.Entity.Transaction.Category, htmlAttributes: new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Entity.Transaction.Category, "", new { @class = "text-danger" })
             </div>
@@ -79,7 +79,7 @@
         <div id="divCreditAccount">
             <div class="form-group">
                 <label class="control-label col-md-2">Credit</label>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.DropDownListFor(model => model.Entity.Transaction.CreditAccountId, new SelectList(Model.Entity.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => Model.Entity.Accounts, "", new { @class = "text-danger" })
                 </div>
@@ -89,7 +89,7 @@
         <div id="divDebitAccount">
             <div class="form-group">
                 <label class="control-label col-md-2">Debit</label>
-                <div class="col-md-10">
+                <div class="col-md-3">
                     @Html.DropDownListFor(model => model.Entity.Transaction.DebitAccountId, new SelectList(Model.Entity.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Entity.Accounts, "", new { @class = "text-danger" })
                 </div>
@@ -98,7 +98,7 @@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Entity.Transaction.Amount, htmlAttributes: new { @class = "control-label col-md-2" })
-            <div class="col-md-10">
+            <div class="col-md-2">
                 @Html.EditorFor(model => model.Entity.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Entity.Transaction.Amount, "", new { @class = "text-danger" })
             </div>
@@ -108,7 +108,7 @@
         <div id="divIsCredit">
             <div class="form-group">
                 @Html.LabelFor(model => model.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.CheckBoxFor(model => model.UsedCreditCard, new { htmlAttributes = new { @class = "form-control" } })
                 </div>
             </div>
@@ -117,7 +117,7 @@
         <div id="divCreditCard">
             <div class="form-group">
                 <label class="control-label col-md-2">Credit Card</label>
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.DropDownListFor(model => model.Entity.Transaction.SelectedCreditCardAccountId, new SelectList(Model.Entity.CreditCards, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => Model.Entity.CreditCards, "", new { @class = "text-danger" })
                 </div>
@@ -127,7 +127,7 @@
         <div id="divAutoTransferPaycheckContributions">
             <div class="form-group">
                 @Html.LabelFor(model => model.AutoTransferPaycheckContributions, "Auto Transfer Paycheck Contributions?", htmlAttributes: new { @class = "control-label col-md-2" })
-                <div class="col-md-10">
+                <div class="col-md-4">
                     @Html.CheckBoxFor(model => model.AutoTransferPaycheckContributions, new { htmlAttributes = new { @class = "form-control" } })
                 </div>
             </div>
