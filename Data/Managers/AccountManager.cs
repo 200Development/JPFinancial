@@ -67,9 +67,9 @@ namespace JPFData.Managers
         {
             try
             {
-                entity.Account.BalanceLimit = entity.Account.BalanceLimit ?? 0.0m;
-                entity.Account.BalanceSurplus = entity.Account.BalanceSurplus ?? 0.0m;
-                entity.Account.RequiredSavings = entity.Account.RequiredSavings ?? 0.0m;
+                entity.Account.BalanceLimit = entity.Account.BalanceLimit;
+                entity.Account.BalanceSurplus = entity.Account.BalanceSurplus;
+                entity.Account.RequiredSavings = entity.Account.RequiredSavings;
 
                 _db.Accounts.Add(entity.Account);
                 Logger.Instance.DataFlow($"New Account added to data context");
@@ -120,10 +120,10 @@ namespace JPFData.Managers
                 else
                     metrics.AverageBalance = 0;
 
-                metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
-                metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
-                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus != null && a.BalanceSurplus > 0).ToList().Count;if (surplusAccounts > 0)
-                    metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / surplusAccounts;
+                metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus);
+                metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus);
+                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus > 0).ToList().Count;if (surplusAccounts > 0)
+                    metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
                 metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 
                 Logger.Instance.DataFlow($"Return Account metrics");

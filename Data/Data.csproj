@@ -156,6 +156,10 @@
     <Compile Include="Migrations\201902171628267_removePaycheckFromTransaction.Designer.cs">
       <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.cs" />
+    <Compile Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.Designer.cs">
+      <DependentUpon>201902240449034_UpdateAccountToNotAllowNulls.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -313,6 +317,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201902171628267_removePaycheckFromTransaction.resx">
       <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.resx">
+      <DependentUpon>201902240449034_UpdateAccountToNotAllowNulls.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>

@@ -30,16 +30,16 @@ namespace JPFData.Models
         public decimal Balance { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Paycheck Contribution")]
-        public decimal? PaycheckContribution { get; set; }
+        public decimal PaycheckContribution { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Suggested Paycheck Contribution")]
-        public decimal? SuggestedPaycheckContribution { get; set; }
+        public decimal SuggestedPaycheckContribution { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Required Savings")]
-        public decimal? RequiredSavings { get; set; }
+        public decimal RequiredSavings { get; set; }
 
         [DataType(DataType.Currency), Display(Name = "Surplus/Deficit")]
-        public decimal? BalanceSurplus { get; set; }
+        public decimal BalanceSurplus { get; set; }
 
         [Display(Name = "Exclude From Surplus")]
         public bool ExcludeFromSurplus { get; set; }
@@ -54,6 +54,6 @@ namespace JPFData.Models
         public bool IsMandatory { get; set; }
 
         [Display(Name = "Balance Limit")]
-        public decimal? BalanceLimit { get; set; }
+        public decimal BalanceLimit { get; set; }
     }
 }

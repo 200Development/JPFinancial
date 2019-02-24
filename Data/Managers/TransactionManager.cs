@@ -341,7 +341,7 @@ namespace JPFData.Managers
         }
 
         //TODO: move to Calculations and replace existing Calculations.UpdateBalanceSurplus Method
-        private decimal? UpdateBalanceSurplus(Account account)
+        private decimal UpdateBalanceSurplus(Account account)
         {
             try
             {
@@ -353,7 +353,7 @@ namespace JPFData.Managers
                         ? account.Balance - account.BalanceLimit
                         : decimal.Zero;
 
-                return account.BalanceSurplus = account.Balance - (account.RequiredSavings ?? 0.0m);
+                return account.BalanceSurplus = account.Balance - account.RequiredSavings;
             }
             catch (Exception)
             {
