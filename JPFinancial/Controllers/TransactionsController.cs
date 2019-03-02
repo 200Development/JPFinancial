@@ -79,7 +79,7 @@ namespace JPFinancial.Controllers
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
-                transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
+                //transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
                 transactionVM.EventArgument = EventArgumentEnum.Create;
 
                 if (!transactionVM.HandleRequest()) return View(transactionVM);

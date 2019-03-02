@@ -73,17 +73,17 @@ namespace JPFData.Managers
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
-                if (entity.Transaction.UsedCreditCard)
-                {
-                    UpdateDbCreditCard(entity.Transaction, "create");
-                    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                }
+                //if (entity.Transaction.UsedCreditCard)
+                //{
+                //    UpdateDbCreditCard(entity.Transaction, "create");
+                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
+                //}
 
-                if (entity.Transaction.SelectedBillId != null)
-                {
-                    SetBillAsPaid(entity.Transaction.SelectedBillId);
-                    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                }
+                //if (entity.Transaction.SelectedBillId != null)
+                //{
+                //    SetBillAsPaid(entity.Transaction.SelectedBillId);
+                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
+                //}
 
                 if (!AddTransactionToDb(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
@@ -107,23 +107,23 @@ namespace JPFData.Managers
                 //AsNoTracking() is essential or EF will throw an error
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Update);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
-                if (entity.Transaction.UsedCreditCard)
-                {
-                    UpdateDbCreditCard(entity.Transaction, "edit");
-                    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                }
+                //if (entity.Transaction.UsedCreditCard)
+                //{
+                //    UpdateDbCreditCard(entity.Transaction, "edit");
+                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
+                //}
 
 
                 _db.Entry(entity.Transaction).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Transaction updated in data context");
 
-                if (entity.Transaction.UsedCreditCard)
-                {
-                    var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccountId);
-                    _db.Entry(creditCard).State = EntityState.Modified;
-                    Logger.Instance.DataFlow($"Credit card updated in data context");
-                }
+                //if (entity.Transaction.UsedCreditCard)
+                //{
+                //    var creditCards = _db.CreditCards.ToList();
+                //    var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccountId);
+                //    _db.Entry(creditCard).State = EntityState.Modified;
+                //    Logger.Instance.DataFlow($"Credit card updated in data context");
+                //}
 
 
                 _db.SaveChanges();
@@ -145,12 +145,12 @@ namespace JPFData.Managers
                 if (UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete))
                     _db.Transactions.Remove(transaction);
 
-                if (transaction.UsedCreditCard)
-                {
-                    var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccountId);
-                    _db.Entry(creditCard).State = EntityState.Modified;
-                }
+                //if (transaction.UsedCreditCard)
+                //{
+                //    var creditCards = _db.CreditCards.ToList();
+                //    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccountId);
+                //    _db.Entry(creditCard).State = EntityState.Modified;
+                //}
 
 
                 _db.SaveChanges();
@@ -236,8 +236,8 @@ namespace JPFData.Managers
                                 .FirstOrDefault();
                             if (originalTransaction == null) return false;
                             var originalCreditAccount =
-                                _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.CreditAccountId);
-                            var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == originalTransaction.DebitAccountId);
+                                _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.CreditAccountId ?? 0));
+                            var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.DebitAccountId ?? 0));
                             var originalAmount = originalTransaction.Amount;
 
                             // Reassign the Debit/Credit Account Id's to Transaction Model
@@ -323,8 +323,8 @@ namespace JPFData.Managers
                 newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
                 newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
                 newTransaction.Amount = entity.Transaction.Amount;
-                newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
-                newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
+                //newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
+                //newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
                 if (entity.Transaction.SelectedBillId != null)
                     newTransaction.SelectedBillId = entity.Transaction.SelectedBillId;
                 _db.Transactions.Add(newTransaction);
@@ -425,26 +425,27 @@ namespace JPFData.Managers
             try
             {
                 if (transaction.Amount <= 0) return true; //only return false when exception is thrown
-                var accountsWithContributions = _db.Accounts.Where(a => a.PaycheckContribution != null && a.PaycheckContribution > 0).ToList();
+                var accountsWithContributions = _db.Accounts.Where(a => a.PaycheckContribution > 0).ToList();
                 var totalContributions = accountsWithContributions.Sum(a => a.PaycheckContribution);
                 if (totalContributions > transaction.Amount)
                 {
                 }
 
-                foreach (var account in accountsWithContributions)
-                {
-                    if (!TransferPaycheckContribution(transaction, account)) return false;
-                    if (!AddContributionTransactionToDb(transaction, account)) return false;
-                }
 
                 var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
                 if (poolAccount == null) return false;
 
                 poolAccount.Balance += transaction.Amount;
                 _db.Entry(poolAccount).State = EntityState.Modified;
-
-
                 _db.SaveChanges();
+
+                foreach (var account in accountsWithContributions)
+                {
+                    if (!TransferPaycheckContribution(poolAccount, account)) return false;
+                    if (!AddContributionTransactionToDb(transaction, account)) return false;
+                }
+
+              
                 return true;
             }
             catch (Exception e)
@@ -454,17 +455,18 @@ namespace JPFData.Managers
             }
         }
 
-        private bool TransferPaycheckContribution(Transaction transaction, Account account)
+        private bool TransferPaycheckContribution(Account poolAccount, Account account)
         {
             try
             {
-                if (account.PaycheckContribution == null) return false;
+                //if (account.PaycheckContribution == null) return false;
 
                 var contribution = (decimal)account.PaycheckContribution;
-                transaction.Amount -= contribution;
+                poolAccount.Balance -= contribution;
                 account.Balance += contribution;
                 //_db.Entry(transaction).State = EntityState.Modified;
                 _db.Entry(account).State = EntityState.Modified;
+                _db.Entry(poolAccount).State = EntityState.Modified;
 
 
                 _db.SaveChanges();
@@ -481,7 +483,7 @@ namespace JPFData.Managers
         {
             try
             {
-                if (account.PaycheckContribution == null) return false;
+                //if (account.PaycheckContribution == null) return false;
 
                 var newTransaction = new Transaction();
                 newTransaction.Date = transaction.Date;
@@ -491,7 +493,7 @@ namespace JPFData.Managers
                 newTransaction.Type = TransactionTypesEnum.Transfer;
                 newTransaction.DebitAccountId = account.Id;
                 newTransaction.CreditAccountId = null;
-                newTransaction.Amount = (decimal)account.PaycheckContribution;
+                newTransaction.Amount = account.PaycheckContribution;
                 _db.Transactions.Add(newTransaction);
 
 
