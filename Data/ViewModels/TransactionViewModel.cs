@@ -59,8 +59,7 @@ namespace JPFData.ViewModels
                 {
                     case EventArgumentEnum.Create:
                         if (!AutoTransferPaycheckContributions) return _manager.Create(Entity);
-                        if (!_manager.HandlePaycheckContributions(Entity.Transaction)) return false;
-                        return _manager.Create(Entity);
+                        return _manager.HandlePaycheckContributions(Entity.Transaction) && _manager.Create(Entity);
                     case EventArgumentEnum.Read:
                         switch (EventCommand)
                         {
