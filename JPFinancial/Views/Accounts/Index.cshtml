@@ -110,7 +110,7 @@
             </div>
         }
 
-        @if (Model.Entity.RebalanceReport.PaycheckSurplus > 0)
+        @if (Model.Entity.Metrics.MonthlySurplus > 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -123,8 +123,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Paycheck Surplus</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
+                                    <p style="width: 100%">Monthly Surplus</p>
+                                    @Html.DisplayFor(model => model.Entity.Metrics.MonthlySurplus)
                                 </div>
                             </div>
                         </div>
@@ -139,7 +139,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.RebalanceReport.PaycheckSurplus < 0)
+        @if (Model.Entity.Metrics.MonthlySurplus < 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -152,8 +152,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Paycheck Deficit</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.PaycheckSurplus)
+                                    <p style="width: 100%">Monthly Deficit</p>
+                                    @Html.DisplayFor(model => model.Entity.Metrics.MonthlySurplus)
                                 </div>
                             </div>
                         </div>
@@ -168,7 +168,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.RebalanceReport.PaycheckSurplus == 0)
+        @if (Model.Entity.Metrics.MonthlySurplus == 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -181,7 +181,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Paycheck Surplus</p>
+                                    <p style="width: 100%">Monthly Surplus</p>
                                     Balanced
                                 </div>
                             </div>
@@ -212,7 +212,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Discretionary Surplus</p>
+                                    <p>Disc Surplus</p>
                                     @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
                                 </div>
                             </div>
@@ -240,7 +240,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Discretionary Deficit</p>
+                                    <p>Disc Deficit</p>
                                     @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
                                 </div>
                             </div>
@@ -268,7 +268,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Discretionary Surplus</p>
+                                    <p>Disc Surplus</p>
                                     Balanced
                                 </div>
                             </div>

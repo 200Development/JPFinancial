@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using JPFData.DTO;
+using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models;
 
@@ -47,7 +48,7 @@ namespace JPFData.Managers
 
             return entity;
         }
-        
+
         public Account Details(AccountDTO entity)
         {
             try
@@ -119,10 +120,18 @@ namespace JPFData.Managers
                     metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
                 else
                     metrics.AverageBalance = 0;
+                var incomeTransactions = _db.Transactions.Where(t => t.Type == TransactionTypesEnum.Income);
+                var oldestIncomeTransaction = incomeTransactions.OrderBy(t => t.Date).FirstOrDefault();
+                var daysAgo = 0;
+                if (oldestIncomeTransaction != null)
+                    daysAgo = (DateTime.Today - oldestIncomeTransaction.Date).Days;
+                var monthsAgo = daysAgo / 30 < 1 ? 1 : daysAgo / 30;
+                
 
+                metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (entity.Accounts.Sum(a => a.PaycheckContribution) * 2);
                 metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus);
                 metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus);
-                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus > 0).ToList().Count;if (surplusAccounts > 0)
+                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
                 metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
 

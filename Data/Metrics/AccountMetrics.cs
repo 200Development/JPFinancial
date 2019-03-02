@@ -40,5 +40,8 @@ namespace JPFData.Metrics
 
         [Display(Name = "Total Balance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal TotalBalance { get; set; }
+
+        [Display(Name = "Monthly Surplus"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal MonthlySurplus { get; set; }
     }
 }
