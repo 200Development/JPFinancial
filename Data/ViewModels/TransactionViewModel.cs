@@ -20,7 +20,7 @@ namespace JPFData.ViewModels
 
 
         public TransactionDTO Entity { get; set; }
-        public TransactionDTO SearchEntity { get; set; }
+        //public TransactionDTO SearchEntity { get; set; }
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public EventCommandEnum EventCommand { get; set; }
 
@@ -41,7 +41,7 @@ namespace JPFData.ViewModels
         private void Init()
         {
             Entity = new TransactionDTO();
-            SearchEntity = new TransactionDTO();
+            //SearchEntity = new TransactionDTO();
             ValidationErrors = new List<KeyValuePair<string, string>>();
             _manager = new TransactionManager();
             Date = DateTime.Today.ToString("d", CultureInfo.CurrentCulture);

@@ -9,7 +9,7 @@ namespace JPFData.Models
             Due = DateTime.Today;
             Amount = decimal.Zero;
             BillId = 0;
-            CreditAccount = 0;
+            CreditAccountId = 0;
             IsPaid = false;
         }
 
@@ -18,7 +18,7 @@ namespace JPFData.Models
         public DateTime Due { get; set; }
         public decimal Amount { get; set; }
         public int BillId { get; set; }
-        public int CreditAccount { get; set; }
+        public int CreditAccountId { get; set; }
         public bool IsPaid { get; set; }
     }
 }

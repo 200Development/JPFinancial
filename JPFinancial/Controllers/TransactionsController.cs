@@ -32,34 +32,7 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // GET: Transactions/Details/5
-        //public ActionResult Details(int? id)
-        //{
-        //    try
-        //    {
-        //        Logger.Instance.DataFlow($"Details");
-        //        if (id == null)
-        //        {
-        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-        //        }
-        //        Transaction transaction = _db.Transactions.Find(id);
-        //        if (transaction == null)
-        //        {
-        //            Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
-        //            return HttpNotFound();
-        //        }
-        //        Logger.Instance.DataFlow($"Transaction returned to View");
-        //        return View(transaction);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Logger.Instance.Error(e);
-        //        return View(new Transaction());
-        //    }
-        //}
-
         // GET: Transactions/Create
-
         public ActionResult Create()
         {
             return View(new TransactionViewModel());
@@ -79,7 +52,6 @@ namespace JPFinancial.Controllers
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
-                //transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
                 transactionVM.EventArgument = EventArgumentEnum.Create;
 
                 if (!transactionVM.HandleRequest()) return View(transactionVM);

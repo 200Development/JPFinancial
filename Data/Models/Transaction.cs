@@ -14,10 +14,9 @@ namespace JPFData.Models
             CreditAccountId = 0;
             DebitAccountId = 0;
             SelectedCreditCardAccountId = 0;
-            SelectedBillId = 0;
+            SelectedExpenseId = 0;
             Amount = decimal.Zero;
             UsedCreditCard = false;
-            //PaycheckId = 0;
         }
 
         [Key]
@@ -29,7 +28,8 @@ namespace JPFData.Models
         public int? CreditAccountId { get; set; }
         public int? DebitAccountId { get; set; }
         public int? SelectedCreditCardAccountId { get; set; }
-        public int? SelectedBillId { get; set; }
+        public int? SelectedExpenseId { get; set; }
+        public DateTime? SelectedBillDueDate { get; set; }
         //public Paycheck Paycheck { get; set; }
         //public int? PaycheckId { get; set; }
 

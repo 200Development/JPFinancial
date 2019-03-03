@@ -35,14 +35,5 @@ namespace JPFData.Models
         [Required]
         [Display(Name = "Mandatory Expense?")]
         public virtual bool IsMandatory { get; set; }
-
-        [Display(Name = "Paid?")]
-        public virtual bool IsPaid { get; set; }
-    }
-
-    public class OutstandingBill
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

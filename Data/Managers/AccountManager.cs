@@ -68,15 +68,15 @@ namespace JPFData.Managers
         {
             try
             {
-                entity.Account.BalanceLimit = entity.Account.BalanceLimit;
-                entity.Account.BalanceSurplus = entity.Account.BalanceSurplus;
-                entity.Account.RequiredSavings = entity.Account.RequiredSavings;
+                //entity.Account.BalanceLimit = entity.Account.BalanceLimit;
+                //entity.Account.BalanceSurplus = entity.Account.BalanceSurplus;
+                //entity.Account.RequiredSavings = entity.Account.RequiredSavings;
 
                 _db.Accounts.Add(entity.Account);
                 Logger.Instance.DataFlow($"New Account added to data context");
 
                 _db.SaveChanges();
-                Logger.Instance.DataFlow($"Save changes to DB");
+                Logger.Instance.DataFlow($"Saved changes to DB");
 
 
                 return true;

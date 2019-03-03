@@ -96,6 +96,7 @@
     <Compile Include="DTO\AccountDTO.cs" />
     <Compile Include="DTO\BillDTO.cs" />
     <Compile Include="DTO\CreditCardDTO.cs" />
+    <Compile Include="DTO\ExpenseDTO.cs" />
     <Compile Include="DTO\IncomeDTO.cs" />
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
     <Compile Include="Enumerations\EventCommandEnum.cs" />
@@ -103,10 +104,12 @@
     <Compile Include="Logger.cs" />
     <Compile Include="Managers\BillManager.cs" />
     <Compile Include="Managers\CreditCardManager.cs" />
+    <Compile Include="Managers\ExpenseManager.cs" />
     <Compile Include="Managers\IncomeManager.cs" />
     <Compile Include="Metrics\AccountMetrics.cs" />
     <Compile Include="Metrics\BillMetrics.cs" />
     <Compile Include="Metrics\CreditCardMetrics.cs" />
+    <Compile Include="Metrics\ExpenseMetrics.cs" />
     <Compile Include="Metrics\IncomeMetrics.cs" />
     <Compile Include="Metrics\StaticFinancialMetrics.cs" />
     <Compile Include="Metrics\TimePeriodFinancialMetrics.cs" />
@@ -163,6 +166,18 @@
     <Compile Include="Migrations\201903021737482_UpdatesExpenseTable.cs" />
     <Compile Include="Migrations\201903021737482_UpdatesExpenseTable.Designer.cs">
       <DependentUpon>201903021737482_UpdatesExpenseTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903022033013_RemoveIsPaidFromBills.cs" />
+    <Compile Include="Migrations\201903022033013_RemoveIsPaidFromBills.Designer.cs">
+      <DependentUpon>201903022033013_RemoveIsPaidFromBills.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs" />
+    <Compile Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.Designer.cs">
+      <DependentUpon>201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs" />
+    <Compile Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.Designer.cs">
+      <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
@@ -253,6 +268,7 @@
     <Compile Include="Models\Earning.cs" />
     <Compile Include="Models\Expense.cs" />
     <Compile Include="Models\Loan.cs" />
+    <Compile Include="Models\OutstandingExpense.cs" />
     <Compile Include="Models\Paycheck.cs" />
     <Compile Include="Models\Rebalance.cs" />
     <Compile Include="Models\Tax.cs" />
@@ -265,7 +281,7 @@
     <Compile Include="ViewModels\AddPhoneNumberViewModel.cs" />
     <Compile Include="ViewModels\ChangePasswordViewModel.cs" />
     <Compile Include="ViewModels\ConfigureTwoFactorViewModel.cs" />
-    <Compile Include="ViewModels\CreateBillViewModel.cs" />
+    <Compile Include="ViewModels\BillViewModel.cs" />
     <Compile Include="ViewModels\CreateSalaryViewModel.cs" />
     <Compile Include="ViewModels\ExternalLoginListViewModel.cs" />
     <Compile Include="ViewModels\FactorViewModel.cs" />
@@ -327,6 +343,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903021737482_UpdatesExpenseTable.resx">
       <DependentUpon>201903021737482_UpdatesExpenseTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903022033013_RemoveIsPaidFromBills.resx">
+      <DependentUpon>201903022033013_RemoveIsPaidFromBills.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.resx">
+      <DependentUpon>201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.resx">
+      <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>

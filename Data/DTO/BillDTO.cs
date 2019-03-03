@@ -8,10 +8,12 @@ namespace JPFData.DTO
     {
         public BillDTO()
         {
+            Bill = new Bill();
             Bills = new List<Bill>();
             Metrics = new BillMetrics();
         }
 
+        public Bill Bill { get; set; }
         public List<Bill> Bills { get; set; }
         public BillMetrics Metrics { get; set; }
     }

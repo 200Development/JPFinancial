@@ -1,10 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
+using JPFData.Enumerations;
 using JPFData.Models;
 using JPFData.ViewModels;
 
@@ -46,10 +46,9 @@ namespace JPFinancial.Controllers
         // GET: Bills/Create
         public ActionResult Create()
         {
-
             try
             {
-                var viewModel = new CreateBillViewModel
+                var viewModel = new BillViewModel
                 {
                     Accounts = _db.Accounts.ToList()
                 };
@@ -59,7 +58,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new CreateBillViewModel());
+                return View(new BillViewModel());
             }
         }
 
@@ -68,31 +67,18 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(CreateBillViewModel viewModel)
+        public ActionResult Create(BillViewModel billVM)
         {
             try
             {
-                if (!ModelState.IsValid) return View();
+                Logger.Instance.DataFlow($"Create");
+                if (!ModelState.IsValid) return View(billVM);
 
+                billVM.EventArgument = EventArgumentEnum.Create;
+                if (!billVM.HandleRequest()) return View(billVM);
 
-                var account = _db.Accounts.Single(a => a.Id == viewModel.AccountId);
-                var accountId = account.Id;
-
-                var bill = new Bill
-                {
-                    Name = viewModel.Name,
-                    IsMandatory = viewModel.IsMandatory,
-                    AmountDue = viewModel.AmountDue,
-                    DueDate = viewModel.DueDate,
-                    PaymentFrequency = viewModel.PaymentFrequency,
-                    AccountId = accountId,
-                    Account = account
-                };
-
-                _db.Bills.Add(bill);
-                _db.SaveChanges();
+                Logger.Instance.DataFlow($"Redirect to Bill.Index View");
                 return RedirectToAction("Index");
-
             }
             catch (Exception e)
             {
@@ -101,23 +87,23 @@ namespace JPFinancial.Controllers
             }
         }
 
-        public static IEnumerable<SelectListItem> ToSelectListItems(IEnumerable<Account> accounts, int selectedId)
-        {
-            try
-            {
-                return accounts.OrderBy(account => account.Name).Select(account => new SelectListItem
-                {
-                    Selected = (account.Id == selectedId),
-                    Text = account.Name,
-                    Value = account.Id.ToString()
-                });
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return null;
-            }
-        }
+        //public static IEnumerable<SelectListItem> ToSelectListItems(IEnumerable<Account> accounts, int selectedId)
+        //{
+        //    try
+        //    {
+        //        return accounts.OrderBy(account => account.Name).Select(account => new SelectListItem
+        //        {
+        //            Selected = (account.Id == selectedId),
+        //            Text = account.Name,
+        //            Value = account.Id.ToString()
+        //        });
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Logger.Instance.Error(e);
+        //        return null;
+        //    }
+        //}
 
         // GET: Bills/Edit/5
         public ActionResult Edit(int? id)
@@ -134,7 +120,7 @@ namespace JPFinancial.Controllers
                 {
                     return HttpNotFound();
                 }
-                CreateBillViewModel viewModel = new CreateBillViewModel();
+                BillViewModel viewModel = new BillViewModel();
                 var account = _db.Accounts.Single(a => a.Id == bill.AccountId);
                 //var accountId = account.Id;
 
@@ -153,7 +139,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new CreateBillViewModel());
+                return View(new BillViewModel());
             }
         }
 
@@ -162,7 +148,7 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(CreateBillViewModel viewModel)
+        public ActionResult Edit(BillViewModel viewModel)
         {
             try
             {

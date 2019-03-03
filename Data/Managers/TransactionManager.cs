@@ -73,20 +73,12 @@ namespace JPFData.Managers
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
-                //if (entity.Transaction.UsedCreditCard)
-                //{
-                //    UpdateDbCreditCard(entity.Transaction, "create");
-                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                //}
-
-                //if (entity.Transaction.SelectedBillId != null)
-                //{
-                //    SetBillAsPaid(entity.Transaction.SelectedBillId);
-                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                //}
-
                 if (!AddTransactionToDb(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
+
+                if (entity.Transaction.SelectedExpenseId == null)
+                    return entity.Transaction.Type == TransactionTypesEnum.Transfer || new Calculations().Rebalance();
+                if (!SetExpenseAsPaid(entity.Transaction.SelectedExpenseId)) return false;
 
 
                 //Testing to Update accounts after each transaction unless its a transfer
@@ -211,12 +203,7 @@ namespace JPFData.Managers
                             {
                                 var originalBalance = transaction.CreditAccount.Balance; // logs beginning balance
                                 transaction.CreditAccount.Balance -= transaction.Amount;
-                                if (transaction.SelectedBillId != null)
-                                {
-                                    var originalRequiredBalance = transaction.CreditAccount.RequiredSavings; // logs beginning balance
-                                    transaction.CreditAccount.RequiredSavings -= transaction.Amount;
-                                    Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.RequiredSavings ({originalRequiredBalance}) - {transaction.Amount} = {transaction.CreditAccount.RequiredSavings}");
-                                }
+
                                 Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.CreditAccount.Balance}");
                                 transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
                                 _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
@@ -258,10 +245,10 @@ namespace JPFData.Managers
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance += transaction.Amount;
-                                            if ((transaction.SelectedBillId ?? 0) > 0)
+                                            if ((transaction.SelectedExpenseId ?? 0) > 0)
                                             {
                                                 originalCreditAccount.RequiredSavings -= transaction.Amount;
-                                                var bill = _db.Bills.Find(transaction.SelectedBillId);
+                                                var bill = _db.Bills.Find(transaction.SelectedExpenseId);
                                                 _db.Entry(bill).State = EntityState.Modified;
                                             }
                                             originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
@@ -314,8 +301,8 @@ namespace JPFData.Managers
             {
                 var newTransaction = new Transaction();
                 newTransaction.Date = entity.Transaction.Date;
-                newTransaction.Payee = entity.Transaction.SelectedBillId != null
-                    ? _db.Bills.FirstOrDefault(b => b.Id == entity.Transaction.SelectedBillId)?.Name
+                newTransaction.Payee = entity.Transaction.SelectedExpenseId != null
+                    ? _db.Expenses.FirstOrDefault(e => e.Id == entity.Transaction.SelectedExpenseId)?.Name
                     : entity.Transaction.Payee;
                 newTransaction.Category = entity.Transaction.Category;
                 newTransaction.Memo = entity.Transaction.Memo;
@@ -325,8 +312,8 @@ namespace JPFData.Managers
                 newTransaction.Amount = entity.Transaction.Amount;
                 //newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
                 //newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
-                if (entity.Transaction.SelectedBillId != null)
-                    newTransaction.SelectedBillId = entity.Transaction.SelectedBillId;
+                if (entity.Transaction.SelectedExpenseId != null)
+                    newTransaction.SelectedExpenseId = entity.Transaction.SelectedExpenseId;
                 _db.Transactions.Add(newTransaction);
 
 
@@ -445,7 +432,7 @@ namespace JPFData.Managers
                     if (!AddContributionTransactionToDb(transaction, account)) return false;
                 }
 
-              
+
                 return true;
             }
             catch (Exception e)
@@ -507,21 +494,27 @@ namespace JPFData.Managers
             }
         }
 
-        private void SetBillAsPaid(int? id)
+        private bool SetExpenseAsPaid(int? expenseId)
         {
             try
             {
-                var selectedBill = _db.Bills.FirstOrDefault(b => b.Id == id);
-                if (selectedBill == null || selectedBill.IsPaid) return;
-                selectedBill.IsPaid = true;
+                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                if (selectedExpense == null)
+                {
+                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                    return true;
+                }
+                selectedExpense.IsPaid = true;
+                _db.Entry(selectedExpense).State = EntityState.Modified;
 
 
-                _db.Entry(selectedBill).State = EntityState.Modified;
                 _db.SaveChanges();
+                return true;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
+                return false;
             }
         }
 
@@ -547,7 +540,7 @@ namespace JPFData.Managers
                 metrics.AccountMetrics = new AccountMetrics();
                 metrics.CreditCardMetrics = new CreditCardMetrics();
 
-                
+
                 var transactions = _db.Transactions.ToList();
                 var bills = _db.Bills.ToList();
                 var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();
@@ -562,8 +555,8 @@ namespace JPFData.Managers
                 var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
-                var incomeTransactionsByMonth = incomeTransactions.Select(t => new {t.Date.Year, t.Date.Month, t.Amount})
-                    .GroupBy(x => new {x.Year, x.Month}, (key, group) => new {year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount)}).ToList();
+                var incomeTransactionsByMonth = incomeTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
+                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
                 var transferTransactionsByMonth = transferTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
