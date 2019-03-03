@@ -2,7 +2,7 @@
 using Microsoft.Owin;
 using Owin;
 
-[assembly: OwinStartupAttribute(typeof(JPFinancial.Startup))]
+[assembly: OwinStartup(typeof(JPFinancial.Startup))]
 namespace JPFinancial
 {
     public partial class Startup
@@ -14,7 +14,7 @@ namespace JPFinancial
         {
             ConfigureAuth(app);
 
-            _calc.UpdateRequiredBalanceForBills(true);
+            _calc.UpdateRequiredSavings(true);
             _calc.UpdateBalanceSurplus(true);
             _calc.UpdateBillDueDates();
         }

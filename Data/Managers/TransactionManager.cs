@@ -67,22 +67,25 @@ namespace JPFData.Managers
 
         public bool Create(TransactionDTO entity)
         {
+            //TODO: Create Transaction method needs to be more efficient.  Currently makes 5 calls to the DB. GetUsedAccounts(1),SetExpenseAsPaid(1),UpdateDbAccountBalances(2),AddTransactionToDb(1)
+            
             try
             {
                 GetUsedAccounts(entity);
+
+                if (entity.Transaction.SelectedExpenseId != null)
+                    if (!SetExpenseAsPaid(entity.Transaction.SelectedExpenseId, EventArgumentEnum.Create)) return false;
+
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
                 if (!AddTransactionToDb(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
+                return true;
 
-                if (entity.Transaction.SelectedExpenseId == null)
-                    return entity.Transaction.Type == TransactionTypesEnum.Transfer || new Calculations().Rebalance();
-                if (!SetExpenseAsPaid(entity.Transaction.SelectedExpenseId)) return false;
-
-
+                
                 //Testing to Update accounts after each transaction unless its a transfer
-                return entity.Transaction.Type == TransactionTypesEnum.Transfer || new Calculations().Rebalance();
+                //return entity.Transaction.Type == TransactionTypesEnum.Transfer || new Calculations().Rebalance();
             }
             catch (Exception e)
             {
@@ -105,6 +108,7 @@ namespace JPFData.Managers
                 //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
                 //}
 
+                //if(entity.Transaction.SelectedExpenseId != null)
 
                 _db.Entry(entity.Transaction).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Transaction updated in data context");
@@ -134,15 +138,11 @@ namespace JPFData.Managers
             {
                 Transaction transaction = _db.Transactions.Find(entity.Id);
 
-                if (UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete))
-                    _db.Transactions.Remove(transaction);
+                if (transaction.SelectedExpenseId != null)
+                    if (!SetExpenseAsPaid(transaction.SelectedExpenseId, EventArgumentEnum.Delete)) return false;
 
-                //if (transaction.UsedCreditCard)
-                //{
-                //    var creditCards = _db.CreditCards.ToList();
-                //    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccountId);
-                //    _db.Entry(creditCard).State = EntityState.Modified;
-                //}
+                if (!UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete)) return false;
+                _db.Transactions.Remove(transaction);
 
 
                 _db.SaveChanges();
@@ -195,7 +195,12 @@ namespace JPFData.Managers
                                 var originalBalance = transaction.DebitAccount.Balance; // logs beginning balance
                                 transaction.DebitAccount.Balance += transaction.Amount;
                                 Logger.Instance.Calculation($"{transaction.DebitAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.DebitAccount.Balance}");
-                                transaction.DebitAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.DebitAccount);
+
+                                // Update Account's required savings
+                                new Calculations().UpdateRequiredSavings(transaction);
+                                transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
+
+
                                 _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
                             }
 
@@ -203,9 +208,13 @@ namespace JPFData.Managers
                             {
                                 var originalBalance = transaction.CreditAccount.Balance; // logs beginning balance
                                 transaction.CreditAccount.Balance -= transaction.Amount;
-
                                 Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.CreditAccount.Balance}");
+
+                                // Update Account's required savings
+                                new Calculations().UpdateRequiredSavings(transaction);
                                 transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
+
+
                                 _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
                             }
 
@@ -238,6 +247,10 @@ namespace JPFData.Managers
                                         if (originalDebitAccount != null)
                                         {
                                             originalDebitAccount.Balance -= transaction.Amount;
+
+                                            // Update Account's required savings
+                                            new Calculations().UpdateRequiredSavings(transaction);
+
                                             originalDebitAccount.BalanceSurplus = UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
                                         }
@@ -245,12 +258,10 @@ namespace JPFData.Managers
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance += transaction.Amount;
-                                            if ((transaction.SelectedExpenseId ?? 0) > 0)
-                                            {
-                                                originalCreditAccount.RequiredSavings -= transaction.Amount;
-                                                var bill = _db.Bills.Find(transaction.SelectedExpenseId);
-                                                _db.Entry(bill).State = EntityState.Modified;
-                                            }
+
+                                            // Update Account's required savings
+                                            new Calculations().UpdateRequiredSavings(transaction);
+
                                             originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
@@ -494,22 +505,42 @@ namespace JPFData.Managers
             }
         }
 
-        private bool SetExpenseAsPaid(int? expenseId)
+        private bool SetExpenseAsPaid(int? expenseId, EventArgumentEnum eventArgument)
         {
             try
             {
-                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
-                if (selectedExpense == null)
+                if (eventArgument == EventArgumentEnum.Create)
                 {
-                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                    var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                    if (selectedExpense == null)
+                    {
+                        Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                        return true;
+                    }
+
+                    selectedExpense.IsPaid = true;
+                    _db.Entry(selectedExpense).State = EntityState.Modified;
+
+
+                    _db.SaveChanges();
                     return true;
                 }
-                selectedExpense.IsPaid = true;
-                _db.Entry(selectedExpense).State = EntityState.Modified;
+                else
+                {
+                    var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                    if (selectedExpense == null)
+                    {
+                        Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                        return true;
+                    }
+
+                    selectedExpense.IsPaid = false;
+                    _db.Entry(selectedExpense).State = EntityState.Modified;
 
 
-                _db.SaveChanges();
-                return true;
+                    _db.SaveChanges();
+                    return true;
+                }
             }
             catch (Exception e)
             {
