@@ -5,7 +5,7 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers

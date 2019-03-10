@@ -5,7 +5,7 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
 using JPFData;
-using JPFData.Models;
+using JPFData.Models.Identity;
 
 namespace JPFinancial
 {

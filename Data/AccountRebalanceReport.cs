@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData
 {
@@ -8,7 +8,7 @@ namespace JPFData
     {
         public AccountRebalanceReport()
         {
-            newReport = false;
+            NewReport = false;
             Surplus = decimal.Zero;
             Deficit = decimal.Zero;
             TotalSurplus = decimal.Zero;
@@ -16,7 +16,7 @@ namespace JPFData
             AccountsWithDeficit = new List<Account>();
         }
 
-        public bool newReport { get; set; }
+        public bool NewReport { get; set; }
 
         [DataType(DataType.Currency)]
         public decimal Surplus { get; set; }

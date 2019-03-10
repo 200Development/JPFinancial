@@ -5,7 +5,7 @@ using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 
 namespace JPFData.Managers
@@ -82,10 +82,6 @@ namespace JPFData.Managers
                 if (!AddTransactionToDb(entity)) return false;
                 Logger.Instance.DataFlow($"Transaction added to database context");
                 return true;
-
-                
-                //Testing to Update accounts after each transaction unless its a transfer
-                //return entity.Transaction.Type == TransactionTypesEnum.Transfer || new Calculations().Rebalance();
             }
             catch (Exception e)
             {
@@ -321,8 +317,6 @@ namespace JPFData.Managers
                 newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
                 newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
                 newTransaction.Amount = entity.Transaction.Amount;
-                //newTransaction.SelectedCreditCardAccountId = entity.Transaction.SelectedCreditCardAccountId;
-                //newTransaction.UsedCreditCard = entity.Transaction.UsedCreditCard;
                 if (entity.Transaction.SelectedExpenseId != null)
                     newTransaction.SelectedExpenseId = entity.Transaction.SelectedExpenseId;
                 _db.Transactions.Add(newTransaction);
@@ -457,12 +451,9 @@ namespace JPFData.Managers
         {
             try
             {
-                //if (account.PaycheckContribution == null) return false;
-
                 var contribution = (decimal)account.PaycheckContribution;
                 poolAccount.Balance -= contribution;
                 account.Balance += contribution;
-                //_db.Entry(transaction).State = EntityState.Modified;
                 _db.Entry(account).State = EntityState.Modified;
                 _db.Entry(poolAccount).State = EntityState.Modified;
 
@@ -481,8 +472,6 @@ namespace JPFData.Managers
         {
             try
             {
-                //if (account.PaycheckContribution == null) return false;
-
                 var newTransaction = new Transaction();
                 newTransaction.Date = transaction.Date;
                 newTransaction.Payee = $"Transfer to {account.Name}";
@@ -634,11 +623,6 @@ namespace JPFData.Managers
                     {
                         mandatoryByMonth.Add(transaction.Key, 0m);
                     }
-
-                    //if (discretionaryByMonth.ContainsKey(expense.Key) == false)
-                    //{
-                    //    discretionaryByMonth.Add(expense.Key, 0m);
-                    //}
                 }
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in discretionaryByMonth)
@@ -647,11 +631,6 @@ namespace JPFData.Managers
                     {
                         discretionaryByMonth.Add(transaction.Key, 0m);
                     }
-
-                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
-                    //{
-                    //    mandatoryByMonth.Add(expense.Key, 0m);
-                    //}
                 }
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in expensesByMonth)
@@ -660,11 +639,6 @@ namespace JPFData.Managers
                     {
                         expensesByMonth.Add(transaction.Key, 0m);
                     }
-
-                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
-                    //{
-                    //    mandatoryByMonth.Add(expense.Key, 0m);
-                    //}
                 }
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in incomeByMonth)
@@ -673,11 +647,6 @@ namespace JPFData.Managers
                     {
                         incomeByMonth.Add(transaction.Key, 0m);
                     }
-
-                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
-                    //{
-                    //    mandatoryByMonth.Add(expense.Key, 0m);
-                    //}
                 }
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in transfersByMonth)
@@ -686,11 +655,6 @@ namespace JPFData.Managers
                     {
                         transfersByMonth.Add(transaction.Key, 0m);
                     }
-
-                    //if (mandatoryByMonth.ContainsKey(expense.Key) == false)
-                    //{
-                    //    mandatoryByMonth.Add(expense.Key, 0m);
-                    //}
                 }
 
 
@@ -706,11 +670,6 @@ namespace JPFData.Managers
                     incomeByMonth.Add(i, 0m);
                     transfersByMonth.Add(i, 0m);
                 }
-
-                //var last12 = expensesByMonth.Take(11);
-                //var orderedByYear = last12.OrderBy(expense => expense.Key.Year);
-                //var thenOrderByMonth = orderedByYear.OrderBy(expense => expense.Key.Month);
-                //var toDict = thenOrderByMonth.ToDictionary(expense => expense.Key, expense => expense.Value);
 
                 metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);
                 metrics.DiscretionaryExpensesByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)}{mandatory.Key.Year}", mandatory => mandatory.Value);

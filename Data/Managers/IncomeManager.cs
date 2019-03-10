@@ -5,7 +5,7 @@ using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
@@ -153,7 +153,7 @@ namespace JPFData.Managers
             try
             {
                 if (paycheck.NetPay <= 0) return true; //only return false when exception is thrown
-                var accountsWithContributions = _db.Accounts.Where(a => a.PaycheckContribution != null && a.PaycheckContribution > 0).ToList();
+                var accountsWithContributions = _db.Accounts.Where(a => a.PaycheckContribution > 0).ToList();
                 var totalContributions = accountsWithContributions.Sum(a => a.PaycheckContribution);
                 if (totalContributions > paycheck.NetPay)
                 {
@@ -178,7 +178,6 @@ namespace JPFData.Managers
         {
             try
             {
-                if (account.PaycheckContribution == null) return false;
                 var contribution = (decimal)account.PaycheckContribution;
                 paycheck.NetPay -= contribution;
                 account.Balance += contribution;

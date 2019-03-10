@@ -5,7 +5,7 @@ using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
@@ -68,10 +68,6 @@ namespace JPFData.Managers
         {
             try
             {
-                //entity.Account.BalanceLimit = entity.Account.BalanceLimit;
-                //entity.Account.BalanceSurplus = entity.Account.BalanceSurplus;
-                //entity.Account.RequiredSavings = entity.Account.RequiredSavings;
-
                 _db.Accounts.Add(entity.Account);
                 Logger.Instance.DataFlow($"New Account added to data context");
 

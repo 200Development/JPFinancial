@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JPFData.DTO;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
@@ -107,34 +107,6 @@ namespace JPFData.Managers
             return metrics;
         }
 
-        //public IEnumerable<OutstandingExpense> GetOutstandingBills()
-        //{
-        //    try
-        //    {
-        //        var ret = new List<OutstandingExpense>();
-        //        Logger.Instance.DataFlow($"Get");
-        //        var bills = _db.Bills.ToList();
-        //        Logger.Instance.DataFlow($"Pulled list of Bills from DB");
-        //        var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
-        //        Logger.Instance.DataFlow($"Sorted Bills to only return ones that are outstanding");
-
-        //        foreach (var bill in outstandingBills)
-        //        {
-        //            var newBill = new OutstandingExpense();
-        //            newBill.Id = bill.Id;
-        //            newBill.Name = $"{bill.Name} - {bill.AmountDue} Due {bill.DueDate.ToShortDateString()}";
-
-        //            ret.Add(newBill);
-        //        }
-
-        //        return ret;
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Logger.Instance.Error(e);
-        //        return new List<OutstandingExpense>();
-        //    }
-        //}
         public Bill Details(BillDTO entity)
         {
             throw new NotImplementedException();

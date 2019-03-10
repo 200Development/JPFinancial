@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Managers;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.ViewModels
 {

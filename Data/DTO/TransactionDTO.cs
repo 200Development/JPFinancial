@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using JPFData.Managers;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.DTO
 {
@@ -18,7 +18,6 @@ namespace JPFData.DTO
                 Accounts = new AccountManager().Get(new AccountDTO()).Accounts;
                 CreditCards = new CreditCardManager().Get(new CreditCardDTO()).CreditCards;
                 BillsOutstanding = new ExpenseManager().GetOutstandingBills();
-                //BillsOutstanding = new BillManager().GetOutstandingBills();
             }
             catch (Exception)
             {

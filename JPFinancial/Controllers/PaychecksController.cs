@@ -5,7 +5,7 @@ using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
@@ -53,15 +53,6 @@ namespace JPFinancial.Controllers
             incomeVM.EventArgument = EventArgumentEnum.Create;
             incomeVM.HandleRequest();
 
-            //if (!UpdatePoolAccount(paycheck, "create")) return View(paycheck);
-            //if (!AddIncomeTransactionToDb(paycheck)) return View(paycheck);
-            //if (!TransferPaycheckContributions(paycheck, "create")) return View(paycheck);
-
-
-            //_db.Paychecks.Add(paycheck);
-            //_db.SaveChanges();
-
-
             return RedirectToAction("Index");
         }
 
@@ -85,7 +76,6 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public ActionResult Edit([Bind(Include = "Id,Date,Regular,ElectronicsNontaxable,TravelBusinessExpenseNontaxable,HolidayPay,GrossPay,FederalTaxableGross,FederalWithholding,YTDFederalWithholding,FederalMedicaidWithholding,YTDFederalMedicaidWithholding,SocialSecurityWithholding,YTDSocialSecurityWithholding,StateTaxWithholding,YTDStateTaxWithholding,CityTaxWithholding,YTDCityTaxWithholding,FedWithholding,YTDFedWithholding,IRA401KWithholding,YTDIRA401KWithholding,DependentCareFSAWithholding,YTDDependentCareFSAWithholding,HealthInsuranceWithholding,YTDHealthInsuranceWithholding,DentalInsuranceWithholding,YTDDentalInsuranceWithholding,TotalBeforeTaxDeductions,YTDTotalBeforeTaxDeductions,ChildSupportWithholding,YTDChildSupportWithholding,TotalAfterTaxDeductions,YTDTotalAfterTaxDeductions,TotalDeductions,YTDTotalDeductions,NetPay,MaritalStatus,Allowances")] Paycheck paycheck)
         public ActionResult Edit([Bind(Include = "Id,Date,Employer,GrossPay,NetPay")] Paycheck paycheck)
         {
             if (!ModelState.IsValid) return View(paycheck);
@@ -148,28 +138,6 @@ namespace JPFinancial.Controllers
             return true;
         }
 
-        private bool AddIncomeTransactionToDb(Paycheck paycheck)
-        {
-            try
-            {
-                var newTransaction = new Transaction();
-                newTransaction.Date = paycheck.Date;
-                newTransaction.Payee = paycheck.Employer;
-                newTransaction.Category = CategoriesEnum.NetSalary;
-                newTransaction.Memo = string.Empty;
-                newTransaction.Type = TransactionTypesEnum.Income;
-                newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-                newTransaction.CreditAccount = null;
-                newTransaction.Amount = paycheck.NetPay;
-                _db.Entry(newTransaction).State = EntityState.Added;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
         /// <summary>
         /// Update all Accounts with Payroll contributions
         /// </summary>
@@ -188,10 +156,7 @@ namespace JPFinancial.Controllers
                 foreach (var account in accounts)
                 {
                     decimal paycheckContribution;
-                    if (account.PaycheckContribution != null)
-                        paycheckContribution = (decimal)account.PaycheckContribution;
-                    else
-                        continue; //Don't enter the transaction if there's no Paycheck Contribution set for the Account
+                    paycheckContribution = (decimal)account.PaycheckContribution;
 
 
                     var newTransaction = new Transaction();
@@ -224,17 +189,6 @@ namespace JPFinancial.Controllers
                     .FirstOrDefault();
 
                 if (originalPaycheck == null) return false;
-                //var originalTransactions =
-                //    _db.Transactions.Where(t => t.PaycheckId == paycheck.Id).ToList();
-
-                //foreach (var transaction in originalTransactions)
-                //{
-                //    if (type != "delete") continue;
-                //    transaction.DebitAccount.Balance += transaction.Amount;
-                //    transaction.CreditAccount.Balance -= transaction.Amount;
-                //    _db.Entry(transaction).State = EntityState.Modified;
-                //}
-
             }
             return true;
         }

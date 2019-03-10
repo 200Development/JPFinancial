@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using JPFData.DTO;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
@@ -37,7 +37,7 @@ namespace JPFData.Managers
             return entity;
         }
 
-        public ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
+        private ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
         {
             throw new NotImplementedException();
         }
@@ -48,6 +48,7 @@ namespace JPFData.Managers
             {
                 var ret = new List<OutstandingExpense>();
                 Logger.Instance.DataFlow($"Get");
+             
                 // Get all bill expenses that have not yet been paid
                 var expenses = _db.Expenses.Where(e => e.BillId > 0 && !e.IsPaid).ToList();
                 Logger.Instance.DataFlow($"Pulled list of bill expenses from DB that haven't been paid");

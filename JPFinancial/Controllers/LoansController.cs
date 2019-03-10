@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
@@ -13,14 +13,12 @@ namespace JPFinancial.Controllers
     public class LoansController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
 
         // GET: Loans
         public ActionResult Index()
         {
             //var months = 12;
             var loansVM = new List<LoanViewModel>();
-            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
 
             foreach (var loan in _db.Loans.ToList())
             {
