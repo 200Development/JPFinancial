@@ -7,6 +7,7 @@ using JPFData.Models.JPFinancial;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class CreditCardsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

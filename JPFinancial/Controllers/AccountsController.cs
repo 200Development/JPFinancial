@@ -11,6 +11,7 @@ namespace JPFinancial.Controllers
     /// <summary>
     /// Handles all Account interactions with Views
     /// </summary>
+    [Authorize]
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();

@@ -7,6 +7,7 @@ using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class IncomeController : Controller
     {
         // GET: Salary

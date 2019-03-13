@@ -10,6 +10,7 @@ using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class PaychecksController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
