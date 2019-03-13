@@ -188,6 +188,14 @@
     <Compile Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.Designer.cs">
       <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201903102002117_dropUnusedTables.cs" />
+    <Compile Include="Migrations\201903102002117_dropUnusedTables.Designer.cs">
+      <DependentUpon>201903102002117_dropUnusedTables.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201903131350107_AddRebalanceTable.cs" />
+    <Compile Include="Migrations\201903131350107_AddRebalanceTable.Designer.cs">
+      <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -254,7 +262,6 @@
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
-    <Compile Include="Models\Email\EmailServiceException.cs" />
     <Compile Include="Models\Email\SendGridEmailService.cs" />
     <Compile Include="Models\JPFinancial\Account.cs" />
     <Compile Include="ApplicationDbContext.cs" />
@@ -373,6 +380,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.resx">
       <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903102002117_dropUnusedTables.resx">
+      <DependentUpon>201903102002117_dropUnusedTables.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201903131350107_AddRebalanceTable.resx">
+      <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>
