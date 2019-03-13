@@ -36,6 +36,21 @@ namespace JPFinancial.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
+            //var vm = new TransactionViewModel();
+            //var items = new List<SelectListItem>();
+
+            //foreach (var filter in vm.Entity.FilterOptions)
+            //{
+            //       items.Add(new SelectListItem()
+            //       {
+            //           Text = filter.DisplayName,
+            //           Value = filter.Name,
+            //           Selected = filter.Name.Equals("All")
+            //       });
+            //}
+
+
+            //vm.Entity.FilterOptions = items;
             return View(new TransactionViewModel());
         }
 
