@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
-using JPFData.Models;
 using JPFData.Models.JPFinancial;
 
 namespace JPFData
@@ -585,11 +584,11 @@ namespace JPFData
             {
                 Logger.Instance.Calculation($"UpdateRequiredSavings");
                 var savingsAccountBalances = new Dictionary<string, decimal>();
-                var transactionAccounts = new List<Account>();
-                if(transaction.CreditAccount != null)
-                    transactionAccounts.Add(transaction.CreditAccount);
-                if(transaction.DebitAccount != null)
-                    transactionAccounts.Add(transaction.DebitAccount);
+                //var transactionAccounts = new List<Account>();
+                //if(transaction.CreditAccount != null)
+                //    transactionAccounts.Add(transaction.CreditAccount);
+                //if(transaction.DebitAccount != null)
+                //    transactionAccounts.Add(transaction.DebitAccount);
 
                 foreach (var expense in _db.Expenses.Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList())
                 {
