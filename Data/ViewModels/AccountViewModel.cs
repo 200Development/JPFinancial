@@ -20,7 +20,7 @@ namespace JPFData.ViewModels
 
 
         public AccountDTO Entity { get; set; }
-        public AccountDTO SearchEntity { get; set; }
+        //public AccountDTO SearchEntity { get; set; }
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public string Mode { get; set; }
         public bool IsValid { get; set; }
@@ -31,7 +31,7 @@ namespace JPFData.ViewModels
         private void Init()
         {
             Entity = new AccountDTO();
-            SearchEntity = new AccountDTO();
+            //SearchEntity = new AccountDTO();
             _manager = new AccountManager();
         }
 

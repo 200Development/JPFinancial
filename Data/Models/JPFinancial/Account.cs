@@ -6,6 +6,7 @@ namespace JPFData.Models.JPFinancial
     {
         public Account()
         {
+            UserId = string.Empty;
             Name = string.Empty;
             Balance = decimal.Zero;
             PaycheckContribution = decimal.Zero;
@@ -21,6 +22,9 @@ namespace JPFData.Models.JPFinancial
 
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
 
         [Required, StringLength(255)]
         public string Name { get; set; }

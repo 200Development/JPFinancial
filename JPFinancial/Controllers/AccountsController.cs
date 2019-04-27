@@ -99,7 +99,9 @@ namespace JPFinancial.Controllers
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            return View(new AccountViewModel());
+            var vm = new AccountViewModel();
+            vm.Entity.Account.UserId = Global.Instance.User.Id;
+            return View(vm);
         }
 
         // POST: Accounts/Create
@@ -116,7 +118,6 @@ namespace JPFinancial.Controllers
 
                 accountVM.EventArgument = EventArgumentEnum.Create;
                 if(!accountVM.HandleRequest()) return View(accountVM);
-
 
                 Logger.Instance.DataFlow($"Redirect to Account.Index View");
                 return RedirectToAction("Index");

@@ -110,6 +110,7 @@
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
     <Compile Include="Enumerations\EventCommandEnum.cs" />
     <Compile Include="Enumerations\MaritalStatusEnum.cs" />
+    <Compile Include="Global.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Managers\BillManager.cs" />
     <Compile Include="Managers\CreditCardManager.cs" />
@@ -195,6 +196,14 @@
     <Compile Include="Migrations\201903131350107_AddRebalanceTable.cs" />
     <Compile Include="Migrations\201903131350107_AddRebalanceTable.Designer.cs">
       <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904232332296_addUserIdToAccount.cs" />
+    <Compile Include="Migrations\201904232332296_addUserIdToAccount.Designer.cs">
+      <DependentUpon>201904232332296_addUserIdToAccount.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201904232334503_updateAccountUserIdToString.cs" />
+    <Compile Include="Migrations\201904232334503_updateAccountUserIdToString.Designer.cs">
+      <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
@@ -386,6 +395,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201903131350107_AddRebalanceTable.resx">
       <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904232332296_addUserIdToAccount.resx">
+      <DependentUpon>201904232332296_addUserIdToAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904232334503_updateAccountUserIdToString.resx">
+      <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>

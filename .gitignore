@@ -244,3 +244,4 @@ ModelManifest.xml
 /SQL/total cost for last 90 days of transactions by account.sql
 /Data/Calculations.cs
 /Data/CalculationsArchive.cs
+/SQL/Data

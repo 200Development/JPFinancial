@@ -16,12 +16,15 @@ namespace JPFData.Managers
     {
         private readonly ApplicationDbContext _db;
         private readonly Calculations _calc;
+        private readonly string _userId;
 
 
         public AccountManager()
         {
             _db = new ApplicationDbContext();
             _calc = new Calculations();
+            _userId = Global.Instance.User.Id;
+
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
@@ -33,7 +36,7 @@ namespace JPFData.Managers
             try
             {
                 Logger.Instance.DataFlow($"Get");
-                entity.Accounts = _db.Accounts.ToList();
+                entity.Accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
                 Logger.Instance.DataFlow($"Pull list of Accounts from DB");
                 entity.Metrics = RefreshAccountMetrics(entity);
                 Logger.Instance.DataFlow($"Refresh Account metrics");
@@ -110,7 +113,9 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Refresh Account metrics");
                 AccountMetrics metrics = new AccountMetrics();
 
-                metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
+                if (entity.Accounts.Count < 1) return metrics;
+
+                    metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
                 metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
                 if (entity.Accounts.Count > 0)
                     metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using JPFData;
 using JPFData.Models.Identity;
 using JPFData.ViewModels;
 
@@ -85,6 +86,8 @@ namespace JPFinancial.Controllers
                     ViewBag.errorMessage = "You must have a confirmed email to log on.";
                     return View("Error");
                 }
+
+                
             }
 
             // This doesn't count login failures towards UserAccount lockout
@@ -93,6 +96,7 @@ namespace JPFinancial.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
+                    Global.Instance.User = user;
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
