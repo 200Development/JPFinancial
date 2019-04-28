@@ -23,11 +23,11 @@ namespace JPFData.ViewModels
         //public TransactionDTO SearchEntity { get; set; }
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
         public EventCommandEnum EventCommand { get; set; }
-
         public EventArgumentEnum EventArgument { get; set; }
 
         // Type needs to be in VM or javascript will break.  Would normally put in the DTO (https://www.codeproject.com/articles/1050468/data-transfer-object-design-pattern-in-csharp)  todo: research this
         public TransactionTypesEnum Type { get; set; }
+        public CategoriesEnum Category { get; set; }
         public string Date { get; set; }
         public bool AutoTransferPaycheckContributions { get; set; }
 
@@ -59,7 +59,7 @@ namespace JPFData.ViewModels
                 {
                     case EventArgumentEnum.Create:
                         if (!AutoTransferPaycheckContributions) return _manager.Create(Entity);
-                        return _manager.HandlePaycheckContributions(Entity.Transaction) && _manager.Create(Entity);
+                        return _manager.Create(Entity) && _manager.HandlePaycheckContributions(Entity.Transaction);
                     case EventArgumentEnum.Read:
                         switch (EventCommand)
                         {

@@ -14,6 +14,14 @@ namespace JPFData.Managers
     /// </summary>
     public class AccountManager
     {
+        /*
+       STRUCTURE
+       private properties
+       constructors
+       public properties
+       public methods
+       private methods
+       */
         private readonly ApplicationDbContext _db;
         private readonly Calculations _calc;
         private readonly string _userId;
@@ -23,7 +31,7 @@ namespace JPFData.Managers
         {
             _db = new ApplicationDbContext();
             _calc = new Calculations();
-            _userId = Global.Instance.User.Id;
+            _userId = Global.Instance.User.Id ?? string.Empty;
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
@@ -115,7 +123,7 @@ namespace JPFData.Managers
 
                 if (entity.Accounts.Count < 1) return metrics;
 
-                    metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
+                metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
                 metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
                 if (entity.Accounts.Count > 0)
                     metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
@@ -127,7 +135,7 @@ namespace JPFData.Managers
                 if (oldestIncomeTransaction != null)
                     daysAgo = (DateTime.Today - oldestIncomeTransaction.Date).Days;
                 var monthsAgo = daysAgo / 30 < 1 ? 1 : daysAgo / 30;
-                
+
 
                 metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (entity.Accounts.Sum(a => a.PaycheckContribution) * 2);
                 metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus);

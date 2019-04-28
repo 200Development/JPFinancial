@@ -407,9 +407,16 @@ namespace JPFinancial.Controllers
             return View(model);
         }
 
-        //
+        [AllowAnonymous]
+        public ActionResult LogOff(string returnUrl)
+        {
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
         // POST: /UserAccount/LogOff
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {

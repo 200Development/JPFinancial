@@ -205,6 +205,10 @@
     <Compile Include="Migrations\201904232334503_updateAccountUserIdToString.Designer.cs">
       <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.cs" />
+    <Compile Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.Designer.cs">
+      <DependentUpon>201904271649100_addUserIdToTransactionUpdateAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\init.cs" />
     <Compile Include="Migrations\init.Designer.cs">
       <DependentUpon>init.cs</DependentUpon>
@@ -401,6 +405,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201904232334503_updateAccountUserIdToString.resx">
       <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.resx">
+      <DependentUpon>201904271649100_addUserIdToTransactionUpdateAccount.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\init.resx">
       <DependentUpon>init.cs</DependentUpon>

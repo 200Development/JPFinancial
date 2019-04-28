@@ -11,6 +11,7 @@
 {
     @Html.AntiForgeryToken()
 
+    @Html.HiddenFor(model => model.Entity.Account.UserId);
     <div class="form-horizontal">
         <h4>Account</h4>
         <hr />

@@ -16,7 +16,7 @@ namespace JPFData.Managers
     public class TransactionManager
     {
         /*
-        MANAGER STRUCTURE
+        STRUCTURE
         private properties
         constructors
         public properties
@@ -24,21 +24,24 @@ namespace JPFData.Managers
         private methods
         */
         private readonly ApplicationDbContext _db;
+        private readonly string _userId;
         private List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
 
         public TransactionManager()
         {
             _db = new ApplicationDbContext();
+            _userId = Global.Instance.User.Id ?? string.Empty;
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
 
         public TransactionDTO Get(TransactionDTO entity)
         {
+
             try
             {
-                entity.Transactions = _db.Transactions.ToList();
+                entity.Transactions = _db.Transactions.Where(t => t.UserId == _userId).ToList();
                 Logger.Instance.DataFlow($"Selected all transactions from DB");
                 entity.Metrics = RefreshTransactionMetrics(entity);
                 Logger.Instance.DataFlow($"Refreshed transaction metrics");
@@ -215,7 +218,7 @@ namespace JPFData.Managers
                             }
 
 
-                            _db.SaveChanges();
+                             _db.SaveChanges();
                             return true;
                         }
                     case EventArgumentEnum.Delete:
@@ -427,9 +430,10 @@ namespace JPFData.Managers
                 var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
                 if (poolAccount == null) return false;
 
-                poolAccount.Balance += transaction.Amount;
-                _db.Entry(poolAccount).State = EntityState.Modified;
-                _db.SaveChanges();
+                /* Creates duplicate entry into pool account */
+                //poolAccount.Balance += transaction.Amount;
+                //_db.Entry(poolAccount).State = EntityState.Modified;
+                //_db.SaveChanges();
 
                 foreach (var account in accountsWithContributions)
                 {
@@ -561,7 +565,7 @@ namespace JPFData.Managers
                 metrics.CreditCardMetrics = new CreditCardMetrics();
 
 
-                var transactions = _db.Transactions.ToList();
+                var transactions = _db.Transactions.Where(t => t.UserId == Global.Instance.User.Id).ToList();
                 var bills = _db.Bills.ToList();
                 var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();
                 var expenseTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Expense).ToList();

@@ -8,6 +8,7 @@ namespace JPFData.Models.JPFinancial
     {
         public Transaction()
         {
+            UserId = string.Empty;
             Date = DateTime.Today;
             Payee = string.Empty;
             Memo = string.Empty;
@@ -19,21 +20,30 @@ namespace JPFData.Models.JPFinancial
             UsedCreditCard = false;
         }
 
-        [Key]
+        [Required, Key]
         public int Id { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
+
+        [Required, StringLength(255)]
         public string Payee { get; set; }
+
+        [StringLength(255)]
         public string Memo { get; set; }
+
+        [Required]
         public TransactionTypesEnum Type { get; set; }
+
+        [Required]
         public CategoriesEnum Category { get; set; }
+
         public int? CreditAccountId { get; set; }
         public int? DebitAccountId { get; set; }
         public int? SelectedCreditCardAccountId { get; set; }
         public int? SelectedExpenseId { get; set; }
-        public DateTime? SelectedBillDueDate { get; set; }
-        //public Paycheck Paycheck { get; set; }
-        //public int? PaycheckId { get; set; }
 
-        [DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        [Required, DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
         public DateTime Date { get; set; }
 
         [Display(Name = "From")]
@@ -42,10 +52,10 @@ namespace JPFData.Models.JPFinancial
         [Display(Name = "To")]
         public Account DebitAccount { get; set; }
    
-        [DataType(DataType.Currency)]
+        [Required, DataType(DataType.Currency)]
         public decimal Amount { get; set; }
 
-        [Display(Name = "Charged to Credit Card?")]
+        [Required, Display(Name = "Charged to Credit Card?")]
         public bool UsedCreditCard { get; set; }
     }
 }

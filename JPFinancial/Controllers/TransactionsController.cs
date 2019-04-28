@@ -23,6 +23,7 @@ namespace JPFinancial.Controllers
                 transactionVM.EventArgument = EventArgumentEnum.Read;
                 transactionVM.EventCommand = EventCommandEnum.Get;
                 transactionVM.HandleRequest();
+
                 Logger.Instance.DataFlow($"TransactionViewModel returned to View");
                 return View(transactionVM);
             }
@@ -36,22 +37,9 @@ namespace JPFinancial.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            //var vm = new TransactionViewModel();
-            //var items = new List<SelectListItem>();
-
-            //foreach (var filter in vm.Entity.FilterOptions)
-            //{
-            //       items.Add(new SelectListItem()
-            //       {
-            //           Text = filter.DisplayName,
-            //           Value = filter.Name,
-            //           Selected = filter.Name.Equals("All")
-            //       });
-            //}
-
-
-            //vm.Entity.FilterOptions = items;
-            return View(new TransactionViewModel());
+            var transactionVM = new TransactionViewModel();
+            transactionVM.Entity.Transaction.UserId = Global.Instance.User.Id;
+            return View(transactionVM);
         }
 
         // POST: Transactions/Create
@@ -67,6 +55,7 @@ namespace JPFinancial.Controllers
                 if (!ModelState.IsValid) return View(transactionVM);
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
+                transactionVM.Entity.Transaction.Category = transactionVM.Category;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
                 transactionVM.EventArgument = EventArgumentEnum.Create;
 
@@ -145,13 +134,13 @@ namespace JPFinancial.Controllers
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
                 TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.Entity.Transaction.Id = (int) id;
+                transactionVM.Entity.Transaction.Id = (int)id;
                 transactionVM.EventArgument = EventArgumentEnum.Delete;
                 transactionVM.EventCommand = EventCommandEnum.Get;
 
 
-                return View(!transactionVM.HandleRequest() 
-                    ? new Transaction() 
+                return View(!transactionVM.HandleRequest()
+                    ? new Transaction()
                     : transactionVM.Entity.Transaction);
             }
             catch (Exception e)

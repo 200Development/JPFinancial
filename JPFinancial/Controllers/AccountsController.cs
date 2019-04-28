@@ -99,9 +99,9 @@ namespace JPFinancial.Controllers
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            var vm = new AccountViewModel();
-            vm.Entity.Account.UserId = Global.Instance.User.Id;
-            return View(vm);
+            var accountVM = new AccountViewModel();
+            accountVM.Entity.Account.UserId = Global.Instance.User.Id;
+            return View(accountVM);
         }
 
         // POST: Accounts/Create
