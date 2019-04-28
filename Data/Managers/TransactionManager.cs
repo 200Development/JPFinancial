@@ -143,7 +143,6 @@ namespace JPFData.Managers
                 if (!UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete)) return false;
                 _db.Transactions.Remove(transaction);
 
-
                 _db.SaveChanges();
                 return true;
             }
@@ -310,6 +309,7 @@ namespace JPFData.Managers
             try
             {
                 var newTransaction = new Transaction();
+                newTransaction.UserId = entity.Transaction.UserId;
                 newTransaction.Date = entity.Transaction.Date;
                 newTransaction.Payee = entity.Transaction.SelectedExpenseId != null
                     ? _db.Expenses.FirstOrDefault(e => e.Id == entity.Transaction.SelectedExpenseId)?.Name

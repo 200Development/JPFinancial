@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.Metrics
@@ -32,5 +31,6 @@ namespace JPFData.Metrics
         public Dictionary<string, decimal> ExpensesByMonth { get; set; }
         public Dictionary<string, decimal> IncomeByMonth { get; set; }
         public Dictionary<string, decimal> TransfersByMonth { get; set; }
+        public Dictionary<string, decimal> CreditCardExpensesByMonth { get; set; }
     }
 }
