@@ -12,7 +12,7 @@
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Transactions</h4>
-                        <p class="category">Last 30 Days</p>
+                        <p class="category">Last 12 Months</p>
                     </div>
                     <div class="content">
                         <div id="chartExpenses" class="ct-chart"></div>
@@ -24,7 +24,7 @@
                             </div>*@
                             <hr />
                             <div class="stats">
-                                <i class="ti-reload"></i> Updated 3 minutes ago
+                             @*   <i class="ti-reload"></i> Updated 3 minutes ago*@
                             </div>
                         </div>
                     </div>
@@ -142,75 +142,61 @@
 
         function chart() {
             var metrics = @Html.Raw(Json.Encode(@Model.Entity.Metrics));
-            var mandatoryExpensesByMonth = metrics.MandatoryExpensesByMonth;
-            var discretionaryExpensesByMonth = metrics.DiscretionaryExpensesByMonth;
             var expensesByMonth = metrics.ExpensesByMonth;
             var incomeByMonth = metrics.IncomeByMonth;
             var transfersByMonth = metrics.TransfersByMonth;
 
             var expensesLength = Object.keys(expensesByMonth).length;
-            var mandatoryLength = Object.keys(mandatoryExpensesByMonth).length;
-            var discretionaryLength = Object.keys(discretionaryExpensesByMonth).length;
             var incomeLength = Object.keys(incomeByMonth).length;
             var transferLength = Object.keys(transfersByMonth).length;
 
             var monthsArray = new Array(expensesLength);
             var expensesArray = new Array(expensesLength);
-            var mandatoryArray = new Array(mandatoryLength);
-            var discretionaryArray = new Array(discretionaryLength);
             var incomeArray = new Array(incomeLength);
             var transferArray = new Array(transferLength);
             var highestAmount = 0;
 
-            for (prop in expensesByMonth) {
-                monthsArray.push(prop);
-                expensesArray.push(expensesByMonth[prop]);
-                if (expensesByMonth[prop] > highestAmount) {
-                    highestAmount = expensesByMonth[prop];
-                }
-            }
-
-            for (prop in mandatoryExpensesByMonth) {
-                mandatoryArray.push(mandatoryExpensesByMonth[prop]);
-                if (mandatoryExpensesByMonth[prop] > highestAmount) {
-                    highestAmount = mandatoryExpensesByMonth[prop];
-                }
-            }
-
-            for (prop in discretionaryExpensesByMonth) {
-                discretionaryArray.push(discretionaryExpensesByMonth[prop]);
-                if (discretionaryExpensesByMonth[prop] > highestAmount) {
-                    highestAmount = discretionaryExpensesByMonth[prop];
-                }
-            }
 
             for (prop in expensesByMonth) {
-                incomeArray.push(expensesByMonth[prop]);
-                if (expensesByMonth[prop] > highestAmount) {
-                    highestAmount = expensesByMonth[prop];
+                if (expensesByMonth.hasOwnProperty(prop)) {
+                    monthsArray.push(prop);
+                    expensesArray.push(expensesByMonth[prop]);
+                    if (expensesByMonth[prop] > highestAmount) {
+                        highestAmount = expensesByMonth[prop];
+                    }
+                }
+            }
+
+            for (prop in incomeByMonth) {
+                if (incomeByMonth.hasOwnProperty(prop)) {
+                    incomeArray.push(incomeByMonth[prop]);
+                    if (incomeByMonth[prop] > highestAmount) {
+                        highestAmount = incomeByMonth[prop];
+                    }
                 }
             }
 
             for (prop in transfersByMonth) {
-                transferArray.push(transfersByMonth[prop]);
-                if (transfersByMonth[prop] > highestAmount) {
-                    highestAmount = transfersByMonth[prop];
+                if (transfersByMonth.hasOwnProperty(prop)) {
+                    transferArray.push(transfersByMonth[prop]);
+                    if (transfersByMonth[prop] > highestAmount) {
+                        highestAmount = transfersByMonth[prop];
+                    }
                 }
             }
 
             monthsArray = monthsArray.filter(function(n) { return n != undefined });
             expensesArray = expensesArray.filter(function(n) { return n != undefined });
-            mandatoryArray = mandatoryArray.filter(function(n) { return n != undefined });
-            discretionaryArray = discretionaryArray.filter(function(n) { return n != undefined });
             incomeArray = incomeArray.filter(function(n) { return n != undefined });
             transferArray = transferArray.filter(function(n) { return n != undefined });
 
-            var dataTable = new google.visualization.DataTable();
+            var dataTable = new window.google.visualization.DataTable();
 
-            var data = [['Month', 'Discretionary Spending', 'Mandatory Spending', 'Income']];
+            var data = [['Month', 'Income', 'Expense']];
 
-            for (var i = 0; i <= monthsArray.length; i++) {
-                data.push([monthsArray[i], discretionaryArray[i], mandatoryArray[i], incomeArray[i]]);
+            var i;
+            for (i = 0; i <= monthsArray.length; i++) {
+                data.push([monthsArray[i], incomeArray[i], expensesArray[i]]);
             };
 
             var numRows = data.length;
@@ -218,10 +204,10 @@
 
             dataTable.addColumn('string', data[0][0]);
 
-            for (var i = 1; i < numCols; i++)
+            for (i = 1; i < numCols; i++)
                 dataTable.addColumn('number', data[0][i]);
 
-            for (var i = 1; i < numRows; i++)
+            for (i = 1; i < numRows; i++)
                 dataTable.addRow(data[i]);
 
             var options = {
@@ -230,10 +216,10 @@
                 lineWidth: 2,
                 height: "225",
                 backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#32CA0A"],
+                colors: ["#32CA0A", "#EB5E28"],
                 tooltip: {
                     textStyle: {
-                        color: "#666666",
+                        color: "#3D4849",
                         fontSize: 12
                     },
                     showColorCode: true
@@ -246,13 +232,19 @@
                     }
                 },
                 chartArea: {
-                    left: 60,
-                    top: 10,
-                    height: "80%"
+                    left: 50,
+                    top: 25,
+                    height: "85%"
+                },
+
+                vAxis: {
+                    gridlines: {
+                        color: "transparent"
+                    }
                 }
             };
 
-            var chart = new google.visualization.AreaChart(document.getElementById("chartExpenses"));
+            var chart = new window.google.visualization.AreaChart(document.getElementById("chartExpenses"));
             chart.draw(dataTable, options);
 
             /* Graph End */

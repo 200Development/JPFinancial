@@ -131,7 +131,7 @@ namespace JPFinancial.Controllers
                 viewModel.AmountDue = bill.AmountDue;
                 viewModel.DueDate = bill.DueDate;
                 viewModel.Id = bill.Id;
-                viewModel.IsMandatory = bill.IsMandatory;
+                //viewModel.IsMandatory = bill.IsMandatory;
                 viewModel.PaymentFrequency = bill.PaymentFrequency;
                 viewModel.Accounts = _db.Accounts.ToList();
 
@@ -163,7 +163,7 @@ namespace JPFinancial.Controllers
                 bill.AmountDue = viewModel.AmountDue;
                 bill.DueDate = viewModel.DueDate;
                 bill.Id = viewModel.Id;
-                bill.IsMandatory = viewModel.IsMandatory;
+                //bill.IsMandatory = viewModel.IsMandatory;
                 bill.PaymentFrequency = viewModel.PaymentFrequency;
                 
                 _db.Entry(bill).State = EntityState.Modified;

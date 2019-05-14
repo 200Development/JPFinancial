@@ -130,10 +130,7 @@
                         </div>
                         <div class="footer">
                             <hr />
-                            <div class="stats">
-                                @*  <i class="ti-calendar"></i>*@
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                            </div>
+                            <div class="stats"></div>
                         </div>
                     </div>
                 </div>
@@ -160,8 +157,6 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @*  <i class="ti-calendar"></i>*@
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
                             </div>
                         </div>
                     </div>
@@ -189,8 +184,6 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @*  <i class="ti-calendar"></i>*@
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
                             </div>
                         </div>
                     </div>
@@ -220,7 +213,6 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @* <i class="ti-reload"></i> Update now*@
                             </div>
                         </div>
                     </div>
@@ -248,7 +240,6 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @* <i class="ti-reload"></i> Update now*@
                             </div>
                         </div>
                     </div>
@@ -276,7 +267,6 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @* <i class="ti-reload"></i> Update now*@
                             </div>
                         </div>
                     </div>
@@ -290,7 +280,6 @@
                     <div class="card">
                         <div class="header">
                             <h4 class="title">Balances</h4>
-                            @*<p class="category">Current</p>*@
                         </div>
                         <div class="content">
                             <div id="chartAccounts" class="ct-chart"></div>
@@ -309,7 +298,6 @@
                     <div class="card">
                         <div class="header" style="margin: 8px 0">
                             <h4 class="title">Accounts</h4>
-                            @*<p class="category">Current</p>*@
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Add Account", "Create")
                             </button>
@@ -319,19 +307,6 @@
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Rebalance", "Rebalance")
                             </button>
-                            @*<button class="btn btn-sm">
-                                    @Html.ActionLink("Pool Account Surpluses", "")
-                                </button>
-                                <button class="btn btn-sm">
-                                    @Html.ActionLink("Pool Account Surpluses", "")
-                                </button>
-                                <button class="btn btn-sm">
-                                    @Html.ActionLink("Payoff Account Deficits", "")
-                                </button>
-                                <button class="btn btn-sm">
-                                    @Html.ActionLink("Update Contributions to Suggested", "")
-                                </button>*@
-
                         </div>
                         <div class="container-fluid" style="text-align: center">
                             @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
@@ -347,7 +322,6 @@
                                 </div>
                                 <div class="card-body" style="margin: 12px 0; text-align: center">
                                     <div class="card-price"><span style="font-weight: bold">CurrentBalance:</span>&nbsp;$@item.Balance</div>
-                                    @*<div class="card-price"><span style="font-weight: bold">Savings</span> - $@item.RequiredSavings</div>*@
                                     @if (@item.BalanceSurplus > 0)
                                         {
                                         <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
@@ -396,10 +370,6 @@
                 packages: ["corechart"]
             });
 
-        //function Rebalance(btn) {
-        //    var test = "";
-        //}
-
         $(document).ready(function() { chart(); });
 
         function chart() {
@@ -438,15 +408,15 @@
 
             var options = {
                 width: "auto",
-                pointSize: 7,
-                lineWidth: 1,
-                height: "200",
+                pointSize: 8,
+                lineWidth: 2,
+                height: "225",
                 backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#F3BB45"],
+                colors: ["##32CA0A"],
                 tooltip: {
                     textStyle: {
                         color: "#666666",
-                        fontSize: 11
+                        fontSize: 12
                     },
                     showColorCode: false
                 },
@@ -457,9 +427,9 @@
                     }
                 },
                 chartArea: {
-                    left: 40,
-                    top: 10,
-                    height: "80%"
+                    left: 50,
+                    top: 25,
+                    height: "85%"
                 }
             };
 

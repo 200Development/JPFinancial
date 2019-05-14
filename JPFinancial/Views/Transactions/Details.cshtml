@@ -7,8 +7,9 @@
 <h2>Details</h2>
 
 <div>
+    @Html.HiddenFor(model => model.Id)
     <h4>Transaction</h4>
-    <hr />
+    <hr/>
     <dl class="dl-horizontal">
         <dt>
             @Html.DisplayNameFor(model => model.Date)

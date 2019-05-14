@@ -31,7 +31,7 @@ namespace JPFData.Managers
         {
             _db = new ApplicationDbContext();
             _calc = new Calculations();
-            _userId = Global.Instance.User.Id ?? string.Empty;
+            _userId = Global.Instance?.User.Id ?? string.Empty;
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }

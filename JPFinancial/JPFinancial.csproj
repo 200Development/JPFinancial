@@ -197,8 +197,6 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\PaychecksController.cs" />
-    <Compile Include="Controllers\IncomeController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -317,11 +315,6 @@
     <Content Include="Views\Bill\Edit.cshtml" />
     <Content Include="Views\Bill\Index.cshtml" />
     <Content Include="Views\Bill\_Bills.cshtml" />
-    <Content Include="Views\Income\Create.cshtml" />
-    <Content Include="Views\Income\Delete.cshtml" />
-    <Content Include="Views\Income\Details.cshtml" />
-    <Content Include="Views\Income\Edit.cshtml" />
-    <Content Include="Views\Income\Index.cshtml" />
     <Content Include="Views\Accounts\Create.cshtml" />
     <Content Include="Views\Accounts\Delete.cshtml" />
     <Content Include="Views\Accounts\Details.cshtml" />
@@ -340,11 +333,6 @@
     <Content Include="Views\Dashboard\_AccountsPartial.cshtml" />
     <Content Include="Views\Dashboard\_TopTransactions.cshtml" />
     <Content Include="Views\Shared\_Transactions.cshtml" />
-    <Content Include="Views\Paychecks\Create.cshtml" />
-    <Content Include="Views\Paychecks\Delete.cshtml" />
-    <Content Include="Views\Paychecks\Details.cshtml" />
-    <Content Include="Views\Paychecks\Edit.cshtml" />
-    <Content Include="Views\Paychecks\Index.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
   </ItemGroup>
   <ItemGroup>

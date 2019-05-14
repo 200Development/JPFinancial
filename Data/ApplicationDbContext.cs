@@ -20,7 +20,6 @@ namespace JPFData
         public IDbSet<Transaction> Transactions { get; set; }
         public IDbSet<Loan> Loans { get; set; }
         public IDbSet<CreditCard> CreditCards { get; set; }
-        public IDbSet<Paycheck> Paychecks { get; set; }
         public IDbSet<Expense> Expenses { get; set; }
         public IDbSet<Rebalance> Rebalance { get; set; }
 

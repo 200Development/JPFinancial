@@ -55,7 +55,6 @@ namespace JPFinancial.Controllers
                 if (!ModelState.IsValid) return View(transactionVM);
 
                 transactionVM.Entity.Transaction.Type = transactionVM.Type;
-                transactionVM.Entity.Transaction.Category = transactionVM.Category;
                 transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
                 transactionVM.EventArgument = EventArgumentEnum.Create;
 
@@ -108,7 +107,6 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Edit");
                 if (!ModelState.IsValid) return View(transactionVM);
-
 
                 transactionVM.EventArgument = EventArgumentEnum.Update;
                 transactionVM.EventCommand = EventCommandEnum.Edit;

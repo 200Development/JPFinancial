@@ -106,7 +106,7 @@
         </div>
 
 
-        <div id="divIsCredit">
+        @*<div id="divIsCredit">
             <div class="form-group">
                 @Html.LabelFor(model => model.UsedCreditCard, "Credit?", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-4">
@@ -123,7 +123,7 @@
                     @Html.ValidationMessageFor(model => Model.Entity.CreditCards, "", new { @class = "text-danger" })
                 </div>
             </div>
-        </div>
+        </div>*@
 
         <div id="divAutoTransferPaycheckContributions">
             <div class="form-group">
@@ -156,21 +156,21 @@
         var isBillCb = document.getElementById('IsBill');
         var payBillDiv = document.getElementById('divPayBill');
         var payeeDiv = document.getElementById('divPayee');
-        var creditCardDiv = document.getElementById('divCreditCard');
+        //var creditCardDiv = document.getElementById('divCreditCard');
         var transactionType = document.getElementById('Type');
         var creditAccountDiv = document.getElementById('divCreditAccount');
         var debitAccountDiv = document.getElementById('divDebitAccount');
         var autoTransferDiv = document.getElementById('divAutoTransferPaycheckContributions');
-        var isCreditDiv = document.getElementById('divIsCredit');
+        //var isCreditDiv = document.getElementById('divIsCredit');
         var isBillDiv = document.getElementById('divIsBill');
 
-        function isCredit() {
-            if (usedCreditCardCb.checked) {
-                creditCardDiv.style.display = "block";
-            } else {
-                creditCardDiv.style.display = "none";
-            }
-        };
+        //function isCredit() {
+        //    if (usedCreditCardCb.checked) {
+        //        creditCardDiv.style.display = "block";
+        //    } else {
+        //        creditCardDiv.style.display = "none";
+        //    }
+        //};
 
         function isBill() {
             if (isBillCb.checked) {
@@ -189,26 +189,26 @@
                 creditAccountDiv.style.display = "none";
                 debitAccountDiv.style.display = "block";
                 autoTransferDiv.style.display = "block";
-                isCreditDiv.style.display = "none";
+                //isCreditDiv.style.display = "none";
                 isBillDiv.style.display = "none";
             } else if (transactionType.value === "1") {
                 creditAccountDiv.style.display = "block";
                 debitAccountDiv.style.display = "none";
                 autoTransferDiv.style.display = "none";
-                isCreditDiv.style.display = "block";
+                //isCreditDiv.style.display = "block";
                 isBillDiv.style.display = "block";
             } else if (transactionType.value === "2") {
                 creditAccountDiv.style.display = "block";
                 debitAccountDiv.style.display = "block";
                 autoTransferDiv.style.display = "none";
-                isCreditDiv.style.display = "none";
+                //isCreditDiv.style.display = "none";
                 isBillDiv.style.display = "none";
             }
         };
 
         document.addEventListener("DOMContentLoaded", function () {
             updateType();
-            isCredit();
+            //isCredit();
             isBill();
         });
 
@@ -216,9 +216,9 @@
             updateType();
         });
 
-        usedCreditCardCb.addEventListener('change', (event) => {
-            isCredit();
-        });
+        //usedCreditCardCb.addEventListener('change', (event) => {
+        //    isCredit();
+        //});
 
         isBillCb.addEventListener('change', (event) => {
             isBill();

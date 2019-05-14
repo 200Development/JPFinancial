@@ -196,8 +196,7 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"Expenses by DateRange");
-                // onlyMandatory sums only mandatory expenses
-                var bills = onlyMandatory ? _db.Bills.Where(b => b.IsMandatory).ToList() : _db.Bills.ToList();
+                var bills = _db.Bills.ToList();
                 var expenses = 0m;
 
                 foreach (var bill in bills)

@@ -263,7 +263,7 @@ namespace JPFData
             {
                 var accountSavings = account.RequiredSavings;
                 var savingsPercentage = accountSavings / totalSavings;
-                account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
+                //account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
             }
 
             return accounts;

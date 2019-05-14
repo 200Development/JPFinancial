@@ -31,7 +31,7 @@ namespace JPFData.Managers
         public TransactionManager()
         {
             _db = new ApplicationDbContext();
-            _userId = Global.Instance.User.Id ?? string.Empty;
+            _userId = Global.Instance.User?.Id ?? string.Empty;
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
@@ -71,7 +71,7 @@ namespace JPFData.Managers
         public bool Create(TransactionDTO entity)
         {
             //TODO: Create Transaction method needs to be more efficient.  Currently makes 5 calls to the DB. GetUsedAccounts(1),SetExpenseAsPaid(1),UpdateDbAccountBalances(2),AddTransactionToDb(1)
-            
+
             try
             {
                 GetUsedAccounts(entity);
@@ -101,24 +101,9 @@ namespace JPFData.Managers
                 //AsNoTracking() is essential or EF will throw an error
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Update);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
-                //if (entity.Transaction.UsedCreditCard)
-                //{
-                //    UpdateDbCreditCard(entity.Transaction, "edit");
-                //    Logger.Instance.DataFlow($"Credit card used for transaction updated in data context");
-                //}
-
-                //if(entity.Transaction.SelectedExpenseId != null)
 
                 _db.Entry(entity.Transaction).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Transaction updated in data context");
-
-                //if (entity.Transaction.UsedCreditCard)
-                //{
-                //    var creditCards = _db.CreditCards.ToList();
-                //    var creditCard = creditCards.FirstOrDefault(c => c.Id == entity.Transaction.SelectedCreditCardAccountId);
-                //    _db.Entry(creditCard).State = EntityState.Modified;
-                //    Logger.Instance.DataFlow($"Credit card updated in data context");
-                //}
 
 
                 _db.SaveChanges();
@@ -217,7 +202,7 @@ namespace JPFData.Managers
                             }
 
 
-                             _db.SaveChanges();
+                            _db.SaveChanges();
                             return true;
                         }
                     case EventArgumentEnum.Delete:
@@ -354,65 +339,6 @@ namespace JPFData.Managers
             {
                 return decimal.Zero;
             }
-        }
-
-        private void UpdateDbCreditCard(Transaction transaction, string type)
-        {
-            var creditCardId = transaction?.SelectedCreditCardAccountId;
-            if (creditCardId == null) return;
-            var creditCards = _db.CreditCards.ToList();
-            var creditCard = creditCards.FirstOrDefault(c => c.Id == creditCardId);
-
-            switch (type)
-            {
-                case "create":
-                    {
-                        if (creditCard != null) creditCard.CurrentBalance += transaction.Amount;
-                        _db.Entry(creditCard).State = EntityState.Modified;
-                        break;
-                    }
-                case "delete":
-                case "edit":
-                    {
-                        var originalTransaction = _db.Transactions
-                            .AsNoTracking()
-                            .Where(t => t.Id == transaction.Id)
-                            .Cast<Transaction>()
-                            .FirstOrDefault();
-                        if (originalTransaction == null) return;
-                        var originalCreditCard = _db.CreditCards.FirstOrDefault(a => a.Id == originalTransaction.SelectedCreditCardAccountId);
-                        var originalAmount = originalTransaction.Amount;
-
-                        // Reassign the credit card Id to Transaction Model
-                        transaction.SelectedCreditCardAccountId = originalTransaction.SelectedCreditCardAccountId;
-
-                        switch (type)
-                        {
-                            case "delete":
-                                {
-                                    if (originalCreditCard == null) return;
-                                    originalCreditCard.CurrentBalance -= transaction.Amount;
-                                    _db.Entry(originalCreditCard).State = EntityState.Modified;
-                                    break;
-                                }
-                            case "edit":
-                                {
-                                    var amountDifference = transaction.Amount - originalAmount;
-                                    if (creditCard == null) return;
-                                    creditCard.CurrentBalance += amountDifference;
-                                    _db.Entry(creditCard).State = EntityState.Modified;
-                                    break;
-                                }
-                            default:
-                                throw new NotImplementedException();
-                        }
-                        break;
-                    }
-                default:
-                    throw new NotImplementedException($"{type} is not an accepted type for TransactionController.UpdateDbCreditCard method");
-            }
-
-            _db.SaveChanges();
         }
 
         public bool HandlePaycheckContributions(Transaction transaction)
@@ -566,17 +492,11 @@ namespace JPFData.Managers
 
 
                 var transactions = _db.Transactions.Where(t => t.UserId == Global.Instance.User.Id).ToList();
-                var bills = _db.Bills.ToList();
                 var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();
                 var expenseTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Expense).ToList();
                 var transferTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Transfer).ToList();
 
-                var discretionaryExpenseTransactions = expenseTransactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory == false);
-                var discretionarySpendingSumsByMonth = discretionaryExpenseTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
-                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
-
-                var mandatoryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory);
-                var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
+                var expenseTransactionsByMonth = expenseTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
                 var incomeTransactionsByMonth = incomeTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
@@ -585,26 +505,19 @@ namespace JPFData.Managers
                 var transferTransactionsByMonth = transferTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
+
                 var expensesByMonth = new Dictionary<DateTime, decimal>();
                 var mandatoryByMonth = new Dictionary<DateTime, decimal>();
                 var discretionaryByMonth = new Dictionary<DateTime, decimal>();
                 var incomeByMonth = new Dictionary<DateTime, decimal>();
                 var transfersByMonth = new Dictionary<DateTime, decimal>();
 
-                foreach (var transaction in discretionarySpendingSumsByMonth)
-                {
-                    var date = new DateTime(transaction.year, transaction.month, 1);
-                    var amount = transaction.expenses;
-                    discretionaryByMonth.Add(date, amount);
-                    expensesByMonth.Add(date, amount);
-                }
 
-                foreach (var transaction in mandatoryExpensesByMonth)
+                foreach (var transaction in expenseTransactionsByMonth)
                 {
                     var date = new DateTime(transaction.year, transaction.month, 1);
                     var amount = transaction.expenses;
-                    mandatoryByMonth.Add(date, amount);
-                    expensesByMonth[date] += amount;
+                    expensesByMonth.Add(date, amount);
                 }
 
                 foreach (var transaction in incomeTransactionsByMonth)
@@ -621,21 +534,6 @@ namespace JPFData.Managers
                     transfersByMonth.Add(date, amount);
                 }
 
-                foreach (KeyValuePair<DateTime, decimal> transaction in mandatoryByMonth)
-                {
-                    if (mandatoryByMonth.ContainsKey(transaction.Key) == false)
-                    {
-                        mandatoryByMonth.Add(transaction.Key, 0m);
-                    }
-                }
-
-                foreach (KeyValuePair<DateTime, decimal> transaction in discretionaryByMonth)
-                {
-                    if (discretionaryByMonth.ContainsKey(transaction.Key) == false)
-                    {
-                        discretionaryByMonth.Add(transaction.Key, 0m);
-                    }
-                }
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in expensesByMonth)
                 {
@@ -667,12 +565,16 @@ namespace JPFData.Managers
 
                 for (DateTime i = index; i <= DateTime.Today; i = i.AddMonths(1))
                 {
-                    if (expensesByMonth.ContainsKey(i)) continue;
-                    mandatoryByMonth.Add(i, 0m);
-                    discretionaryByMonth.Add(i, 0m);
-                    expensesByMonth.Add(i, 0m);
-                    incomeByMonth.Add(i, 0m);
-                    transfersByMonth.Add(i, 0m);
+                    if (!mandatoryByMonth.ContainsKey(i))
+                        mandatoryByMonth.Add(i, 0m);
+                    if (!discretionaryByMonth.ContainsKey(i))
+                        discretionaryByMonth.Add(i, 0m);
+                    if (!expensesByMonth.ContainsKey(i))
+                        expensesByMonth.Add(i, 0m);
+                    if (!incomeByMonth.ContainsKey(i))
+                        incomeByMonth.Add(i, 0m);
+                    if (!transfersByMonth.ContainsKey(i))
+                        transfersByMonth.Add(i, 0m);
                 }
 
                 metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);

@@ -67,8 +67,8 @@ namespace JPFData.Managers
             /* CURRENT MONTH'S EXPENSES */
             //TODO: difference between totalDue and billsDue?
             //TODO: what counts as expenses, mandatory expenses, discretionary spending?
-            metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
-            metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
+            //metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
+            //metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
             metrics.Expenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month && b.DueDate.Year == DateTime.Today.Year).Sum(b => b.AmountDue);
 
             /* PAST MONTHLY EXPENSES */
@@ -89,15 +89,15 @@ namespace JPFData.Managers
             var transactionSumsByMonth = transactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                 .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
-            var discretionaryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory == false);
+            //var discretionaryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory == false);
 
-            var discretionarySpendingSumsByMonth = discretionaryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
-                .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+            //var discretionarySpendingSumsByMonth = discretionaryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
+            //    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
-            var mandatoryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory);
+            //var mandatoryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory);
 
-            var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
-                .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+            //var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
+                //.GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
             var last3MonthsTransactions = transactionSumsByMonth.OrderByDescending(t => t.year).ThenByDescending(x => x.month).Take(3);
             var quarterlyTransactionAverageCost = last3MonthsTransactions.Average(t => t?.expenses);
@@ -116,19 +116,19 @@ namespace JPFData.Managers
                 expensesByMonth.Add(date, amount);
             }
 
-            foreach (var transaction in discretionarySpendingSumsByMonth)
-            {
-                var date = new DateTime(transaction.year, transaction.month, 1);
-                var amount = transaction.expenses;
-                discretionaryByMonth.Add(date, amount);
-            }
+            //foreach (var transaction in discretionarySpendingSumsByMonth)
+            //{
+            //    var date = new DateTime(transaction.year, transaction.month, 1);
+            //    var amount = transaction.expenses;
+            //    discretionaryByMonth.Add(date, amount);
+            //}
 
-            foreach (var transaction in mandatoryExpensesByMonth)
-            {
-                var date = new DateTime(transaction.year, transaction.month, 1);
-                var amount = transaction.expenses;
-                mandatoryByMonth.Add(date, amount);
-            }
+            //foreach (var transaction in mandatoryExpensesByMonth)
+            //{
+            //    var date = new DateTime(transaction.year, transaction.month, 1);
+            //    var amount = transaction.expenses;
+            //    mandatoryByMonth.Add(date, amount);
+            //}
 
             foreach (KeyValuePair<DateTime, decimal> expense in expensesByMonth)
             {

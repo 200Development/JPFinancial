@@ -27,13 +27,5 @@ namespace JPFData.Models.JPFinancial
         public int AccountId { get; set; }
 
         public Account Account { get; set; }
-
-        [Required]
-        [Display(Name = "Late?")]
-        public virtual bool IsLate { get; set; }
-
-        [Required]
-        [Display(Name = "Mandatory Expense?")]
-        public virtual bool IsMandatory { get; set; }
     }
 }

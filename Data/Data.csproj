@@ -106,7 +106,6 @@
     <Compile Include="DTO\BillDTO.cs" />
     <Compile Include="DTO\CreditCardDTO.cs" />
     <Compile Include="DTO\ExpenseDTO.cs" />
-    <Compile Include="DTO\IncomeDTO.cs" />
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
     <Compile Include="Enumerations\EventCommandEnum.cs" />
     <Compile Include="Enumerations\MaritalStatusEnum.cs" />
@@ -115,7 +114,6 @@
     <Compile Include="Managers\BillManager.cs" />
     <Compile Include="Managers\CreditCardManager.cs" />
     <Compile Include="Managers\ExpenseManager.cs" />
-    <Compile Include="Managers\IncomeManager.cs" />
     <Compile Include="Metrics\AccountMetrics.cs" />
     <Compile Include="Metrics\BillMetrics.cs" />
     <Compile Include="Metrics\CreditCardMetrics.cs" />
@@ -129,149 +127,17 @@
     <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
     <Compile Include="Managers\TransactionManager.cs" />
-    <Compile Include="Migrations\201901261931452_addTotalTaxesToPaycheck.cs" />
-    <Compile Include="Migrations\201901261931452_addTotalTaxesToPaycheck.Designer.cs">
-      <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
+    <Compile Include="Migrations\201905121714344_initAfterRestart.cs" />
+    <Compile Include="Migrations\201905121714344_initAfterRestart.Designer.cs">
+      <DependentUpon>201905121714344_initAfterRestart.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.cs" />
-    <Compile Include="Migrations\201902012103242_removeUnusedPaycheckFields.Designer.cs">
-      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    <Compile Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.cs" />
+    <Compile Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.Designer.cs">
+      <DependentUpon>201905121731129_removeMandatoryAndLateFromBills.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201902021640479_removeDescriptionFromEarnings.cs" />
-    <Compile Include="Migrations\201902021640479_removeDescriptionFromEarnings.Designer.cs">
-      <DependentUpon>201902021640479_removeDescriptionFromEarnings.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902061335243_addsRebalanceTable.cs" />
-    <Compile Include="Migrations\201902061335243_addsRebalanceTable.Designer.cs">
-      <DependentUpon>201902061335243_addsRebalanceTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902071441459_addIsPaidToBills.cs" />
-    <Compile Include="Migrations\201902071441459_addIsPaidToBills.Designer.cs">
-      <DependentUpon>201902071441459_addIsPaidToBills.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.cs" />
-    <Compile Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.Designer.cs">
-      <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs" />
-    <Compile Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.Designer.cs">
-      <DependentUpon>201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.cs" />
-    <Compile Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.Designer.cs">
-      <DependentUpon>201902162332515_removesDefaultFromAccountBalanceLimit.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902170249372_AddsPropertiesToAccounts.cs" />
-    <Compile Include="Migrations\201902170249372_AddsPropertiesToAccounts.Designer.cs">
-      <DependentUpon>201902170249372_AddsPropertiesToAccounts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902171628267_removePaycheckFromTransaction.cs" />
-    <Compile Include="Migrations\201902171628267_removePaycheckFromTransaction.Designer.cs">
-      <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.cs" />
-    <Compile Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.Designer.cs">
-      <DependentUpon>201902240449034_UpdateAccountToNotAllowNulls.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903021737482_UpdatesExpenseTable.cs" />
-    <Compile Include="Migrations\201903021737482_UpdatesExpenseTable.Designer.cs">
-      <DependentUpon>201903021737482_UpdatesExpenseTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903022033013_RemoveIsPaidFromBills.cs" />
-    <Compile Include="Migrations\201903022033013_RemoveIsPaidFromBills.Designer.cs">
-      <DependentUpon>201903022033013_RemoveIsPaidFromBills.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs" />
-    <Compile Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.Designer.cs">
-      <DependentUpon>201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs" />
-    <Compile Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.Designer.cs">
-      <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903102002117_dropUnusedTables.cs" />
-    <Compile Include="Migrations\201903102002117_dropUnusedTables.Designer.cs">
-      <DependentUpon>201903102002117_dropUnusedTables.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201903131350107_AddRebalanceTable.cs" />
-    <Compile Include="Migrations\201903131350107_AddRebalanceTable.Designer.cs">
-      <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201904232332296_addUserIdToAccount.cs" />
-    <Compile Include="Migrations\201904232332296_addUserIdToAccount.Designer.cs">
-      <DependentUpon>201904232332296_addUserIdToAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201904232334503_updateAccountUserIdToString.cs" />
-    <Compile Include="Migrations\201904232334503_updateAccountUserIdToString.Designer.cs">
-      <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.cs" />
-    <Compile Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.Designer.cs">
-      <DependentUpon>201904271649100_addUserIdToTransactionUpdateAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\init.cs" />
-    <Compile Include="Migrations\init.Designer.cs">
-      <DependentUpon>init.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\addsPercentageOfSavingsToAccounts.cs" />
-    <Compile Include="Migrations\addsPercentageOfSavingsToAccounts.Designer.cs">
-      <DependentUpon>addsPercentageOfSavingsToAccounts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\AddModelsForPaycheck.cs" />
-    <Compile Include="Migrations\AddModelsForPaycheck.Designer.cs">
-      <DependentUpon>AddModelsForPaycheck.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\addsMembersToPaycheck.cs" />
-    <Compile Include="Migrations\addsMembersToPaycheck.Designer.cs">
-      <DependentUpon>addsMembersToPaycheck.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\removeListsFromPaycheck.cs" />
-    <Compile Include="Migrations\removeListsFromPaycheck.Designer.cs">
-      <DependentUpon>removeListsFromPaycheck.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\removeFedWitholding.cs" />
-    <Compile Include="Migrations\removeFedWitholding.Designer.cs">
-      <DependentUpon>removeFedWitholding.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\updatesEmployerToStringForPaycheck.cs" />
-    <Compile Include="Migrations\updatesEmployerToStringForPaycheck.Designer.cs">
-      <DependentUpon>updatesEmployerToStringForPaycheck.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\madePaycheckAllowancesNullable.cs" />
-    <Compile Include="Migrations\madePaycheckAllowancesNullable.Designer.cs">
-      <DependentUpon>madePaycheckAllowancesNullable.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\UpdatePaycheckAndAccount.cs" />
-    <Compile Include="Migrations\UpdatePaycheckAndAccount.Designer.cs">
-      <DependentUpon>UpdatePaycheckAndAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\addReqPayContributionToAccount.cs" />
-    <Compile Include="Migrations\addReqPayContributionToAccount.Designer.cs">
-      <DependentUpon>addReqPayContributionToAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\updateMisc.cs" />
-    <Compile Include="Migrations\updateMisc.Designer.cs">
-      <DependentUpon>updateMisc.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.cs" />
-    <Compile Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.Designer.cs">
-      <DependentUpon>ChangeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\UpdateCreditCard.cs" />
-    <Compile Include="Migrations\UpdateCreditCard.Designer.cs">
-      <DependentUpon>UpdateCreditCard.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\cleanUp.cs" />
-    <Compile Include="Migrations\cleanUp.Designer.cs">
-      <DependentUpon>cleanUp.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\AddPaycheckIdToTransaction.cs" />
-    <Compile Include="Migrations\AddPaycheckIdToTransaction.Designer.cs">
-      <DependentUpon>AddPaycheckIdToTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\UpdatesPaycheckNullables.cs" />
-    <Compile Include="Migrations\UpdatesPaycheckNullables.Designer.cs">
-      <DependentUpon>UpdatesPaycheckNullables.cs</DependentUpon>
+    <Compile Include="Migrations\201905121820572_updateAccountModel.cs" />
+    <Compile Include="Migrations\201905121820572_updateAccountModel.Designer.cs">
+      <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
@@ -301,7 +167,6 @@
     <Compile Include="Models\JPFinancial\Expense.cs" />
     <Compile Include="Models\JPFinancial\Loan.cs" />
     <Compile Include="Models\JPFinancial\OutstandingExpense.cs" />
-    <Compile Include="Models\JPFinancial\Paycheck.cs" />
     <Compile Include="Models\JPFinancial\Rebalance.cs" />
     <Compile Include="Models\JPFinancial\Tax.cs" />
     <Compile Include="Enumerations\TaxesEnum.cs" />
@@ -324,10 +189,8 @@
     <Compile Include="ViewModels\FactorViewModel.cs" />
     <Compile Include="ViewModels\ForgotPasswordViewModel.cs" />
     <Compile Include="ViewModels\ForgotViewModel.cs" />
-    <Compile Include="ViewModels\IncomeViewModel.cs" />
     <Compile Include="ViewModels\LoginViewModel.cs" />
     <Compile Include="ViewModels\ManageLoginsViewModel.cs" />
-    <Compile Include="ViewModels\PaycheckViewModel.cs" />
     <Compile Include="ViewModels\RegisterViewModel.cs" />
     <Compile Include="ViewModels\ResetPasswordViewModel.cs" />
     <Compile Include="ViewModels\SendCodeViewModel.cs" />
@@ -349,113 +212,14 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201901261931452_addTotalTaxesToPaycheck.resx">
-      <DependentUpon>201901261931452_addTotalTaxesToPaycheck.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905121714344_initAfterRestart.resx">
+      <DependentUpon>201905121714344_initAfterRestart.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902012103242_removeUnusedPaycheckFields.resx">
-      <DependentUpon>201902012103242_removeUnusedPaycheckFields.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.resx">
+      <DependentUpon>201905121731129_removeMandatoryAndLateFromBills.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902021640479_removeDescriptionFromEarnings.resx">
-      <DependentUpon>201902021640479_removeDescriptionFromEarnings.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902061335243_addsRebalanceTable.resx">
-      <DependentUpon>201902061335243_addsRebalanceTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902071441459_addIsPaidToBills.resx">
-      <DependentUpon>201902071441459_addIsPaidToBills.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902071451570_AddIdToSelectedCCAndBill.resx">
-      <DependentUpon>201902071451570_AddIdToSelectedCCAndBill.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.resx">
-      <DependentUpon>201902162326017_addsIsMandatoryAndBalanceLimitToAccounts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902162332515_removesDefaultFromAccountBalanceLimit.resx">
-      <DependentUpon>201902162332515_removesDefaultFromAccountBalanceLimit.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902170249372_AddsPropertiesToAccounts.resx">
-      <DependentUpon>201902170249372_AddsPropertiesToAccounts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902171628267_removePaycheckFromTransaction.resx">
-      <DependentUpon>201902171628267_removePaycheckFromTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201902240449034_UpdateAccountToNotAllowNulls.resx">
-      <DependentUpon>201902240449034_UpdateAccountToNotAllowNulls.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903021737482_UpdatesExpenseTable.resx">
-      <DependentUpon>201903021737482_UpdatesExpenseTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903022033013_RemoveIsPaidFromBills.resx">
-      <DependentUpon>201903022033013_RemoveIsPaidFromBills.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.resx">
-      <DependentUpon>201903030049358_UpdateTransactionToGetExpenseIdInsteadOfBillId.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903030209473_UpdateTransactionSelectedBillDueDateToNullable.resx">
-      <DependentUpon>201903030209473_UpdateTransactionSelectedBillDueDateToNullable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903102002117_dropUnusedTables.resx">
-      <DependentUpon>201903102002117_dropUnusedTables.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201903131350107_AddRebalanceTable.resx">
-      <DependentUpon>201903131350107_AddRebalanceTable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904232332296_addUserIdToAccount.resx">
-      <DependentUpon>201904232332296_addUserIdToAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904232334503_updateAccountUserIdToString.resx">
-      <DependentUpon>201904232334503_updateAccountUserIdToString.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201904271649100_addUserIdToTransactionUpdateAccount.resx">
-      <DependentUpon>201904271649100_addUserIdToTransactionUpdateAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\init.resx">
-      <DependentUpon>init.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\addsPercentageOfSavingsToAccounts.resx">
-      <DependentUpon>addsPercentageOfSavingsToAccounts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\AddModelsForPaycheck.resx">
-      <DependentUpon>AddModelsForPaycheck.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\addsMembersToPaycheck.resx">
-      <DependentUpon>addsMembersToPaycheck.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\removeListsFromPaycheck.resx">
-      <DependentUpon>removeListsFromPaycheck.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\removeFedWitholding.resx">
-      <DependentUpon>removeFedWitholding.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\updatesEmployerToStringForPaycheck.resx">
-      <DependentUpon>updatesEmployerToStringForPaycheck.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\madePaycheckAllowancesNullable.resx">
-      <DependentUpon>madePaycheckAllowancesNullable.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\UpdatePaycheckAndAccount.resx">
-      <DependentUpon>UpdatePaycheckAndAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\addReqPayContributionToAccount.resx">
-      <DependentUpon>addReqPayContributionToAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\updateMisc.resx">
-      <DependentUpon>updateMisc.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\ChangeFieldToSuggestedPaycheckContribution.resx">
-      <DependentUpon>ChangeFieldToSuggestedPaycheckContribution.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\UpdateCreditCard.resx">
-      <DependentUpon>UpdateCreditCard.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\cleanUp.resx">
-      <DependentUpon>cleanUp.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\AddPaycheckIdToTransaction.resx">
-      <DependentUpon>AddPaycheckIdToTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\UpdatesPaycheckNullables.resx">
-      <DependentUpon>UpdatesPaycheckNullables.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201905121820572_updateAccountModel.resx">
+      <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

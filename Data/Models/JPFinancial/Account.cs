@@ -14,7 +14,6 @@ namespace JPFData.Models.JPFinancial
             RequiredSavings = decimal.Zero;
             BalanceSurplus = decimal.Zero;
             ExcludeFromSurplus = false;
-            PercentageOfSavings = decimal.Zero;
             IsPoolAccount = false;
             IsMandatory = false;
             BalanceLimit = decimal.Zero;
@@ -46,9 +45,6 @@ namespace JPFData.Models.JPFinancial
 
         [Required, Display(Name = "Exclude From Surplus")]
         public bool ExcludeFromSurplus { get; set; }
-
-        [Required, Display(Name = "% of Savings")]
-        public decimal PercentageOfSavings { get; set; }
 
         [Required, Display(Name = "Pool Account")]
         public bool IsPoolAccount { get; set; }
