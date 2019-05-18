@@ -8,9 +8,6 @@ using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
-    /// <summary>
-    /// Handles all Account interactions with Views
-    /// </summary>
     [Authorize]
     public class AccountsController : Controller
     {
@@ -86,6 +83,8 @@ namespace JPFinancial.Controllers
                     Logger.Instance.DataFlow($"AccountViewModel returned to View");
                     return View(accountVM);
                 }
+
+
                 Logger.Instance.Debug("Returned Account is null - (error)");
                 return HttpNotFound();
             }

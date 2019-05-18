@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JPFData.Models.JPFinancial.Bill>
+﻿@model JPFData.ViewModels.BillViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -150,7 +150,7 @@
                         </p>
                     </div>
                     <div class="container-fluid" style="text-align: center">
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Bills.OrderByDescending(b => b.AmountDue).ThenBy(c => c.Name))
                         {
                             <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
                                 <div class="card-header">

@@ -6,8 +6,18 @@ namespace JPFData.Models.JPFinancial
 {
     public class Bill 
     {
+
+        public Bill()
+        {
+            DueDate = Convert.ToDateTime(DateTime.Today.ToString("MMMM dd yyyy"));
+            if (Global.Instance.User != null)
+                UserId = Global.Instance.User.Id;
+        }
         [Key]
         public int Id { get; set; }
+
+        [Required]
+        public string UserId { get; set; }
 
         [Required, StringLength(255)]
         public string Name { get; set; }

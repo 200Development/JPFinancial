@@ -1,49 +1,67 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
     public class BillManager
     {
         private readonly ApplicationDbContext _db;
+        private readonly string _userId;
 
 
         public BillManager()
         {
             _db = new ApplicationDbContext();
+            _userId = Global.Instance.User.Id;
         }
 
 
-        public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
-
-        public BillDTO Get(BillDTO entity)
+        public BillViewModel GetAllBills(BillViewModel billVM)
         {
             try
             {
-                entity.Bills = _db.Bills.ToList();
-                entity.Metrics = RefreshBillMetrics(entity);
+                Logger.Instance.DataFlow($"Get");
+                billVM.Bills = _db.Bills.Where(b => b.UserId == _userId).ToList();
+                Logger.Instance.DataFlow($"Pull list of Bills from DB");
+                billVM.Metrics = RefreshBillMetrics(billVM);
+                Logger.Instance.DataFlow($"Refresh Bill metrics");
+
+                
+                return billVM;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
                 throw;
             }
-
-
-            return entity;
         }
 
-        public bool Create(BillDTO entity)
+        public Bill GetBill(int? id)
         {
             try
             {
-                if (!AddBillToExpenses(entity.Bill)) return false;
+                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                return _db.Bills.Find(id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
 
-                _db.Bills.Add(entity.Bill);
+        public bool Create(BillViewModel billVM)
+        {
+            try
+            {
+                if (!AddBillToExpenses(billVM.Bill)) return false;
+
+                _db.Bills.Add(billVM.Bill);
                 Logger.Instance.DataFlow($"New Bill added to data context");
 
                 _db.SaveChanges();
@@ -55,10 +73,72 @@ namespace JPFData.Managers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return false;
+                throw;
             }
         }
 
+        public bool Edit(BillViewModel billVM)
+        {
+            try
+            {
+                Logger.Instance.DataFlow($"Edit");
+                _db.Entry(billVM.Bill).State = EntityState.Modified;
+                Logger.Instance.DataFlow($"Save Account changes to data context");
+                _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public bool Delete(int billId)
+        {
+            try
+            {
+                List<Expense> expenses = _db.Expenses.Where(e => e.BillId == billId).ToList();
+                foreach (Expense expense in expenses)
+                {
+                    _db.Expenses.Remove(expense);
+                    Logger.Instance.Info($"Flagged to remove expense with id of {expense.Id} from DB");
+                }
+
+                Bill bill = _db.Bills.Find(billId);
+                _db.Bills.Remove(bill);
+                Logger.Instance.Info($"Flagged to remove bill with id of {bill.Id} from DB");
+
+
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public List<Account> GetAllAccounts()
+        {
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == _userId).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        //TODO: Refactor or redesign to prevent having to use new Expense Class
         private bool AddBillToExpenses(Bill bill)
         {
             try
@@ -82,39 +162,44 @@ namespace JPFData.Managers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return false;
+                throw;
             }
         }
 
-        public BillMetrics RefreshBillMetrics(BillDTO entity)
+        private BillMetrics RefreshBillMetrics(BillViewModel billVM)
         {
             BillMetrics metrics = new BillMetrics();
 
             try
             {
-                metrics.LargestBalance = entity.Bills.Max(b => b.AmountDue);
-                metrics.SmallestBalance = entity.Bills.Min(b => b.AmountDue);
-                metrics.TotalBalance = entity.Bills.Sum(b => b.AmountDue);
-                metrics.AverageBalance = entity.Bills.Sum(b => b.AmountDue) / entity.Bills.Count;
-
+                metrics.LargestBalance = billVM.Bills.Max(b => b.AmountDue);
+                metrics.SmallestBalance = billVM.Bills.Min(b => b.AmountDue);
+                metrics.TotalBalance = billVM.Bills.Sum(b => b.AmountDue);
+                metrics.AverageBalance = billVM.Bills.Sum(b => b.AmountDue) / billVM.Bills.Count;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.Instance.Error(e);
+                return new BillMetrics();
             }
+
 
             return metrics;
         }
 
-        public Bill Details(BillDTO entity)
+        public Bill Details(BillViewModel billVM)
         {
-            throw new NotImplementedException();
-        }
-
-        public bool Edit(BillDTO entity)
-        {
-            throw new NotImplementedException();
+            try
+            {
+                Logger.Instance.DataFlow($"Details");
+                Logger.Instance.DataFlow($"Pull Bill with Id of {billVM.Bill.Id} from DB");
+                return _db.Bills.FirstOrDefault(b => b.Id == billVM.Bill.Id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
         }
     }
 }

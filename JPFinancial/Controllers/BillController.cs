@@ -5,6 +5,7 @@ using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
+using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
@@ -14,11 +15,25 @@ namespace JPFinancial.Controllers
     public class BillController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly BillManager _billManager = new BillManager();
 
         // GET: Bills
         public ActionResult Index()
         {
-            return View(_db.Bills.ToList());
+            try
+            {
+                Logger.Instance.DataFlow("Index");
+                BillViewModel billVM = new BillViewModel();
+                billVM = _billManager.GetAllBills(billVM);
+
+
+                return View(billVM);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
 
         // GET: Bills/Details/5
@@ -26,21 +41,29 @@ namespace JPFinancial.Controllers
         {
             try
             {
+                Logger.Instance.DataFlow($"Details");
                 if (id == null)
                 {
+                    Logger.Instance.Debug("Bill ID is null");
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Bill bill = _db.Bills.Find(id);
-                if (bill == null)
+
+                BillViewModel billVM = new BillViewModel();
+                billVM.Bill = _billManager.GetBill(id);
+
+                if (billVM.Bill != null)
                 {
-                    return HttpNotFound();
+                    return View(billVM);
                 }
-                return View(bill);
+
+
+                Logger.Instance.Debug("Returned Bill is null - (error)");
+                return HttpNotFound();
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new Bill());
+                return View(new BillViewModel());
             }
         }
 
@@ -49,12 +72,11 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                var viewModel = new BillViewModel
-                {
-                    Accounts = _db.Accounts.ToList()
-                };
+                BillViewModel billVM = new BillViewModel();
+                billVM.Accounts = _billManager.GetAllAccounts();
 
-                return View(viewModel);
+
+                return View(billVM);
             }
             catch (Exception e)
             {
@@ -74,17 +96,15 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(billVM);
+                if (!_billManager.Create(billVM)) return View(billVM);
 
-                billVM.EventArgument = EventArgumentEnum.Create;
-                if (!billVM.HandleRequest()) return View(billVM);
 
-                Logger.Instance.DataFlow($"Redirect to Bill.Index View");
                 return RedirectToAction("Index");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return RedirectToAction("Index");
+                return View(new BillViewModel());
             }
         }
 
@@ -115,27 +135,21 @@ namespace JPFinancial.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Bill bill = _db.Bills.Find(id);
+                BillViewModel billVM = new BillViewModel();
+                billVM.Bill = _billManager.GetBill(id);
+                Logger.Instance.DataFlow($"Pull Bill with ID {id} from DB and set to BillViewModel.Bill");
 
-                if (bill == null)
+
+                if (billVM.Bill == null)
                 {
                     return HttpNotFound();
                 }
-                BillViewModel viewModel = new BillViewModel();
-                var account = _db.Accounts.Single(a => a.Id == bill.AccountId);
-                //var accountId = account.Id;
+                billVM.Bill.Account = _billManager.GetAllAccounts().Single(a => a.Id == billVM.Bill.AccountId);
+                billVM.Accounts = _billManager.GetAllAccounts();
+                Logger.Instance.DataFlow($"Pull Bill.Account with ID {billVM.Bill.AccountId} from DB and set to BillViewModel.Bill.Account");
 
-                viewModel.Name = bill.Name;
-                viewModel.AccountId = bill.AccountId;
-                viewModel.Account = account;
-                viewModel.AmountDue = bill.AmountDue;
-                viewModel.DueDate = bill.DueDate;
-                viewModel.Id = bill.Id;
-                //viewModel.IsMandatory = bill.IsMandatory;
-                viewModel.PaymentFrequency = bill.PaymentFrequency;
-                viewModel.Accounts = _db.Accounts.ToList();
 
-                return View(viewModel);
+                return View(billVM);
             }
             catch (Exception e)
             {
@@ -149,26 +163,16 @@ namespace JPFinancial.Controllers
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit(BillViewModel viewModel)
+        public ActionResult Edit(BillViewModel billVM)
         {
             try
             {
-                if (!ModelState.IsValid) return View(viewModel);
+                if (!ModelState.IsValid) return View(billVM);
+                if (_billManager.Edit(billVM))
+                    return RedirectToAction("Index");
 
 
-                var bill = new Bill();
-                bill.Name = viewModel.Name;
-                bill.Account = viewModel.Account;
-                bill.AccountId = viewModel.AccountId;
-                bill.AmountDue = viewModel.AmountDue;
-                bill.DueDate = viewModel.DueDate;
-                bill.Id = viewModel.Id;
-                //bill.IsMandatory = viewModel.IsMandatory;
-                bill.PaymentFrequency = viewModel.PaymentFrequency;
-                
-                _db.Entry(bill).State = EntityState.Modified;
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                return View(billVM);
             }
             catch (Exception e)
             {
@@ -186,7 +190,7 @@ namespace JPFinancial.Controllers
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
-                Bill bill = _db.Bills.Find(id);
+                Bill bill = _billManager.GetBill(id);
                 if (bill == null)
                 {
                     return HttpNotFound();
@@ -207,10 +211,18 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Bill bill = _db.Bills.Find(id);
-                _db.Bills.Remove(bill);
-                _db.SaveChanges();
-                return RedirectToAction("Index");
+                if (_billManager.Delete(id))
+                    return RedirectToAction("Index");
+
+                // Send Bill back to Delete View if delete failed
+                Bill bill = _billManager.GetBill(id);
+                if (bill == null)
+                {
+                    return HttpNotFound();
+                }
+
+
+                return View(bill);
             }
             catch (Exception e)
             {

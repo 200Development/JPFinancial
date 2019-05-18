@@ -1,4 +1,4 @@
-﻿@model JPFData.Models.JPFinancial.Bill
+﻿@model JPFData.ViewModels.BillViewModel
 
 @{
     ViewBag.Title = "Details";
@@ -11,40 +11,40 @@
     <hr />
     <dl class="dl-horizontal">
         <dt>
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Bill.Name)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Bill.Name)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.AmountDue)
+            @Html.DisplayNameFor(model => model.Bill.AmountDue)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.AmountDue)
+            @Html.DisplayFor(model => model.Bill.AmountDue)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.DueDate)
+            @Html.DisplayNameFor(model => model.Bill.DueDate)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.DueDate)
+            @Html.DisplayFor(model => model.Bill.DueDate)
         </dd>
 
         <dt>
-            @Html.DisplayNameFor(model => model.PaymentFrequency)
+            @Html.DisplayNameFor(model => model.Bill.PaymentFrequency)
         </dt>
 
         <dd>
-            @Html.DisplayFor(model => model.PaymentFrequency)
+            @Html.DisplayFor(model => model.Bill.PaymentFrequency)
         </dd>
 
     </dl>
 </div>
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.Id }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.Bill.Id }) |
     @Html.ActionLink("Back to List", "Index")
 </p>

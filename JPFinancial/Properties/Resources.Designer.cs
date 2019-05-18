@@ -79,6 +79,15 @@ namespace JPFinancial.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to MMMM dd yyyy.
+        /// </summary>
+        internal static string DateTimeFormat {
+            get {
+                return ResourceManager.GetString("DateTimeFormat", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to ryan@jrparsonsllc.com.
         /// </summary>
         internal static string UserRegistrationFromEmailAddress {

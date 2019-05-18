@@ -103,7 +103,6 @@
     <Compile Include="Calculations.cs" />
     <Compile Include="CalculationsArchive.cs" />
     <Compile Include="DTO\AccountDTO.cs" />
-    <Compile Include="DTO\BillDTO.cs" />
     <Compile Include="DTO\CreditCardDTO.cs" />
     <Compile Include="DTO\ExpenseDTO.cs" />
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
@@ -138,6 +137,10 @@
     <Compile Include="Migrations\201905121820572_updateAccountModel.cs" />
     <Compile Include="Migrations\201905121820572_updateAccountModel.Designer.cs">
       <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201905140154286_addUserIdToBill.cs" />
+    <Compile Include="Migrations\201905140154286_addUserIdToBill.Designer.cs">
+      <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
@@ -220,6 +223,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905121820572_updateAccountModel.resx">
       <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905140154286_addUserIdToBill.resx">
+      <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
