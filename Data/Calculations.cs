@@ -6,6 +6,7 @@ using System.Linq;
 using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 namespace JPFData
 {
@@ -347,8 +348,6 @@ namespace JPFData
                 Logger.Instance.Calculation($"UpdateSuggestedPaycheckContributions");
                 /* Update paycheck contributions for accounts with assigned bills */
                 var accounts = _db.Accounts.ToList();
-                var bills = _db.Bills.ToList();
-                var transactions = _db.Transactions.ToList();
 
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
@@ -1313,20 +1312,20 @@ namespace JPFData
             }
         }
 
-        public AccountRebalanceReport GetRebalancingAccountsReport(AccountDTO accounts)
+        public AccountRebalanceReport GetRebalancingAccountsReport()
         {
             try
             {
                 Logger.Instance.Calculation($"GetRebalancingAccountsReport");
-                AccountRebalanceReport report = accounts.RebalanceReport;
-
+                AccountRebalanceReport report = new AccountRebalanceReport();
+                List<Account> accounts = _db.Accounts.ToList();
 
                 //Clear out to prevent stacking
                 report.AccountsWithSurplus.Clear();
                 report.AccountsWithDeficit.Clear();
                 report.Surplus = 0.0m;
                 report.Deficit = 0.0m;
-                foreach (var account in accounts.Accounts)
+                foreach (var account in accounts)
                 {
                     Logger.Instance.Calculation($"Name: {account.Name}; Accts. W/ Surplus: {report.AccountsWithSurplus.Count}; Accts. W/ Deficit: {report.AccountsWithDeficit.Count}; Surplus: {Math.Round(report.Surplus, 2)}; Deficit: {Math.Round(report.Deficit, 2)}; TotalSurplus: {Math.Round(report.TotalSurplus, 2)}; PaycheckSurplus: {Math.Round(report.PaycheckSurplus, 2)}");
                     // Get Accounts' Total Surplus/Deficit

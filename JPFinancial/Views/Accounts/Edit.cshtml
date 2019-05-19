@@ -11,74 +11,74 @@
 {
     @Html.AntiForgeryToken()
 
-    @Html.HiddenFor(model => model.Entity.Account.UserId);
+    @Html.HiddenFor(model => model.Account.UserId);
     <div class="form-horizontal">
         <h4>Account</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Entity.Account.Id)
+        @Html.HiddenFor(model => model.Account.Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Entity.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Entity.Account.Name, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.Balance, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Entity.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Entity.Account.Balance, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.PaycheckContribution, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.PaycheckContribution, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Entity.Account.PaycheckContribution, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Entity.Account.PaycheckContribution, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Account.PaycheckContribution, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Account.PaycheckContribution, "", new { @class = "text-danger" })
             </div>
         </div>
 
         @*<div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.RequiredSavings, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.RequiredSavings, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Entity.Account.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Entity.Account.RequiredSavings, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Account.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Account.RequiredSavings, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.IsPoolAccount, "Is this the account where you want to pool your money?", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.IsPoolAccount, "Is this the account where you want to pool your money?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.CheckBoxFor(model => model.Entity.Account.IsPoolAccount, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.CheckBoxFor(model => model.Account.IsPoolAccount, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Entity.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.CheckBoxFor(model => model.Entity.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.CheckBoxFor(model => model.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
             </div>
         </div>
 
         <div id="divMandatoryAccount">
             <div class="form-group">
-                @Html.LabelFor(model => model.Entity.Account.IsMandatory, "Mandatory Account?", htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Account.IsMandatory, "Mandatory Account?", htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.CheckBoxFor(model => model.Entity.Account.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.CheckBoxFor(model => model.Account.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
                 </div>
             </div>
         </div>*@
 
         <div id="divBalanceLimit">
             <div class="form-group">
-                @Html.LabelFor(model => model.Entity.Account.BalanceLimit, htmlAttributes: new { @class = "control-label col-md-2" })
+                @Html.LabelFor(model => model.Account.BalanceLimit, htmlAttributes: new { @class = "control-label col-md-2" })
                 <div class="col-md-10">
-                    @Html.EditorFor(model => model.Entity.Account.BalanceLimit, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Entity.Account.BalanceLimit, "", new { @class = "text-danger" })
+                    @Html.EditorFor(model => model.Account.BalanceLimit, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Account.BalanceLimit, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

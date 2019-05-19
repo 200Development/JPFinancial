@@ -18,15 +18,15 @@
                     <div class="row">
                         <div class="col-xs-5">
                             <div class="icon-big icon-success text-center">
-                                @if (Model.Entity.Metrics.TotalBalance > 0)
+                                @if (Model.Metrics.TotalBalance > 0)
                                 {
                                     <i class="ti-face-smile icon-success"></i>
                                 }
-                                @if (Model.Entity.Metrics.TotalBalance == 0)
+                                @if (Model.Metrics.TotalBalance == 0)
                                 {
                                     <i class="ti-face-smile icon-warning"></i>
                                 }
-                                @if (Model.Entity.Metrics.TotalBalance < 0)
+                                @if (Model.Metrics.TotalBalance < 0)
                                 {
                                     <i class="ti-face-sad icon-danger"></i>
                                 }
@@ -35,7 +35,7 @@
                         <div class="col-xs-7">
                             <div class="numbers">
                                 <p>Cash Balance</p>
-                                @Html.DisplayFor(model => model.Entity.Metrics.TotalBalance)
+                                @Html.DisplayFor(model => model.Metrics.TotalBalance)
                             </div>
                         </div>
                     </div>
@@ -43,14 +43,14 @@
                         <hr />
                         <div class="stats">
                             <span style="margin-right: 8px">Surplus:</span>
-                            @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                            @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count == 0)
+        @if (Model.RebalanceReport.AccountsWithDeficit.Count == 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -64,7 +64,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Account Deficits</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                    @Html.DisplayFor(model => model.RebalanceReport.AccountsWithDeficit.Count)
                                 </div>
                             </div>
                         </div>
@@ -72,7 +72,7 @@
                             <hr />
                             <div class="stats">
                                 <span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
+                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)
                             </div>
                         </div>
                     </div>
@@ -80,7 +80,7 @@
             </div>
         }
 
-        @if (Model.Entity.RebalanceReport.AccountsWithDeficit.Count > 0)
+        @if (Model.RebalanceReport.AccountsWithDeficit.Count > 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -94,7 +94,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Account Deficits</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.AccountsWithDeficit.Count)
+                                    @Html.DisplayFor(model => model.RebalanceReport.AccountsWithDeficit.Count)
                                 </div>
                             </div>
                         </div>
@@ -102,7 +102,7 @@
                             <hr />
                             <div class="stats">
                                 <span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.Entity.RebalanceReport.Deficit)
+                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)
                             </div>
                         </div>
                     </div>
@@ -110,7 +110,7 @@
             </div>
         }
 
-        @if (Model.Entity.Metrics.MonthlySurplus > 0)
+        @if (Model.Metrics.MonthlySurplus > 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -124,7 +124,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p style="width: 100%">Monthly Surplus</p>
-                                    @Html.DisplayFor(model => model.Entity.Metrics.MonthlySurplus)
+                                    @Html.DisplayFor(model => model.Metrics.MonthlySurplus)
                                 </div>
                             </div>
                         </div>
@@ -136,7 +136,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.Metrics.MonthlySurplus < 0)
+        @if (Model.Metrics.MonthlySurplus < 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -150,7 +150,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p style="width: 100%">Monthly Deficit</p>
-                                    @Html.DisplayFor(model => model.Entity.Metrics.MonthlySurplus)
+                                    @Html.DisplayFor(model => model.Metrics.MonthlySurplus)
                                 </div>
                             </div>
                         </div>
@@ -163,7 +163,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.Metrics.MonthlySurplus == 0)
+        @if (Model.Metrics.MonthlySurplus == 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -192,7 +192,7 @@
         }
 
 
-        @if (Model.Entity.RebalanceReport.TotalSurplus > 0)
+        @if (Model.RebalanceReport.TotalSurplus > 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -206,7 +206,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Disc Surplus</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                    @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
                                 </div>
                             </div>
                         </div>
@@ -219,7 +219,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.RebalanceReport.TotalSurplus < 0)
+        @if (Model.RebalanceReport.TotalSurplus < 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -233,7 +233,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Disc Deficit</p>
-                                    @Html.DisplayFor(model => model.Entity.RebalanceReport.TotalSurplus)
+                                    @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
                                 </div>
                             </div>
                         </div>
@@ -246,7 +246,7 @@
                 </div>
             </div>
         }
-        @if (Model.Entity.RebalanceReport.TotalSurplus == 0)
+        @if (Model.RebalanceReport.TotalSurplus == 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -309,7 +309,7 @@
                             </button>
                         </div>
                         <div class="container-fluid" style="text-align: center">
-                            @foreach (var item in Model.Entity.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+                            @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
                             {
                             <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
                                 <div class="card-header">
@@ -373,7 +373,7 @@
         $(document).ready(function() { chart(); });
 
         function chart() {
-            var accounts = @Html.Raw(Json.Encode(@Model.Entity.Accounts.OrderByDescending(a => a.Balance).Take(8)));
+            var accounts = @Html.Raw(Json.Encode(@Model.Accounts.OrderByDescending(a => a.Balance).Take(8)));
             var dataTable = new google.visualization.DataTable();
             var accountsLength = Object.keys(accounts).length;
             var accountsArray = new Array(accountsLength);

@@ -6,6 +6,7 @@ using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
@@ -23,8 +24,8 @@ namespace JPFData.Managers
        private methods
        */
         private readonly ApplicationDbContext _db;
-        private readonly Calculations _calc;
         private readonly string _userId;
+        private readonly Calculations _calc;
 
 
         public AccountManager()
@@ -39,34 +40,30 @@ namespace JPFData.Managers
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public AccountDTO Get(AccountDTO entity)
+        public List<Account> GetAllAccounts()
         {
             try
             {
-                Logger.Instance.DataFlow($"Get");
-                entity.Accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
-                Logger.Instance.DataFlow($"Pull list of Accounts from DB");
-                entity.Metrics = RefreshAccountMetrics(entity);
-                Logger.Instance.DataFlow($"Refresh Account metrics");
-                entity.RebalanceReport = _calc.GetRebalancingAccountsReport(entity);
-                Logger.Instance.DataFlow($"Get rebalancing accounts report");
+                Logger.Instance.DataFlow($"Return list of Accounts");
+                return _db.Accounts.Where(a => a.UserId == _userId).ToList();
+
+                //accountVM.Metrics = RefreshAccountMetrics(accountVM);
+                //accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport(accountVM);
+                //Logger.Instance.DataFlow($"Get rebalancing accounts report");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
+                throw;
             }
-
-
-            return entity;
         }
 
-        public Account Details(AccountDTO entity)
+        public Account GetAccount(int? id)
         {
             try
             {
-                Logger.Instance.DataFlow($"Details");
-                Logger.Instance.DataFlow($"Pull Account with Id of {entity.Account.Id} from DB");
-                return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
+                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                return _db.Accounts.Find(id);
             }
             catch (Exception e)
             {
@@ -75,11 +72,11 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Create(AccountDTO entity)
+        public bool Create(AccountViewModel accountVM)
         {
             try
             {
-                _db.Accounts.Add(entity.Account);
+                _db.Accounts.Add(accountVM.Account);
                 Logger.Instance.DataFlow($"New Account added to data context");
 
                 _db.SaveChanges();
@@ -95,12 +92,12 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Edit(AccountDTO entity)
+        public bool Edit(AccountViewModel accountVM)
         {
             try
             {
                 Logger.Instance.DataFlow($"Edit");
-                _db.Entry(entity.Account).State = EntityState.Modified;
+                _db.Entry(accountVM.Account).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Save Account changes to data context");
                 _db.SaveChanges();
                 Logger.Instance.DataFlow($"Save changes to DB");
@@ -114,19 +111,52 @@ namespace JPFData.Managers
             }
         }
 
-        private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
+        public bool Delete(int accountId)
+        {
+            try
+            {
+                Logger.Instance.DataFlow($"Pull Account with Id of {accountId} from DB");
+
+                Account account = _db.Accounts.Find(accountId);
+                if(account.IsPoolAccount)
+                    throw new NotImplementedException("Cannot delete pool account");
+
+                //Add the account balance to the pool account.  Should this be default, optional, or never?
+                //Account poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
+                //if (poolAccount != null) poolAccount.Balance += account.Balance;
+                //Logger.Instance.Info($"Transfers ${account.Balance} to pool account");
+
+                _db.Accounts.Remove(account);
+                //_db.Entry(poolAccount).State = EntityState.Modified;
+                Logger.Instance.Info($"Account with id of {accountId} has been flagged for removal from DB");
+
+
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public AccountMetrics GetAccountMetrics()
         {
             try
             {
                 Logger.Instance.DataFlow($"Refresh Account metrics");
                 AccountMetrics metrics = new AccountMetrics();
+                List<Account> accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
 
-                if (entity.Accounts.Count < 1) return metrics;
+                if (accounts.Count < 1) return metrics;
 
-                metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
-                metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
-                if (entity.Accounts.Count > 0)
-                    metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
+                metrics.LargestBalance = accounts.Max(a => a.Balance);
+                metrics.SmallestBalance = accounts.Min(a => a.Balance);
+                if (accounts.Count > 0)
+                    metrics.AverageBalance = accounts.Sum(a => a.Balance) / accounts.Count;
                 else
                     metrics.AverageBalance = 0;
                 var incomeTransactions = _db.Transactions.Where(t => t.Type == TransactionTypesEnum.Income);
@@ -137,12 +167,12 @@ namespace JPFData.Managers
                 var monthsAgo = daysAgo / 30 < 1 ? 1 : daysAgo / 30;
 
 
-                metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (entity.Accounts.Sum(a => a.PaycheckContribution) * 2);
-                metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus);
-                metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus);
-                var surplusAccounts = entity.Accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
-                    metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
-                metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
+                metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (accounts.Sum(a => a.PaycheckContribution) * 2);
+                metrics.LargestSurplus = accounts.Max(a => a.BalanceSurplus);
+                metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
+                var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
+                    metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
+                metrics.TotalBalance = accounts.Sum(a => a.Balance);
 
                 Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;

@@ -31,8 +31,8 @@ namespace JPFinancial.Controllers
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.Instance.Error(e);
+                return View(new BillViewModel());
             }
         }
 
@@ -53,6 +53,7 @@ namespace JPFinancial.Controllers
 
                 if (billVM.Bill != null)
                 {
+                    Logger.Instance.DataFlow($"BillViewModel returned to View");
                     return View(billVM);
                 }
 
@@ -142,6 +143,7 @@ namespace JPFinancial.Controllers
 
                 if (billVM.Bill == null)
                 {
+                    Logger.Instance.Debug("Returned Bill is null - (error)");
                     return HttpNotFound();
                 }
                 billVM.Bill.Account = _billManager.GetAllAccounts().Single(a => a.Id == billVM.Bill.AccountId);
@@ -177,7 +179,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return RedirectToAction("Index");
+                return View(new BillViewModel());
             }
         }
 
@@ -188,6 +190,7 @@ namespace JPFinancial.Controllers
             {
                 if (id == null)
                 {
+                    Logger.Instance.Debug("Bill Id is null - (error)");
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
                 Bill bill = _billManager.GetBill(id);
@@ -195,6 +198,8 @@ namespace JPFinancial.Controllers
                 {
                     return HttpNotFound();
                 }
+
+
                 return View(bill);
             }
             catch (Exception e)

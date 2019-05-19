@@ -3,6 +3,7 @@ using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
+using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
@@ -12,7 +13,8 @@ namespace JPFinancial.Controllers
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-
+        private readonly  AccountManager _accountManager = new AccountManager();
+        private readonly Calculations _calc = new Calculations();
 
         // GET: Accounts
         public ActionResult Index()
@@ -21,11 +23,11 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Index");
                 AccountViewModel accountVM = new AccountViewModel();
-                accountVM.EventArgument = EventArgumentEnum.Read;
-                accountVM.EventCommand = EventCommandEnum.Get;
-                accountVM.HandleRequest();
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.Metrics = _accountManager.GetAccountMetrics();
+                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
-                Logger.Instance.DataFlow($"AccountViewModel returned to View");
+                
                 //TODO: Add ability to show X number of Accounts
                 return View(accountVM);
             }
@@ -43,9 +45,10 @@ namespace JPFinancial.Controllers
             try
             {
                 Logger.Instance.DataFlow($"Index (w/ VM)");
-                accountVM.EventArgument = EventArgumentEnum.Read;
-                accountVM.EventCommand = EventCommandEnum.Get;
-                accountVM.HandleRequest();
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.Metrics = _accountManager.GetAccountMetrics();
+                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
+
                 ModelState.Clear();
                 Logger.Instance.DataFlow($"ModelState cleared");
 
@@ -66,19 +69,17 @@ namespace JPFinancial.Controllers
             try
             {
                 Logger.Instance.DataFlow($"Details");
-                if (id == null)
+                if (id == null) 
                 {
                     Logger.Instance.Debug("Account ID is null");
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
+
                 AccountViewModel accountVM = new AccountViewModel();
-                accountVM.EventArgument = EventArgumentEnum.Read;
-                accountVM.EventCommand = EventCommandEnum.Details;
-                accountVM.Entity.Account = _db.Accounts.Find(id);
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                accountVM.Account = _accountManager.GetAccount(id);
 
 
-                if (accountVM.Entity.Account != null)
+                if (accountVM.Account != null)
                 {
                     Logger.Instance.DataFlow($"AccountViewModel returned to View");
                     return View(accountVM);
@@ -98,9 +99,19 @@ namespace JPFinancial.Controllers
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            var accountVM = new AccountViewModel();
-            accountVM.Entity.Account.UserId = Global.Instance.User.Id;
-            return View(accountVM);
+            try
+            {
+                AccountViewModel accountVM = new AccountViewModel();
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+
+
+                return View(accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         // POST: Accounts/Create
@@ -114,11 +125,9 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(accountVM);
+                if (!_accountManager.Create(accountVM)) return View(accountVM);
 
-                accountVM.EventArgument = EventArgumentEnum.Create;
-                if(!accountVM.HandleRequest()) return View(accountVM);
 
-                Logger.Instance.DataFlow($"Redirect to Account.Index View");
                 return RedirectToAction("Index");
             }
             catch (Exception e)
@@ -133,23 +142,24 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Edit - load");
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
+
                 AccountViewModel accountVM = new AccountViewModel();
-                accountVM.Entity.Account = _db.Accounts.Find(id);
+                accountVM.Account = _db.Accounts.Find(id);
                 Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
 
-                if (accountVM.Entity.Account == null)
+                if (accountVM.Account == null)
                 {
                     Logger.Instance.Debug("Returned Account is null - (error)");
                     return HttpNotFound();
                 }
 
+                accountVM.Accounts = _accountManager.GetAllAccounts();
 
-                Logger.Instance.DataFlow($"AccountViewModel returned to View");
+
                 return View(accountVM);
             }
             catch (Exception e)
@@ -168,18 +178,11 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Edit - save");
                 if (!ModelState.IsValid) return View(accountVM);
-                accountVM.EventArgument = EventArgumentEnum.Update;
-                accountVM.EventCommand = EventCommandEnum.Edit;
-                if (accountVM.HandleRequest())
-                {
-                    Logger.Instance.DataFlow($"Redirect to Account.Index View");
+                if (_accountManager.Edit(accountVM))
                     return RedirectToAction("Index");
-                }
 
 
-                Logger.Instance.DataFlow($"AccountViewModel returned to View - (error)");
                 return View(accountVM);
             }
             catch (Exception e)
@@ -194,23 +197,19 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Delete - confirm");
                 if (id == null)
                 {
                     Logger.Instance.Debug("Account Id is null - (error)");
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
 
-                Account account = _db.Accounts.Find(id);
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                Account account = _accountManager.GetAccount(id);
                 if (account == null)
                 {
-                    Logger.Instance.Debug("Returned Account is null - (error)");
                     return HttpNotFound();
                 }
 
 
-                Logger.Instance.DataFlow($"Account returned to View");
                 return View(account);
             }
             catch (Exception e)
@@ -227,17 +226,18 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Delete - remove account");
-                Account account = _db.Accounts.Find(id);
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
-                _db.Accounts.Remove(account);
-                Logger.Instance.DataFlow($"Remove Account from data context");
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Changes saved to DB");
+                if (_accountManager.Delete(id))
+                    return RedirectToAction("Index");
+
+                // Send Account back to Delete View if delete failed
+                Account account = _accountManager.GetAccount(id);
+                if (account == null)
+                {
+                    return HttpNotFound();
+                }
 
 
-                Logger.Instance.DataFlow($"Redirect to Account.Index View");
-                return RedirectToAction("Index");
+                return View("Index");
             }
             catch (Exception e)
             {
@@ -252,12 +252,8 @@ namespace JPFinancial.Controllers
             try
             {
                 Logger.Instance.DataFlow($"Update");
-                vm.EventArgument = EventArgumentEnum.Update;
-                vm.EventCommand = EventCommandEnum.Update;
-                vm.HandleRequest();
+                _accountManager.Update();
 
-
-                Logger.Instance.DataFlow($"Redirect to Account.Index View with passed AccountViewModel");
                 return RedirectToAction("Index", vm);
             }
             catch (Exception e)
@@ -273,12 +269,9 @@ namespace JPFinancial.Controllers
             try
             {
                 Logger.Instance.DataFlow($"Rebalance");
-                vm.EventArgument = EventArgumentEnum.Update;
-                vm.EventCommand = EventCommandEnum.Rebalance;
-                vm.HandleRequest();
+                _accountManager.Rebalance();
 
 
-                Logger.Instance.DataFlow($"Redirect to Account.Index View with passed AccountViewModel");
                 return RedirectToAction("Index", vm);
             }
             catch (Exception e)

@@ -15,7 +15,7 @@ namespace JPFData.DTO
             Metrics = new TransactionMetrics();
             try
             {
-                Accounts = new AccountManager().Get(new AccountDTO()).Accounts;
+                Accounts = new AccountManager().GetAllAccounts();
                 CreditCards = new CreditCardManager().Get(new CreditCardDTO()).CreditCards;
                 BillsOutstanding = new ExpenseManager().GetOutstandingBills();
                 FilterOptions = GetFilterOptions();

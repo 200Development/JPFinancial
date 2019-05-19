@@ -17,7 +17,7 @@ namespace JPFData.Managers
         public BillManager()
         {
             _db = new ApplicationDbContext();
-            _userId = Global.Instance.User.Id;
+            _userId = Global.Instance.User.Id ?? string.Empty;
         }
 
 
@@ -45,7 +45,7 @@ namespace JPFData.Managers
         {
             try
             {
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                Logger.Instance.DataFlow($"Pull Bill with ID {id} from DB and set to BillViewModel.Account");
                 return _db.Bills.Find(id);
             }
             catch (Exception e)
@@ -86,7 +86,7 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Save Account changes to data context");
                 _db.SaveChanges();
                 Logger.Instance.DataFlow($"Save changes to DB");
-
+                
 
                 return true;
             }
@@ -110,7 +110,7 @@ namespace JPFData.Managers
 
                 Bill bill = _db.Bills.Find(billId);
                 _db.Bills.Remove(bill);
-                Logger.Instance.Info($"Flagged to remove bill with id of {bill.Id} from DB");
+                Logger.Instance.Info($"Bill with id of {bill.Id} has been flagged for removal from DB");
 
 
                 _db.SaveChanges();
@@ -166,8 +166,10 @@ namespace JPFData.Managers
             }
         }
 
+        //TODO:update to not take any parameters
         private BillMetrics RefreshBillMetrics(BillViewModel billVM)
         {
+
             BillMetrics metrics = new BillMetrics();
 
             try
