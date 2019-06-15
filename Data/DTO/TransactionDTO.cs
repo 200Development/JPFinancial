@@ -17,7 +17,7 @@ namespace JPFData.DTO
             {
                 Accounts = new AccountManager().GetAllAccounts();
                 CreditCards = new CreditCardManager().Get(new CreditCardDTO()).CreditCards;
-                BillsOutstanding = new ExpenseManager().GetOutstandingBills();
+                BillsOutstanding = new BillManager().GetOutstandingBills();
                 FilterOptions = GetFilterOptions();
             }
             catch (Exception)

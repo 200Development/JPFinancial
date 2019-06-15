@@ -17,7 +17,7 @@ namespace JPFData.Managers
         public BillManager()
         {
             _db = new ApplicationDbContext();
-            _userId = Global.Instance.User.Id ?? string.Empty;
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
 
@@ -59,12 +59,11 @@ namespace JPFData.Managers
         {
             try
             {
+
+                if (!AddBill(billVM)) return false;
+
                 if (!AddBillToExpenses(billVM.Bill)) return false;
 
-                _db.Bills.Add(billVM.Bill);
-                Logger.Instance.DataFlow($"New Bill added to data context");
-
-                _db.SaveChanges();
                 Logger.Instance.DataFlow($"Saved changes to DB");
 
                 
@@ -138,6 +137,23 @@ namespace JPFData.Managers
             }
         }
 
+        private bool AddBill(BillViewModel billVM)
+        {
+            try
+            {
+                _db.Bills.Add(billVM.Bill);
+                Logger.Instance.DataFlow($"New Bill added to data context");
+                _db.SaveChanges();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
         //TODO: Refactor or redesign to prevent having to use new Expense Class
         private bool AddBillToExpenses(Bill bill)
         {
@@ -149,6 +165,7 @@ namespace JPFData.Managers
                 expense.Amount = bill.AmountDue;
                 expense.Due = bill.DueDate;
                 expense.IsPaid = false;
+                expense.UserId = _userId;
 
                 _db.Expenses.Add(expense);
                 Logger.Instance.DataFlow($"New Expense added to data context");
@@ -189,18 +206,34 @@ namespace JPFData.Managers
             return metrics;
         }
 
-        public Bill Details(BillViewModel billVM)
+        public IEnumerable<OutstandingExpense> GetOutstandingBills()
         {
             try
             {
-                Logger.Instance.DataFlow($"Details");
-                Logger.Instance.DataFlow($"Pull Bill with Id of {billVM.Bill.Id} from DB");
-                return _db.Bills.FirstOrDefault(b => b.Id == billVM.Bill.Id);
+                var ret = new List<OutstandingExpense>();
+                Logger.Instance.DataFlow($"Get");
+
+                // Get all bill expenses that have not yet been paid
+                var expenses = _db.Expenses.Where(e => e.BillId > 0 && !e.IsPaid).ToList();
+                Logger.Instance.DataFlow($"Pulled list of bill expenses from DB that haven't been paid");
+                //var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
+
+                foreach (var expense in expenses)
+                {
+                    var newExpense = new OutstandingExpense();
+                    newExpense.Id = expense.Id;
+                    newExpense.Name = $"{expense.Name} - {expense.Amount} Due {expense.Due.ToShortDateString()}";
+                    newExpense.DueDate = expense.Due;
+
+                    ret.Add(newExpense);
+                }
+
+                return ret;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                throw;
+                return new List<OutstandingExpense>();
             }
         }
     }

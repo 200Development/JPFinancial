@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
@@ -32,7 +31,7 @@ namespace JPFData.Managers
         {
             _db = new ApplicationDbContext();
             _calc = new Calculations();
-            _userId = Global.Instance?.User.Id ?? string.Empty;
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
@@ -172,7 +171,7 @@ namespace JPFData.Managers
                 metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
                 var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
-                metrics.TotalBalance = accounts.Sum(a => a.Balance);
+                metrics.CashBalance = accounts.Sum(a => a.Balance);
 
                 Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;

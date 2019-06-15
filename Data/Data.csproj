@@ -140,6 +140,10 @@
     <Compile Include="Migrations\201905140154286_addUserIdToBill.Designer.cs">
       <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201905191542532_addUserIdToExpense.cs" />
+    <Compile Include="Migrations\201905191542532_addUserIdToExpense.Designer.cs">
+      <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
     <Compile Include="Models\Email\SendGridEmailService.cs" />
@@ -224,6 +228,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905140154286_addUserIdToBill.resx">
       <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201905191542532_addUserIdToExpense.resx">
+      <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
