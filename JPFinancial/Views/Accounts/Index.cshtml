@@ -12,21 +12,21 @@
         <div class="row" style="margin: 0 0 12px 16px">
             <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
         </div>
-        <div class="col-lg-3 col-sm-6">
+        <div class="col-lg-4 col-sm-6">
             <div class="card">
                 <div class="content">
                     <div class="row">
                         <div class="col-xs-5">
                             <div class="icon-big icon-success text-center">
-                                @if (Model.Metrics.TotalBalance > 0)
+                                @if (Model.Metrics.CashBalance > 0)
                                 {
                                     <i class="ti-face-smile icon-success"></i>
                                 }
-                                @if (Model.Metrics.TotalBalance == 0)
+                                @if (Model.Metrics.CashBalance == 0)
                                 {
                                     <i class="ti-face-smile icon-warning"></i>
                                 }
-                                @if (Model.Metrics.TotalBalance < 0)
+                                @if (Model.Metrics.CashBalance < 0)
                                 {
                                     <i class="ti-face-sad icon-danger"></i>
                                 }
@@ -35,54 +35,54 @@
                         <div class="col-xs-7">
                             <div class="numbers">
                                 <p>Cash Balance</p>
-                                @Html.DisplayFor(model => model.Metrics.TotalBalance)
+                                @Html.DisplayFor(model => model.Metrics.CashBalance)
                             </div>
                         </div>
                     </div>
                     <div class="footer">
                         <hr />
                         <div class="stats">
-                            <span style="margin-right: 8px">Surplus:</span>
-                            @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
+                            @*<span style="margin-right: 8px">Surplus:</span>
+                            @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)*@
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        @if (Model.RebalanceReport.AccountsWithDeficit.Count == 0)
+        @if (Model.Metrics.AccountingBalance >= 0)
         {
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
                             <div class="col-xs-5">
                                 <div class="icon-big icon-success text-center">
-                                    <i class="ti-thumb-up"></i>
+                                    <i class="ti-thumb-down"></i>
                                 </div>
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Account Deficits</p>
-                                    @Html.DisplayFor(model => model.RebalanceReport.AccountsWithDeficit.Count)
+                                    <p>Accounting Balance</p>
+                                    @Html.DisplayFor(model => model.Metrics.AccountingBalance)
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)
+                                @*<span style="margin-right: 12px">Total Deficit</span>
+                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)*@
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         }
-
-        @if (Model.RebalanceReport.AccountsWithDeficit.Count > 0)
+        
+        @if (Model.Metrics.AccountingBalance < 0)
         {
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
@@ -93,16 +93,16 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Account Deficits</p>
-                                    @Html.DisplayFor(model => model.RebalanceReport.AccountsWithDeficit.Count)
+                                    <p>Accounting Balance</p>
+                                    @Html.DisplayFor(model => model.Metrics.AccountingBalance)
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)
+                                @*<span style="margin-right: 12px">Total Deficit</span>
+                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)*@
                             </div>
                         </div>
                     </div>
@@ -110,9 +110,9 @@
             </div>
         }
 
-        @if (Model.Metrics.MonthlySurplus > 0)
+        @if (Model.Metrics.SpendableCash >= 0)
         {
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
@@ -123,8 +123,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Monthly Surplus</p>
-                                    @Html.DisplayFor(model => model.Metrics.MonthlySurplus)
+                                    <p style="width: 100%">Spendable Cash</p>
+                                    @Html.DisplayFor(model => model.Metrics.SpendableCash)
                                 </div>
                             </div>
                         </div>
@@ -136,9 +136,9 @@
                 </div>
             </div>
         }
-        @if (Model.Metrics.MonthlySurplus < 0)
+        @if (Model.Metrics.SpendableCash < 0)
         {
-            <div class="col-lg-3 col-sm-6">
+            <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
@@ -149,35 +149,8 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Monthly Deficit</p>
-                                    @Html.DisplayFor(model => model.Metrics.MonthlySurplus)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        @if (Model.Metrics.MonthlySurplus == 0)
-        {
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-receipt"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p style="width: 100%">Monthly Surplus</p>
-                                    Balanced
+                                    <p style="width: 100%">Spendable Cash</p>
+                                    @Html.DisplayFor(model => model.Metrics.SpendableCash)
                                 </div>
                             </div>
                         </div>
@@ -192,7 +165,7 @@
         }
 
 
-        @if (Model.RebalanceReport.TotalSurplus > 0)
+        @*@if (Model.RebalanceReport.TotalSurplus > 0)
         {
             <div class="col-lg-3 col-sm-6">
                 <div class="card">
@@ -272,7 +245,7 @@
                     </div>
                 </div>
             </div>
-        }
+        }*@
         </div>
         
             <div class="row">
@@ -286,7 +259,7 @@
                             <div class="footer">
                                 <hr />
                                 <div class="stats">
-                                    <i class="ti-reload"></i> Updated 3 minutes ago
+                                  @*  <i class="ti-reload"></i> Updated 3 minutes ago*@
                                 </div>
                             </div>
                         </div>
@@ -387,11 +360,11 @@
             accountsArray = accountsArray.filter(function(n) { return n != undefined });
 
             //Set the graph X (Account) and Y (CurrentBalance) values
-            var data = [['Account', 'CurrentBalance']];
+            var data = [['Account', 'Current Balance']];
 
             //Iterate through Accounts array to add each account to the graph.
             for (var i = 0; i < accountsArray.length; i++) {
-                if(accountsArray[i]['Balance'] === 0)continue; //Exclude any Accounts with a balance of $0.00
+                if (accountsArray[i]['Balance'] === 0) continue; //Exclude any Accounts with a balance of $0.00
                 data.push([accountsArray[i]['Name'], accountsArray[i]['Balance']]);
             };
 
@@ -430,6 +403,12 @@
                     left: 50,
                     top: 25,
                     height: "85%"
+                },
+
+                vAxis: {
+                    gridlines: {
+                        color: "transparent"
+                    }
                 }
             };
 

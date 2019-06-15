@@ -48,7 +48,7 @@
                 @Html.EditorFor(model => model.Account.RequiredSavings, new { htmlAttributes = new { @class = "form-control" } })
                 @Html.ValidationMessageFor(model => model.Account.RequiredSavings, "", new { @class = "text-danger" })
             </div>
-        </div>
+        </div>*@
 
         <div class="form-group">
             @Html.LabelFor(model => model.Account.IsPoolAccount, "Is this the account where you want to pool your money?", htmlAttributes: new { @class = "control-label col-md-2" })
@@ -57,7 +57,7 @@
             </div>
         </div>
 
-        <div class="form-group">
+        @*<div class="form-group">
             @Html.LabelFor(model => model.Account.ExcludeFromSurplus, "Exclude from Surplus Calculations?", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
                 @Html.CheckBoxFor(model => model.Account.ExcludeFromSurplus, new { htmlAttributes = new { @class = "form-control" } })
