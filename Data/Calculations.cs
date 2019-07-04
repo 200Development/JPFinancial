@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
-using JPFData.ViewModels;
 
 namespace JPFData
 {
@@ -354,7 +352,10 @@ namespace JPFData
                 /*  */
                 var accountManager = new AccountManager();
                 var accounts = accountManager.GetAllAccounts();
-           
+
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
+
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
                 {
@@ -362,7 +363,8 @@ namespace JPFData
                 }
 
                 // update suggested paycheck contributions for bills
-                foreach (var bill in _db.Bills.ToList())
+                //
+                foreach (var bill in bills)
                 {
                     var billTotal = bill.AmountDue;
                     Logger.Instance.Calculation($"{billTotal} due on {bill.DueDate} for {bill.Name}");
@@ -552,9 +554,11 @@ namespace JPFData
             {
                 Logger.Instance.Calculation($"UpdatePaycheckContributions");
                 // Update the suggested paycheck contributions to ensure freshest metrics
+                var accountManager = new AccountManager();
+
                 if (!new Calculations().UpdateSuggestedPaycheckContributions()) return false;
 
-                var accounts = _db.Accounts.Where(a => !a.ExcludeFromSurplus).Where(a => a.SuggestedPaycheckContribution > 0).ToList();
+                var accounts = accountManager.GetPaycheckContributions();
                 foreach (var account in accounts)
                 {
                     var originalContribution = account.PaycheckContribution;
@@ -563,7 +567,9 @@ namespace JPFData
                     Logger.Instance.Calculation($"{account.Name} paycheck contribution {Math.Round((decimal)originalContribution, 2)} => {Math.Round((decimal)account.PaycheckContribution, 2)}");
                 }
 
-                _db.SaveChanges();
+                if (accounts.Count > 0)
+                    _db.SaveChanges();
+
                 return true;
             }
             catch (Exception e)
@@ -734,13 +740,14 @@ namespace JPFData
                 var savingsAccountBalances = new Dictionary<string, decimal>();
                 ExpenseManager expenseManager = new ExpenseManager();
                 AccountManager accountManager = new AccountManager();
-                List<Expense> expenses = expenseManager.GetAllExpenses();
+                BillManager billManager = new BillManager();
+                List<Expense> unpaidExpenses = expenseManager.GetAllUnpaidExpenses();
                 List<Account> accounts = accountManager.GetAllAccounts();
 
                 //foreach (var bill in _db.Bills.ToList())
-                foreach (var expense in expenses.Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList())
+                foreach (var expense in unpaidExpenses)
                 {
-                    var bill = _db.Bills.FirstOrDefault(b => b.Id == expense.BillId);
+                    var bill = billManager.GetBill(expense.BillId);
                     if (bill == null)
                     {
                         Logger.Instance.Debug($"No Bill found WHERE expense.BillId = {expense.BillId}");
