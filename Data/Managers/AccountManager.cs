@@ -117,7 +117,7 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Pull Account with Id of {accountId} from DB");
 
                 Account account = _db.Accounts.Find(accountId);
-                if(account.IsPoolAccount)
+                if (account.IsPoolAccount)
                     throw new NotImplementedException("Cannot delete pool account");
 
                 //Add the account balance to the pool account.  Should this be default, optional, or never?
@@ -148,7 +148,8 @@ namespace JPFData.Managers
             {
                 Logger.Instance.DataFlow($"Refresh Account metrics");
                 AccountMetrics metrics = new AccountMetrics();
-                List<Account> accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                BillManager billManager = new BillManager();
+                List<Account> accounts = GetAllAccounts();
 
                 if (accounts.Count < 1) return metrics;
 
@@ -171,7 +172,13 @@ namespace JPFData.Managers
                 metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
                 var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
-                metrics.CashBalance = accounts.Sum(a => a.Balance);
+
+                var sumOfAccountBalances = accounts.Sum(a => a.Balance);
+                var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
+
+                metrics.CashBalance = sumOfAccountBalances;
+                metrics.AccountingBalance = sumOfAccountBalances - outstandingExpenses;
+                metrics.SpendableCash = accounts.Sum(a => a.BalanceSurplus); // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
 
                 Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;
@@ -180,6 +187,19 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return null;
+            }
+        }
+
+        public IList<Account> GetPaycheckContributions()
+        {
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == Global.Instance.User.Id).Where(a => !a.ExcludeFromSurplus).Where(a => a.SuggestedPaycheckContribution > 0).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return new List<Account>();
             }
         }
 
