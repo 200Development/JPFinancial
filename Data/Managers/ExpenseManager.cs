@@ -39,6 +39,18 @@ namespace JPFData.Managers
         {
             throw new NotImplementedException();
         }
-       
+
+        public List<Expense> GetAllUnpaidExpenses()
+        {
+            try
+            {
+                return _db.Expenses.Where(e => e.UserId == Global.Instance.User.Id).Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
     }
 }
