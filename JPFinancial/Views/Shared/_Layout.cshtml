@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Activities.Statements
+@using JPFData
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -109,9 +111,13 @@
             </div>
         </div>
         @*Left Side Nav End*@
+       
         <div class="main-panel">
+           
             <nav class="navbar navbar-default">
+
                 <div class="container-fluid">
+
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle">
                             <span class="sr-only">Toggle navigation</span>
@@ -121,11 +127,24 @@
                         </button>
                         @*  <a class="navbar-brand" href="#">Dashboard</a>*@
                     </div>
+
                     <div class="collapse navbar-collapse">
+                        <div style="float: left">
+                            @if (Global.Instance.User != null && Global.Instance.User.Id != "")
+                            {
+                                <h4>Welcome @Global.Instance.User.UserName</h4>
+                            }
+                        </div>
                         <ul class="nav navbar-nav navbar-right">
-                            <li>@Html.ActionLink("Logout", "LogOff", "Identity")</li>
-                            <li>@Html.ActionLink("Login", "Login", "Identity")</li>
-                            <li>@Html.ActionLink("Register", "Register", "Identity")</li>
+                            @if (Global.Instance.User == null || Global.Instance.User.Id == "")
+                            {
+                                <li>@Html.ActionLink("Login", "Login", "Identity")</li>
+                                <li>@Html.ActionLink("Register", "Register", "Identity")</li>
+                            }
+                            @if (Global.Instance.User != null && Global.Instance.User.Id != "")
+                            {
+                                <li>@Html.ActionLink("Logout", "LogOff", "Identity")</li>
+                            }
                         </ul>
                     </div>
                 </div>
@@ -133,7 +152,7 @@
 
             @RenderBody()
 
-            <hr />
+            <hr/>
             <div class="col-md-12 col-lg-12 row">
                 <footer>
                     <p>&copy; @DateTime.Now.Year - J R Parsons, LLC</p>
