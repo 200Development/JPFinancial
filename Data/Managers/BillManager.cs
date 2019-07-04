@@ -21,18 +21,19 @@ namespace JPFData.Managers
         }
 
 
-        public BillViewModel GetAllBills(BillViewModel billVM)
+        public List<Bill> GetAllBills()
         {
             try
             {
-                Logger.Instance.DataFlow($"Get");
-                billVM.Bills = _db.Bills.Where(b => b.UserId == _userId).ToList();
-                Logger.Instance.DataFlow($"Pull list of Bills from DB");
-                billVM.Metrics = RefreshBillMetrics(billVM);
-                Logger.Instance.DataFlow($"Refresh Bill metrics");
 
-                
-                return billVM;
+                Logger.Instance.DataFlow($"Return list of Bills");
+                return _db.Bills.Where(b => b.UserId == _userId).ToList();
+                //Logger.Instance.DataFlow($"Pull list of Bills from DB");
+                //billVM.Metrics = RefreshBillMetrics(billVM);
+                //Logger.Instance.DataFlow($"Refresh Bill metrics");
+
+
+                //return billVM;
             }
             catch (Exception e)
             {
@@ -184,17 +185,17 @@ namespace JPFData.Managers
         }
 
         //TODO:update to not take any parameters
-        private BillMetrics RefreshBillMetrics(BillViewModel billVM)
+        public BillMetrics GetBillMetrics()
         {
-
+            List<Bill> bills = _db.Bills.Where(b => b.UserId == _userId).ToList();
             BillMetrics metrics = new BillMetrics();
 
             try
             {
-                metrics.LargestBalance = billVM.Bills.Max(b => b.AmountDue);
-                metrics.SmallestBalance = billVM.Bills.Min(b => b.AmountDue);
-                metrics.TotalBalance = billVM.Bills.Sum(b => b.AmountDue);
-                metrics.AverageBalance = billVM.Bills.Sum(b => b.AmountDue) / billVM.Bills.Count;
+                metrics.LargestBalance = bills.Max(b => b.AmountDue);
+                metrics.SmallestBalance = bills.Min(b => b.AmountDue);
+                metrics.TotalBalance = bills.Sum(b => b.AmountDue);
+                metrics.AverageBalance = bills.Sum(b => b.AmountDue) / bills.Count;
             }
             catch (Exception e)
             {
@@ -214,7 +215,7 @@ namespace JPFData.Managers
                 Logger.Instance.DataFlow($"Get");
 
                 // Get all bill expenses that have not yet been paid
-                var expenses = _db.Expenses.Where(e => e.BillId > 0 && !e.IsPaid).ToList();
+                var expenses = _db.Expenses.Where(e => e.UserId == Global.Instance.User.Id).Where(e => e.BillId > 0 && !e.IsPaid).ToList();
                 Logger.Instance.DataFlow($"Pulled list of bill expenses from DB that haven't been paid");
                 //var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
 
@@ -224,6 +225,7 @@ namespace JPFData.Managers
                     newExpense.Id = expense.Id;
                     newExpense.Name = $"{expense.Name} - {expense.Amount} Due {expense.Due.ToShortDateString()}";
                     newExpense.DueDate = expense.Due;
+                    newExpense.AmountDue = expense.Amount;
 
                     ret.Add(newExpense);
                 }
@@ -234,6 +236,20 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return new List<OutstandingExpense>();
+            }
+        }
+
+        public decimal GetOutstandingExpenseTotal()
+        {
+            try
+            {
+                var outstandingBills = GetOutstandingBills();
+                return outstandingBills.Sum(b => b.AmountDue);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return 0m;
             }
         }
     }
