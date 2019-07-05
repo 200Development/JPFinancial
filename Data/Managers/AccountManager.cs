@@ -179,6 +179,7 @@ namespace JPFData.Managers
                 metrics.CashBalance = sumOfAccountBalances;
                 metrics.AccountingBalance = sumOfAccountBalances - outstandingExpenses;
                 metrics.SpendableCash = accounts.Sum(a => a.BalanceSurplus); // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
+                metrics.OutstandingExpenses = outstandingExpenses;
 
                 Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;

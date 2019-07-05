@@ -14,6 +14,7 @@ namespace JPFData.Metrics
             SmallestSurplus = decimal.Zero;
             AverageSurplus = decimal.Zero;
             CashBalance = decimal.Zero;
+            OutstandingExpenses = decimal.Zero;
         }
 
 
@@ -49,5 +50,8 @@ namespace JPFData.Metrics
 
         [Display(Name = "Monthly Surplus"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal MonthlySurplus { get; set; }
+
+        [Display(Name = "Outstanding Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal OutstandingExpenses { get; set; }
     }
 }

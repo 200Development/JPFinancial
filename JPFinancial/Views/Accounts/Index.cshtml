@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-xs-7">
                             <div class="numbers">
-                                <p>Cash Balance</p>
+                                <p>@Html.LabelFor(model => model.Metrics.CashBalance)</p>
                                 @Html.DisplayFor(model => model.Metrics.CashBalance)
                             </div>
                         </div>
@@ -63,7 +63,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Accounting Balance</p>
+                                    <p>@Html.LabelFor(model => model.Metrics.AccountingBalance)</p>
                                     @Html.DisplayFor(model => model.Metrics.AccountingBalance)
                                 </div>
                             </div>
@@ -71,8 +71,8 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @*<span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)*@
+                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
                             </div>
                         </div>
                     </div>
@@ -93,7 +93,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p>Accounting Balance</p>
+                                    <p>@Html.LabelFor(model => model.Metrics.AccountingBalance)</p>
                                     @Html.DisplayFor(model => model.Metrics.AccountingBalance)
                                 </div>
                             </div>
@@ -101,8 +101,8 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                @*<span style="margin-right: 12px">Total Deficit</span>
-                                @Html.DisplayFor(model => model.RebalanceReport.Deficit)*@
+                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
                             </div>
                         </div>
                     </div>
@@ -123,7 +123,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Spendable Cash</p>
+                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.SpendableCash)</p>
                                     @Html.DisplayFor(model => model.Metrics.SpendableCash)
                                 </div>
                             </div>
@@ -149,7 +149,7 @@
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">Spendable Cash</p>
+                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.SpendableCash)</p>
                                     @Html.DisplayFor(model => model.Metrics.SpendableCash)
                                 </div>
                             </div>
