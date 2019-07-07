@@ -13,9 +13,6 @@ namespace JPFinancial
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
-
-            _calc.UpdateRequiredSavings();
-            _calc.UpdateBillDueDates();
         }
     }
 }
