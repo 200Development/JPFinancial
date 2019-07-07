@@ -95,12 +95,13 @@ namespace JPFData.Managers
         {
             try
             {
-                Logger.Instance.DataFlow($"Edit");
-                _db.Entry(accountVM.Account).State = EntityState.Modified;
-                Logger.Instance.DataFlow($"Save Account changes to data context");
-                _db.SaveChanges();
                 Logger.Instance.DataFlow($"Save changes to DB");
-                _calc.Update();
+                accountVM.Account.BalanceSurplus = _calc.UpdateAccountSurplus(accountVM.Account);
+
+                _db.Entry(accountVM.Account).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
                 return true;
             }
             catch (Exception e)
@@ -173,11 +174,11 @@ namespace JPFData.Managers
                 var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
 
-                var sumOfAccountBalances = accounts.Sum(a => a.Balance);
+                var cashBalance = accounts.Sum(a => a.Balance);
                 var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
 
-                metrics.CashBalance = sumOfAccountBalances;
-                metrics.AccountingBalance = sumOfAccountBalances - outstandingExpenses;
+                metrics.CashBalance = cashBalance;
+                metrics.AccountingBalance = cashBalance - outstandingExpenses;
                 metrics.SpendableCash = accounts.Sum(a => a.BalanceSurplus); // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
 
