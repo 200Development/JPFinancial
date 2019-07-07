@@ -858,28 +858,24 @@ namespace JPFData
             }
         }
 
-        public decimal UpdateAccountSurplus(Account account)
+        public decimal UpdateBalanceSurplus(Account account)
         {
-            // public because runs on startup with dbSave = true
             try
             {
-                Logger.Instance.Calculation($"UpdateBalanceSurplus");
-                var requiredSurplus = account.Balance - account.RequiredSavings;
+                if (account.Balance < 0.0m)
+                    return account.BalanceSurplus = account.Balance;
 
-                //TODO: Add comment for clarity
-                if (requiredSurplus <= 0)
-                    return requiredSurplus;
+                if (account.BalanceLimit > 0)
+                    return account.BalanceSurplus = account.Balance > account.BalanceLimit
+                        ? account.Balance - account.BalanceLimit
+                        : decimal.Zero;
 
-
-                if (account.Balance - account.BalanceLimit <= 0)
-                    return 0;
-
-                return account.Balance - account.BalanceLimit;
+                return account.Balance - account.RequiredSavings;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                throw;
+                return decimal.Zero;
             }
         }
 
