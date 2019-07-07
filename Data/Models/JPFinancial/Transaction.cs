@@ -4,20 +4,18 @@ using JPFData.Enumerations;
 
 namespace JPFData.Models.JPFinancial
 {
-    public class Transaction 
+    public class Transaction
     {
         public Transaction()
         {
-            UserId = string.Empty;
+            UserId = Global.Instance.User == null ? string.Empty : Global.Instance.User.Id;
             Date = DateTime.Today;
             Payee = string.Empty;
             Memo = string.Empty;
             CreditAccountId = 0;
             DebitAccountId = 0;
-            SelectedCreditCardAccountId = 0;
             SelectedExpenseId = 0;
             Amount = decimal.Zero;
-            UsedCreditCard = false;
         }
 
         [Required, Key]
@@ -40,7 +38,6 @@ namespace JPFData.Models.JPFinancial
 
         public int? CreditAccountId { get; set; }
         public int? DebitAccountId { get; set; }
-        public int? SelectedCreditCardAccountId { get; set; }
         public int? SelectedExpenseId { get; set; }
 
         [Required, DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
@@ -51,7 +48,7 @@ namespace JPFData.Models.JPFinancial
 
         [Display(Name = "To")]
         public Account DebitAccount { get; set; }
-   
+
         [Required, DataType(DataType.Currency)]
         public decimal Amount { get; set; }
 

@@ -2,10 +2,10 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 
 namespace JPFData.Managers
@@ -24,67 +24,57 @@ namespace JPFData.Managers
         private methods
         */
         private readonly ApplicationDbContext _db;
+        private readonly Calculations _calc;
         private readonly string _userId;
-        private List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
 
         public TransactionManager()
         {
             _db = new ApplicationDbContext();
-            _userId = Global.Instance.User?.Id ?? string.Empty;
-            ValidationErrors = new List<KeyValuePair<string, string>>();
+            _calc = new Calculations();
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
 
-        public TransactionDTO Get(TransactionDTO entity)
+        public List<Transaction> GetAllTransactions()
         {
-
             try
             {
-                entity.Transactions = _db.Transactions.Where(t => t.UserId == _userId).ToList();
-                Logger.Instance.DataFlow($"Selected all transactions from DB");
-                entity.Metrics = RefreshTransactionMetrics(entity);
-                Logger.Instance.DataFlow($"Refreshed transaction metrics");
-                return entity;
+                return _db.Transactions.Where(t => t.UserId == _userId).ToList();
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return null;
+                throw;
             }
         }
 
-        public Transaction GetTransaction(TransactionDTO entity)
+        public Transaction GetTransaction(int? id)
         {
             try
             {
-                Logger.Instance.DataFlow($"Get transaction with Id: {entity.Transaction.Id}");
-                return _db.Transactions.Find(entity.Transaction.Id);
+                return _db.Transactions.Find(id);
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return null;
+                throw;
             }
         }
 
-        public bool Create(TransactionDTO entity)
+        public bool Create(TransactionViewModel entity)
         {
-            //TODO: Create Transaction method needs to be more efficient.  Currently makes 5 calls to the DB. GetUsedAccounts(1),SetExpenseAsPaid(1),UpdateDbAccountBalances(2),AddTransactionToDb(1)
-
             try
             {
                 GetUsedAccounts(entity);
 
+
                 if (entity.Transaction.SelectedExpenseId != null)
-                    if (!SetExpenseAsPaid(entity.Transaction.SelectedExpenseId, EventArgumentEnum.Create)) return false;
+                    if (!SetExpenseToPaid(entity.Transaction.SelectedExpenseId)) return false;
 
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
-                Logger.Instance.DataFlow($"Account balances updated in data context");
 
-                if (!AddTransactionToDb(entity)) return false;
-                Logger.Instance.DataFlow($"Transaction added to database context");
-                return true;
+                return AddTransactionToDb(entity);
             }
             catch (Exception e)
             {
@@ -93,7 +83,7 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Edit(TransactionDTO entity)
+        public bool Edit(TransactionViewModel entity)
         {
             try
             {
@@ -116,14 +106,14 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Delete(Transaction entity)
+        public bool Delete(int id)
         {
             try
             {
-                Transaction transaction = _db.Transactions.Find(entity.Id);
+                Transaction transaction = _db.Transactions.Find(id);
 
                 if (transaction.SelectedExpenseId != null)
-                    if (!SetExpenseAsPaid(transaction.SelectedExpenseId, EventArgumentEnum.Delete)) return false;
+                    if (!SetExpenseToUnpaid(transaction.SelectedExpenseId)) return false;
 
                 if (!UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete)) return false;
                 _db.Transactions.Remove(transaction);
@@ -143,7 +133,7 @@ namespace JPFData.Managers
         /// Sets the Credit & Debit Accounts from passed Id's
         /// </summary>
         /// <param name="entity"></param>
-        private void GetUsedAccounts(TransactionDTO entity)
+        private void GetUsedAccounts(TransactionViewModel entity)
         {
             try
             {
@@ -181,7 +171,7 @@ namespace JPFData.Managers
 
                                 // Update Account's required savings
                                 new Calculations().UpdateRequiredSavings(transaction);
-                                transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
+                                transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
                                 _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
@@ -195,7 +185,7 @@ namespace JPFData.Managers
 
                                 // Update Account's required savings
                                 new Calculations().UpdateRequiredSavings(transaction);
-                                transaction.CreditAccount.BalanceSurplus = UpdateBalanceSurplus(transaction.CreditAccount);
+                                transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
                                 _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
@@ -234,7 +224,7 @@ namespace JPFData.Managers
                                             // Update Account's required savings
                                             new Calculations().UpdateRequiredSavings(transaction);
 
-                                            originalDebitAccount.BalanceSurplus = UpdateBalanceSurplus(originalDebitAccount);
+                                            originalDebitAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
                                         }
 
@@ -245,7 +235,7 @@ namespace JPFData.Managers
                                             // Update Account's required savings
                                             new Calculations().UpdateRequiredSavings(transaction);
 
-                                            originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
+                                            originalCreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
 
@@ -259,14 +249,14 @@ namespace JPFData.Managers
                                         if (originalDebitAccount != null)
                                         {
                                             originalDebitAccount.Balance += amountDifference;
-                                            originalDebitAccount.BalanceSurplus = UpdateBalanceSurplus(originalDebitAccount);
+                                            originalDebitAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
                                         }
 
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance -= amountDifference;
-                                            originalCreditAccount.BalanceSurplus = UpdateBalanceSurplus(originalCreditAccount);
+                                            originalCreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
 
@@ -289,7 +279,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddTransactionToDb(TransactionDTO entity)
+        private bool AddTransactionToDb(TransactionViewModel entity)
         {
             try
             {
@@ -320,27 +310,6 @@ namespace JPFData.Managers
             }
         }
 
-        //TODO: move to Calculations and replace existing Calculations.UpdateBalanceSurplus Method
-        private decimal UpdateBalanceSurplus(Account account)
-        {
-            try
-            {
-                if (account.Balance < 0.0m)
-                    return account.BalanceSurplus = account.Balance;
-
-                if (account.BalanceLimit > 0)
-                    return account.BalanceSurplus = account.Balance > account.BalanceLimit
-                        ? account.Balance - account.BalanceLimit
-                        : decimal.Zero;
-
-                return account.BalanceSurplus = account.Balance - account.RequiredSavings;
-            }
-            catch (Exception)
-            {
-                return decimal.Zero;
-            }
-        }
-
         public bool HandlePaycheckContributions(Transaction transaction)
         {
             try
@@ -350,25 +319,26 @@ namespace JPFData.Managers
                 var totalContributions = accountsWithContributions.Sum(a => a.PaycheckContribution);
                 if (totalContributions > transaction.Amount)
                 {
+                    // TODO: How to handle income not enough to cover all paycheck contributions
                 }
 
 
                 var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
                 if (poolAccount == null) return false;
 
-                /* Creates duplicate entry into pool account */
-                //poolAccount.Balance += transaction.Amount;
-                //_db.Entry(poolAccount).State = EntityState.Modified;
-                //_db.SaveChanges();
 
                 foreach (var account in accountsWithContributions)
                 {
-                    if (!TransferPaycheckContribution(poolAccount, account)) return false;
-                    if (!AddContributionTransactionToDb(transaction, account)) return false;
+                    Logger.Instance.Calculation($"PoolAccount.Balance = ${poolAccount.Balance}");
+                    Logger.Instance.Calculation($"Paycheck Contribution: {account.PaycheckContribution} transferred from Pool Account to {account.Name}");
+
+                    
+                    if (!UpdateAccountBalance(account, account.PaycheckContribution, AccountingTypes.Debit)) return false;
+                    if (!AddTransactionToDb(transaction, account)) return false;
                 }
 
 
-                return true;
+                return UpdateAccountBalance(poolAccount, totalContributions, AccountingTypes.Credit);
             }
             catch (Exception e)
             {
@@ -377,18 +347,25 @@ namespace JPFData.Managers
             }
         }
 
-        private bool TransferPaycheckContribution(Account poolAccount, Account account)
+        private bool UpdateAccountBalance(Account account, decimal amount, AccountingTypes type)
         {
             try
             {
-                var contribution = (decimal)account.PaycheckContribution;
-                poolAccount.Balance -= contribution;
-                account.Balance += contribution;
+                switch (type)
+                {
+                    case AccountingTypes.Debit:
+                        account.Balance += amount;
+                        break;
+                    case AccountingTypes.Credit:
+                        account.Balance -= amount;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException(nameof(type), type, null);
+                }
                 _db.Entry(account).State = EntityState.Modified;
-                _db.Entry(poolAccount).State = EntityState.Modified;
-
-
                 _db.SaveChanges();
+
+
                 return true;
             }
             catch (Exception e)
@@ -398,7 +375,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddContributionTransactionToDb(Transaction transaction, Account account)
+        private bool AddTransactionToDb(Transaction transaction, Account account)
         {
             try
             {
@@ -424,12 +401,10 @@ namespace JPFData.Managers
             }
         }
 
-        private bool SetExpenseAsPaid(int? expenseId, EventArgumentEnum eventArgument)
+        private bool SetExpenseToPaid(int? expenseId)
         {
             try
             {
-                if (eventArgument == EventArgumentEnum.Create)
-                {
                     var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
                     if (selectedExpense == null)
                     {
@@ -439,27 +414,10 @@ namespace JPFData.Managers
 
                     selectedExpense.IsPaid = true;
                     _db.Entry(selectedExpense).State = EntityState.Modified;
-
-
                     _db.SaveChanges();
+
+
                     return true;
-                }
-                else
-                {
-                    var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
-                    if (selectedExpense == null)
-                    {
-                        Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
-                        return true;
-                    }
-
-                    selectedExpense.IsPaid = false;
-                    _db.Entry(selectedExpense).State = EntityState.Modified;
-
-
-                    _db.SaveChanges();
-                    return true;
-                }
             }
             catch (Exception e)
             {
@@ -468,20 +426,32 @@ namespace JPFData.Managers
             }
         }
 
-        private bool Validate(Transaction entity)
+        private bool SetExpenseToUnpaid(int? expenseId)
         {
-            ValidationErrors.Clear();
-
-            if (string.IsNullOrEmpty(entity.Payee)) return ValidationErrors.Count == 0;
-            if (entity.Payee.ToLower() == entity.Payee)
+            try
             {
-                ValidationErrors.Add(new KeyValuePair<string, string>("Payee", "Payee must not be all lower case."));
-            }
+                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                if (selectedExpense == null)
+                {
+                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                    return true;
+                }
 
-            return ValidationErrors.Count == 0;
+                selectedExpense.IsPaid = false;
+                _db.Entry(selectedExpense).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
         }
 
-        private TransactionMetrics RefreshTransactionMetrics(TransactionDTO entity)
+        public TransactionMetrics GetMetrics()
         {
             try
             {
@@ -638,5 +608,11 @@ namespace JPFData.Managers
                 return null;
             }
         }
+    }
+
+    public enum AccountingTypes
+    {
+        Debit,
+        Credit
     }
 }

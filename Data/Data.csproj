@@ -118,7 +118,6 @@
     <Compile Include="Metrics\IncomeMetrics.cs" />
     <Compile Include="Metrics\StaticFinancialMetrics.cs" />
     <Compile Include="Metrics\TimePeriodFinancialMetrics.cs" />
-    <Compile Include="DTO\TransactionDTO.cs" />
     <Compile Include="Metrics\TransactionMetrics.cs" />
     <Compile Include="Enumerations\ExpenseTypeEnum.cs" />
     <Compile Include="Managers\AccountManager.cs" />
@@ -143,6 +142,14 @@
     <Compile Include="Migrations\201905191542532_addUserIdToExpense.cs" />
     <Compile Include="Migrations\201905191542532_addUserIdToExpense.Designer.cs">
       <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907070703522_addsIsBillToTransaction.cs" />
+    <Compile Include="Migrations\201907070703522_addsIsBillToTransaction.Designer.cs">
+      <DependentUpon>201907070703522_addsIsBillToTransaction.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201907070738322_removesFieldsFromTransaction.cs" />
+    <Compile Include="Migrations\201907070738322_removesFieldsFromTransaction.Designer.cs">
+      <DependentUpon>201907070738322_removesFieldsFromTransaction.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
@@ -231,6 +238,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201905191542532_addUserIdToExpense.resx">
       <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907070703522_addsIsBillToTransaction.resx">
+      <DependentUpon>201907070703522_addsIsBillToTransaction.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201907070738322_removesFieldsFromTransaction.resx">
+      <DependentUpon>201907070738322_removesFieldsFromTransaction.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

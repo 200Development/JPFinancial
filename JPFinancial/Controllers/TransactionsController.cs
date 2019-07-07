@@ -2,7 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Enumerations;
+using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
@@ -12,19 +12,19 @@ namespace JPFinancial.Controllers
     public class TransactionsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly TransactionManager _transactionManager = new TransactionManager();
+        private readonly AccountManager _accountManager = new AccountManager();
 
         // GET: Transactions
         public ActionResult Index()
         {
             try
             {
-                Logger.Instance.DataFlow($"Index");
                 TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.EventArgument = EventArgumentEnum.Read;
-                transactionVM.EventCommand = EventCommandEnum.Get;
-                transactionVM.HandleRequest();
+                transactionVM.Transactions = _transactionManager.GetAllTransactions();
+                transactionVM.Metrics = _transactionManager.GetMetrics();
 
-                Logger.Instance.DataFlow($"TransactionViewModel returned to View");
+
                 return View(transactionVM);
             }
             catch (Exception e)
@@ -37,9 +37,19 @@ namespace JPFinancial.Controllers
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            var transactionVM = new TransactionViewModel();
-            transactionVM.Entity.Transaction.UserId = Global.Instance.User.Id;
-            return View(transactionVM);
+            try
+            {
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                transactionVM.Accounts = _accountManager.GetAllAccounts();
+
+
+                return View(transactionVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return HttpNotFound();
+            }
         }
 
         // POST: Transactions/Create
@@ -51,15 +61,24 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Create");
+                ExpenseManager expenseManager = new ExpenseManager();
+                transactionVM.Transaction.UserId = Global.Instance.User.Id;
+                transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction.SelectedExpenseId).Name;
+
+                ModelState["Transaction.Payee"].Errors.Clear();
+                UpdateModel(transactionVM.Transaction); //throws invalidoperationexception
+
+
                 if (!ModelState.IsValid) return View(transactionVM);
+                if (!transactionVM.AutoTransferPaycheckContributions)
+                    _transactionManager.Create(transactionVM);
+                else
+                {
+                    if (!_transactionManager.Create(transactionVM) ||
+                        !_transactionManager.HandlePaycheckContributions(transactionVM.Transaction))
+                        return View(transactionVM);
+                }
 
-                transactionVM.Entity.Transaction.Type = transactionVM.Type;
-                transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
-                transactionVM.EventArgument = EventArgumentEnum.Create;
-
-                if (!transactionVM.HandleRequest()) return View(transactionVM);
-                Logger.Instance.DataFlow($"Return to index View");
                 return RedirectToAction("Index");
             }
             catch (Exception e)
@@ -74,19 +93,23 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Edit");
                 if (id == null)
                 {
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
                 }
                 TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.EventArgument = EventArgumentEnum.Update;
-                transactionVM.EventCommand = EventCommandEnum.Get;
-                transactionVM.Entity.Transaction.Id = (int)id;
-                transactionVM.HandleRequest();
+                AccountManager accountManager = new AccountManager();
+                transactionVM.Transaction = _transactionManager.GetTransaction(id);
 
-                if (transactionVM.Entity.Transaction != null) return View(transactionVM);
-                Logger.Instance.DataFlow($"Transaction returned is null.  return HttpNotFound to View");
+
+                if (transactionVM.Transaction == null)
+                {
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
+                }
+
+                transactionVM.Accounts = accountManager.GetAllAccounts();
+
                 return HttpNotFound();
             }
             catch (Exception e)
@@ -105,16 +128,12 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Edit");
                 if (!ModelState.IsValid) return View(transactionVM);
+                if (_transactionManager.Edit(transactionVM))
+                    return RedirectToAction("Index");
 
-                transactionVM.EventArgument = EventArgumentEnum.Update;
-                transactionVM.EventCommand = EventCommandEnum.Edit;
 
-                if (!transactionVM.HandleRequest()) return View(transactionVM);
-                Logger.Instance.DataFlow($"Redirected to Index");
-                return RedirectToAction("Index");
-
+                return View(transactionVM);
             }
             catch (Exception e)
             {
@@ -131,15 +150,16 @@ namespace JPFinancial.Controllers
                 if (id == null)
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
 
-                TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.Entity.Transaction.Id = (int)id;
-                transactionVM.EventArgument = EventArgumentEnum.Delete;
-                transactionVM.EventCommand = EventCommandEnum.Get;
+                Transaction transaction = _transactionManager.GetTransaction(id);
+                if (transaction == null)
+                {
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
+                }
 
 
-                return View(!transactionVM.HandleRequest()
-                    ? new Transaction()
-                    : transactionVM.Entity.Transaction);
+
+                return View(transaction);
             }
             catch (Exception e)
             {
@@ -155,20 +175,24 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.Entity.Transaction.Id = id;
-                transactionVM.EventArgument = EventArgumentEnum.Delete;
-                transactionVM.EventCommand = EventCommandEnum.Delete;
-                if (!transactionVM.HandleRequest())
-                    return View(transactionVM.Entity.Transaction);
+                if (_transactionManager.Delete(id))
+                    return RedirectToAction("Index");
+
+                // Send Transaction back to Delete View because Delete failed
+                Transaction transaction = _transactionManager.GetTransaction(id);
+                if (transaction == null)
+                {
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
+                }
 
 
-                return RedirectToAction("Index");
+                return View("Index");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new Transaction());
+                return RedirectToAction("Index");
             }
         }
 
