@@ -35,6 +35,19 @@ namespace JPFData.Managers
             }
         }
 
+        public Expense GetExpense(int? expenseId)
+        {
+            try
+            {
+                return _db.Expenses.Find(expenseId);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
         private ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
         {
             throw new NotImplementedException();
@@ -52,5 +65,7 @@ namespace JPFData.Managers
                 throw;
             }
         }
+
+     
     }
 }
