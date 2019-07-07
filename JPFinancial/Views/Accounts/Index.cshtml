@@ -9,7 +9,7 @@
     <div class="content">
         <div class="container-fluid">
         <div class="row">
-        <div class="row" style="margin: 0 0 12px 16px">
+        <div class="row" style="margin: 12px 0 12px 16px">
             <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
         </div>
         <div class="col-lg-4 col-sm-6">
@@ -42,8 +42,8 @@
                     <div class="footer">
                         <hr />
                         <div class="stats">
-                            @*<span style="margin-right: 8px">Surplus:</span>
-                            @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)*@
+                            <span style="margin-right: 8px">@Html.LabelFor(model => model.Metrics.SpendableCash):</span>
+                            @Html.DisplayFor(model => model.Metrics.SpendableCash)
                         </div>
                     </div>
                 </div>
@@ -71,8 +71,8 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
-                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
+                                @*<span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)*@
                             </div>
                         </div>
                     </div>
@@ -101,8 +101,8 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
-                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
+                                @*<span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)*@
                             </div>
                         </div>
                     </div>
@@ -110,21 +110,21 @@
             </div>
         }
 
-        @if (Model.Metrics.SpendableCash >= 0)
+        @if (Model.Metrics.OutstandingExpenses > 0)
         {
             <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
                             <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
+                                <div class="icon-big icon-danger text-center">
                                     <i class="ti-receipt"></i>
                                 </div>
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.SpendableCash)</p>
-                                    @Html.DisplayFor(model => model.Metrics.SpendableCash)
+                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</p>
+                                    @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
                                 </div>
                             </div>
                         </div>
@@ -136,21 +136,21 @@
                 </div>
             </div>
         }
-        @if (Model.Metrics.SpendableCash < 0)
+        @if (Model.Metrics.OutstandingExpenses <= 0)
         {
             <div class="col-lg-4 col-sm-6">
                 <div class="card">
                     <div class="content">
                         <div class="row">
                             <div class="col-xs-5">
-                                <div class="icon-big icon-danger text-center">
+                                <div class="icon-big icon-success text-center">
                                     <i class="ti-receipt"></i>
                                 </div>
                             </div>
                             <div class="col-xs-7">
                                 <div class="numbers">
-                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.SpendableCash)</p>
-                                    @Html.DisplayFor(model => model.Metrics.SpendableCash)
+                                    <p style="width: 100%">@Html.LabelFor(model => model.Metrics.OutstandingExpenses)</p>
+                                    @Html.DisplayFor(model => model.Metrics.OutstandingExpenses)
                                 </div>
                             </div>
                         </div>
@@ -164,90 +164,7 @@
             </div>
         }
 
-
-        @*@if (Model.RebalanceReport.TotalSurplus > 0)
-        {
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-envelope"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Disc Surplus</p>
-                                    @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        @if (Model.RebalanceReport.TotalSurplus < 0)
-        {
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-danger text-center">
-                                    <i class="ti-envelope"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Disc Deficit</p>
-                                    @Html.DisplayFor(model => model.RebalanceReport.TotalSurplus)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }
-        @if (Model.RebalanceReport.TotalSurplus == 0)
-        {
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-envelope"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Disc Surplus</p>
-                                    Balanced
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        }*@
         </div>
-        
             <div class="row">
                 <div class="col-md-12">
                     <div class="card">
@@ -294,7 +211,7 @@
                                     </div>
                                 </div>
                                 <div class="card-body" style="margin: 12px 0; text-align: center">
-                                    <div class="card-price"><span style="font-weight: bold">CurrentBalance:</span>&nbsp;$@item.Balance</div>
+                                    <div class="card-price"><span style="font-weight: bold">Balance:</span>&nbsp;$@item.Balance</div>
                                     @if (@item.BalanceSurplus > 0)
                                         {
                                         <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
@@ -311,10 +228,10 @@
                                 <div class="card-footer">
                                     <div class="card-text">
                                         <div style="float: left; font-size: .9em">
-                                            <span style="font-weight: bold">Paycheck:</span>&nbsp;$@item.PaycheckContribution
+                                            <span style="font-weight: bold">Required:</span>&nbsp;$@item.RequiredSavings
                                         </div>
                                         <div style="float: right; font-size: .9em">
-                                            <span style="font-weight: bold">Suggested:</span>&nbsp;$@item.SuggestedPaycheckContribution
+                                            <span style="font-weight: bold">Limit:</span>&nbsp;$@item.BalanceLimit
                                         </div>
                                     </div>
                                 </div>
