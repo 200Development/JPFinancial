@@ -625,5 +625,18 @@ namespace JPFData.Managers
                     throw new NotImplementedException();
             }
         }
+
+        public IEnumerable<Transaction> GetTransactionsBetweenDates(DateTime begin, DateTime end)
+        {
+            try
+            {
+                return _db.Transactions.Where(t => t.Date >= begin && t.Date < end).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
     }
 }
