@@ -102,7 +102,8 @@ namespace JPFData
                 Logger.Instance.Calculation($"FutureValue");
                 var payperiods = PayPeriodsTilDue(futureDate);
                 var date = DateTime.Today;
-                var billsFromDb = _db.Bills.Where(b => b.UserId == Global.Instance.User.Id).ToList();
+                var billManager = new BillManager();
+                var billsFromDb = billManager.GetAllBills();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -196,7 +197,8 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"Expenses by DateRange");
-                var bills = _db.Bills.ToList();
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var expenses = 0m;
 
                 foreach (var bill in bills)
@@ -267,10 +269,12 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"DiscretionarySpendingByDateRange");
-                var ret = 0m;
-                var transactions = _db.Transactions.Where(t => t.Date >= begin && t.Date < end).ToList();
-                var bills = _db.Bills.ToList();
+                var transactionManager = new TransactionManager();
+                var transactions = transactionManager.GetTransactionsBetweenDates(begin, end);
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var isBill = false;
+                var ret = 0m;
 
                 foreach (var transaction in transactions)
                 {
@@ -307,7 +311,8 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"UpdateTotalCosts");
-                var billsFromDb = _db.Bills.ToList();
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                 var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
                 var expenses = 0.0m;
@@ -321,7 +326,7 @@ namespace JPFData
                     var dueDate = Convert.ToDateTime(bill.Value);
                     if (!(dueDate >= currentDate && dueDate <= endDate)) continue;
 
-                    expenses += billsFromDb.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
+                    expenses += bills.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
                     Logger.Instance.Calculation($"{expenses} added to {bill.Key}");
                 }
 
@@ -506,7 +511,7 @@ namespace JPFData
                 if (!UpdateRequiredSavings()) return false;
                 Logger.Instance.DataFlow($"Update required balance for Bills");
 
-                if (!UpdateBalanceSurplus()) return false;
+                if (!UpdateAllAccountSurpluses()) return false;
                 Logger.Instance.DataFlow($"Update Account balance surplus");
                 Logger.Instance.DataFlow($"Save changes to DB");
 
@@ -532,7 +537,7 @@ namespace JPFData
                 Logger.Instance.DataFlow($"Rebalance Accounts (use pool Account to balance Accounts with deficits");
 
 
-                return UpdateBalanceSurplus();
+                return UpdateAllAccountSurpluses();
             }
             catch (Exception e)
             {
@@ -590,8 +595,10 @@ namespace JPFData
             {
                 Logger.Instance.Calculation($"UpdateRequiredSavings");
                 var savingsAccountBalances = new Dictionary<string, decimal>();
+                var expenseManager = new ExpenseManager();
+                var unpaidExpenses = expenseManager.GetAllUnpaidExpenses();
 
-                foreach (var expense in _db.Expenses.Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList())
+                foreach (var expense in unpaidExpenses)
                 {
                     var bill = _db.Bills.FirstOrDefault(b => b.Id == expense.BillId);
                     if (bill == null)
@@ -851,6 +858,31 @@ namespace JPFData
             }
         }
 
+        public decimal UpdateAccountSurplus(Account account)
+        {
+            // public because runs on startup with dbSave = true
+            try
+            {
+                Logger.Instance.Calculation($"UpdateBalanceSurplus");
+                var requiredSurplus = account.Balance - account.RequiredSavings;
+
+                //TODO: Add comment for clarity
+                if (requiredSurplus <= 0)
+                    return requiredSurplus;
+
+
+                if (account.Balance - account.BalanceLimit <= 0)
+                    return 0;
+
+                return account.Balance - account.BalanceLimit;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
         /// <summary>
         /// Database update if dbSave = true, else EntityState.Modified.
         /// Update the balance surplus for each Account.
@@ -858,7 +890,7 @@ namespace JPFData
         /// </summary>
         /// <param name="entity"></param>
         /// <returns></returns>
-        private bool UpdateBalanceSurplus()
+        private bool UpdateAllAccountSurpluses()
         {
             // public because runs on startup with dbSave = true
             try
@@ -869,20 +901,17 @@ namespace JPFData
 
                 foreach (var account in accounts)
                 {
-                    var requiredSavings = account.RequiredSavings;
-                    var balance = account.Balance;
-                    var balanceLimit = account.BalanceLimit;
-                    var requiredSurplus = balance - requiredSavings;
+                    var requiredSurplus = account.Balance - account.RequiredSavings;
 
                     //TODO: Add comment for clarity
                     if (requiredSurplus <= 0)
                         account.BalanceSurplus = requiredSurplus;
                     else
                     {
-                        if (balance - balanceLimit <= 0)
+                        if (account.Balance - account.BalanceLimit <= 0)
                             account.BalanceSurplus = 0;
                         else
-                            account.BalanceSurplus = balance - balanceLimit;
+                            account.BalanceSurplus = account.Balance - account.BalanceLimit;
                     }
 
 
@@ -1010,7 +1039,8 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"UpdateBillDueDates");
-                var bills = _db.Bills.ToList();
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var beginDate = DateTime.Today;
 
                 foreach (var bill in bills)
@@ -1137,7 +1167,8 @@ namespace JPFData
             try
             {
                 Logger.Instance.Calculation($"UpdateBillDueDates");
-                var bills = _db.Bills.ToList();
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
 
                 foreach (var bill in bills)
@@ -1283,7 +1314,8 @@ namespace JPFData
             {
                 Logger.Instance.Calculation($"GetRebalancingAccountsReport");
                 AccountRebalanceReport report = new AccountRebalanceReport();
-                List<Account> accounts = _db.Accounts.ToList();
+                var accountManager = new AccountManager();
+                var accounts = accountManager.GetAllAccounts();
 
                 //Clear out to prevent stacking
                 report.AccountsWithSurplus.Clear();
