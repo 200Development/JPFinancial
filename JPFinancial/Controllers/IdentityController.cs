@@ -16,15 +16,18 @@ namespace JPFinancial.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private readonly Calculations _calc;
 
         public IdentityController()
         {
+            _calc = new Calculations();
         }
 
         public IdentityController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
-            UserManager = userManager;
             SignInManager = signInManager;
+            UserManager = userManager;
+            _calc = new Calculations();
         }
 
         public ApplicationSignInManager SignInManager
@@ -97,12 +100,12 @@ namespace JPFinancial.Controllers
             {
                 case SignInStatus.Success:
                     Global.Instance.User = user;
+                    _calc.UpdateBillDueDates();
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
