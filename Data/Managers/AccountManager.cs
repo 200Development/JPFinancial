@@ -5,7 +5,6 @@ using System.Linq;
 using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
-using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
@@ -43,12 +42,7 @@ namespace JPFData.Managers
         {
             try
             {
-                Logger.Instance.DataFlow($"Return list of Accounts");
                 return _db.Accounts.Where(a => a.UserId == _userId).ToList();
-
-                //accountVM.Metrics = RefreshAccountMetrics(accountVM);
-                //accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport(accountVM);
-                //Logger.Instance.DataFlow($"Get rebalancing accounts report");
             }
             catch (Exception e)
             {
@@ -61,7 +55,6 @@ namespace JPFData.Managers
         {
             try
             {
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
                 return _db.Accounts.Find(id);
             }
             catch (Exception e)
@@ -71,34 +64,11 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Create(AccountViewModel accountVM)
+        public bool Create(Account account)
         {
             try
             {
-                _db.Accounts.Add(accountVM.Account);
-                Logger.Instance.DataFlow($"New Account added to data context");
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Saved changes to DB");
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        public bool Edit(AccountViewModel accountVM)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Save changes to DB");
-                accountVM.Account.BalanceSurplus = _calc.UpdateAccountSurplus(accountVM.Account);
-
-                _db.Entry(accountVM.Account).State = EntityState.Modified;
+                _db.Accounts.Add(account);
                 _db.SaveChanges();
 
 
@@ -111,26 +81,34 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Delete(int accountId)
+        public bool Edit(Account account)
         {
             try
             {
-                Logger.Instance.DataFlow($"Pull Account with Id of {accountId} from DB");
+                account.BalanceSurplus = _calc.UpdateBalanceSurplus(account);
 
-                Account account = _db.Accounts.Find(accountId);
+                _db.Entry(account).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            try
+            {
+                Account account = _db.Accounts.Find(id);
                 if (account.IsPoolAccount)
-                    throw new NotImplementedException("Cannot delete pool account");
-
-                //Add the account balance to the pool account.  Should this be default, optional, or never?
-                //Account poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-                //if (poolAccount != null) poolAccount.Balance += account.Balance;
-                //Logger.Instance.Info($"Transfers ${account.Balance} to pool account");
+                    throw new Exception("Cannot delete pool account");
 
                 _db.Accounts.Remove(account);
-                //_db.Entry(poolAccount).State = EntityState.Modified;
-                Logger.Instance.Info($"Account with id of {accountId} has been flagged for removal from DB");
-
-
                 _db.SaveChanges();
 
 
@@ -143,11 +121,10 @@ namespace JPFData.Managers
             }
         }
 
-        public AccountMetrics GetAccountMetrics()
+        public AccountMetrics GetMetrics()
         {
             try
             {
-                Logger.Instance.DataFlow($"Refresh Account metrics");
                 AccountMetrics metrics = new AccountMetrics();
                 BillManager billManager = new BillManager();
                 List<Account> accounts = GetAllAccounts();
@@ -182,7 +159,6 @@ namespace JPFData.Managers
                 metrics.SpendableCash = accounts.Sum(a => a.BalanceSurplus); // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
 
-                Logger.Instance.DataFlow($"Return Account metrics");
                 return metrics;
             }
             catch (Exception e)

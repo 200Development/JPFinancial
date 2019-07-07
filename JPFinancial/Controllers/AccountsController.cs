@@ -2,7 +2,6 @@
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
@@ -24,7 +23,7 @@ namespace JPFinancial.Controllers
                 Logger.Instance.DataFlow($"Index");
                 AccountViewModel accountVM = new AccountViewModel();
                 accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.Metrics = _accountManager.GetAccountMetrics();
+                accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
                 
@@ -46,7 +45,7 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow($"Index (w/ VM)");
                 accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.Metrics = _accountManager.GetAccountMetrics();
+                accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
                 ModelState.Clear();
@@ -123,9 +122,8 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Create");
                 if (!ModelState.IsValid) return View(accountVM);
-                if (!_accountManager.Create(accountVM)) return View(accountVM);
+                if (!_accountManager.Create(accountVM.Account)) return View(accountVM);
 
 
                 return RedirectToAction("Index");
@@ -148,8 +146,8 @@ namespace JPFinancial.Controllers
                 }
 
                 AccountViewModel accountVM = new AccountViewModel();
-                accountVM.Account = _db.Accounts.Find(id);
-                Logger.Instance.DataFlow($"Pull Account with ID {id} from DB and set to AccountViewModel.Entity.Account");
+                accountVM.Account = _accountManager.GetAccount(id);
+
 
                 if (accountVM.Account == null)
                 {
@@ -179,7 +177,7 @@ namespace JPFinancial.Controllers
             try
             {
                 if (!ModelState.IsValid) return View(accountVM);
-                if (_accountManager.Edit(accountVM))
+                if (_accountManager.Edit(accountVM.Account))
                     return RedirectToAction("Index");
 
 
@@ -198,14 +196,12 @@ namespace JPFinancial.Controllers
             try
             {
                 if (id == null)
-                {
-                    Logger.Instance.Debug("Account Id is null - (error)");
                     return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
 
                 Account account = _accountManager.GetAccount(id);
                 if (account == null)
                 {
+                    Logger.Instance.Debug("Returned Account is null - (error)");
                     return HttpNotFound();
                 }
 
@@ -233,6 +229,7 @@ namespace JPFinancial.Controllers
                 Account account = _accountManager.GetAccount(id);
                 if (account == null)
                 {
+                    Logger.Instance.Debug("Returned Account is null - (error)");
                     return HttpNotFound();
                 }
 
