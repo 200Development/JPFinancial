@@ -1,4 +1,4 @@
-﻿using JPFData;
+﻿using System.Threading.Tasks;
 using Microsoft.Owin;
 using Owin;
 
@@ -7,9 +7,6 @@ namespace JPFinancial
 {
     public partial class Startup
     {
-        private readonly Calculations _calc = new Calculations();
-
-
         public void Configuration(IAppBuilder app)
         {
             ConfigureAuth(app);
