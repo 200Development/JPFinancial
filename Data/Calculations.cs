@@ -349,7 +349,7 @@ namespace JPFData
         /// Updates all account's suggested paycheck contributions.  paycheck contributions is the $ amount that should be 
         /// </summary>
         /// <returns></returns>
-        private bool UpdateSuggestedPaycheckContributions()
+        private bool UpdatePaycheckContributions()
         {
             try
             {
@@ -361,127 +361,113 @@ namespace JPFData
                 var billManager = new BillManager();
                 var bills = billManager.GetAllBills();
 
+                var accountContribution = new Dictionary<string, decimal>();
+
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
                 {
-                    account.SuggestedPaycheckContribution = decimal.Zero;
+                    account.PaycheckContribution = decimal.Zero;
                 }
 
                 // update suggested paycheck contributions for bills
-                //
                 foreach (var bill in bills)
                 {
                     var billTotal = bill.AmountDue;
                     Logger.Instance.Calculation($"{billTotal} due on {bill.DueDate} for {bill.Name}");
 
                     // get the account assigned to the bill
-                    Account account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
-                    if (account != null && account.ExcludeFromSurplus) continue;
+                    bill.Account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+                    if (bill.Account != null && bill.Account.ExcludeFromSurplus) continue;
 
                     //TODO: Needs to account for all pay frequencies
                     //TODO: Suggested contribution assumes payday twice a month.  need to update to include other options
-                    if (account == null) continue;
-                    var suggestedContribution = 0.0m;
+                    if (bill.Account == null) continue;
+                    var contribution = 0.0m;
                     switch (bill.PaymentFrequency)
                     {
                         case FrequencyEnum.Annually:
-                            suggestedContribution = billTotal / 24;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 24;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.SemiAnnually:
-                            suggestedContribution = billTotal / 12;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 12;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.Quarterly:
-                            suggestedContribution = billTotal / 6;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 6;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.SemiMonthly: // every 2 months
-                            suggestedContribution = billTotal / 4;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 4;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.Monthly:
-                            suggestedContribution = billTotal / 2;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.Weekly:
-                            suggestedContribution = billTotal * 2;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal * 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.BiWeekly:
-                            suggestedContribution = billTotal;
-                            account.SuggestedPaycheckContribution = suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                         case FrequencyEnum.Daily:
                             break;
                         default:
-                            suggestedContribution = billTotal / 2;
-                            account.SuggestedPaycheckContribution += suggestedContribution;
-                            Logger.Instance.Calculation($"{Math.Round(suggestedContribution, 2)} added to {account.Name}.SuggestedContribution");
+                            contribution = billTotal / 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
                             break;
                     }
                 }
 
-                /*  TODO: Need a better way to calculate non bill expenses.  (ex. items like taxes which are an annual expense get added in to the calculation as if its a monthly expense)
-                // update paycheck contributions for non-bill expenses
-                var joinAccountsBills = accounts.SelectMany(
-                    account => bills.Where(bill => account.Id == bill.AccountId).DefaultIfEmpty(),
-                    (account, bill) => new
-                    {
-                        Account = account,
-                        Bill = bill
-                    });
-                //Get only Accounts that don't have any association with Bills
-                //Reason: I want all the accounts that don't have regular bills so i can calculate an avg. paycheck contribution suggestion based on past spending
-                var accountsWithoutBills = (from @join in joinAccountsBills where @join.Bill == null select @join.Account).ToList();
-
-                //Get last 90 days of transactions
-                var filteredTransactions = transactions.Where(t => t.Date > DateTime.Today.AddDays(-90)).ToList();
-
-                //Get oldest transaction within 90 days to account for not having 90+ days of transactions
-                var earliestTransaction = filteredTransactions.OrderBy(t => t.Date).FirstOrDefault();
-
-                //Get how many days ago the oldest transaction occured
-                var totalDaysAgo = 0;
-                if (earliestTransaction != null)
+                foreach (var dict in accountContribution)
                 {
-                    totalDaysAgo = DateTime.Today.Subtract(earliestTransaction.Date).Days;
-                }
-
-                if (totalDaysAgo > 0)
-                {
-                    foreach (var account in accountsWithoutBills)
+                    try
                     {
-                        //Add all expense transactions for the past 90 days for the current account 
-                        var cost = filteredTransactions.Where(t => t.CreditAccount != null)
-                            .Where(t => t.Type == TransactionTypesEnum.Expense)
-                            .Where(t => t.CreditAccount.Name == account.Name).Sum(t => t.Amount);
-
-
-                        //Divide total cost by how many days ago the oldest transaction occured
-                        var costPerDay = cost / totalDaysAgo;
-
-                        account.SuggestedPaycheckContribution =
-                            costPerDay * 15; //rough for paid twice a month todo: add better algorithm to calculate
-
-                        Logger.Instance.Calculation(
-                            $"Past {totalDaysAgo} days of expenses, totaling {Math.Round(cost, 2)} was credited to the {account.Name} account");
-                        Logger.Instance.Calculation(
-                            $"{account.Name} account cost/day is {Math.Round(costPerDay, 2)} (cost {Math.Round(cost, 2)} / oldest transaction (days ago) {totalDaysAgo})");
-                        Logger.Instance.Calculation(
-                            $"{account.Name}.SuggestedPaycheckContribution = {Math.Round(costPerDay * 15, 2)} (cost/day * 15)");
+                        var account = accounts.FirstOrDefault(a => a.Name == dict.Key);
+                        if (account != null) account.PaycheckContribution = dict.Value;
+                        _db.Entry(account).State = EntityState.Modified;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
                     }
                 }
-                else
-                    Logger.Instance.Calculation($"There are no transactions");
-                */
+
 
                 _db.SaveChanges();
                 return true;
@@ -538,44 +524,6 @@ namespace JPFData
 
 
                 return UpdateAllAccountSurpluses();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Entity update.
-        /// Update paycheck contributions to suggested contribution amount.
-        /// Paycheck contribution = suggested paycheck contribution.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        private bool UpdatePaycheckContributions()
-        {
-            try
-            {
-                Logger.Instance.Calculation($"UpdatePaycheckContributions");
-                // Update the suggested paycheck contributions to ensure freshest metrics
-                var accountManager = new AccountManager();
-
-                if (!new Calculations().UpdateSuggestedPaycheckContributions()) return false;
-
-                var accounts = accountManager.GetPaycheckContributions();
-                foreach (var account in accounts)
-                {
-                    var originalContribution = account.PaycheckContribution;
-                    account.PaycheckContribution = account.SuggestedPaycheckContribution;
-                    _db.Entry(account).State = EntityState.Modified;
-                    Logger.Instance.Calculation($"{account.Name} paycheck contribution {Math.Round((decimal)originalContribution, 2)} => {Math.Round((decimal)account.PaycheckContribution, 2)}");
-                }
-
-                if (accounts.Count > 0)
-                    _db.SaveChanges();
-
-                return true;
             }
             catch (Exception e)
             {
@@ -742,8 +690,6 @@ namespace JPFData
             // public because runs on startup with dbSave = true
             try
             {
-                Logger.Instance.Calculation($"UpdateRequiredSavings");
-                Logger.Instance.DataFlow($"UpdateRequiredSavings");
                 var savingsAccountBalances = new Dictionary<string, decimal>();
                 ExpenseManager expenseManager = new ExpenseManager();
                 AccountManager accountManager = new AccountManager();
