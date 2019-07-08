@@ -42,7 +42,7 @@ namespace JPFData.Managers
         {
             try
             {
-                return _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount).ToList();
             }
             catch (Exception e)
             {
@@ -178,6 +178,29 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return new List<Account>();
+            }
+        }
+
+        public void CheckAndCreatePoolAccount()
+        {
+            try
+            {
+                var accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                if (accounts.Exists(a => a.IsPoolAccount)) return;
+
+                var poolAccount = new Account();
+                poolAccount.Name = "Pool";
+                poolAccount.Balance = decimal.Zero;
+                poolAccount.IsPoolAccount = true;
+                poolAccount.UserId = _userId;
+
+                _db.Accounts.Add(poolAccount);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
             }
         }
 

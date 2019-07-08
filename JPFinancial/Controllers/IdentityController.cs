@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using JPFData;
+using JPFData.Managers;
 using JPFData.Models.Identity;
 using JPFData.ViewModels;
 
@@ -101,6 +102,10 @@ namespace JPFinancial.Controllers
                 case SignInStatus.Success:
                     Global.Instance.User = user;
                     _calc.UpdateBillDueDates();
+
+                    var accountManager = new AccountManager();
+                    accountManager.CheckAndCreatePoolAccount();
+
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");

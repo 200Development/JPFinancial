@@ -101,7 +101,6 @@ namespace JPFinancial.Controllers
             try
             {
                 AccountViewModel accountVM = new AccountViewModel();
-                accountVM.Accounts = _accountManager.GetAllAccounts();
 
 
                 return View(accountVM);

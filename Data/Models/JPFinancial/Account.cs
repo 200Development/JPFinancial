@@ -6,19 +6,7 @@ namespace JPFData.Models.JPFinancial
     {
         public Account()
         {
-            //UserId = string.Empty;
-            //Name = string.Empty;
-            //Balance = decimal.Zero;
-            //PaycheckContribution = decimal.Zero;
-            //SuggestedPaycheckContribution = decimal.Zero;
-            //RequiredSavings = decimal.Zero;
-            //BalanceSurplus = decimal.Zero;
-            //ExcludeFromSurplus = false;
-            //IsPoolAccount = false;
-            //IsMandatory = false;
-            //BalanceLimit = decimal.Zero;
-            if (Global.Instance.User != null)
-                UserId = Global.Instance.User.Id;
+          UserId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
         [Key]
