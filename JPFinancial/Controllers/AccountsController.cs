@@ -247,8 +247,9 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Update");
                 _accountManager.Update();
+                vm.Accounts = _accountManager.GetAllAccounts();
+                vm.Metrics = _accountManager.GetMetrics();
 
                 return RedirectToAction("Index", vm);
             }
@@ -264,9 +265,9 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Rebalance");
                 _accountManager.Rebalance();
-
+                vm.Accounts = _accountManager.GetAllAccounts();
+                vm.Metrics = _accountManager.GetMetrics();
 
                 return RedirectToAction("Index", vm);
             }
