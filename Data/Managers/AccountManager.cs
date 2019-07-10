@@ -42,6 +42,7 @@ namespace JPFData.Managers
         {
             try
             {
+                // should pool account be excluded?
                 return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount).ToList();
             }
             catch (Exception e)
@@ -56,6 +57,19 @@ namespace JPFData.Managers
             try
             {
                 return _db.Accounts.Find(id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
+
+        public Account GetPoolAccount()
+        {
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == _userId).FirstOrDefault(a => a.IsPoolAccount);
             }
             catch (Exception e)
             {
@@ -126,6 +140,7 @@ namespace JPFData.Managers
             try
             {
                 AccountMetrics metrics = new AccountMetrics();
+                AccountManager accountManager = new AccountManager();
                 BillManager billManager = new BillManager();
                 List<Account> accounts = GetAllAccounts();
 
@@ -156,8 +171,10 @@ namespace JPFData.Managers
 
                 metrics.CashBalance = cashBalance;
                 metrics.AccountingBalance = cashBalance - outstandingExpenses;
-                metrics.SpendableCash = accounts.Sum(a => a.BalanceSurplus); // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
+                var sumOfAccountBalances = accounts.Sum(a => a.BalanceSurplus);
+                metrics.SpendableCash = sumOfAccountBalances > 0 ? sumOfAccountBalances : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
+                metrics.PoolBalance = accountManager.GetPoolAccount().Balance;
 
                 return metrics;
             }
@@ -165,19 +182,6 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 return null;
-            }
-        }
-
-        public IList<Account> GetPaycheckContributions()
-        {
-            try
-            {
-                return _db.Accounts.Where(a => a.UserId == Global.Instance.User.Id).Where(a => !a.ExcludeFromSurplus).Where(a => a.SuggestedPaycheckContribution > 0).ToList();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return new List<Account>();
             }
         }
 
