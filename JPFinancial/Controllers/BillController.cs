@@ -16,6 +16,7 @@ namespace JPFinancial.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly BillManager _billManager = new BillManager();
+        private readonly AccountManager _accountManager = new AccountManager();
 
         // GET: Bills
         public ActionResult Index()
@@ -74,7 +75,7 @@ namespace JPFinancial.Controllers
             try
             {
                 BillViewModel billVM = new BillViewModel();
-                billVM.Accounts = _billManager.GetAllAccounts();
+                billVM.Accounts = _accountManager.GetAllAccounts();
 
 
                 return View(billVM);
@@ -146,8 +147,8 @@ namespace JPFinancial.Controllers
                     Logger.Instance.Debug("Returned Bill is null - (error)");
                     return HttpNotFound();
                 }
-                billVM.Bill.Account = _billManager.GetAllAccounts().Single(a => a.Id == billVM.Bill.AccountId);
-                billVM.Accounts = _billManager.GetAllAccounts();
+                billVM.Bill.Account = _accountManager.GetAllAccounts().Single(a => a.Id == billVM.Bill.AccountId);
+                billVM.Accounts = _accountManager.GetAllAccounts();
                 Logger.Instance.DataFlow($"Pull Bill.Account with ID {billVM.Bill.AccountId} from DB and set to BillViewModel.Bill.Account");
 
 
