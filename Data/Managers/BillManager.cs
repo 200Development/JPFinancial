@@ -125,18 +125,18 @@ namespace JPFData.Managers
             }
         }
 
-        public List<Account> GetAllAccounts()
-        {
-            try
-            {
-                return _db.Accounts.Where(a => a.UserId == _userId).ToList();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                throw;
-            }
-        }
+        //public List<Account> GetAllAccounts()
+        //{
+        //    try
+        //    {
+        //        return _db.Accounts.Where(a => a.UserId == _userId).ToList();
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Logger.Instance.Error(e);
+        //        throw;
+        //    }
+        //}
 
         private bool AddBill(BillViewModel billVM)
         {

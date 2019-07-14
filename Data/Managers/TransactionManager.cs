@@ -315,7 +315,8 @@ namespace JPFData.Managers
             try
             {
                 if (transaction.Amount <= 0) return true; //only return false when exception is thrown
-                var accountsWithContributions = _db.Accounts.Where(a => a.PaycheckContribution > 0).ToList();
+                var accountManager = new AccountManager();
+                var accountsWithContributions = accountManager.GetAllAccounts().Where(a => a.PaycheckContribution > 0).ToList();
                 var totalContributions = accountsWithContributions.Sum(a => a.PaycheckContribution);
                 if (totalContributions > transaction.Amount)
                 {
