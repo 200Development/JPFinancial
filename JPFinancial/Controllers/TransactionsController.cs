@@ -2,6 +2,7 @@
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
+using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
@@ -61,13 +62,13 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                ExpenseManager expenseManager = new ExpenseManager();
-                transactionVM.Transaction.UserId = Global.Instance.User.Id;
-                transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction.SelectedExpenseId).Name;
-
-                ModelState["Transaction.Payee"].Errors.Clear();
-                UpdateModel(transactionVM.Transaction); //throws invalidoperationexception
-
+                if (transactionVM.Type == TransactionTypesEnum.Expense && transactionVM.IsBill)
+                {
+                    ExpenseManager expenseManager = new ExpenseManager();
+                    transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction?.SelectedExpenseId).Name ?? string.Empty;
+                    ModelState["Transaction.Payee"].Errors.Clear();
+                    UpdateModel(transactionVM.Transaction); //throws invalidoperationexception
+                }
 
                 if (!ModelState.IsValid) return View(transactionVM);
                 if (!transactionVM.AutoTransferPaycheckContributions)
@@ -75,7 +76,8 @@ namespace JPFinancial.Controllers
                 else
                 {
                     if (!_transactionManager.Create(transactionVM) ||
-                        !_transactionManager.HandlePaycheckContributions(transactionVM.Transaction))
+                        !_transactionManager.HandlePaycheckContributions(transactionVM.Transaction) ||
+                        !_accountManager.Update())
                         return View(transactionVM);
                 }
 
