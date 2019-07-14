@@ -15,7 +15,7 @@
                         <p class="category">Last 12 Months</p>
                     </div>
                     <div class="content">
-                        <div id="chartExpenses" class="ct-chart"></div>
+                        <div id="chartBills" class="ct-chart"></div>
                         <div class="footer">
                             @*<div class="chart-legend">
                                 <i class="fa fa-circle text-success"></i> Total
@@ -244,7 +244,7 @@
                 }
             };
 
-            var chart = new window.google.visualization.AreaChart(document.getElementById("chartExpenses"));
+            var chart = new window.google.visualization.AreaChart(document.getElementById("chartBills"));
             chart.draw(dataTable, options);
 
             /* Graph End */
