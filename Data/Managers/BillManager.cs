@@ -12,12 +12,13 @@ namespace JPFData.Managers
     {
         private readonly ApplicationDbContext _db;
         private readonly string _userId;
-
+        private readonly Calculations _calc;
 
         public BillManager()
         {
             _db = new ApplicationDbContext();
             _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+            _calc = new Calculations();
         }
 
 
@@ -28,12 +29,6 @@ namespace JPFData.Managers
 
                 Logger.Instance.DataFlow($"Return list of Bills");
                 return _db.Bills.Where(b => b.UserId == _userId).ToList();
-                //Logger.Instance.DataFlow($"Pull list of Bills from DB");
-                //billVM.Metrics = RefreshBillMetrics(billVM);
-                //Logger.Instance.DataFlow($"Refresh Bill metrics");
-
-
-                //return billVM;
             }
             catch (Exception e)
             {
@@ -60,10 +55,11 @@ namespace JPFData.Managers
         {
             try
             {
-
                 if (!AddBill(billVM)) return false;
 
                 if (!AddBillToExpenses(billVM.Bill)) return false;
+
+                if (!UpdateAccountPaycheckContribution()) return false;
 
                 Logger.Instance.DataFlow($"Saved changes to DB");
 
@@ -76,7 +72,7 @@ namespace JPFData.Managers
                 throw;
             }
         }
-
+        
         public bool Edit(BillViewModel billVM)
         {
             try
@@ -125,19 +121,6 @@ namespace JPFData.Managers
             }
         }
 
-        //public List<Account> GetAllAccounts()
-        //{
-        //    try
-        //    {
-        //        return _db.Accounts.Where(a => a.UserId == _userId).ToList();
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        Logger.Instance.Error(e);
-        //        throw;
-        //    }
-        //}
-
         private bool AddBill(BillViewModel billVM)
         {
             try
@@ -181,6 +164,96 @@ namespace JPFData.Managers
             {
                 Logger.Instance.Error(e);
                 throw;
+            }
+        }
+
+        //TODO: Update to only update effected Accounts
+        private bool UpdateAccountPaycheckContribution()
+        {
+            try
+            {
+                var updatedAccounts = new List<Account>();
+                var paycheckContributionsDict = _calc.GetPaycheckContributionsDict();
+                var accountManager = new AccountManager();
+                var account = new Account();
+
+                // Update paycheck contribution for all accounts
+                foreach (var paycheckContribution in paycheckContributionsDict)
+                {
+                    try
+                    {
+                        account = updatedAccounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+                        var accountIndex = -1;
+
+                        if (account == null)
+                        {
+                            account.Name = paycheckContribution.Key;
+                        }
+                        else
+                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        if (!(paycheckContribution.Value >= account.PaycheckContribution)) continue;
+
+
+                        if (accountIndex >= 0)
+                            updatedAccounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
+                        else
+                        {
+                            account.PaycheckContribution = paycheckContribution.Value;
+                            updatedAccounts.Add(account);
+                        }
+
+
+                        // iterate through all updated accounts and set state to modified to save to database
+                        foreach (var updatedAccount in updatedAccounts)
+                        {
+                            try
+                            {
+                                var accounts = accountManager.GetAllAccounts();
+                                account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
+
+                                // shouldn't ever be null since updatedAccounts comes from Accounts in DB
+                                account.PaycheckContribution = updatedAccount.PaycheckContribution;
+                                account.RequiredSavings = updatedAccount.RequiredSavings;
+
+                                var requiredSurplus = account.Balance - account.RequiredSavings;
+
+                                if (requiredSurplus <= 0)
+                                    account.BalanceSurplus = requiredSurplus;
+                                else
+                                {
+                                    if (account.Balance - account.BalanceLimit <= 0)
+                                        account.BalanceSurplus = 0;
+                                    else
+                                        account.BalanceSurplus = account.Balance - account.BalanceLimit;
+                                }
+
+
+                                _db.Entry(account).State = EntityState.Modified;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Instance.Error(e);
+                            }
+                        }
+
+                        // save changes to the database
+                        if (_db.ChangeTracker.HasChanges())
+                            _db.SaveChanges();
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
             }
         }
 

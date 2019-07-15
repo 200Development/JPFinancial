@@ -62,24 +62,47 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                if (transactionVM.Type == TransactionTypesEnum.Expense && transactionVM.IsBill)
+                if (!ModelState.IsValid) return View(transactionVM);
+
+                switch (transactionVM.Type)
                 {
-                    ExpenseManager expenseManager = new ExpenseManager();
-                    transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction?.SelectedExpenseId).Name ?? string.Empty;
-                    ModelState["Transaction.Payee"].Errors.Clear();
-                    UpdateModel(transactionVM.Transaction); //throws invalidoperationexception
+                    case TransactionTypesEnum.Expense:
+                        {
+                            if (transactionVM.IsBill)
+                            {
+                                ExpenseManager expenseManager = new ExpenseManager();
+                                transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction?.SelectedExpenseId).Name ??
+                                    string.Empty;
+                                ModelState["Transaction.Payee"].Errors.Clear();
+                                UpdateModel(transactionVM.Transaction);
+                            }
+                            else
+                            {
+                                UpdateModel(transactionVM.Transaction);
+                            }
+
+                            break;
+                        }
+                    case TransactionTypesEnum.Income:
+                        {
+                            if (!transactionVM.AutoTransferPaycheckContributions)
+                                _transactionManager.Create(transactionVM);
+                            else
+                            {
+                                if (!_transactionManager.HandlePaycheckContributions(transactionVM.Transaction))
+                                    return View(transactionVM);
+                            }
+
+                            break;
+                        }
+                    case TransactionTypesEnum.Transfer:
+                        throw new NotImplementedException();
+                    default:
+                        throw new NotImplementedException();
                 }
 
-                if (!ModelState.IsValid) return View(transactionVM);
-                if (!transactionVM.AutoTransferPaycheckContributions)
-                    _transactionManager.Create(transactionVM);
-                else
-                {
-                    if (!_transactionManager.Create(transactionVM) ||
-                        !_transactionManager.HandlePaycheckContributions(transactionVM.Transaction) ||
-                        !_accountManager.Update())
-                        return View(transactionVM);
-                }
+                if (!_accountManager.Update())
+                    return View(transactionVM);
 
                 return RedirectToAction("Index");
             }

@@ -371,49 +371,27 @@ namespace JPFData
             {
                 var requiredSavingsDict = GetRequiredSavingsDict();
                 var paycheckContributionsDict = GetPaycheckContributionsDict();
-                var updatedAccounts = new List<Account>();
+                var accountManager = new AccountManager();
+
+                // Load all Accounts from the database into the list of updated accounts.
+                // Ensures that the required savings and balance surplus's for all accounts has fresh data
+                // TODO: research if there's a way to accomplish this, without having to iterate through ALL of the Db Accounts each time.  Updated flag or time entry?
+                var accounts = accountManager.GetAllAccounts();
+
 
                 // Update required savings for all accounts and add updated accounts to updatedAccounts to track changes
                 foreach (var requiredSavings in requiredSavingsDict)
                 {
                     try
                     {
-                        var account = updatedAccounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-                        var accountIndex = -1;
+                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
 
-                        if (account == null)
-                        {
-                            account = new Account();
-                            account.Name = requiredSavings.Key;
-                        }
-                        else
-                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+
 
                         if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
-
-
-                        if (accountIndex >= 0)
-                            updatedAccounts[accountIndex].RequiredSavings = requiredSavings.Value;
-                        else
-                        {
-                            account.RequiredSavings = requiredSavings.Value;
-                            updatedAccounts.Add(account);
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // update balance surplus for each account
-                foreach (var updatedAccount in updatedAccounts)
-                {
-                    try
-                    {
-                        // get index to update the account from the updated accounts list
-                        var accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
-                        updatedAccounts[accountIndex].BalanceSurplus = UpdateBalanceSurplus(updatedAccounts[accountIndex]);
+                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
                     }
                     catch (Exception e)
                     {
@@ -426,27 +404,14 @@ namespace JPFData
                 {
                     try
                     {
-                        var account = updatedAccounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
-                        var accountIndex = -1;
+                        var account = accounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
 
-                        if (account == null)
-                        {
-                            account = new Account();
-                            account.Name = paycheckContribution.Key;
-                        }
-                        else
-                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+
 
                         if (!(paycheckContribution.Value >= account.PaycheckContribution)) continue;
-
-
-                        if (accountIndex >= 0)
-                            updatedAccounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
-                        else
-                        {
-                            account.PaycheckContribution = paycheckContribution.Value;
-                            updatedAccounts.Add(account);
-                        }
+                        accounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
                     }
                     catch (Exception e)
                     {
@@ -455,29 +420,11 @@ namespace JPFData
                 }
 
                 // iterate through all updated accounts and set state to modified to save to database
-                foreach (var updatedAccount in updatedAccounts)
+                foreach (var account in accounts)
                 {
                     try
                     {
-                        var accountManager = new AccountManager();
-                        var accounts = accountManager.GetAllAccounts();
-                        var account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
-
-                        // shouldn't ever be null since updatedAccounts comes from Accounts in DB
-                        account.PaycheckContribution = updatedAccount.PaycheckContribution;
-                        account.RequiredSavings = updatedAccount.RequiredSavings;
-
-                        var requiredSurplus = account.Balance - account.RequiredSavings;
-
-                        if (requiredSurplus <= 0)
-                            account.BalanceSurplus = requiredSurplus;
-                        else
-                        {
-                            if (account.Balance - account.BalanceLimit <= 0)
-                                account.BalanceSurplus = 0;
-                            else
-                                account.BalanceSurplus = account.Balance - account.BalanceLimit;
-                        }
+                        account.BalanceSurplus = UpdateBalanceSurplus(account);
 
 
                         _db.Entry(account).State = EntityState.Modified;
@@ -506,8 +453,14 @@ namespace JPFData
         {
             try
             {
+                //// throws "Attaching an entity of type 'JPFData.Models.JPFinancial.Account' failed because another entity of the same type already has the same primary key value" Exception
+                //if (!Update())
+                //{
+                //    Logger.Instance.Info("Failed to update accounts");
+                //    return false;
+                //}
+
                 var accountManager = new AccountManager();
-                var updatedAccounts = new List<Account>();
                 var accounts = accountManager.GetAllAccounts();
                 var poolAccount = accountManager.GetPoolAccount();
                 var requiredSavingsDict = GetRequiredSavingsDict();
@@ -517,28 +470,15 @@ namespace JPFData
                 {
                     try
                     {
-                        var account = updatedAccounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-                        var accountIndex = -1;
+                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
 
-                        // create new instance of the account being updated if one doesn't already exist in the list of updated accounts
-                        if (account == null)
-                        {
-                            account = new Account();
-                            account.Name = requiredSavings.Key;
-                        }
-                        else
-                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
 
                         if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
 
-                        // udpate the correct account
-                        if (accountIndex >= 0)
-                            updatedAccounts[accountIndex].RequiredSavings = requiredSavings.Value;
-                        else
-                        {
-                            account.RequiredSavings = requiredSavings.Value;
-                            updatedAccounts.Add(account);
-                        }
+                        // update the correct account
+                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
                     }
                     catch (Exception e)
                     {
@@ -548,92 +488,45 @@ namespace JPFData
 
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
-                // transfer balance surplus's from each account to the pool account
-                foreach (Account account in updatedAccounts)
+
+                foreach (Account account in accounts)
                 {
                     try
                     {
-                        if (account.Id == poolAccount.Id || account.ExcludeFromSurplus || account.BalanceSurplus <= 0) continue;
-                        var updatedAccount = updatedAccounts.Find(a => string.Equals(a.Name, account.Name, StringComparison.CurrentCultureIgnoreCase));
-                        var accountIndex = -1;
-
-                        if (updatedAccount == null)
+                        // if balance surplus is > $0.00, transfer to pool account.  If surplus is < 0, transfer funds from pool to cover account deficits
+                        if (!account.ExcludeFromSurplus && account.BalanceSurplus > 0)
                         {
-                            updatedAccount = new Account();
-                            updatedAccount.Name = account.Name;
+                            // transfer balance surplus's from each account to the pool account
+                            account.Balance -= account.BalanceSurplus;
+                            poolAccount.Balance += account.BalanceSurplus;
+
+                            // set balance surplus to $0.00
+                            account.BalanceSurplus = 0;
                         }
-                        else
-                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, account.Name, StringComparison.CurrentCultureIgnoreCase));
-
-
-                        if (updatedAccount.BalanceSurplus == 0) continue;
-                        if (accountIndex >= 0)
-                            updatedAccounts[accountIndex].Balance -= account.BalanceSurplus;
-                        else
-                            updatedAccount.Balance -= updatedAccount.BalanceSurplus;
-                        poolAccount.Balance += updatedAccount.BalanceSurplus;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // cover any account deficits from the surplus in the pool account 
-                foreach (var account in accounts)
-                {
-                    try
-                    {
-                        if (poolAccount.Balance <= 0) continue;
-                        if (account.ExcludeFromSurplus || account.BalanceSurplus >= 0) continue;
-                        var accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, account.Name, StringComparison.CurrentCultureIgnoreCase));
-
-
-                        var deficit = account.BalanceSurplus * -1;
-
-                        if (poolAccount.Balance < deficit)
+                        else if(!account.ExcludeFromSurplus && account.BalanceSurplus <= 0)
                         {
-                            var balance = poolAccount.Balance;
-                            updatedAccounts[accountIndex].Balance += balance;
-                            poolAccount.Balance -= balance;
+                            // cover any account deficits from the surplus in the pool account 
+                            var deficit = account.BalanceSurplus * -1;
+
+                            // Use the rest of the pool money if there's not enough to cover the full deficit
+                            if (poolAccount.Balance < deficit)
+                            {
+                                account.Balance += poolAccount.Balance;
+                                poolAccount.Balance -= poolAccount.Balance;
+                            }
+                            else // Make account whole
+                            {
+                                account.Balance += deficit;
+                                poolAccount.Balance -= deficit;
+                            }
                         }
-                        else // Make account whole
-                        {
-                            updatedAccounts[accountIndex].Balance += deficit;
-                            poolAccount.Balance -= deficit;
-                        }
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // update balance surplus for each account
-                foreach (var updatedAccount in updatedAccounts)
-                {
-                    try
-                    {
-                        var accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
-                        updatedAccounts[accountIndex].BalanceSurplus = UpdateBalanceSurplus(updatedAccounts[accountIndex]);
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // iterate through all updated accounts and set state to modified to save to database
-                foreach (var updatedAccount in updatedAccounts)
-                {
-                    try
-                    {
-                        var account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
-                        account.RequiredSavings = updatedAccount.RequiredSavings;
-                        account.Balance = updatedAccount.Balance;
-                        account.BalanceSurplus = updatedAccount.BalanceSurplus;
 
 
+                        // update balance surplus for each account
+                        account.BalanceSurplus = UpdateBalanceSurplus(account);
+
+
+                        // set state to modified to save to database
                         _db.Entry(account).State = EntityState.Modified;
                     }
                     catch (Exception e)
@@ -642,18 +535,11 @@ namespace JPFData
                     }
                 }
 
-                // save changes to the database 
-                try
-                {
-                    _db.Entry(poolAccount).State = EntityState.Modified;
-                    if (_db.ChangeTracker.HasChanges())
-                        _db.SaveChanges();
-                }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                    throw;
-                }
+
+                // save changes to the database
+                _db.Entry(poolAccount).State = EntityState.Modified;
+                if (_db.ChangeTracker.HasChanges())
+                    _db.SaveChanges();
 
 
                 return true;
@@ -921,7 +807,7 @@ namespace JPFData
             }
         }
 
-        private Dictionary<string, decimal> GetRequiredSavingsDict()
+        public Dictionary<string, decimal> GetRequiredSavingsDict()
         {
             try
             {
@@ -991,7 +877,7 @@ namespace JPFData
                                     break;
                             }
 
-                            save = Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2);
+                            save = payPeriodsLeft > 1 ? Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2) : savePerPaycheck;
                         }
                         else
                             save = expense.Amount;
@@ -1022,7 +908,7 @@ namespace JPFData
             }
         }
 
-        private Dictionary<string, decimal> GetPaycheckContributionsDict()
+        public Dictionary<string, decimal> GetPaycheckContributionsDict()
         {
             try
             {

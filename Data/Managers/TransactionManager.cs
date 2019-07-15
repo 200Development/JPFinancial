@@ -143,11 +143,10 @@ namespace JPFData.Managers
                     Logger.Instance.DataFlow($"Credit Account set");
                 }
 
-                if (entity.Transaction.DebitAccountId != null)
-                {
-                    entity.Transaction.DebitAccount = _db.Accounts.Find(entity.Transaction.DebitAccountId);
-                    Logger.Instance.DataFlow($"Debit Account set");
-                }
+                if (entity.Transaction.DebitAccountId == null) return;
+
+                entity.Transaction.DebitAccount = _db.Accounts.Find(entity.Transaction.DebitAccountId);
+                Logger.Instance.DataFlow($"Debit Account set");
             }
             catch (Exception e)
             {
@@ -314,32 +313,44 @@ namespace JPFData.Managers
         {
             try
             {
-                if (transaction.Amount <= 0) return true; //only return false when exception is thrown
                 var accountManager = new AccountManager();
+                transaction.DebitAccount = accountManager.GetAccount(transaction.DebitAccountId);
                 var accountsWithContributions = accountManager.GetAllAccounts().Where(a => a.PaycheckContribution > 0).ToList();
                 var totalContributions = accountsWithContributions.Sum(a => a.PaycheckContribution);
+                var incomeAfterPaycheckContributions = transaction.Amount;
+
                 if (totalContributions > transaction.Amount)
                 {
                     // TODO: How to handle income not enough to cover all paycheck contributions
                 }
 
 
-                var poolAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount);
-                if (poolAccount == null) return false;
-
-
                 foreach (var account in accountsWithContributions)
                 {
-                    Logger.Instance.Calculation($"PoolAccount.Balance = ${poolAccount.Balance}");
-                    Logger.Instance.Calculation($"Paycheck Contribution: {account.PaycheckContribution} transferred from Pool Account to {account.Name}");
-
-                    
                     if (!UpdateAccountBalance(account, account.PaycheckContribution, AccountingTypes.Debit)) return false;
-                    if (!AddTransactionToDb(transaction, account)) return false;
+                    if (!AddTransferToDb(transaction, account)) return false;
+                    incomeAfterPaycheckContributions -= account.PaycheckContribution;
                 }
 
+                Logger.Instance.Calculation($"Net income of {incomeAfterPaycheckContributions} added to {transaction.DebitAccount?.Name} after {totalContributions} in paycheck contributions was paid out");
+                if(!UpdateAccountBalance(transaction.DebitAccount, incomeAfterPaycheckContributions, AccountingTypes.Debit)) return false;
 
-                return UpdateAccountBalance(poolAccount, totalContributions, AccountingTypes.Credit);
+                //TODO: find a better way to add remainder of income after paycheck contributions to Db
+                var incomeAfterContributions = new Transaction();
+                incomeAfterContributions.Date = transaction.Date;
+                incomeAfterContributions.Payee = $"Transfer to {transaction.DebitAccount?.Name}";
+                incomeAfterContributions.Category = transaction.Category;
+                incomeAfterContributions.Memo = transaction.Memo;
+                incomeAfterContributions.Type = transaction.Type;
+                incomeAfterContributions.DebitAccountId = transaction.DebitAccountId;
+                incomeAfterContributions.CreditAccountId = null;
+                incomeAfterContributions.Amount = incomeAfterPaycheckContributions;
+
+                _db.Transactions.Add(incomeAfterContributions);
+
+
+                _db.SaveChanges();
+                return true;
             }
             catch (Exception e)
             {
@@ -376,7 +387,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddTransactionToDb(Transaction transaction, Account account)
+        private bool AddTransferToDb(Transaction transaction, Account account)
         {
             try
             {
@@ -406,19 +417,19 @@ namespace JPFData.Managers
         {
             try
             {
-                    var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
-                    if (selectedExpense == null)
-                    {
-                        Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
-                        return true;
-                    }
-
-                    selectedExpense.IsPaid = true;
-                    _db.Entry(selectedExpense).State = EntityState.Modified;
-                    _db.SaveChanges();
-
-
+                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                if (selectedExpense == null)
+                {
+                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
                     return true;
+                }
+
+                selectedExpense.IsPaid = true;
+                _db.Entry(selectedExpense).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
             }
             catch (Exception e)
             {

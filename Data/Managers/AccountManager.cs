@@ -139,19 +139,32 @@ namespace JPFData.Managers
         {
             try
             {
+                //TODO: Needs Refactoring
                 AccountMetrics metrics = new AccountMetrics();
                 AccountManager accountManager = new AccountManager();
                 BillManager billManager = new BillManager();
                 List<Account> accounts = GetAllAccounts();
+                var poolAccount = GetPoolAccount();
+                var requiredSavingsDict = _calc.GetRequiredSavingsDict();
+                var totalRequiredSavings = 0.0m;
 
-                if (accounts.Count < 1) return metrics;
+                foreach (var savings in requiredSavingsDict)
+                {
+                    try
+                    {
+                        totalRequiredSavings += savings.Value;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                if (!accounts.Any()) return metrics;
 
                 metrics.LargestBalance = accounts.Max(a => a.Balance);
                 metrics.SmallestBalance = accounts.Min(a => a.Balance);
-                if (accounts.Count > 0)
-                    metrics.AverageBalance = accounts.Sum(a => a.Balance) / accounts.Count;
-                else
-                    metrics.AverageBalance = 0;
+                metrics.AverageBalance = accounts.Sum(a => a.Balance) / accounts.Count;
                 var incomeTransactions = _db.Transactions.Where(t => t.Type == TransactionTypesEnum.Income);
                 var oldestIncomeTransaction = incomeTransactions.OrderBy(t => t.Date).FirstOrDefault();
                 var daysAgo = 0;
@@ -160,19 +173,21 @@ namespace JPFData.Managers
                 var monthsAgo = daysAgo / 30 < 1 ? 1 : daysAgo / 30;
 
 
-                metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (accounts.Sum(a => a.PaycheckContribution) * 2);
+                if (incomeTransactions.Any())
+                    metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (accounts.Sum(a => a.PaycheckContribution) * 2);
                 metrics.LargestSurplus = accounts.Max(a => a.BalanceSurplus);
                 metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
                 var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
 
-                var cashBalance = accounts.Sum(a => a.Balance);
+                var cashBalance = accounts.Sum(a => a.Balance) + poolAccount.Balance;
                 var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
 
                 metrics.CashBalance = cashBalance;
-                metrics.AccountingBalance = cashBalance - outstandingExpenses;
-                var sumOfAccountBalances = accounts.Sum(a => a.BalanceSurplus);
-                metrics.SpendableCash = sumOfAccountBalances > 0 ? sumOfAccountBalances : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
+                metrics.AccountingBalance = cashBalance - totalRequiredSavings;
+
+                var totalSurplus = accounts.Sum(a => a.BalanceSurplus) + poolAccount.Balance;
+                metrics.SpendableCash = totalSurplus > 0 ? totalSurplus : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
                 metrics.PoolBalance = accountManager.GetPoolAccount().Balance;
 
