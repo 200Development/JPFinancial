@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using JPFData.Enumerations;
 
-namespace JPFData.Models
+namespace JPFData.Models.JPFinancial
 {
     public class Bill 
     {

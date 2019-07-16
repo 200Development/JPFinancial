@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Managers;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData
 {
@@ -23,12 +23,14 @@ namespace JPFData
         {
             try
             {
-                //return date.AddMonths(1).AddDays(-date.Day).Day;
-                return new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+                var lastDay = new DateTime(date.Year, date.Month, DateTime.DaysInMonth(date.Year, date.Month));
+                Logger.Instance.Calculation($"LastDayOfMonth({date:d}) returned {lastDay:d}");
+                return lastDay;
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return new DateTime();
             }
         }
 
@@ -43,172 +45,14 @@ namespace JPFData
             //TODO: change to take datetime as parameter
             try
             {
-                return new DateTime(year, month, 1);
+                var firstDay = new DateTime(year, month, 1);
+                Logger.Instance.Calculation($"FirstDayOfMonth({year}, {month}) returned {firstDay}");
+                return firstDay;
             }
             catch (Exception e)
             {
-                throw e;
-            }
-        }
-
-        /// <summary>
-        /// Returns Dictionary (string, string) with current and end (next pay period) dates set
-        /// </summary>
-        /// <param name="billsDictionary"></param>
-        private void SetCurrentAndEndDate(IDictionary<string, string> billsDictionary)
-        {
-            try
-            {
-                var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-                var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
-
-                if (Convert.ToDateTime(billsDictionary["currentDate"]).Day <= 14)
-                {
-                    billsDictionary["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
-                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-                    billsDictionary["endDate"] =
-                        new DateTime(currentDate.Year, currentDate.Month, LastDayOfMonth(currentDate).Day)
-                            .ToShortDateString();
-                }
-                else
-                {
-                    billsDictionary["currentDate"] =
-                        FirstDayOfMonth(currentDate.AddMonths(1).Year, currentDate.AddMonths(1).Month)
-                            .ToString(CultureInfo.InvariantCulture);
-                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-                    billsDictionary["endDate"] =
-                        new DateTime(currentDate.Year, currentDate.Month, 15).ToShortDateString();
-                    //TODO: simplify
-                }
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        /// <summary>
-        /// Returns the last payday.  If the current date is the same as the first or last payday, the current date will be returned
-        /// </summary>
-        /// <param name="salary"></param>
-        /// <returns></returns>
-        public DateTime PreviousPaydate(Salary salary)
-        {
-            if (salary == null)
-                return DateTime.MinValue;
-
-            var payDate = new DateTime();
-            var today = DateTime.Today;
-
-            switch (salary.PayFrequency)
-            {
-                case FrequencyEnum.Weekly:
-                    {
-                        switch (salary.PaydayOfWeek)
-                        {
-                            case DayEnum.Sunday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Sunday));
-                                break;
-                            case DayEnum.Monday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Monday));
-                                break;
-                            case DayEnum.Tuesday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Tuesday));
-                                break;
-                            case DayEnum.Wednesday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Wednesday));
-                                break;
-                            case DayEnum.Thursday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Thursday));
-                                break;
-                            case DayEnum.Friday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Friday));
-                                break;
-                            case DayEnum.Saturday:
-                                payDate = DateTime.Today.AddDays((double)(-(int)(DateTime.Today.DayOfWeek) - DayOfWeek.Saturday));
-                                break;
-                        }
-                    }
-                    break;
-                case FrequencyEnum.BiWeekly:
-                    throw new NotImplementedException();
-                case FrequencyEnum.Monthly:
-                    payDate = today.Day == (int)salary.PaydayOfWeek ? today : today.AddMonths(-1);
-                    break;
-                case FrequencyEnum.SemiMonthly:
-                    {
-                        var firstPayDate = new DateTime(today.Year, today.Month, Convert.ToInt32(salary.FirstPayday));
-                        var lastPayDate = salary.FirstPayday.ToLower() == "last" ? new DateTime(today.Year, today.Month, LastDayOfMonth(today).Day)
-                            : new DateTime(today.Year, today.Month, Convert.ToInt32(salary.LastPayday));
-
-                        if (today == firstPayDate)
-                            payDate = firstPayDate;
-                        else if (today == lastPayDate)
-                            payDate = lastPayDate;
-                        else if (today > firstPayDate && today < lastPayDate)
-                            payDate = firstPayDate;
-                        else if (today < firstPayDate)
-                            if (today.Month == 1)
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)).Day)
-                                    : new DateTime(today.AddYears(-1).Year, today.AddMonths(-1).Month, lastPayDate.Day);
-                            else
-                                payDate = salary.LastPayday.ToLower() == "last" ? new DateTime(today.Year, today.AddMonths(-1).Month, LastDayOfMonth(today.AddMonths(-1)).Day)
-                                    : new DateTime(today.Year, today.AddMonths(-1).Month, today.Day);
-                    }
-                    break;
-                case FrequencyEnum.Quarterly:
-                    throw new NotImplementedException();
-                case FrequencyEnum.SemiAnnually:
-                    throw new NotImplementedException();
-                case FrequencyEnum.Annually:
-                    throw new NotImplementedException();
-                default:
-                    throw new ArgumentOutOfRangeException();
-            }
-
-            return payDate;
-        }
-
-        public DateTime SavingsDate(decimal futureValue, decimal netPay)
-        {
-            try
-            {
-                var date = DateTime.Today;
-                var billsFromDb = _db.Bills.ToList();
-
-                var bills = new Dictionary<string, string>
-                {
-                    {"currentDate", DateTime.Today.ToShortDateString()},
-                    {
-                        "endDate",
-                        DateTime.Today.Day <= 14
-                            ? new DateTime(date.Year, date.Month, 15).ToShortDateString()
-                            : new DateTime(date.Year, date.Month, LastDayOfMonth(date).Day).ToShortDateString()
-                    },
-                    {"periodCosts", "0"},
-                    {"totalCosts", "0"},
-                    {"totalSavings", "0"}
-                };
-
-                foreach (var bill in billsFromDb)
-                {
-                    bills.Add(bill.Name, bill.DueDate.ToShortDateString());
-                }
-
-                while (Convert.ToDecimal(bills["totalSavings"]) < futureValue)
-                {
-                    bills = UpdateBillDueDates(bills);
-                    bills = UpdateTotalCosts(bills);
-                    SetCurrentAndEndDate(bills);
-                    var savings = Convert.ToDecimal(bills["totalSavings"]);
-                    savings += netPay;
-                    bills["totalSavings"] = savings.ToString(CultureInfo.InvariantCulture);
-                }
-                return Convert.ToDateTime(bills["endDate"]);
-            }
-            catch (Exception e)
-            {
-                throw e;
+                Logger.Instance.Error(e);
+                return new DateTime();
             }
         }
 
@@ -216,9 +60,11 @@ namespace JPFData
         {
             try
             {
+                Logger.Instance.Calculation($"FutureValue");
                 var payperiods = PayPeriodsTilDue(futureDate);
                 var date = DateTime.Today;
-                var billsFromDb = _db.Bills.ToList();
+                var billManager = new BillManager();
+                var billsFromDb = billManager.GetAllBills();
 
                 var bills = new Dictionary<string, string>
                 {
@@ -243,14 +89,15 @@ namespace JPFData
                     bills = UpdateBillDueDates(bills);
                     bills = UpdateTotalCosts(bills);
                     SetCurrentAndEndDate(bills);
-                    decimal? savings = Convert.ToDecimal(bills["totalSavings"].ToString());
-                    var periodCosts = Convert.ToDecimal(bills["periodCosts"].ToString());
+                    decimal? savings = Convert.ToDecimal(bills["totalSavings"]);
+                    var periodCosts = Convert.ToDecimal(bills["periodCosts"]);
 
                     savings += netPay - periodCosts;
                     bills["totalSavings"] = savings.ToString();
                 }
                 //var cost = Convert.ToDecimal(bills["periodCosts"]);
                 var save = Convert.ToDecimal(bills["totalSavings"]);
+                Logger.Instance.Calculation($"FutureValue({futureDate:d}, {netPay}) returned {save}");
 
                 return save;
             }
@@ -264,30 +111,36 @@ namespace JPFData
         {
             try
             {
-                var incomePerPayperiod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
+                Logger.Instance.Calculation($"GetMonthlyIncome");
+                var incomePerPayPeriod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
                 var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
                 var monthlyIncome = 0.00m;
 
                 switch (paymentFrequency)
                 {
                     case FrequencyEnum.Weekly:
-                        monthlyIncome = incomePerPayperiod * 4;
+                        monthlyIncome = incomePerPayPeriod * 4;
+                        Logger.Instance.Calculation($"Monthly income for weekly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 4)");
                         break;
                     case FrequencyEnum.SemiMonthly:
-                        monthlyIncome = incomePerPayperiod * 2;
+                        monthlyIncome = incomePerPayPeriod * 2;
+                        Logger.Instance.Calculation($"Monthly income for semi-monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 2)");
                         break;
                     case FrequencyEnum.Monthly:
-                        monthlyIncome = incomePerPayperiod;
+                        monthlyIncome = incomePerPayPeriod;
+                        Logger.Instance.Calculation($"Monthly income for monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod})");
                         break;
                     default:
-                        monthlyIncome = incomePerPayperiod * 2;
+                        monthlyIncome = incomePerPayPeriod * 2;
+                        Logger.Instance.Calculation($"Monthly income for semi-monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 2)");
                         break;
                 }
 
                 return monthlyIncome;
             }
-            catch (Exception)
+            catch (Exception e)
             {
+                Logger.Instance.Error(e);
                 return 0.0m;
             }
         }
@@ -298,14 +151,15 @@ namespace JPFData
         /// </summary>
         /// <param name="begin">start date of the date range</param>
         /// <param name="end">end date of the date range</param>
-        /// <param name="onlyMandatory">summates only mandatory expenses</param>
+        /// <param name="onlyMandatory">sumates only mandatory expenses</param>
         /// <returns></returns>
         public decimal ExpensesByDateRange(DateTime begin, DateTime end, bool onlyMandatory = false)
         {
             try
             {
-                // onlyMandatory sums only mandatory expenses
-                var bills = onlyMandatory ? _db.Bills.Where(b => b.IsMandatory).ToList() : _db.Bills.ToList();
+                Logger.Instance.Calculation($"Expenses by DateRange");
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var expenses = 0m;
 
                 foreach (var bill in bills)
@@ -315,7 +169,7 @@ namespace JPFData
                     var frequency = bill.PaymentFrequency;
                     var dueDate = bill.DueDate;
                     var newDueDate = dueDate;
-
+                    Logger.Instance.Calculation($"{bill.Name} original due date is {dueDate:d}");
                     //TODO: Fix semi-monthly bills being added 3 times (31st, 16th, 1st)
                     while (newDueDate >= begin)
                     {
@@ -323,41 +177,51 @@ namespace JPFData
                         {
                             case FrequencyEnum.Daily:
                                 newDueDate = newDueDate.AddDays(-1);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.Weekly:
                                 newDueDate = newDueDate.AddDays(-7);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.BiWeekly:
                                 newDueDate = newDueDate.AddDays(-14);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.Monthly:
                                 newDueDate = newDueDate.AddMonths(-1);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.SemiMonthly:
                                 newDueDate = newDueDate.AddDays(-15);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.Quarterly:
                                 newDueDate = newDueDate.AddMonths(-3);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.SemiAnnually:
                                 newDueDate = newDueDate.AddMonths(-6);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             case FrequencyEnum.Annually:
                                 newDueDate = newDueDate.AddYears(-1);
+                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
                         // adds expense only if the bill due date falls within the date range
-                        if (newDueDate >= begin && newDueDate < end)
-                            expenses += bill.AmountDue;
+                        if (newDueDate < begin || newDueDate >= end) continue;
+                        expenses += bill.AmountDue;
+                        Logger.Instance.Calculation($"Expenses: {expenses} added to {bill.Name}.AmountDue");
                     }
                 }
                 return expenses;
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return 0.0m;
             }
         }
 
@@ -365,10 +229,13 @@ namespace JPFData
         {
             try
             {
-                var ret = 0m;
-                var transactions = _db.Transactions.Where(t => t.Date >= begin && t.Date < end).ToList();
-                var bills = _db.Bills.ToList();
+                Logger.Instance.Calculation($"DiscretionarySpendingByDateRange");
+                var transactionManager = new TransactionManager();
+                var transactions = transactionManager.GetTransactionsBetweenDates(begin, end);
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var isBill = false;
+                var ret = 0m;
 
                 foreach (var transaction in transactions)
                 {
@@ -376,17 +243,780 @@ namespace JPFData
                     {
                         // If the bill name matches the transaction payee, count the transaction as a bill (mandatory expense)
                         if (bill.Name.Equals(transaction.Payee))
+                        {
                             isBill = true;
+                            Logger.Instance.Calculation($"{transaction.Amount}: {transaction.Payee} transaction is a bill");
+                        }
+                        else
+                            Logger.Instance.Calculation($"{transaction.Amount}: {transaction.Payee} transaction is not a bill");
                     }
+
                     // If transaction is not a bill, add to discretionary spending total
-                    if (!isBill)
-                        ret += transaction.Amount;
+                    if (isBill) continue;
+
+                    ret += transaction.Amount;
+                    Logger.Instance.Calculation($"{transaction.Amount} added to discretionary spending total");
                 }
+                Logger.Instance.Calculation($"{ret} total discretionary spending from {begin:d} to {end:d}");
                 return ret;
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return 0.0m;
+            }
+        }
+
+        public static decimal DailyInterest(Loan loan)
+        {
+            try
+            {
+                Logger.Instance.Calculation($"DailyInterest");
+                var dailyInterestRate = (loan.APR / 100) / (decimal)364.25;
+                var dailyInterest = dailyInterestRate * loan.OutstandingBalance;
+                Logger.Instance.Calculation($"{loan.Name} loan daily interest = {dailyInterest} (dailyInterestRate {dailyInterestRate} * outstandingBalance {loan.OutstandingBalance})");
+                return dailyInterest;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return 0.0m;
+            }
+        }
+
+        public static decimal MonthlyInterest(Loan loan)
+        {
+            try
+            {
+                Logger.Instance.Calculation($"MonthlyInterest");
+                var monthlyInterestRate = (loan.APR / 100) / 12;
+                var monthlyInterest = monthlyInterestRate * loan.OutstandingBalance;
+                Logger.Instance.Calculation($"{loan.Name} loan monthly interest = {monthlyInterest} (monthlyInterestRate {monthlyInterestRate} * outstandingBalance {loan.OutstandingBalance})");
+                return monthlyInterest;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return 0.0m;
+            }
+        }
+
+        public AccountRebalanceReport GetRebalancingAccountsReport()
+        {
+            try
+            {
+                Logger.Instance.Calculation($"GetRebalancingAccountsReport");
+                AccountRebalanceReport report = new AccountRebalanceReport();
+                var accountManager = new AccountManager();
+                var accounts = accountManager.GetAllAccounts();
+
+                //Clear out to prevent stacking
+                report.AccountsWithSurplus.Clear();
+                report.AccountsWithDeficit.Clear();
+                report.Surplus = 0.0m;
+                report.Deficit = 0.0m;
+                foreach (var account in accounts)
+                {
+                    Logger.Instance.Calculation($"Name: {account.Name}; Accts. W/ Surplus: {report.AccountsWithSurplus.Count}; Accts. W/ Deficit: {report.AccountsWithDeficit.Count}; Surplus: {Math.Round(report.Surplus, 2)}; Deficit: {Math.Round(report.Deficit, 2)}; TotalSurplus: {Math.Round(report.TotalSurplus, 2)}; PaycheckSurplus: {Math.Round(report.PaycheckSurplus, 2)}");
+                    // Get Accounts' Total Surplus/Deficit
+                    var accountSurplus = account.Balance - account.RequiredSavings;
+                    if (accountSurplus == 0) continue;
+                    if (accountSurplus > 0)
+                    {
+                        report.AccountsWithSurplus.Add(account);
+                        report.Surplus += accountSurplus;
+                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} surplus added to report.Surplus ({report.Surplus})");
+                    }
+                    else if (accountSurplus < 0)
+                    {
+                        report.AccountsWithDeficit.Add(account);
+                        report.Deficit += accountSurplus;
+                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} deficit added to report.Deficit ({report.Deficit})");
+                    }
+
+                    if (!account.ExcludeFromSurplus)
+                    {
+                        report.TotalSurplus += accountSurplus;
+                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} added to report.TotalSurplus ({report.TotalSurplus})");
+                    }
+
+                    // Get Paycheck's Total Surplus/Deficit
+                    if (account.ExcludeFromSurplus) continue;
+
+                    var paycheckSurplus = account.PaycheckContribution - account.SuggestedPaycheckContribution;
+                    if (paycheckSurplus == 0) continue;
+
+                    report.PaycheckSurplus += paycheckSurplus;
+                    Logger.Instance.Calculation($"{paycheckSurplus} paycheck surplus (contribution: {account.PaycheckContribution} - suggested: {account.SuggestedPaycheckContribution}) added to report.PaycheckSurplus ({report.Surplus})");
+                }
+
+                report.NewReport = true;
+                return report;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return new AccountRebalanceReport();
+            }
+        }
+
+        /// <summary>
+        /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
+        /// </summary>
+        /// <param name="entity"></param>
+        /// <returns></returns>
+        public bool Update()
+        {
+            try
+            {
+                var requiredSavingsDict = GetRequiredSavingsDict();
+                var paycheckContributionsDict = GetPaycheckContributionsDict();
+                var accountManager = new AccountManager();
+
+                // Load all Accounts from the database into the list of updated accounts.
+                // Ensures that the required savings and balance surplus's for all accounts has fresh data
+                // TODO: research if there's a way to accomplish this, without having to iterate through ALL of the Db Accounts each time.  Updated flag or time entry?
+                var accounts = accountManager.GetAllAccounts();
+
+
+                // Update required savings for all accounts and add updated accounts to updatedAccounts to track changes
+                foreach (var requiredSavings in requiredSavingsDict)
+                {
+                    try
+                    {
+                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+
+
+                        if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
+                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                // Update paycheck contribution for all accounts
+                foreach (var paycheckContribution in paycheckContributionsDict)
+                {
+                    try
+                    {
+                        var account = accounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+
+
+                        if (!(paycheckContribution.Value >= account.PaycheckContribution)) continue;
+                        accounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                // iterate through all updated accounts and set state to modified to save to database
+                foreach (var account in accounts)
+                {
+                    try
+                    {
+                        account.BalanceSurplus = UpdateBalanceSurplus(account);
+
+
+                        _db.Entry(account).State = EntityState.Modified;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                // save changes to the database
+                if (_db.ChangeTracker.HasChanges())
+                    _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        public bool Rebalance()
+        {
+            try
+            {
+                //// throws "Attaching an entity of type 'JPFData.Models.JPFinancial.Account' failed because another entity of the same type already has the same primary key value" Exception
+                //if (!Update())
+                //{
+                //    Logger.Instance.Info("Failed to update accounts");
+                //    return false;
+                //}
+
+                var accountManager = new AccountManager();
+                var accounts = accountManager.GetAllAccounts();
+                var poolAccount = accountManager.GetPoolAccount();
+                var requiredSavingsDict = GetRequiredSavingsDict();
+
+                // update required savings for all accounts
+                foreach (var requiredSavings in requiredSavingsDict)
+                {
+                    try
+                    {
+                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        var accountIndex = -1;
+                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
+
+                        // update the correct account
+                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                if (poolAccount == null) throw new Exception("Pool account has not been assigned");
+
+
+                foreach (Account account in accounts)
+                {
+                    try
+                    {
+                        // if balance surplus is > $0.00, transfer to pool account.  If surplus is < 0, transfer funds from pool to cover account deficits
+                        if (!account.ExcludeFromSurplus && account.BalanceSurplus > 0)
+                        {
+                            // transfer balance surplus's from each account to the pool account
+                            account.Balance -= account.BalanceSurplus;
+                            poolAccount.Balance += account.BalanceSurplus;
+
+                            // set balance surplus to $0.00
+                            account.BalanceSurplus = 0;
+                        }
+                        else if(!account.ExcludeFromSurplus && account.BalanceSurplus <= 0)
+                        {
+                            // cover any account deficits from the surplus in the pool account 
+                            var deficit = account.BalanceSurplus * -1;
+
+                            // Use the rest of the pool money if there's not enough to cover the full deficit
+                            if (poolAccount.Balance < deficit)
+                            {
+                                account.Balance += poolAccount.Balance;
+                                poolAccount.Balance -= poolAccount.Balance;
+                            }
+                            else // Make account whole
+                            {
+                                account.Balance += deficit;
+                                poolAccount.Balance -= deficit;
+                            }
+                        }
+
+
+                        // update balance surplus for each account
+                        account.BalanceSurplus = UpdateBalanceSurplus(account);
+
+
+                        // set state to modified to save to database
+                        _db.Entry(account).State = EntityState.Modified;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+
+                // save changes to the database
+                _db.Entry(poolAccount).State = EntityState.Modified;
+                if (_db.ChangeTracker.HasChanges())
+                    _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Update Account.RequiredBalance for Accounts used in Transaction
+        /// </summary>
+        /// <param name="transaction"></param>
+        /// <returns></returns>
+        public bool UpdateRequiredSavings(Transaction transaction)
+        {
+            try
+            {
+                Logger.Instance.Calculation($"UpdateRequiredSavings");
+                var savingsAccountBalances = new Dictionary<string, decimal>();
+                var expenseManager = new ExpenseManager();
+                var unpaidExpenses = expenseManager.GetAllUnpaidExpenses();
+
+                foreach (var expense in unpaidExpenses)
+                {
+                    var bill = _db.Bills.FirstOrDefault(b => b.Id == expense.BillId);
+                    if (bill == null)
+                    {
+                        Logger.Instance.Debug($"No Bill found WHERE expense.BillId = {expense.BillId}");
+                        Logger.Instance.DataFlow($"No Bill found WHERE expense.BillId = {expense.BillId}");
+                        continue;
+                    }
+
+                    bill.Account = _db.Accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+                    if (bill.Account == null) continue;
+                    var billTotal = expense.Amount; // Use info from Expense and not Bill to account for when the current Bill.Amount differs from past amounts
+                    var dueDate = expense.Due;
+                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
+                    var savePerPaycheck = 0.0m;
+                    var save = 0.0m;
+
+                    // Calculate how much to save each pay period
+                    if (dueDate > DateTime.Today)
+                    {
+                        switch (bill.PaymentFrequency)
+                        {
+                            case FrequencyEnum.Annually:
+                                savePerPaycheck = billTotal / 24;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.SemiAnnually:
+                                savePerPaycheck = billTotal / 12;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.Quarterly:
+                                savePerPaycheck = billTotal / 6;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.SemiMonthly:
+                                savePerPaycheck = billTotal / 4;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.Monthly:
+                                savePerPaycheck = billTotal / 2;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.BiWeekly:
+                                savePerPaycheck = billTotal;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            case FrequencyEnum.Weekly:
+                                savePerPaycheck = billTotal * 2;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                            default:
+                                savePerPaycheck = billTotal / 2;
+                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                break;
+                        }
+
+                        save = Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2);
+                    }
+                    else
+                        save = expense.Amount;
+
+                    // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
+
+                    Logger.Instance.Calculation($"{bill.Account.Name} - [{Math.Round(billTotal, 2)}] [{bill.DueDate:d}] [{payPeriodsLeft}(ppl)] [{Math.Round(savePerPaycheck, 2)}(spp)] [{Math.Round(save, 2)}(req save)]");
+
+                    if (savingsAccountBalances.ContainsKey(bill.Account.Name))
+                        savingsAccountBalances[bill.Account.Name] += save;
+                    else
+                        savingsAccountBalances.Add(bill.Account.Name, save);
+                    ////savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
+                }
+
+                // update each account that has a bill credited to it 
+                if (transaction.CreditAccount != null)
+                {
+                    var valuesFound = false;
+                    decimal totalSavings = 0;
+
+                    foreach (var savings in savingsAccountBalances)
+                    {
+                        if (savings.Key != transaction.CreditAccount.Name) continue;
+                        totalSavings += savings.Value;
+                        valuesFound = true;
+                    }
+
+                    if (valuesFound)
+                    {
+                        // If required savings doesn't need updating, save a call to the DB
+                        if (transaction.CreditAccount.RequiredSavings != totalSavings)
+                        {
+                            transaction.CreditAccount.RequiredSavings = totalSavings;
+                            Logger.Instance.Calculation(
+                                $"{transaction.CreditAccount.Name}.RequiredSavings = {Math.Round(totalSavings, 2)}");
+                            _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
+                        }
+                    }
+                }
+                if (transaction.DebitAccount != null)
+                {
+                    var valuesFound = false;
+                    decimal totalSavings = 0;
+
+                    foreach (var savings in savingsAccountBalances)
+                    {
+                        if (savings.Key != transaction.DebitAccount.Name) continue;
+                        totalSavings += savings.Value;
+                        valuesFound = true;
+                    }
+
+                    if (valuesFound)
+                    {
+                        // If required savings doesn't need updating, save a call to the DB
+                        if (transaction.DebitAccount.RequiredSavings != totalSavings)
+                        {
+                            transaction.DebitAccount.RequiredSavings = totalSavings;
+                            Logger.Instance.Calculation(
+                                $"{transaction.DebitAccount.Name}.RequiredSavings = {Math.Round(totalSavings, 2)}");
+                            _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
+                        }
+                    }
+                }
+
+
+                _db.SaveChanges();
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="account"></param>
+        /// <returns></returns>
+        public decimal UpdateBalanceSurplus(Account account)
+        {
+            try
+            {
+                // If account balance is < $0.00, balance surplus = balance.
+                // If there's a balance limit AND the account balance is greater than the balance limit, balance surplus = any funds over the balance limit
+                // If the balance limit is > balance, balance surplus = $0.00 since there is no surplus
+                // If there's no balance limit, balance surplus = any funds over the required savings
+                if (account.Balance < 0.0m)
+                    return account.BalanceSurplus = account.Balance;
+
+                if (account.BalanceLimit > 0)
+                    return account.BalanceSurplus = account.Balance > account.BalanceLimit
+                        ? account.Balance - account.BalanceLimit
+                        : decimal.Zero;
+
+                return account.Balance - account.RequiredSavings;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return decimal.Zero;
+            }
+        }
+
+        /// <summary>
+        /// Updates database Bills.DueDate if the previous due date has passed
+        /// </summary>
+        public void UpdateBillDueDates()
+        {
+            try
+            {
+                Logger.Instance.Calculation($"UpdateBillDueDates");
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
+                var beginDate = DateTime.Today;
+
+                foreach (var bill in bills)
+                {
+                    if (bill.DueDate.Date > beginDate) continue;
+
+                    var frequency = bill.PaymentFrequency;
+                    var dueDate = bill.DueDate;
+                    var newDueDate = dueDate;
+
+                    /* Updates bill due date to the current due date
+                       while loop handles due date updates, regardless of how out of date they are */
+                    while (newDueDate < beginDate)
+                    {
+                        switch (frequency)
+                        {
+                            case FrequencyEnum.Daily:
+                                newDueDate = newDueDate.AddDays(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Weekly:
+                                newDueDate = newDueDate.AddDays(7);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.BiWeekly:
+                                newDueDate = newDueDate.AddDays(14);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Monthly:
+                                newDueDate = newDueDate.AddMonths(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.SemiMonthly:
+                                newDueDate = newDueDate.AddDays(15);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Quarterly:
+                                newDueDate = newDueDate.AddMonths(3);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.SemiAnnually:
+                                newDueDate = newDueDate.AddMonths(6);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Annually:
+                                newDueDate = newDueDate.AddYears(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                    bill.DueDate = newDueDate;
+                    _db.Entry(bill).State = EntityState.Modified;
+                    Logger.Instance.Calculation($"{bill.Name} due date of {dueDate:d} updated to {newDueDate:d}");
+
+                    if (!AddNewExpenseToDb(bill)) return;
+                }
+
+
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+            }
+        }
+
+        public Dictionary<string, decimal> GetRequiredSavingsDict()
+        {
+            try
+            {
+                var savingsAccountBalances = new Dictionary<string, decimal>();
+                ExpenseManager expenseManager = new ExpenseManager();
+                AccountManager accountManager = new AccountManager();
+                BillManager billManager = new BillManager();
+                List<Expense> unpaidExpenses = expenseManager.GetAllUnpaidExpenses();
+
+                //foreach (var bill in _db.Bills.ToList())
+                foreach (var expense in unpaidExpenses)
+                {
+                    try
+                    {
+                        var bill = billManager.GetBill(expense.BillId);
+                        if (bill == null)
+                        {
+                            Logger.Instance.Debug($"No Bill found WHERE expense.BillId = {expense.BillId}");
+                            Logger.Instance.DataFlow($"No Bill found WHERE expense.BillId = {expense.BillId}");
+                            continue;
+                        }
+
+                        bill.Account = accountManager.GetAccount(bill.AccountId);
+                        if (bill.Account == null) continue;
+                        var billTotal = expense.Amount; // Use info from Expense and not Bill to account for when the current Bill.Amount differs from past amounts
+                        var dueDate = expense.Due;
+                        var payPeriodsLeft = PayPeriodsTilDue(dueDate);
+                        var savePerPaycheck = 0.0m;
+                        var save = 0.0m;
+
+                        // Calculate how much to save each pay period
+                        if (dueDate > DateTime.Today)
+                        {
+                            switch (bill.PaymentFrequency)
+                            {
+                                case FrequencyEnum.Annually:
+                                    savePerPaycheck = billTotal / 24;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.SemiAnnually:
+                                    savePerPaycheck = billTotal / 12;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.Quarterly:
+                                    savePerPaycheck = billTotal / 6;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.SemiMonthly:
+                                    savePerPaycheck = billTotal / 4;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.Monthly:
+                                    savePerPaycheck = billTotal / 2;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.BiWeekly:
+                                    savePerPaycheck = billTotal;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                case FrequencyEnum.Weekly:
+                                    savePerPaycheck = billTotal * 2;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                                default:
+                                    savePerPaycheck = billTotal / 2;
+                                    Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
+                                    break;
+                            }
+
+                            save = payPeriodsLeft > 1 ? Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2) : savePerPaycheck;
+                        }
+                        else
+                            save = expense.Amount;
+
+                        // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
+
+                        Logger.Instance.Calculation($"{bill.Account.Name} - [{Math.Round(billTotal, 2)}] [{bill.DueDate:d}] [{payPeriodsLeft}(ppl)] [{Math.Round(savePerPaycheck, 2)}(spp)] [{Math.Round(save, 2)}(req save)]");
+
+                        if (savingsAccountBalances.ContainsKey(bill.Account.Name))
+                            savingsAccountBalances[bill.Account.Name] += save;
+                        else
+                            savingsAccountBalances.Add(bill.Account.Name, save);
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                        throw;
+                    }
+                }
+
+
+                return savingsAccountBalances;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public Dictionary<string, decimal> GetPaycheckContributionsDict()
+        {
+            try
+            {
+                var accountManager = new AccountManager();
+                var accounts = accountManager.GetAllAccounts();
+
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
+
+                var accountContribution = new Dictionary<string, decimal>();
+
+                //Zeros out all accounts req paycheck contributions
+                foreach (var account in accounts)
+                {
+                    account.PaycheckContribution = decimal.Zero;
+                }
+
+                // update suggested paycheck contributions for bills
+                foreach (var bill in bills)
+                {
+                    var billTotal = bill.AmountDue;
+                    Logger.Instance.Calculation($"{billTotal} due on {bill.DueDate} for {bill.Name}");
+
+                    // get the account assigned to the bill
+                    bill.Account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
+                    if (bill.Account != null && bill.Account.ExcludeFromSurplus) continue;
+
+                    //TODO: Needs to account for all pay frequencies
+                    //TODO: Suggested contribution assumes payday twice a month.  need to update to include other options
+                    if (bill.Account == null) continue;
+                    var contribution = 0.0m;
+                    switch (bill.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Annually:
+                            contribution = billTotal / 24;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.SemiAnnually:
+                            contribution = billTotal / 12;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.Quarterly:
+                            contribution = billTotal / 6;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.SemiMonthly: // every 2 months
+                            contribution = billTotal / 4;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.Monthly:
+                            contribution = billTotal / 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.Weekly:
+                            contribution = billTotal * 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.BiWeekly:
+                            contribution = billTotal;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                        case FrequencyEnum.Daily:
+                            break;
+                        default:
+                            contribution = billTotal / 2;
+                            if (accountContribution.ContainsKey(bill.Account.Name))
+                                accountContribution[bill.Account.Name] += contribution;
+                            else
+                                accountContribution.Add(bill.Account.Name, contribution);
+                            Logger.Instance.Calculation($"{Math.Round(contribution, 2)} added to {bill.Account.Name}.SuggestedContribution");
+                            break;
+                    }
+                }
+
+                return accountContribution;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
             }
         }
 
@@ -394,7 +1024,9 @@ namespace JPFData
         {
             try
             {
-                var billsFromDb = _db.Bills.ToList();
+                Logger.Instance.Calculation($"UpdateTotalCosts");
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
                 var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
                 var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
                 var expenses = 0.0m;
@@ -408,543 +1040,145 @@ namespace JPFData
                     var dueDate = Convert.ToDateTime(bill.Value);
                     if (!(dueDate >= currentDate && dueDate <= endDate)) continue;
 
-                    expenses += billsFromDb.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
+                    expenses += bills.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
+                    Logger.Instance.Calculation($"{expenses} added to {bill.Key}");
                 }
 
                 var billCosts = Convert.ToDecimal(billsDictionary["totalCosts"]);
                 billsDictionary["totalCosts"] = (expenses + billCosts).ToString(CultureInfo.InvariantCulture);
+                Logger.Instance.Calculation($"{expenses + billCosts} added to total costs (expenses: {expenses} + bill costs: {billCosts})");
                 billsDictionary["periodCosts"] = expenses.ToString(CultureInfo.InvariantCulture);
+                Logger.Instance.Calculation($"expenses: {expenses} added to period costs");
 
                 return billsDictionary;
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return null;
             }
         }
 
-        public bool UpdateSuggestedPaycheckContributions()
+        private bool AddNewExpenseToDb(Bill bill)
         {
             try
             {
-                /* Update paycheck contributions for accounts with assigned bills */
-                var accounts = _db.Accounts.ToList();
-                var bills = _db.Bills.ToList();
-                var transactions = _db.Transactions.ToList();
-
-                //Zeros out all accounts req paycheck contributions
-                foreach (var account in accounts)
+                if (ExpenseExists(bill))
                 {
-                    account.SuggestedPaycheckContribution = decimal.Zero;
+                    Logger.Instance.DataFlow($"{bill.Name} due {bill.DueDate} already exists in Expense DB table");
+                    return false;
                 }
 
-                // update suggested paycheck contributions for bills
-                foreach (var bill in _db.Bills.ToList())
-                {
-                    var billTotal = bill.AmountDue;
+                var newExpense = new Expense();
+                newExpense.Name = bill.Name;
+                newExpense.BillId = bill.Id;
+                newExpense.Amount = bill.AmountDue;
+                newExpense.Due = bill.DueDate;
+                newExpense.IsPaid = false;
 
-                    // get the account assigned to the bill
-                    Account account = accounts.FirstOrDefault(a => a.Id == bill.AccountId);
-                    if (account != null && account.ExcludeFromSurplus) continue;
-
-                    //TODO: Needs to account for all pay frequencies
-                    //TODO: Suggested contribution assumes payday twice a month.  need to update to include other options
-                    if (account == null) continue;
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            account.SuggestedPaycheckContribution += billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            account.SuggestedPaycheckContribution += billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            account.SuggestedPaycheckContribution += billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly: // every 2 months
-                            account.SuggestedPaycheckContribution += billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            account.SuggestedPaycheckContribution += billTotal / 2;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            account.SuggestedPaycheckContribution += billTotal * 2;
-                            break;
-                        case FrequencyEnum.BiWeekly:
-                            account.SuggestedPaycheckContribution = billTotal;
-                            break;
-                        case FrequencyEnum.Daily:
-                            break;
-                        default:
-                            account.SuggestedPaycheckContribution += billTotal / 2;
-                            break;
-                    }
-                }
-
-
-                // update paycheck contributions for non-bill expenses
-                var joinAccountsBills = accounts.SelectMany(
-                    account => bills.Where(bill => account.Id == bill.AccountId).DefaultIfEmpty(),
-                    (account, bill) => new
-                    {
-                        Account = account,
-                        Bill = bill
-                    });
-                //Get only Accounts that don't have any association with Bills
-                //Reason: I want all the accounts that don't have regular bills so i can calculate an avg. paycheck contribution suggestion based on past spending
-                var accountsWithoutBills = (from @join in joinAccountsBills where @join.Bill == null select @join.Account).ToList();
-
-                //Get last 90 days of transactions
-                var filteredTransactions = transactions.Where(t => t.Date > DateTime.Today.AddDays(-90)).ToList();
-
-                //Get oldest transaction within 90 days to account for not having 90+ days of transactions
-                var earliestTransaction = filteredTransactions.OrderBy(t => t.Date).FirstOrDefault();
-
-                //Get how many days ago the oldest transaction occured
-                var totalDaysAgo = 0;
-                if (earliestTransaction != null)
-                {
-                    totalDaysAgo = DateTime.Today.Subtract(earliestTransaction.Date).Days;
-                }
-
-                foreach (var account in accountsWithoutBills)
-                {
-                    //Add all expense transactions for the past 90 days for the current account 
-                    var cost = filteredTransactions.Where(t => t.CreditAccount != null).Where(t => t.Type == TransactionTypesEnum.Expense).Where(t => t.CreditAccount.Name == account.Name).Sum(t => t.Amount);
-                  
-                    //Divide total cost by how many days ago the oldest transaction occured
-                    var costPerDay = cost / totalDaysAgo;
-                    
-                    account.SuggestedPaycheckContribution = costPerDay * 15; //rough for paid twice a month todo: add better algorithm to calculate
-                }
+                _db.Expenses.Add(newExpense);
+                Logger.Instance.DataFlow($"New Expense added to data context");
 
                 _db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Entity update.
-        /// Update paycheck contributions to suggested contribution amount.
-        /// Paycheck contribution = suggested paycheck contribution.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public bool UpdatePaycheckContributions()
-        {
-            try
-            {
-                // Update the suggested paycheck contributions to ensure freshest metrics
-                if (!new Calculations().UpdateSuggestedPaycheckContributions()) return false;
-
-                var accounts = _db.Accounts.Where(a => !a.ExcludeFromSurplus).Where(a => a.SuggestedPaycheckContribution > 0).ToList();
-                foreach (var account in accounts)
-                {
-                    account.PaycheckContribution = account.SuggestedPaycheckContribution;
-                    _db.Entry(account).State = EntityState.Modified;
-                    //_dbTransactions += 1;
-                }
+                Logger.Instance.DataFlow($"Saved changes to DB");
 
 
                 return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Database update if dbSave = true, else EntityState.Modified.
-        /// Update the required savings for each Account.
-        /// Required savings = 
-        /// </summary>
-        public bool UpdateRequiredBalanceForBills(bool dbSave = false)
-        {
-            // public because runs on startup with dbSave = true
-            try
-            {
-                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
-
-                foreach (var bill in _db.Bills.ToList())
-                {
-                    bill.Account = _db.Accounts.FirstOrDefault(a => a.Id == bill.AccountId);
-                    if (bill.Account == null) continue;
-                    var billTotal = bill.AmountDue;
-                    // Next due date
-                    var dueDate = bill.DueDate;
-                    // How many pay periods to save until next due date
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
-
-                    // Calculate how much to save from each pay period
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                        case FrequencyEnum.BiWeekly:
-                            savePerPaycheck = billTotal;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
-                            break;
-                        default:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                    }
-                    // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
-                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    // add kvp (account that bill is credited to, amount to save) 
-
-                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
-                }
-
-                // update each account that has a bill credited to it 
-                foreach (var account in _db.Accounts.ToList())
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != account.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-                    if (!valuesFound) continue;
-                    account.RequiredSavings = totalSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    //_dbTransactions += 1;
-                }
-                if (!dbSave) return true;
-                _db.SaveChanges();
-                //_dbTransactions = 0;
-
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        
-        public bool UpdateRequiredBalanceForDiscretionary(bool dbSave = false)
-        {
-            // public because runs on startup with dbSave = true
-            try
-            {
-                var savingsAccountBalances = new List<KeyValuePair<string, decimal>>();
-
-                foreach (var bill in _db.Bills.ToList())
-                {
-                    bill.Account = _db.Accounts.FirstOrDefault(a => a.Id == bill.AccountId);
-                    if (bill.Account == null) continue;
-                    var billTotal = bill.AmountDue;
-                    // Next due date
-                    var dueDate = bill.DueDate;
-                    // How many pay periods to save until next due date
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    decimal savePerPaycheck = 0;
-
-                    // Calculate how much to save from each pay period
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Annually:
-                            savePerPaycheck = billTotal / 24;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            savePerPaycheck = billTotal / 12;
-                            break;
-                        case FrequencyEnum.Quarterly:
-                            savePerPaycheck = billTotal / 6;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            savePerPaycheck = billTotal / 4;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                        case FrequencyEnum.BiWeekly:
-                            savePerPaycheck = billTotal;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            savePerPaycheck = billTotal * 2;
-                            break;
-                        default:
-                            savePerPaycheck = billTotal / 2;
-                            break;
-                    }
-                    // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
-                    var save = billTotal - payPeriodsLeft * savePerPaycheck;
-                    // add kvp (account that bill is credited to, amount to save) 
-
-                    savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
-                }
-
-                // update each account that has a bill credited to it 
-                foreach (var account in _db.Accounts.ToList())
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != account.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-                    if (!valuesFound) continue;
-                    account.RequiredSavings = totalSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    //_dbTransactions += 1;
-                }
-                if (!dbSave) return true;
-                _db.SaveChanges();
-                //_dbTransactions = 0;
-
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Database update if dbSave = true, else EntityState.Modified.
-        /// Update the balance surplus for each Account.
-        /// Balance surplus = balance - required savings.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public bool UpdateBalanceSurplus(bool dbSave = false)
-        {
-            // public because runs on startup with dbSave = true
-            try
-            {
-                foreach (var account in _db.Accounts.ToList())
-                {
-                    account.BalanceSurplus = account.Balance - account.RequiredSavings;
-                    _db.Entry(account).State = EntityState.Modified;
-                    //_dbTransactions += 1;
-                }
-
-
-                if (!dbSave) return true;
-                _db.SaveChanges();
-                //_dbTransactions = 0;
-
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Entity update.
-        /// Move all Account surpluses to the designated pool Account.
-        /// Pool Account balance += Accounts' surplus
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns>If Account balances updated and transactions added to db successfully</returns>
-        public bool PoolSurplus()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-                var poolAccount = accounts.FirstOrDefault(a => a.IsPoolAccount);
-                if (poolAccount == null) throw new Exception("Pool account has not been assigned");
-
-
-                foreach (var account in accounts)
-                {
-                    if (AddSurplusToPoolTransaction(account, poolAccount)) continue;
-                    _db.Entry(account).State = EntityState.Modified;
-                    _db.Entry(poolAccount).State = EntityState.Modified;
-                }
-
-
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        private bool AddSurplusToPoolTransaction(Account account, Account poolAccount)
-        {
-            try
-            {
-                var surplus = account.Balance - account.RequiredSavings;
-                if (account.Id == poolAccount.Id || account.ExcludeFromSurplus || surplus <= 0) return false;
-                if (surplus == null) return false;
-                account.Balance -= (decimal)surplus;
-                poolAccount.Balance += (decimal)surplus;
-
-                var newTransaction = new Transaction();
-                newTransaction.Date = DateTime.Today;
-                newTransaction.Payee = $"Transfer to {poolAccount.Name}";
-                newTransaction.Category = CategoriesEnum.Rebalance;
-                newTransaction.Memo = "Pool Account Surplus's";
-                newTransaction.Type = TransactionTypesEnum.Transfer;
-                newTransaction.DebitAccount = poolAccount;
-                newTransaction.CreditAccount = account;
-                newTransaction.Amount = (decimal)surplus;
-                newTransaction.PaycheckId = null;
-                _db.Entry(newTransaction).State = EntityState.Added;
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Entity update.
-        /// Update balance for Accounts with deficits.
-        /// While (pool.balance > 0) take deficit amount from pool and add to deficit Account balance.
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public bool RebalanceAccounts()
-        {
-            try
-            {
-                var accounts = _db.Accounts.ToList();
-                var poolAccount = accounts.FirstOrDefault(a => a.IsPoolAccount);
-                if (poolAccount == null) throw new Exception("Pool account has not been assigned");
-
-
-                foreach (var account in accounts)
-                {
-                    if (poolAccount.Balance <= 0) break;
-                    if (account.ExcludeFromSurplus || account.BalanceSurplus >= 0) continue;
-                    if (account.BalanceSurplus == null) continue;
-                    var deficit = (decimal)account.BalanceSurplus * -1;
-
-
-                    // If pool account doesn't have enough to cover the full deficit, use what is left
-                    if (poolAccount.Balance < deficit)
-                    {
-                        var balance = poolAccount.Balance;
-                        account.Balance += balance;
-                        poolAccount.Balance -= balance;
-
-                        var newTransaction = new Transaction();
-                        newTransaction.Date = DateTime.Today;
-                        newTransaction.Payee = $"Transfer to {account.Name}";
-                        newTransaction.Category = CategoriesEnum.Rebalance;
-                        newTransaction.Memo = "Cover Deficit";
-                        newTransaction.Type = TransactionTypesEnum.Transfer;
-                        newTransaction.DebitAccount = account;
-                        newTransaction.CreditAccount = poolAccount;
-                        newTransaction.Amount = balance;
-                        newTransaction.PaycheckId = null;
-                        // DB add transaction
-                        _db.Entry(newTransaction).State = EntityState.Added;
-                        // DB update deficit Account balance
-                        _db.Entry(account).State = EntityState.Modified;
-                    }
-                    else // Make account whole
-                    {
-                        account.Balance += deficit;
-                        poolAccount.Balance -= deficit;
-
-                        var newTransaction = new Transaction();
-                        newTransaction.Date = DateTime.Today;
-                        newTransaction.Payee = $"Transfer to {account.Name}";
-                        newTransaction.Category = CategoriesEnum.Rebalance;
-                        newTransaction.Memo = "Cover Deficit";
-                        newTransaction.Type = TransactionTypesEnum.Transfer;
-                        newTransaction.DebitAccount = account;
-                        newTransaction.CreditAccount = poolAccount;
-                        newTransaction.Amount = deficit;
-                        newTransaction.PaycheckId = null;
-                        // DB add transaction
-                        _db.Entry(newTransaction).State = EntityState.Added;
-                        // DB update deficit Account balance
-                        _db.Entry(account).State = EntityState.Modified;
-                    }
-                }
-                // DB update pool Account 
-                _db.Entry(poolAccount).State = EntityState.Modified;
-
-
-                //_db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-
-        // Similar to updating suggested paycheck contributions?
-        public void UpdateAccountGoals(IEnumerable<Account> accounts, Dictionary<string, decimal> accountBalances)
-        {
-            try
-            {
-                foreach (var account in accounts)
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in accountBalances)
-                    {
-                        if (savings.Key != account.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-                    if (valuesFound)
-                    {
-                        account.PaycheckContribution = totalSavings;
-                    }
-                }
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return false;
             }
         }
 
-        public List<Account> UpdateSavingsPercentage(List<Account> accounts)
+        private bool ExpenseExists(Bill bill)
         {
-            if (accounts == null || accounts.Count <= 0) return accounts;
-
-
-            var totalSavings = accounts.Sum(a => a.RequiredSavings) ?? decimal.Zero; ;
-            foreach (Account account in accounts)
+            try
             {
-                var accountSavings = account.RequiredSavings ?? decimal.Zero;
-                var savingsPercentage = accountSavings / totalSavings;
-                account.PercentageOfSavings = decimal.Round(savingsPercentage * 100, 2, MidpointRounding.AwayFromZero);
+                return _db.Expenses.Where(e => e.BillId == bill.Id)
+                    .Where(e => e.Due == bill.DueDate)
+                    .Any(e => e.Amount == bill.AmountDue);
             }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw new Exception("Error thrown checking for existing Expense", e);
+            }
+        }
 
-            return accounts;
+        /// <summary>
+        /// Returns Dictionary with due dates for all bills for calculating all expenses within a timeframe.  Used for calculating future savings
+        /// </summary>
+        /// <param name="billsDictionary"></param>
+        /// <returns></returns>
+        private Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
+        {
+            try
+            {
+                Logger.Instance.Calculation($"UpdateBillDueDates");
+                var billManager = new BillManager();
+                var bills = billManager.GetAllBills();
+                var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+
+                foreach (var bill in bills)
+                {
+                    if (bill.DueDate.Date > beginDate) continue;
+
+                    var frequency = bill.PaymentFrequency;
+                    var dueDate = bill.DueDate;
+                    var newDueDate = dueDate;
+                    Logger.Instance.Calculation($"{bill.Name} due date {dueDate:d}");
+                    while (newDueDate < beginDate)
+                    {
+                        switch (frequency)
+                        {
+                            case FrequencyEnum.Daily:
+                                newDueDate = newDueDate.AddDays(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Weekly:
+                                newDueDate = newDueDate.AddDays(7);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.BiWeekly:
+                                newDueDate = newDueDate.AddDays(14);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Monthly:
+                                newDueDate = newDueDate.AddMonths(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.SemiMonthly:
+                                newDueDate = newDueDate.AddDays(15);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Quarterly:
+                                newDueDate = newDueDate.AddMonths(3);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.SemiAnnually:
+                                newDueDate = newDueDate.AddMonths(6);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            case FrequencyEnum.Annually:
+                                newDueDate = newDueDate.AddYears(1);
+                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                        billsDictionary[bill.Name] = newDueDate.ToShortDateString();
+                        Logger.Instance.Calculation($"Set due date {newDueDate:d}");
+                    }
+                }
+                return billsDictionary;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
         }
 
         /// <summary>
@@ -952,10 +1186,11 @@ namespace JPFData
         /// </summary>
         /// <param name="dueDate"></param>
         /// <returns></returns>
-        public int PayPeriodsTilDue(DateTime? dueDate)
+        private static int PayPeriodsTilDue(DateTime? dueDate)
         {
             try
             {
+                Logger.Instance.Calculation($"PayPeriodsTilDue");
                 var payPeriods = 0;
                 var today = DateTime.Today;
                 var month = DateTime.Today.Month;
@@ -978,376 +1213,53 @@ namespace JPFData
                         today = firstDayOfMonth;
                     }
                 }
+                Logger.Instance.Calculation($"{payPeriods} pay periods until due date {dueDate:d}");
                 return payPeriods - 1 < 0 ? 0 : payPeriods - 1;
             }
             catch (Exception e)
             {
-                throw e;
-            }
-        }
-        
-        public IEnumerable<Bill> BillsDue(DateTime firstPaycheck, DateTime firstDayOfMonth, DateTime lastPaycheck)
-        {
-            try
-            {
-                IList<Bill> billsDue;
-
-                if (DateTime.Today < firstPaycheck) // Bills with due dates 1st - 15th of the current month
-                {
-                    billsDue = (from b in _db.Bills
-                        where b.DueDate >= DateTime.Today && (b.DueDate > firstDayOfMonth && b.DueDate <= firstPaycheck)
-                        select b).ToList();
-                }
-                else // Bills with due dates 16th - last day of the current month
-                {
-                    billsDue = (from b in _db.Bills
-                        where b.DueDate > DateTime.Today && (b.DueDate > firstPaycheck && b.DueDate <= lastPaycheck)
-                        select b).ToList();
-                }
-
-                return billsDue;
-            }
-            catch (Exception e)
-            {
-                throw e;
-            }
-        }
-
-        public Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
-        {
-            try
-            {
-                var bills = _db.Bills.ToList();
-                var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-
-                foreach (var bill in bills)
-                {
-                    if (bill.DueDate.Date > beginDate) continue;
-
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-
-                    while (newDueDate < beginDate)
-                    {
-                        switch (frequency)
-                        {
-                            case FrequencyEnum.Daily:
-                                newDueDate = newDueDate.AddDays(1);
-                                break;
-                            case FrequencyEnum.Weekly:
-                                newDueDate = newDueDate.AddDays(7);
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                newDueDate = newDueDate.AddDays(14);
-                                break;
-                            case FrequencyEnum.Monthly:
-                                newDueDate = newDueDate.AddMonths(1);
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                newDueDate = newDueDate.AddMonths(3);
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(6);
-                                break;
-                            case FrequencyEnum.Annually:
-                                newDueDate = newDueDate.AddYears(1);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        billsDictionary[bill.Name] = newDueDate.ToShortDateString();
-                    }
-                }
-                return billsDictionary;
-            }
-            catch (Exception e)
-            {
-                throw e;
+                Logger.Instance.Error(e);
+                throw;
             }
         }
 
         /// <summary>
-        /// Calculate the remaining balance of a loan
+        /// Returns Dictionary (string, string) with current and end (next pay period) dates set
         /// </summary>
-        /// <param name="loan">Loan class that contains all pertinent information for the loan</param>
-        /// <returns name="remainingBalance" type="decimal">Remaining balance of the loan</returns>
-        public decimal RemainingBalance(Loan loan)
-        {
-            //bug: APR is not being calculated per pay-period
-            var remainingBalance = 0.0m;
-            if (loan == null) return remainingBalance;
-            var payments = Convert.ToDouble(loan.Payments);
-            var rate = Convert.ToDouble(decimal.One + loan.APR);
-            var fv = (loan.OutstandingBalance * (1 + loan.APR)) -
-                     loan.Payment * (decimal)((Math.Pow(loan.Payments, rate) - 1.0 / (double)loan.APR));
-
-            return remainingBalance;
-        }
-
-        public DateTime PayoffDate(Loan loan)
+        /// <param name="billsDictionary"></param>
+        private void SetCurrentAndEndDate(IDictionary<string, string> billsDictionary)
         {
             try
             {
-                var payoffDate = DateTime.Today;
-                if (loan != null)
+                Logger.Instance.Calculation($"SetCurrentAndEndDate");
+                var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
+                Logger.Instance.Calculation($"CurrentDate: {currentDate}, EndDate: {endDate}");
+
+                if (Convert.ToDateTime(billsDictionary["currentDate"]).Day <= 14)
                 {
-                    double interestRate = 0.00;
-                    switch (loan.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Monthly:
-                            interestRate = (double)loan.APR / 12;
-                            break;
-                        case FrequencyEnum.Weekly:
-                            interestRate = (double)loan.APR / 52;
-                            break;
-                        case FrequencyEnum.Daily:
-                            interestRate = (double)loan.APR / 360;
-                            break;
-                        default:
-                            break;
-                    }
-
-                    // Formula: N = -log(1-iA/P) / log(1+i)       N = # of payments, i = interest rate (APR/payments per year), A = loan amount, P = payment
-                    // step 1 = -log(1-iA/P)
-                    decimal interestTimesAmount = (decimal)interestRate * loan.OriginalLoanAmount;
-                    decimal divideByPayment = Convert.ToDecimal(interestTimesAmount / loan.Payment);
-                    double getNegativeLog = Math.Log((double)divideByPayment) * -1;
-
-                    // step 2 = log(1+i)
-                    decimal interestPlusOne = (decimal)(1.0 + interestRate);
-                    double getLog = Math.Log((double)interestPlusOne);
-
-                    // step 3 = step 1 / step 2
-                    double numberOfPayments = getNegativeLog / getLog;
-                    int wholeNumber = (int)numberOfPayments;
-                    double fraction = numberOfPayments - wholeNumber;
-
-                    double days = 0.0;
-                    switch (loan.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Monthly:
-                            payoffDate = DateTime.Today.AddMonths(wholeNumber);
-                            days = Math.Ceiling(30 * fraction);
-                            payoffDate = payoffDate.AddDays(days);
-                            break;
-                        case FrequencyEnum.Weekly:
-                            payoffDate = DateTime.Today.AddDays(wholeNumber * 7);
-                            days = Math.Ceiling(7 * fraction);
-                            payoffDate = payoffDate.AddDays(days);
-                            break;
-                        case FrequencyEnum.Daily:
-                            payoffDate = DateTime.Today.AddDays(wholeNumber + 1);
-                            break;
-                    }
-
-                    return payoffDate;
+                    billsDictionary["currentDate"] = new DateTime(currentDate.Year, currentDate.Month, 16).ToShortDateString();
+                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                    endDate = new DateTime(currentDate.Year, currentDate.Month, LastDayOfMonth(currentDate).Day);
+                    billsDictionary["endDate"] = endDate.ToShortDateString();
+                    Logger.Instance.Calculation($"New CurrentDate: {currentDate}, EndDate: {endDate}");
                 }
-                return payoffDate;
-            }
-            catch (Exception)
-            {
-                throw;
-            }
-        }
-
-        public decimal Payment(Loan loan)
-        {
-            try
-            {
-                var payment = decimal.Zero;
-                if (loan != null)
+                else
                 {
-
-
-
-                    return payment;
+                    billsDictionary["currentDate"] =
+                        FirstDayOfMonth(currentDate.AddMonths(1).Year, currentDate.AddMonths(1).Month)
+                            .ToString(CultureInfo.InvariantCulture);
+                    currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
+                    endDate = new DateTime(currentDate.Year, currentDate.Month, 15);
+                    billsDictionary["endDate"] = endDate.ToShortDateString();
+                    Logger.Instance.Calculation($"New CurrentDate: {currentDate}, EndDate: {endDate}");
+                    //TODO: simplify
                 }
-                return payment;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-
-                throw;
+                Logger.Instance.Error(e);
             }
-        }
-
-        public decimal Interest(Loan loan)
-        {
-            try
-            {
-                var interestPayment = decimal.Zero;
-                if (loan != null)
-                {
-
-
-                    return interestPayment;
-                }
-                return interestPayment;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public decimal Principal(Loan loan)
-        {
-            try
-            {
-                var principalPayment = decimal.Zero;
-                if (loan != null)
-                {
-
-
-                    return principalPayment;
-                }
-                return principalPayment;
-            }
-            catch (Exception)
-            {
-
-                throw;
-            }
-        }
-
-        public decimal DailyInterest(Loan loan)
-        {
-            var dailyInterestRate = (loan.APR / 100) / (decimal)364.25;
-            return dailyInterestRate * loan.OutstandingBalance;
-        }
-
-        public decimal MonthlyInterest(Loan loan)
-        {
-            var monthlyInterestRate = (loan.APR / 100) / 12;
-            return monthlyInterestRate * loan.OutstandingBalance;
-        }
-
-        public decimal ExpenseRatio()
-        {
-            try
-            {
-                var bills = _db.Bills.ToList();
-                var salaries = _db.Salaries.ToList();
-                decimal monthlyExpenses = 0.00m;
-                decimal? income = 0.00m;
-
-                foreach (var bill in bills)
-                {
-                    switch (bill.PaymentFrequency)
-                    {
-                        case FrequencyEnum.Weekly:
-                            monthlyExpenses += bill.AmountDue * 4;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            monthlyExpenses += bill.AmountDue * 2;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            monthlyExpenses += bill.AmountDue;
-                            break;
-                        case FrequencyEnum.SemiAnnually:
-                            monthlyExpenses += bill.AmountDue / 6;
-                            break;
-                        case FrequencyEnum.Annually:
-                            monthlyExpenses += bill.AmountDue / 12;
-                            break;
-                        case FrequencyEnum.Daily:
-                            throw new NotImplementedException();
-                        case FrequencyEnum.BiWeekly:
-                            break; throw new NotImplementedException();
-                        case FrequencyEnum.Quarterly:
-                            throw new NotImplementedException();
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-
-                foreach (var salary in salaries)
-                {
-                    if (salary.PayTypesEnum != PayTypesEnum.Salary) continue;
-                    switch (salary.PayFrequency)
-                    {
-                        case FrequencyEnum.Weekly:
-                            income += salary.NetIncome * 4;
-                            break;
-                        case FrequencyEnum.SemiMonthly:
-                            income += salary.NetIncome * 2;
-                            break;
-                        case FrequencyEnum.Monthly:
-                            income += salary.NetIncome;
-                            break;
-                        case FrequencyEnum.Daily:
-                            throw new NotImplementedException();
-                        case FrequencyEnum.BiWeekly:
-                            throw new NotImplementedException();
-                        case FrequencyEnum.Quarterly:
-                            throw new NotImplementedException();
-                        case FrequencyEnum.SemiAnnually:
-                            throw new NotImplementedException();
-                        case FrequencyEnum.Annually:
-                            throw new NotImplementedException();
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
-
-                income = 3798.40m;
-                if (income == null) return decimal.MinusOne;
-                decimal expenseRatio = (decimal)income / monthlyExpenses;
-
-                return expenseRatio;
-            }
-            catch (Exception)
-            {
-                return decimal.MinusOne;
-            }
-        }
-
-        public AccountRebalanceReport GetRebalancingAccountsReport(AccountDTO accounts)
-        {
-            AccountRebalanceReport report = accounts.RebalanceReport;
-            //UpdateSuggestedPaycheckContributions();
-
-
-            //Clear out to prevent stacking
-            report.AccountsWithSurplus.Clear();
-            report.AccountsWithDeficit.Clear();
-            report.Surplus = 0.0m;
-            report.Deficit = 0.0m;
-            foreach (var account in accounts.Accounts)
-            {
-                // Get Accounts' Total Surplus/Deficit
-                var accountSurplus = account.Balance - account.RequiredSavings;
-                if (accountSurplus == 0) continue;
-                if (accountSurplus > 0)
-                {
-                    report.AccountsWithSurplus.Add(account);
-                    report.Surplus += (decimal)accountSurplus;
-                }
-                else if (accountSurplus < 0)
-                {
-                    report.AccountsWithDeficit.Add(account);
-                    report.Deficit += (decimal)accountSurplus;
-                }
-                if (!account.ExcludeFromSurplus)
-                    report.TotalSurplus += accountSurplus ?? 0m;
-
-                // Get Paycheck's Total Surplus/Deficit
-                if (account.ExcludeFromSurplus) continue;
-
-                var paycheckSurplus = account.PaycheckContribution - account.SuggestedPaycheckContribution;
-                if (paycheckSurplus == 0) continue;
-
-                if (paycheckSurplus != null)
-                    report.PaycheckSurplus += (decimal)paycheckSurplus;
-            }
-
-            report.newReport = true;
-            return report;
         }
     }
 }

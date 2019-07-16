@@ -5,7 +5,7 @@ using Microsoft.Owin.Security.Cookies;
 using Owin;
 using System;
 using JPFData;
-using JPFData.Models;
+using JPFData.Models.Identity;
 
 namespace JPFinancial
 {
@@ -25,7 +25,7 @@ namespace JPFinancial
             app.UseCookieAuthentication(new CookieAuthenticationOptions
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/Account/Login"),
+                LoginPath = new PathString("/Identity/Login"),
                 Provider = new CookieAuthenticationProvider
                 {
                     // Enables the application to validate the security stamp when the user logs in.

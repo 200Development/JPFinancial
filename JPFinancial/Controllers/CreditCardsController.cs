@@ -3,10 +3,11 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class CreditCardsController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();

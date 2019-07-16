@@ -1,6 +1,6 @@
 ﻿using System.Data.Entity;
-using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Models.Identity;
+using JPFData.Models.JPFinancial;
 using Microsoft.AspNet.Identity.EntityFramework;
 
 namespace JPFData
@@ -17,19 +17,11 @@ namespace JPFData
         public IDbSet<Account> Accounts { get; set; }
         public IDbSet<Bill> Bills { get; set; }
         public IDbSet<Salary> Salaries { get; set; }
-        public IDbSet<Company> Companies { get; set; }
         public IDbSet<Transaction> Transactions { get; set; }
         public IDbSet<Loan> Loans { get; set; }
         public IDbSet<CreditCard> CreditCards { get; set; }
-        public IDbSet<Paycheck> Paychecks { get; set; }
-        //Keeping for now since migration is already made. 
-        public IDbSet<Tax> Taxes { get; set; }
-        public IDbSet<Deduction> Deductions { get; set; }
-        public IDbSet<Earning> Earnings { get; set; }
-        public IDbSet<Bonus> Bonuses { get; set; }
         public IDbSet<Expense> Expenses { get; set; }
-        public IDbSet<Benefit> Benefits { get; set; }
-
+        public IDbSet<Rebalance> Rebalance { get; set; }
 
 
         public static ApplicationDbContext Create()

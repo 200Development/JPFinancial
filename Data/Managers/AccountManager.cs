@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using JPFData.DTO;
+using JPFData.Enumerations;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
@@ -13,7 +13,16 @@ namespace JPFData.Managers
     /// </summary>
     public class AccountManager
     {
+        /*
+       STRUCTURE
+       private properties
+       constructors
+       public properties
+       public methods
+       private methods
+       */
         private readonly ApplicationDbContext _db;
+        private readonly string _userId;
         private readonly Calculations _calc;
 
 
@@ -21,115 +30,207 @@ namespace JPFData.Managers
         {
             _db = new ApplicationDbContext();
             _calc = new Calculations();
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public AccountDTO Get(AccountDTO entity)
+        public List<Account> GetAllAccounts()
         {
             try
             {
-                entity.Accounts = _db.Accounts.ToList();
-                entity.Metrics = RefreshAccountMetrics(entity);
-                entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(entity);
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-
-
-            return entity;
-        }
-
-        public Account Details(AccountDTO entity)
-        {
-            return _db.Accounts.FirstOrDefault(a => a.Id == entity.Account.Id);
-        }
-
-        public bool Edit(AccountDTO entity)
-        {
-            try
-            {
-                _db.Entry(entity.Account).State = EntityState.Modified;
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
-        }
-        
-        /// <summary>
-        /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
-        /// </summary>
-        /// <param name="entity"></param>
-        /// <returns></returns>
-        public AccountDTO Update(AccountDTO entity)
-        {
-            try
-            {
-                // set paycheck contributions to suggested contributions
-                if (!_calc.UpdatePaycheckContributions()) return entity;
-
-                entity.Accounts = _db.Accounts.ToList();
-
-                if (!_calc.UpdateRequiredBalanceForBills()) return entity;
-
-                if (!_calc.UpdateBalanceSurplus()) return entity;
-
-
-                _db.SaveChanges();
-            }
-            catch (Exception)
-            {
-                //ignore
-            }
-
-
-            return entity;
-        }
-
-        public AccountDTO Rebalance(AccountDTO entity)
-        {
-            try
-            {
-                if (!_calc.PoolSurplus()) return entity;
-                if (!_calc.RebalanceAccounts()) return entity;
-
-
-                _db.SaveChanges();
-                Update(entity);  //is this necessary or overkill?
+                // should pool account be excluded?
+                return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount).ToList();
             }
             catch (Exception e)
             {
-                //ignore
+                Logger.Instance.Error(e);
+                throw;
             }
-
-
-            return entity;
         }
 
-
-        private AccountMetrics RefreshAccountMetrics(AccountDTO entity)
+        public Account GetAccount(int? id)
         {
-            AccountMetrics metrics = new AccountMetrics();
+            try
+            {
+                return _db.Accounts.Find(id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
 
-            metrics.LargestBalance = entity.Accounts.Max(a => a.Balance);
-            metrics.SmallestBalance = entity.Accounts.Min(a => a.Balance);
-            metrics.AverageBalance = entity.Accounts.Sum(a => a.Balance) / entity.Accounts.Count;
+        public Account GetPoolAccount()
+        {
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == _userId).FirstOrDefault(a => a.IsPoolAccount);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
 
-            metrics.LargestSurplus = entity.Accounts.Max(a => a.BalanceSurplus ?? 0m);
-            metrics.SmallestSurplus = entity.Accounts.Min(a => a.BalanceSurplus ?? 0m);
-            metrics.AverageSurplus = entity.Accounts.Sum(a => a.BalanceSurplus ?? 0m) / entity.Accounts
-                                         .Where(a => a.BalanceSurplus != null && a.BalanceSurplus != 0m).ToList().Count;
-            metrics.TotalBalance = entity.Accounts.Sum(a => a.Balance);
+        public bool Create(Account account)
+        {
+            try
+            {
+                _db.Accounts.Add(account);
+                _db.SaveChanges();
 
 
-            return metrics;
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        public bool Edit(Account account)
+        {
+            try
+            {
+                account.BalanceSurplus = _calc.UpdateBalanceSurplus(account);
+
+                _db.Entry(account).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        public bool Delete(int id)
+        {
+            try
+            {
+                Account account = _db.Accounts.Find(id);
+                if (account.IsPoolAccount)
+                    throw new Exception("Cannot delete pool account");
+
+                _db.Accounts.Remove(account);
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public AccountMetrics GetMetrics()
+        {
+            try
+            {
+                //TODO: Needs Refactoring
+                AccountMetrics metrics = new AccountMetrics();
+                AccountManager accountManager = new AccountManager();
+                BillManager billManager = new BillManager();
+                List<Account> accounts = GetAllAccounts();
+                var poolAccount = GetPoolAccount();
+                var requiredSavingsDict = _calc.GetRequiredSavingsDict();
+                var totalRequiredSavings = 0.0m;
+
+                foreach (var savings in requiredSavingsDict)
+                {
+                    try
+                    {
+                        totalRequiredSavings += savings.Value;
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                if (!accounts.Any()) return metrics;
+
+                metrics.LargestBalance = accounts.Max(a => a.Balance);
+                metrics.SmallestBalance = accounts.Min(a => a.Balance);
+                metrics.AverageBalance = accounts.Sum(a => a.Balance) / accounts.Count;
+                var incomeTransactions = _db.Transactions.Where(t => t.Type == TransactionTypesEnum.Income);
+                var oldestIncomeTransaction = incomeTransactions.OrderBy(t => t.Date).FirstOrDefault();
+                var daysAgo = 0;
+                if (oldestIncomeTransaction != null)
+                    daysAgo = (DateTime.Today - oldestIncomeTransaction.Date).Days;
+                var monthsAgo = daysAgo / 30 < 1 ? 1 : daysAgo / 30;
+
+
+                if (incomeTransactions.Any())
+                    metrics.MonthlySurplus = (incomeTransactions.Sum(t => t.Amount) / monthsAgo) - (accounts.Sum(a => a.PaycheckContribution) * 2);
+                metrics.LargestSurplus = accounts.Max(a => a.BalanceSurplus);
+                metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
+                var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
+                    metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
+
+                var cashBalance = accounts.Sum(a => a.Balance) + poolAccount.Balance;
+                var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
+
+                metrics.CashBalance = cashBalance;
+                metrics.AccountingBalance = cashBalance - totalRequiredSavings;
+
+                var totalSurplus = accounts.Sum(a => a.BalanceSurplus) + poolAccount.Balance;
+                metrics.SpendableCash = totalSurplus > 0 ? totalSurplus : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
+                metrics.OutstandingExpenses = outstandingExpenses;
+                metrics.PoolBalance = accountManager.GetPoolAccount().Balance;
+
+                return metrics;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
+
+        public void CheckAndCreatePoolAccount()
+        {
+            try
+            {
+                var accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                if (accounts.Exists(a => a.IsPoolAccount)) return;
+
+                var poolAccount = new Account();
+                poolAccount.Name = "Pool";
+                poolAccount.Balance = decimal.Zero;
+                poolAccount.IsPoolAccount = true;
+                poolAccount.UserId = _userId;
+
+                _db.Accounts.Add(poolAccount);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public bool Update()
+        {
+            return _calc.Update();
+        }
+
+        public bool Rebalance()
+        {
+            return _calc.Rebalance();
         }
     }
 }

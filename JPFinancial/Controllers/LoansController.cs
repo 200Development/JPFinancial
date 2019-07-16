@@ -5,22 +5,21 @@ using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class LoansController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
 
         // GET: Loans
         public ActionResult Index()
         {
             //var months = 12;
             var loansVM = new List<LoanViewModel>();
-            var financialsPerMonth = new List<Dictionary<DateTime, LoanViewModel>>();
 
             foreach (var loan in _db.Loans.ToList())
             {
@@ -32,7 +31,7 @@ namespace JPFinancial.Controllers
                 newLoanVM.OutstandingBalance = loan.OutstandingBalance;
                 newLoanVM.Payment = loan.Payment;
                 newLoanVM.APR = loan.APR;
-                newLoanVM.DailyInterestCost = _calculations.DailyInterest(loan);
+                newLoanVM.DailyInterestCost = Calculations.DailyInterest(loan);
 
                 loansVM.Add(newLoanVM);
             }

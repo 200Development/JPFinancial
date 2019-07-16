@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Activities.Statements
+@using JPFData
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -23,7 +25,7 @@
         <div class="sidebar" data-background-color="black" data-active-color="danger">
             <div class="sidebar-wrapper">
                 <div class="logo">
-                    <a href="#" class="simple-text">
+                    <a href="~/Home/Index" class="simple-text">
                         J.P. Financial
                     </a>
                 </div>
@@ -46,19 +48,19 @@
                             <p>Bills</p>
                         </a>
                     </li>
-                    <li id="idCredit">
-                        <a href="~/CreditCards/Index">
-                            <i class="ti-credit-card"></i>
-                            <p>Credit Cards</p>
-                        </a>
-                    </li>
-                    <li id="idSalary">
-                        <a href="~/Income/Index">
-                            <i class="ti-money"></i>
-                            <p>Paycheck</p>
-                        </a>
-                    </li>
-                 
+                    @*<li id="idCredit">
+                            <a href="~/CreditCards/Index">
+                                <i class="ti-credit-card"></i>
+                                <p>Credit Cards</p>
+                            </a>
+                        </li>*@
+                    @*<li id="idSalary">
+                            <a href="~/Income/Index">
+                                <i class="ti-money"></i>
+                                <p>Income</p>
+                            </a>
+                        </li>*@
+
                     <li id="idTransactions">
                         <a href="~/Transactions/Index">
                             <i class="ti-package"></i>
@@ -67,51 +69,55 @@
                     </li>
                 </ul>
                 @*<div class="btn-group btn-group-toggle" data-toggle="buttons" id="radioTimeFrame" style="margin: 4px 0 0 0">
-                    <label class="btn btn-sm btn-secondary active">
-                        <input type="radio" name="btnLastWeek" id="btnLastWeek" autocomplete="off" checked> Week
-                    </label>
-                    <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="btnLastMonth" id="btnLastMonth" autocomplete="off"> Month
-                    </label>
-                    <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="btnLastQuarter" id="btnLastQuarter" autocomplete="off"> Quarter
-                    </label>
-                    <label class="btn btn-sm btn-secondary">
-                        <input type="radio" name="btnLastYear" id="btnLastYear" autocomplete="off"> Year
-                    </label>
-                </div>
+                        <label class="btn btn-sm btn-secondary active">
+                            <input type="radio" name="btnLastWeek" id="btnLastWeek" autocomplete="off" checked> Week
+                        </label>
+                        <label class="btn btn-sm btn-secondary">
+                            <input type="radio" name="btnLastMonth" id="btnLastMonth" autocomplete="off"> Month
+                        </label>
+                        <label class="btn btn-sm btn-secondary">
+                            <input type="radio" name="btnLastQuarter" id="btnLastQuarter" autocomplete="off"> Quarter
+                        </label>
+                        <label class="btn btn-sm btn-secondary">
+                            <input type="radio" name="btnLastYear" id="btnLastYear" autocomplete="off"> Year
+                        </label>
+                    </div>
 
-                <div id="divStaticFinances">
-                    <table style="margin: 12px 0 0 12px; width: 100%">
-                        <tr>
-                            <td>Savings Rate</td>
-                            <td>12.51%</td>
-                        </tr>
-                        <tr>
-                            <td>Debt-To-Equity</td>
-                            <td>89.32%</td>
-                        </tr>
-                    </table>
-                    <h3>Time Metrics</h3>
-                </div>
-                <div id="divHistoricalFinances">
-                    <table style="margin: 12px 0 0 12px; width: 100%">
-                        <tr>
-                            <td>Savings Rate</td>
-                            <td>12.51%</td>
-                        </tr>
-                        <tr>
-                            <td>Debt-To-Equity</td>
-                            <td>89.32%</td>
-                        </tr>
-                    </table>
-                </div>*@
+                    <div id="divStaticFinances">
+                        <table style="margin: 12px 0 0 12px; width: 100%">
+                            <tr>
+                                <td>Savings Rate</td>
+                                <td>12.51%</td>
+                            </tr>
+                            <tr>
+                                <td>Debt-To-Equity</td>
+                                <td>89.32%</td>
+                            </tr>
+                        </table>
+                        <h3>Time Metrics</h3>
+                    </div>
+                    <div id="divHistoricalFinances">
+                        <table style="margin: 12px 0 0 12px; width: 100%">
+                            <tr>
+                                <td>Savings Rate</td>
+                                <td>12.51%</td>
+                            </tr>
+                            <tr>
+                                <td>Debt-To-Equity</td>
+                                <td>89.32%</td>
+                            </tr>
+                        </table>
+                    </div>*@
             </div>
         </div>
         @*Left Side Nav End*@
+       
         <div class="main-panel">
+           
             <nav class="navbar navbar-default">
+
                 <div class="container-fluid">
+
                     <div class="navbar-header">
                         <button type="button" class="navbar-toggle">
                             <span class="sr-only">Toggle navigation</span>
@@ -119,21 +125,34 @@
                             <span class="icon-bar bar2"></span>
                             <span class="icon-bar bar3"></span>
                         </button>
-                      @*  <a class="navbar-brand" href="#">Dashboard</a>*@
+                        @*  <a class="navbar-brand" href="#">Dashboard</a>*@
                     </div>
+
                     <div class="collapse navbar-collapse">
+                        <div style="float: left">
+                            @if (Global.Instance.User != null && Global.Instance.User.Id != "")
+                            {
+                                <h4>Welcome @Global.Instance.User.UserName</h4>
+                            }
+                        </div>
                         <ul class="nav navbar-nav navbar-right">
-                            <li>@Html.ActionLink("Logout", "LogOff", "Identity")</li>
-                            <li>@Html.ActionLink("Login", "Login", "Identity")</li>
-                            <li>@Html.ActionLink("Register", "Register", "Identity")</li>
+                            @if (Global.Instance.User == null || Global.Instance.User.Id == "")
+                            {
+                                <li>@Html.ActionLink("Login", "Login", "Identity")</li>
+                                <li>@Html.ActionLink("Register", "Register", "Identity")</li>
+                            }
+                            @if (Global.Instance.User != null && Global.Instance.User.Id != "")
+                            {
+                                <li>@Html.ActionLink("Logout", "LogOff", "Identity")</li>
+                            }
                         </ul>
                     </div>
                 </div>
             </nav>
-            
-                @RenderBody()
 
-            <hr />
+            @RenderBody()
+
+            <hr/>
             <div class="col-md-12 col-lg-12 row">
                 <footer>
                     <p>&copy; @DateTime.Now.Year - J R Parsons, LLC</p>

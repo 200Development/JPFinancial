@@ -1,4 +1,4 @@
-﻿@model IEnumerable<JPFData.Models.Bill>
+﻿@model JPFData.ViewModels.BillViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -119,11 +119,11 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">Expenses</h4>
+                        <h4 class="title">Bills</h4>
                         <p class="category">Last 30 Days</p>
                     </div>
                     <div class="content">
-                        <div id="chartExpenses" class="ct-chart"></div>
+                        <div id="chartBills" class="ct-chart"></div>
                         <div class="footer">
                             <div class="chart-legend">
                                 <i class="fa fa-circle text-success"></i> Total
@@ -150,7 +150,7 @@
                         </p>
                     </div>
                     <div class="container-fluid" style="text-align: center">
-                        @foreach (var item in Model)
+                        @foreach (var item in Model.Bills.OrderByDescending(b => b.AmountDue).ThenBy(c => c.Name))
                         {
                             <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
                                 <div class="card-header">

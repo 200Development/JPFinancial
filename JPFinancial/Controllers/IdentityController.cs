@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Models;
+using JPFData.Managers;
+using JPFData.Models.Identity;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
@@ -16,15 +17,18 @@ namespace JPFinancial.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
+        private readonly Calculations _calc;
 
         public IdentityController()
         {
+            _calc = new Calculations();
         }
 
-        public IdentityController(ApplicationUserManager userManager, ApplicationSignInManager signInManager )
+        public IdentityController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
-            UserManager = userManager;
             SignInManager = signInManager;
+            UserManager = userManager;
+            _calc = new Calculations();
         }
 
         public ApplicationSignInManager SignInManager
@@ -72,18 +76,41 @@ namespace JPFinancial.Controllers
                 return View(model);
             }
 
+            // Require the user to have a confirmed email before they can log on.
+            var user = await UserManager.FindByNameAsync(model.Email);
+            if (user != null)
+            {
+                if (!await UserManager.IsEmailConfirmedAsync(user.Id))
+                {
+                    string callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account-Resend");
+
+
+                    // Uncomment to debug locally  
+                    // ViewBag.Link = callbackUrl;
+                    ViewBag.errorMessage = "You must have a confirmed email to log on.";
+                    return View("Error");
+                }
+
+                
+            }
+
             // This doesn't count login failures towards UserAccount lockout
             // To enable password failures to trigger UserAccount lockout, change to shouldLockout: true
             var result = await SignInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, shouldLockout: false);
             switch (result)
             {
                 case SignInStatus.Success:
+                    Global.Instance.User = user;
+                    _calc.UpdateBillDueDates();
+
+                    var accountManager = new AccountManager();
+                    accountManager.CheckAndCreatePoolAccount();
+
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
                 case SignInStatus.RequiresVerification:
                     return RedirectToAction("SendCode", new { ReturnUrl = returnUrl, RememberMe = model.RememberMe });
-                case SignInStatus.Failure:
                 default:
                     ModelState.AddModelError("", "Invalid login attempt.");
                     return View(model);
@@ -119,7 +146,7 @@ namespace JPFinancial.Controllers
             // If a user enters incorrect codes for a specified amount of time then the user UserAccount
             // will be locked out for a specified amount of time.
             // You can configure the UserAccount lockout settings in IdentityConfig
-            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent:  model.RememberMe, rememberBrowser: model.RememberBrowser);
+            var result = await SignInManager.TwoFactorSignInAsync(model.Provider, model.Code, isPersistent: model.RememberMe, rememberBrowser: model.RememberBrowser);
             switch (result)
             {
                 case SignInStatus.Success:
@@ -151,11 +178,17 @@ namespace JPFinancial.Controllers
             if (!ModelState.IsValid) return View(model);
 
 
-            var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
+            var user = new ApplicationUser { UserName = model.Username, Email = model.Email };
             var result = await UserManager.CreateAsync(user, model.Password);
             if (result.Succeeded)
             {
-                await SignInManager.SignInAsync(user, isPersistent:false, rememberBrowser:false);
+                var callbackUrl = await SendEmailConfirmationTokenAsync(user.Id, "Confirm your account");
+
+                // Uncomment to debug locally 
+                // TempData["ViewBagLink"] = callbackUrl;
+
+                ViewBag.Message = "Check your email and confirm your account, you must be confirmed "
+                                  + "before you can log in.";
 
                 // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
                 // Send an email with this link
@@ -163,7 +196,8 @@ namespace JPFinancial.Controllers
                 // var callbackUrl = Url.Action("ConfirmEmail", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
                 // await UserManager.SendEmailAsync(user.Id, "Confirm your UserAccount", "Please confirm your UserAccount by clicking <a href=\"" + callbackUrl + "\">here</a>");
 
-                return RedirectToAction("Index", "Home");
+                return View("Info");
+                //return RedirectToAction("Index", "Home");
             }
             AddErrors(result);
 
@@ -211,13 +245,10 @@ namespace JPFinancial.Controllers
 
             // For more information on how to enable UserAccount confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
             // Send an email with this link
-            // string code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
-            // var callbackUrl = Url.Action("ResetPassword", "UserAccount", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-            // await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
-            // return RedirectToAction("ForgotPasswordConfirmation", "UserAccount");
-
-            // If we got this far, something failed, redisplay form
-            return View(model);
+            var code = await UserManager.GeneratePasswordResetTokenAsync(user.Id);
+            var callbackUrl = Url.Action("ResetPassword", "Identity", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+            await UserManager.SendEmailAsync(user.Id, "Reset Password", "Please reset your password by clicking <a href=\"" + callbackUrl + "\">here</a>");
+            return RedirectToAction("ForgotPasswordConfirmation", "Identity");
         }
 
         //
@@ -384,9 +415,16 @@ namespace JPFinancial.Controllers
             return View(model);
         }
 
-        //
+        [AllowAnonymous]
+        public ActionResult LogOff(string returnUrl)
+        {
+            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            return RedirectToAction("Index", "Home");
+        }
+
         // POST: /UserAccount/LogOff
         [HttpPost]
+        [AllowAnonymous]
         [ValidateAntiForgeryToken]
         public ActionResult LogOff()
         {
@@ -400,6 +438,17 @@ namespace JPFinancial.Controllers
         public ActionResult ExternalLoginFailure()
         {
             return View();
+        }
+
+        private async Task<string> SendEmailConfirmationTokenAsync(string userId, string subject)
+        {
+            string code = await UserManager.GenerateEmailConfirmationTokenAsync(userId);
+            var callbackUrl = Url.Action("ConfirmEmail", "Identity",
+                new { userId = userId, code = code }, protocol: Request.Url?.Scheme);
+            await UserManager.SendEmailAsync(userId, subject,
+                "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
+            return callbackUrl;
         }
 
         protected override void Dispose(bool disposing)

@@ -1,4 +1,4 @@
-﻿@model JPFData.ViewModels.CreateBillViewModel
+﻿@model JPFData.ViewModels.BillViewModel
 
 @{
     ViewBag.Title = "Edit";
@@ -15,52 +15,45 @@
         <h4>Bill</h4>
         <hr />
         @Html.ValidationSummary(true, "", new { @class = "text-danger" })
-        @Html.HiddenFor(model => model.Id)
+        @Html.HiddenFor(model => model.Bill.Id)
 
         <div class="form-group">
-            @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Bill.Name, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.Name, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
             </div>
         </div>
         
         <div class="form-group">
-            @Html.LabelFor(model => model.IsMandatory, "Mandatory Expense?", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Bill.AmountDue, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.CheckBoxFor(model => model.IsMandatory, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.AmountDue, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Bill.DueDate, htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.EditorFor(model => model.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.AmountDue, "", new { @class = "text-danger" })
+                @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
             </div>
         </div>
 
         <div class="form-group">
-            @Html.LabelFor(model => model.DueDate, htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Bill.PaymentFrequency, htmlAttributes: new {@class = "control-label col-md-2"})
             <div class="col-md-10">
-                @Html.EditorFor(model => model.DueDate, new { htmlAttributes = new { @class = "form-control" } })
-                @Html.ValidationMessageFor(model => model.DueDate, "", new { @class = "text-danger" })
-            </div>
-        </div>
-
-        <div class="form-group">
-            @Html.LabelFor(model => model.PaymentFrequency, htmlAttributes: new {@class = "control-label col-md-2"})
-            <div class="col-md-10">
-                @Html.EnumDropDownListFor(model => model.PaymentFrequency, htmlAttributes: new {@class = "form-control"})
-                @Html.ValidationMessageFor(model => model.PaymentFrequency, "", new {@class = "text-danger"})
+                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, htmlAttributes: new {@class = "form-control"})
+                @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new {@class = "text-danger"})
             </div>
         </div>
         
         <div class="form-group">
-            @Html.LabelFor(model => model.AccountId, "Linked Account", htmlAttributes: new { @class = "control-label col-md-2" })
+            @Html.LabelFor(model => model.Bill.AccountId, "Linked Account", htmlAttributes: new { @class = "control-label col-md-2" })
             <div class="col-md-10">
-                @Html.DropDownListFor(model => model.AccountId,new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.AccountId, "", new { @class = "text-danger" })
+                @Html.DropDownListFor(model => model.Bill.AccountId,new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
             </div>
         </div>
 

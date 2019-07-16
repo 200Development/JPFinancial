@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using JPFData.Metrics;
-using JPFData.Models;
-//using JPFData.ViewModels;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.DTO
 {
@@ -12,8 +11,6 @@ namespace JPFData.DTO
             Accounts = new List<Account>();
             Transactions = new List<Transaction>();
             CreditCards = new List<CreditCard>();
-            //CreateTransaction = new TransactionViewModel();
-            //Transaction = new Transaction();
             StaticFinancialMetrics = new StaticFinancialMetrics();
             TimePeriodMetrics = new TimePeriodFinancialMetrics();
         }
@@ -21,8 +18,6 @@ namespace JPFData.DTO
         public List<Account> Accounts { get; set; }
         public List<Transaction> Transactions { get; set; }
         public List<CreditCard> CreditCards { get; set; }
-        //public TransactionViewModel CreateTransaction { get; set; }
-        //public Transaction Transaction { get; set; }
         public StaticFinancialMetrics StaticFinancialMetrics { get; set; }
         public TimePeriodFinancialMetrics TimePeriodMetrics { get; set; }
     }

@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.DTO
 {
@@ -8,10 +8,12 @@ namespace JPFData.DTO
     {
         public BillDTO()
         {
+            Bill = new Bill();
             Bills = new List<Bill>();
             Metrics = new BillMetrics();
         }
 
+        public Bill Bill { get; set; }
         public List<Bill> Bills { get; set; }
         public BillMetrics Metrics { get; set; }
     }

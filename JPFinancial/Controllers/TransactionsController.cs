@@ -1,48 +1,56 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Managers;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
+    [Authorize]
     public class TransactionsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly TransactionManager _transactionManager = new TransactionManager();
+        private readonly AccountManager _accountManager = new AccountManager();
 
         // GET: Transactions
         public ActionResult Index()
         {
-            TransactionViewModel transactionVM = new TransactionViewModel();
-            transactionVM.EventArgument = EventArgumentEnum.Read;
-            transactionVM.EventCommand = EventCommandEnum.Get;
-            transactionVM.HandleRequest();
-            return View(transactionVM);
-        }
+            try
+            {
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                transactionVM.Transactions = _transactionManager.GetAllTransactions();
+                transactionVM.Metrics = _transactionManager.GetMetrics();
 
-        // GET: Transactions/Details/5
-        public ActionResult Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                return View(transactionVM);
             }
-            Transaction transaction = _db.Transactions.Find(id);
-            if (transaction == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                Logger.Instance.Error(e);
+                return View(new TransactionViewModel());
             }
-            return View(transaction);
         }
 
         // GET: Transactions/Create
         public ActionResult Create()
         {
-            return View(new TransactionViewModel());
+            try
+            {
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                transactionVM.Accounts = _accountManager.GetAllAccounts();
+
+
+                return View(transactionVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return HttpNotFound();
+            }
         }
 
         // POST: Transactions/Create
@@ -52,43 +60,88 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
-            if (!ModelState.IsValid) return View(transactionVM);
+            try
+            {
+                if (!ModelState.IsValid) return View(transactionVM);
 
-            if (transactionVM.Entity.Transaction.CreditAccountId != null)
-                transactionVM.Entity.Transaction.CreditAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.CreditAccountId);
-            if (transactionVM.Entity.Transaction.DebitAccountId != null)
-                transactionVM.Entity.Transaction.DebitAccount = _db.Accounts.Find(transactionVM.Entity.Transaction.DebitAccountId);
-            //if(transactionVM.Entity.Transaction.UsedCreditCard && transactionVM.Entity.Transaction.CreditAccountId != null)
-            //    transactionVM.Entity.Transaction. = _db.CreditCards.Find(transactionVM.Entity.Transaction.CreditAccountId)
-            transactionVM.Entity.Transaction.Type = transactionVM.Type;
-            transactionVM.Entity.Transaction.Date = Convert.ToDateTime(transactionVM.Date);
-            transactionVM.Entity.Transaction.UsedCreditCard = transactionVM.UsedCreditCard;
-            transactionVM.EventArgument = EventArgumentEnum.Create;
-            if (transactionVM.HandleRequest())
+                switch (transactionVM.Type)
+                {
+                    case TransactionTypesEnum.Expense:
+                        {
+                            if (transactionVM.IsBill)
+                            {
+                                ExpenseManager expenseManager = new ExpenseManager();
+                                transactionVM.Transaction.Payee = expenseManager.GetExpense(transactionVM.Transaction?.SelectedExpenseId).Name ??
+                                    string.Empty;
+                                ModelState["Transaction.Payee"].Errors.Clear();
+                                UpdateModel(transactionVM.Transaction);
+                            }
+                            else
+                            {
+                                UpdateModel(transactionVM.Transaction);
+                            }
+
+                            break;
+                        }
+                    case TransactionTypesEnum.Income:
+                        {
+                            if (!transactionVM.AutoTransferPaycheckContributions)
+                                _transactionManager.Create(transactionVM);
+                            else
+                            {
+                                if (!_transactionManager.HandlePaycheckContributions(transactionVM.Transaction))
+                                    return View(transactionVM);
+                            }
+
+                            break;
+                        }
+                    case TransactionTypesEnum.Transfer:
+                        throw new NotImplementedException();
+                    default:
+                        throw new NotImplementedException();
+                }
+
+                if (!_accountManager.Update())
+                    return View(transactionVM);
+
                 return RedirectToAction("Index");
-
-            return View(transactionVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new TransactionViewModel());
+            }
         }
 
         // GET: Transactions/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            TransactionViewModel transactionVM = new TransactionViewModel();
-            transactionVM.EventArgument = EventArgumentEnum.Update;
-            transactionVM.EventCommand = EventCommandEnum.Get;
-            transactionVM.Entity.Transaction.Id = (int)id;
-            transactionVM.HandleRequest();
-            if (transactionVM.Entity.Transaction == null)
-            {
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+                TransactionViewModel transactionVM = new TransactionViewModel();
+                AccountManager accountManager = new AccountManager();
+                transactionVM.Transaction = _transactionManager.GetTransaction(id);
+
+
+                if (transactionVM.Transaction == null)
+                {
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
+                }
+
+                transactionVM.Accounts = accountManager.GetAllAccounts();
+
                 return HttpNotFound();
             }
-
-
-            return View(transactionVM);
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new TransactionViewModel());
+            }
         }
 
         // POST: Transactions/Edit/5
@@ -98,29 +151,46 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(TransactionViewModel transactionVM)
         {
-            if (!ModelState.IsValid) return View(transactionVM);
-            transactionVM.EventArgument = EventArgumentEnum.Update;
-            transactionVM.EventCommand = EventCommandEnum.Edit;
-            if (transactionVM.HandleRequest())
-                return RedirectToAction("Index");
+            try
+            {
+                if (!ModelState.IsValid) return View(transactionVM);
+                if (_transactionManager.Edit(transactionVM))
+                    return RedirectToAction("Index");
 
 
-            return View(transactionVM);
+                return View(transactionVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new TransactionViewModel());
+            }
         }
 
         // GET: Transactions/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                Transaction transaction = _transactionManager.GetTransaction(id);
+                if (transaction == null)
+                {
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
+                }
+
+
+
+                return View(transaction);
             }
-            Transaction transaction = _db.Transactions.Find(id);
-            if (transaction == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                Logger.Instance.Error(e);
+                return View(new Transaction());
             }
-            return View(transaction);
         }
 
         // POST: Transactions/Delete/5
@@ -128,54 +198,28 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Transaction transaction = _db.Transactions.Find(id);
             try
             {
-                _db.Transactions.Remove(transaction);
-                //UpdateAccountBalances(transaction, "delete");
-                //UpdateCreditCard(transaction, "delete");
+                if (_transactionManager.Delete(id))
+                    return RedirectToAction("Index");
 
-                if (transaction.UsedCreditCard)
+                // Send Transaction back to Delete View because Delete failed
+                Transaction transaction = _transactionManager.GetTransaction(id);
+                if (transaction == null)
                 {
-                    var creditCards = _db.CreditCards.ToList();
-                    var creditCard = creditCards.FirstOrDefault(c => c.Id == transaction.SelectedCreditCardAccount);
-                    _db.Entry(creditCard).State = EntityState.Modified;
+                    Logger.Instance.Debug("Returned Transaction is null - (error)");
+                    return HttpNotFound();
                 }
 
-                _db.SaveChanges();
+
+                return View("Index");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
                 return RedirectToAction("Index");
             }
-            catch (Exception)
-            {
-                throw;
-            }
         }
-
-        //private Transaction ConvertViewModelToTransaction(TransactionViewModel transactionViewModel)
-        //{
-        //    try
-        //    {
-        //        var newTransaction = new Transaction();
-        //        newTransaction.Id = transactionViewModel.Id;
-        //        newTransaction.Date = transactionViewModel.Date;
-        //        newTransaction.Payee = transactionViewModel.Payee;
-        //        newTransaction.Memo = transactionViewModel.Memo;
-        //        newTransaction.Type = transactionViewModel.Type;
-        //        newTransaction.Category = transactionViewModel.Category;
-        //        newTransaction.CreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedCreditAccount);
-        //        newTransaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == transactionViewModel.SelectedDebitAccount);
-        //        newTransaction.Amount = transactionViewModel.Amount;
-        //        newTransaction.UsedCreditCard = transactionViewModel.UsedCreditCard;
-        //        newTransaction.SelectedCreditCardAccount = transactionViewModel.SelectedCreditCardAccount;
-
-
-        //        return newTransaction;
-        //    }
-        //    catch (Exception)
-        //    {
-        //        return null;
-        //    }
-        //}
 
         protected override void Dispose(bool disposing)
         {

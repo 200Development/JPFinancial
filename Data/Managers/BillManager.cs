@@ -2,127 +2,327 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using JPFData.DTO;
-using JPFData.Enumerations;
 using JPFData.Metrics;
+using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
     public class BillManager
     {
         private readonly ApplicationDbContext _db;
-
+        private readonly string _userId;
+        private readonly Calculations _calc;
 
         public BillManager()
         {
             _db = new ApplicationDbContext();
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+            _calc = new Calculations();
         }
 
 
-        public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
-
-        public BillDTO Get()
-        {
-            return Get(new BillDTO());
-        }
-
-        public BillDTO Get(BillDTO entity)
+        public List<Bill> GetAllBills()
         {
             try
             {
-                entity.Bills = _db.Bills.ToList();
-                entity.Metrics = RefreshBillMetrics(entity);
+
+                Logger.Instance.DataFlow($"Return list of Bills");
+                return _db.Bills.Where(b => b.UserId == _userId).ToList();
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                Logger.Instance.Error(e);
                 throw;
             }
-
-
-            return entity;
         }
 
-        public BillMetrics RefreshBillMetrics(BillDTO entity)
+        public Bill GetBill(int? id)
         {
+            try
+            {
+                Logger.Instance.DataFlow($"Pull Bill with ID {id} from DB and set to BillViewModel.Account");
+                return _db.Bills.Find(id);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
+
+        public bool Create(BillViewModel billVM)
+        {
+            try
+            {
+                if (!AddBill(billVM)) return false;
+
+                if (!AddBillToExpenses(billVM.Bill)) return false;
+
+                if (!UpdateAccountPaycheckContribution()) return false;
+
+                Logger.Instance.DataFlow($"Saved changes to DB");
+
+                
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+        
+        public bool Edit(BillViewModel billVM)
+        {
+            try
+            {
+                Logger.Instance.DataFlow($"Edit");
+                _db.Entry(billVM.Bill).State = EntityState.Modified;
+                Logger.Instance.DataFlow($"Save Account changes to data context");
+                _db.SaveChanges();
+                Logger.Instance.DataFlow($"Save changes to DB");
+                
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public bool Delete(int billId)
+        {
+            try
+            {
+                List<Expense> expenses = _db.Expenses.Where(e => e.BillId == billId).ToList();
+                foreach (Expense expense in expenses)
+                {
+                    _db.Expenses.Remove(expense);
+                    Logger.Instance.Info($"Flagged to remove expense with id of {expense.Id} from DB");
+                }
+
+                Bill bill = _db.Bills.Find(billId);
+                _db.Bills.Remove(bill);
+                Logger.Instance.Info($"Bill with id of {bill.Id} has been flagged for removal from DB");
+
+
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private bool AddBill(BillViewModel billVM)
+        {
+            try
+            {
+                _db.Bills.Add(billVM.Bill);
+                Logger.Instance.DataFlow($"New Bill added to data context");
+                _db.SaveChanges();
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        //TODO: Refactor or redesign to prevent having to use new Expense Class
+        private bool AddBillToExpenses(Bill bill)
+        {
+            try
+            {
+                var expense = new Expense();
+                expense.Name = bill.Name;
+                expense.BillId = bill.Id;
+                expense.Amount = bill.AmountDue;
+                expense.Due = bill.DueDate;
+                expense.IsPaid = false;
+                expense.UserId = _userId;
+
+                _db.Expenses.Add(expense);
+                Logger.Instance.DataFlow($"New Expense added to data context");
+
+                _db.SaveChanges();
+                Logger.Instance.DataFlow($"Saved changes to DB");
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        //TODO: Update to only update effected Accounts
+        private bool UpdateAccountPaycheckContribution()
+        {
+            try
+            {
+                var updatedAccounts = new List<Account>();
+                var paycheckContributionsDict = _calc.GetPaycheckContributionsDict();
+                var accountManager = new AccountManager();
+                var account = new Account();
+
+                // Update paycheck contribution for all accounts
+                foreach (var paycheckContribution in paycheckContributionsDict)
+                {
+                    try
+                    {
+                        account = updatedAccounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+                        var accountIndex = -1;
+
+                        if (account == null)
+                        {
+                            account.Name = paycheckContribution.Key;
+                        }
+                        else
+                            accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
+
+                        if (!(paycheckContribution.Value >= account.PaycheckContribution)) continue;
+
+
+                        if (accountIndex >= 0)
+                            updatedAccounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
+                        else
+                        {
+                            account.PaycheckContribution = paycheckContribution.Value;
+                            updatedAccounts.Add(account);
+                        }
+
+
+                        // iterate through all updated accounts and set state to modified to save to database
+                        foreach (var updatedAccount in updatedAccounts)
+                        {
+                            try
+                            {
+                                var accounts = accountManager.GetAllAccounts();
+                                account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
+
+                                // shouldn't ever be null since updatedAccounts comes from Accounts in DB
+                                account.PaycheckContribution = updatedAccount.PaycheckContribution;
+                                account.RequiredSavings = updatedAccount.RequiredSavings;
+
+                                var requiredSurplus = account.Balance - account.RequiredSavings;
+
+                                if (requiredSurplus <= 0)
+                                    account.BalanceSurplus = requiredSurplus;
+                                else
+                                {
+                                    if (account.Balance - account.BalanceLimit <= 0)
+                                        account.BalanceSurplus = 0;
+                                    else
+                                        account.BalanceSurplus = account.Balance - account.BalanceLimit;
+                                }
+
+
+                                _db.Entry(account).State = EntityState.Modified;
+                            }
+                            catch (Exception e)
+                            {
+                                Logger.Instance.Error(e);
+                            }
+                        }
+
+                        // save changes to the database
+                        if (_db.ChangeTracker.HasChanges())
+                            _db.SaveChanges();
+
+                    }
+                    catch (Exception e)
+                    {
+                        Logger.Instance.Error(e);
+                    }
+                }
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        //TODO:update to not take any parameters
+        public BillMetrics GetBillMetrics()
+        {
+            List<Bill> bills = _db.Bills.Where(b => b.UserId == _userId).ToList();
             BillMetrics metrics = new BillMetrics();
 
             try
             {
-                metrics.LargestBalance = entity.Bills.Max(b => b.AmountDue);
-                metrics.SmallestBalance = entity.Bills.Min(b => b.AmountDue);
-                metrics.TotalBalance = entity.Bills.Sum(b => b.AmountDue);
-                metrics.AverageBalance = entity.Bills.Sum(b => b.AmountDue) / entity.Bills.Count;
-
+                metrics.LargestBalance = bills.Max(b => b.AmountDue);
+                metrics.SmallestBalance = bills.Min(b => b.AmountDue);
+                metrics.TotalBalance = bills.Sum(b => b.AmountDue);
+                metrics.AverageBalance = bills.Sum(b => b.AmountDue) / bills.Count;
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
-                throw;
+                Logger.Instance.Error(e);
+                return new BillMetrics();
             }
+
 
             return metrics;
         }
 
-        public void UpdateBillDueDates()
+        public IEnumerable<OutstandingExpense> GetOutstandingBills()
         {
             try
             {
-                var bills = _db.Bills.ToList();
-                var beginDate = DateTime.Today;
+                var ret = new List<OutstandingExpense>();
+                Logger.Instance.DataFlow($"Get");
 
-                foreach (var bill in bills)
+                // Get all bill expenses that have not yet been paid
+                var expenses = _db.Expenses.Where(e => e.UserId == Global.Instance.User.Id).Where(e => e.BillId > 0 && !e.IsPaid).ToList();
+                Logger.Instance.DataFlow($"Pulled list of bill expenses from DB that haven't been paid");
+                //var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
+
+                foreach (var expense in expenses)
                 {
-                    if (bill.DueDate.Date > beginDate) continue;
+                    var newExpense = new OutstandingExpense();
+                    newExpense.Id = expense.Id;
+                    newExpense.Name = $"{expense.Name} - {expense.Amount} Due {expense.Due.ToShortDateString()}";
+                    newExpense.DueDate = expense.Due;
+                    newExpense.AmountDue = expense.Amount;
 
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-
-                    /* Updates bill due date to the current due date
-                       while loop handles due date updates, regardless of how out of date they are */
-                    while (newDueDate < beginDate)
-                    {
-                        switch (frequency)
-                        {
-                            case FrequencyEnum.Daily:
-                                newDueDate = newDueDate.AddDays(1);
-                                break;
-                            case FrequencyEnum.Weekly:
-                                newDueDate = newDueDate.AddDays(7);
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                newDueDate = newDueDate.AddDays(14);
-                                break;
-                            case FrequencyEnum.Monthly:
-                                newDueDate = newDueDate.AddMonths(1);
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                newDueDate = newDueDate.AddMonths(3);
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(6);
-                                break;
-                            case FrequencyEnum.Annually:
-                                newDueDate = newDueDate.AddYears(1);
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-                    // Change state of bill to modified for database update
-                    bill.DueDate = newDueDate;
-                    _db.Entry(bill).State = EntityState.Modified;
+                    ret.Add(newExpense);
                 }
-                // Update all modified bills
-                _db.SaveChanges();
+
+                return ret;
             }
             catch (Exception e)
             {
-                throw e;
+                Logger.Instance.Error(e);
+                return new List<OutstandingExpense>();
+            }
+        }
+
+        public decimal GetOutstandingExpenseTotal()
+        {
+            try
+            {
+                var outstandingBills = GetOutstandingBills();
+                return outstandingBills.Sum(b => b.AmountDue);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return 0m;
             }
         }
     }

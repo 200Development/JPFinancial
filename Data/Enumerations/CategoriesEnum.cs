@@ -199,5 +199,7 @@ namespace JPFData.Enumerations
         VehicleRegistration,
         Vet,
         Vision,
+        Refund,
+        Subscription
     }
 }

@@ -1,69 +1,115 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Enumerations;
-using JPFData.Models;
+using JPFData.Managers;
+using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
 namespace JPFinancial.Controllers
 {
-    /// <summary>
-    /// Handles all Account interactions with Views
-    /// </summary>
+    [Authorize]
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-
+        private readonly  AccountManager _accountManager = new AccountManager();
+        private readonly Calculations _calc = new Calculations();
 
         // GET: Accounts
         public ActionResult Index()
         {
-            AccountViewModel accountVM = new AccountViewModel();
-            accountVM.EventArgument = EventArgumentEnum.Read;
-            accountVM.EventCommand = EventCommandEnum.Get;
-            accountVM.HandleRequest();
-            //_dbEditor.UpdateRequiredBalanceForBills();
-            //_dbEditor.UpdateRequiredBalanceSurplus();
+            try
+            {
+                Logger.Instance.DataFlow($"Index");
+                AccountViewModel accountVM = new AccountViewModel();
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.Metrics = _accountManager.GetMetrics();
+                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
-
-            //TODO: Add ability to show X number of Accounts
-            return View(accountVM);
+                
+                //TODO: Add ability to show X number of Accounts
+                return View(accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         //TODO: figure out a better way to update the ViewModel
         [HttpPost]
         public ActionResult Index(AccountViewModel accountVM)
         {
-            accountVM.EventArgument = EventArgumentEnum.Read;
-            accountVM.EventCommand = EventCommandEnum.Get;
-            accountVM.HandleRequest();
-            ModelState.Clear();
+            try
+            {
+                Logger.Instance.DataFlow($"Index (w/ VM)");
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.Metrics = _accountManager.GetMetrics();
+                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
-            return View(accountVM);
+                ModelState.Clear();
+                Logger.Instance.DataFlow($"ModelState cleared");
+
+
+                Logger.Instance.DataFlow($"AccountViewModel returned to View");
+                return View(accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         // GET: Accounts/Details/5
         public ActionResult Details(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            AccountViewModel accountVM = new AccountViewModel();
-            accountVM.EventArgument = EventArgumentEnum.Read;
-            accountVM.EventCommand = EventCommandEnum.Details;
-            accountVM.Entity.Account = _db.Accounts.Find(id);
-            if (accountVM.Entity.Account == null)
-            {
+                Logger.Instance.DataFlow($"Details");
+                if (id == null) 
+                {
+                    Logger.Instance.Debug("Account ID is null");
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                AccountViewModel accountVM = new AccountViewModel();
+                accountVM.Account = _accountManager.GetAccount(id);
+
+
+                if (accountVM.Account != null)
+                {
+                    Logger.Instance.DataFlow($"AccountViewModel returned to View");
+                    return View(accountVM);
+                }
+
+
+                Logger.Instance.Debug("Returned Account is null - (error)");
                 return HttpNotFound();
             }
-            return View(accountVM);
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         // GET: Accounts/Create
         public ActionResult Create()
         {
-            return View(new AccountViewModel());
+            try
+            {
+                AccountViewModel accountVM = new AccountViewModel();
+
+
+                return View(accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         // POST: Accounts/Create
@@ -73,28 +119,51 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Create(AccountViewModel accountVM)
         {
-            if (!ModelState.IsValid) return View(accountVM);
+            try
+            {
+                if (!ModelState.IsValid) return View(accountVM);
+                if (!_accountManager.Create(accountVM.Account)) return View(accountVM);
 
 
-            _db.Accounts.Add(accountVM.Entity.Account);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         // GET: Accounts/Edit/5
         public ActionResult Edit(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                {
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                }
+
+                AccountViewModel accountVM = new AccountViewModel();
+                accountVM.Account = _accountManager.GetAccount(id);
+
+
+                if (accountVM.Account == null)
+                {
+                    Logger.Instance.Debug("Returned Account is null - (error)");
+                    return HttpNotFound();
+                }
+
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+
+
+                return View(accountVM);
             }
-            AccountViewModel accountVM = new AccountViewModel();
-            accountVM.Entity.Account = _db.Accounts.Find(id);
-            if (accountVM.Entity.Account == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
             }
-            return View(accountVM);
         }
 
         // POST: Accounts/Edit/5
@@ -104,29 +173,45 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult Edit(AccountViewModel accountVM)
         {
-            if (!ModelState.IsValid) return View(accountVM);
-            accountVM.EventArgument = EventArgumentEnum.Update;
-            accountVM.EventCommand = EventCommandEnum.Edit;
-            if (accountVM.HandleRequest())
-                return RedirectToAction("Index");
+            try
+            {
+                if (!ModelState.IsValid) return View(accountVM);
+                if (_accountManager.Edit(accountVM.Account))
+                    return RedirectToAction("Index");
 
 
-            return View(accountVM);
+                return View(accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new AccountViewModel());
+            }
         }
 
         //GET: Accounts/Delete/5
         public ActionResult Delete(int? id)
         {
-            if (id == null)
+            try
             {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+                if (id == null)
+                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+
+                Account account = _accountManager.GetAccount(id);
+                if (account == null)
+                {
+                    Logger.Instance.Debug("Returned Account is null - (error)");
+                    return HttpNotFound();
+                }
+
+
+                return View(account);
             }
-            Account account = _db.Accounts.Find(id);
-            if (account == null)
+            catch (Exception e)
             {
-                return HttpNotFound();
+                Logger.Instance.Error(e);
+                return View(new Account());
             }
-            return View(account);
         }
 
         // POST: Accounts/Delete/5
@@ -134,33 +219,63 @@ namespace JPFinancial.Controllers
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)
         {
-            Account account = _db.Accounts.Find(id);
-            _db.Accounts.Remove(account);
-            _db.SaveChanges();
-            return RedirectToAction("Index");
+            try
+            {
+                if (_accountManager.Delete(id))
+                    return RedirectToAction("Index");
+
+                // Send Account back to Delete View if delete failed
+                Account account = _accountManager.GetAccount(id);
+                if (account == null)
+                {
+                    Logger.Instance.Debug("Returned Account is null - (error)");
+                    return HttpNotFound();
+                }
+
+
+                return View("Index");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return RedirectToAction("Index");
+            }
         }
 
         [ActionName("Update")]
         public ActionResult Update(AccountViewModel vm)
         {
-            //AccountViewModel vm = new AccountViewModel();
-            vm.EventArgument = EventArgumentEnum.Update;
-            vm.EventCommand = EventCommandEnum.Update;
-            vm.HandleRequest();
-            //vm.Entity.RebalanceReport = new Calculations().GetRebalancingAccountsReport(vm.Entity);
+            try
+            {
+                _accountManager.Update();
+                vm.Accounts = _accountManager.GetAllAccounts();
+                vm.Metrics = _accountManager.GetMetrics();
 
-            return RedirectToAction("Index", vm);
+                return RedirectToAction("Index", vm);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return RedirectToAction("Index", new AccountViewModel());
+            }
         }
 
         [ActionName("Rebalance")]
         public ActionResult Rebalance(AccountViewModel vm)
         {
-            vm.EventArgument = EventArgumentEnum.Update;
-            vm.EventCommand = EventCommandEnum.Rebalance;
-            vm.HandleRequest();
+            try
+            {
+                _accountManager.Rebalance();
+                vm.Accounts = _accountManager.GetAllAccounts();
+                vm.Metrics = _accountManager.GetMetrics();
 
-
-            return RedirectToAction("Index", vm);
+                return RedirectToAction("Index", vm);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return RedirectToAction("Index", new AccountViewModel());
+            }
         }
 
         protected override void Dispose(bool disposing)

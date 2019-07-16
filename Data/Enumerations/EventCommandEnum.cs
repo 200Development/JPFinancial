@@ -9,6 +9,7 @@
         Pool,
         Update,
         Details,
-        Delete
+        Delete,
+        Filter
     }
 }

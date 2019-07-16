@@ -13,7 +13,9 @@ namespace JPFData.Metrics
             LargestSurplus = decimal.Zero;
             SmallestSurplus = decimal.Zero;
             AverageSurplus = decimal.Zero;
-            TotalBalance = decimal.Zero;
+            CashBalance = decimal.Zero;
+            OutstandingExpenses = decimal.Zero;
+            PoolBalance = decimal.Zero;
         }
 
 
@@ -38,7 +40,22 @@ namespace JPFData.Metrics
         [Display(Name = "Average Surplus"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal AverageSurplus { get; set; }
 
-        [Display(Name = "Total Balance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
-        public decimal TotalBalance { get; set; }
+        [Display(Name = "Cash Balance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal CashBalance { get; set; }
+
+        [Display(Name = "Accounting Balance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal AccountingBalance { get; set; }
+
+        [Display(Name = "Spendable Cash"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal SpendableCash { get; set; }
+
+        [Display(Name = "Monthly Surplus"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal MonthlySurplus { get; set; }
+
+        [Display(Name = "Outstanding Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal OutstandingExpenses { get; set; }
+
+        [Display(Name = "Pool"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal PoolBalance { get; set; }
     }
 }

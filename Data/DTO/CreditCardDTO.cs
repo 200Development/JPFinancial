@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using JPFData.Metrics;
-using JPFData.Models;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.DTO
 {

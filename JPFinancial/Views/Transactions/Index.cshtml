@@ -8,132 +8,23 @@
 <div class="content">
     <div class="container-fluid">
         <div class="row">
-            <div class="row" style="margin: 0 0 12px 16px">
-                <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
-                <p class="category">Monthly</p>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="ti-server"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Total Accounts' Balance</p>
-                                    @*   @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)*@
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i>
-                                @*@Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-wallet"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Credit Card Balance</p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)*@
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i>
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-danger text-center">
-                                    <i class="ti-pulse"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p style="width: 100%"></p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)*@
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i>
-                                @*Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)*@
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-info text-center">
-                                    <i class="ti-server"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Savings Rate</p>
-                                    @*  @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)*@
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i> Update now
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Transactions</h4>
-                        <p class="category">Last 30 Days</p>
+                        <p class="category">Last 12 Months</p>
                     </div>
                     <div class="content">
-                        <div id="chartExpenses" class="ct-chart"></div>
+                        <div id="chartBills" class="ct-chart"></div>
                         <div class="footer">
-                            <div class="chart-legend">
+                            @*<div class="chart-legend">
                                 <i class="fa fa-circle text-success"></i> Total
                                 <i class="fa fa-circle text-info"></i> Income
                                 <i class="fa fa-circle text-danger"></i> Expense
-                            </div>
+                            </div>*@
                             <hr />
                             <div class="stats">
-                                <i class="ti-reload"></i> Updated 3 minutes ago
+                             @*   <i class="ti-reload"></i> Updated 3 minutes ago*@
                             </div>
                         </div>
                     </div>
@@ -152,30 +43,40 @@
                             <p>
                                 @Html.ActionLink("Create New", "Create")
                             </p>
+
+                            <div id="divFilter">
+                                <div class="form-group">
+                                    <label class="control-label col-md-2">Filter</label>
+                                    <div class="col-md-2">
+                                        @Html.DropDownListFor(model => model.FilterOptions, new SelectList(Model.FilterOptions, "Name", "DisplayName"), htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => Model.FilterOptions, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
                             <table class="table">
                                 <tr>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Date)
+                                        @Html.DisplayNameFor(model => model.Transaction.Date)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Payee)
+                                        @Html.DisplayNameFor(model => model.Transaction.Payee)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Memo)
+                                        @Html.DisplayNameFor(model => model.Transaction.Memo)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Type)
+                                        @Html.DisplayNameFor(model => model.Transaction.Type)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Category)
+                                        @Html.DisplayNameFor(model => model.Transaction.Category)
                                     </th>
                                     <th>
-                                        @Html.DisplayNameFor(model => model.Entity.Transaction.Amount)
+                                        @Html.DisplayNameFor(model => model.Transaction.Amount)
                                     </th>
                                     <th></th>
                                 </tr>
 
-                                @foreach (var item in Model.Entity.Transactions.OrderByDescending(m => m.Date))
+                                @foreach (var item in Model.Transactions.OrderByDescending(m => m.Date))
                                 {
                                     <tr>
                                         <td>
@@ -197,9 +98,9 @@
                                             @Html.DisplayFor(modelItem => item.Amount)
                                         </td>
                                         <td>
-                                            @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                            @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                            @Html.ActionLink("Delete", "Delete", new { id = item.Id })
+                                            @Html.ActionLink("Edit", "Edit", new {id = item.Id}) |
+                                            @*   @Html.ActionLink("Details", "Details", new { id = item.Id }) |*@
+                                            @Html.ActionLink("Delete", "Delete", new {id = item.Id})
                                         </td>
                                     </tr>
                                 }
@@ -221,6 +122,16 @@
     <script src="../../Scripts/chartist.min.js"></script>
     <script type="text/javascript" src="https://www.google.com/jsapi"></script> ;
     <script>
+
+        /* General javascript Begin */
+
+        var filterOptionDiv = document.getElementById('divFilter');
+        filterOptionDiv.style.display = "block";
+
+        /* General javascript End */
+
+
+        /* Graph Begin */
         google.load("visualization",
             "1",
             {
@@ -230,54 +141,62 @@
         $(document).ready(function() { chart(); });
 
         function chart() {
-            var staticMetrics = @Html.Raw(Json.Encode(@Model));
-            var totalExpenses = staticMetrics.ExpensesByMonth;
-            var mandatoryExpenses = staticMetrics.MandatoryExpensesByMonth;
-            var discretionaryExpenses = staticMetrics.DiscretionarySpendingByMonth;
+            var metrics = @Html.Raw(Json.Encode(@Model.Metrics));
+            var expensesByMonth = metrics.ExpensesByMonth;
+            var incomeByMonth = metrics.IncomeByMonth;
+            var transfersByMonth = metrics.TransfersByMonth;
 
-            var totalLength = Object.keys(totalExpenses).length;
-            var mandatoryLength = Object.keys(mandatoryExpenses).length;
-            var discretionaryLength = Object.keys(discretionaryExpenses).length;
+            var expensesLength = Object.keys(expensesByMonth).length;
+            var incomeLength = Object.keys(incomeByMonth).length;
+            var transferLength = Object.keys(transfersByMonth).length;
 
-            var monthsArray = new Array(totalLength);
-            var expensesArray = new Array(totalLength);
-            var mandatoryArray = new Array(mandatoryLength);
-            var discretionaryArray = new Array(discretionaryLength);
+            var monthsArray = new Array(expensesLength);
+            var expensesArray = new Array(expensesLength);
+            var incomeArray = new Array(incomeLength);
+            var transferArray = new Array(transferLength);
             var highestAmount = 0;
 
-            for (prop in totalExpenses) {
-                monthsArray.push(prop);
-                expensesArray.push(totalExpenses[prop]);
-                if (totalExpenses[prop] > highestAmount) {
-                    highestAmount = totalExpenses[prop];
+
+            for (prop in expensesByMonth) {
+                if (expensesByMonth.hasOwnProperty(prop)) {
+                    monthsArray.push(prop);
+                    expensesArray.push(expensesByMonth[prop]);
+                    if (expensesByMonth[prop] > highestAmount) {
+                        highestAmount = expensesByMonth[prop];
+                    }
                 }
             }
 
-            for (prop in mandatoryExpenses) {
-                mandatoryArray.push(mandatoryExpenses[prop]);
-                if (mandatoryExpenses[prop] > highestAmount) {
-                    highestAmount = mandatoryExpenses[prop];
+            for (prop in incomeByMonth) {
+                if (incomeByMonth.hasOwnProperty(prop)) {
+                    incomeArray.push(incomeByMonth[prop]);
+                    if (incomeByMonth[prop] > highestAmount) {
+                        highestAmount = incomeByMonth[prop];
+                    }
                 }
             }
 
-            for (prop in discretionaryExpenses) {
-                discretionaryArray.push(discretionaryExpenses[prop]);
-                if (discretionaryExpenses[prop] > highestAmount) {
-                    highestAmount = discretionaryExpenses[prop];
+            for (prop in transfersByMonth) {
+                if (transfersByMonth.hasOwnProperty(prop)) {
+                    transferArray.push(transfersByMonth[prop]);
+                    if (transfersByMonth[prop] > highestAmount) {
+                        highestAmount = transfersByMonth[prop];
+                    }
                 }
             }
 
             monthsArray = monthsArray.filter(function(n) { return n != undefined });
             expensesArray = expensesArray.filter(function(n) { return n != undefined });
-            mandatoryArray = mandatoryArray.filter(function(n) { return n != undefined });
-            discretionaryArray = discretionaryArray.filter(function(n) { return n != undefined });
+            incomeArray = incomeArray.filter(function(n) { return n != undefined });
+            transferArray = transferArray.filter(function(n) { return n != undefined });
 
-            var dataTable = new google.visualization.DataTable();
+            var dataTable = new window.google.visualization.DataTable();
 
-            var data = [['Month', 'Expenses', 'Discretionary', 'Mandatory']];
+            var data = [['Month', 'Income', 'Expense']];
 
-            for (var i = 0; i <= monthsArray.length; i++) {
-                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i]]);
+            var i;
+            for (i = 0; i <= monthsArray.length; i++) {
+                data.push([monthsArray[i], incomeArray[i], expensesArray[i]]);
             };
 
             var numRows = data.length;
@@ -285,41 +204,50 @@
 
             dataTable.addColumn('string', data[0][0]);
 
-            for (var i = 1; i < numCols; i++)
-                dataTable.addColumn('number', data[0][1]);
+            for (i = 1; i < numCols; i++)
+                dataTable.addColumn('number', data[0][i]);
 
-            for (var i = 1; i < numRows; i++)
+            for (i = 1; i < numRows; i++)
                 dataTable.addRow(data[i]);
 
             var options = {
                 width: "auto",
-                pointSize: 7,
-                lineWidth: 1,
-                height: "200",
+                pointSize: 8,
+                lineWidth: 2,
+                height: "225",
                 backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#F3BB45"],
+                colors: ["#32CA0A", "#EB5E28"],
                 tooltip: {
                     textStyle: {
-                        color: "#666666",
-                        fontSize: 11
+                        color: "#3D4849",
+                        fontSize: 12
                     },
-                    showColorCode: false
+                    showColorCode: true
                 },
                 legend: {
                     textStyle: {
                         color: "black",
+                        border: 2,
                         fontSize: 12
                     }
                 },
                 chartArea: {
-                    left: 40,
-                    top: 10,
-                    height: "80%"
+                    left: 50,
+                    top: 25,
+                    height: "85%"
+                },
+
+                vAxis: {
+                    gridlines: {
+                        color: "transparent"
+                    }
                 }
             };
 
-            var chart = new google.visualization.AreaChart(document.getElementById("chartExpenses"));
+            var chart = new window.google.visualization.AreaChart(document.getElementById("chartBills"));
             chart.draw(dataTable, options);
+
+            /* Graph End */
         }
     </script>
 }
