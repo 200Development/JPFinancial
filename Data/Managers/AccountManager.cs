@@ -179,7 +179,7 @@ namespace JPFData.Managers
                 metrics.SmallestSurplus = accounts.Min(a => a.BalanceSurplus);
                 var surplusAccounts = accounts.Where(a => a.BalanceSurplus > 0).ToList().Count; if (surplusAccounts > 0)
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
-
+                
                 var cashBalance = accounts.Sum(a => a.Balance) + poolAccount.Balance;
                 var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
 
@@ -190,6 +190,7 @@ namespace JPFData.Managers
                 metrics.SpendableCash = totalSurplus > 0 ? totalSurplus : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
                 metrics.PoolBalance = accountManager.GetPoolAccount().Balance;
+                metrics.OutstandingAccountDeficit = accounts.Where(a => a.BalanceSurplus < 0).Sum(a => a.BalanceSurplus);
 
                 return metrics;
             }

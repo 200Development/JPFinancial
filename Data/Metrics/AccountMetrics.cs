@@ -15,6 +15,7 @@ namespace JPFData.Metrics
             AverageSurplus = decimal.Zero;
             CashBalance = decimal.Zero;
             OutstandingExpenses = decimal.Zero;
+            OutstandingAccountDeficit = decimal.Zero;
             PoolBalance = decimal.Zero;
         }
 
@@ -54,6 +55,9 @@ namespace JPFData.Metrics
 
         [Display(Name = "Outstanding Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal OutstandingExpenses { get; set; }
+
+        [Display(Name = "Outstanding Account Deficit"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal OutstandingAccountDeficit { get; set; }
 
         [Display(Name = "Pool"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal PoolBalance { get; set; }
