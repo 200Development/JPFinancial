@@ -62,7 +62,7 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                if (!ModelState.IsValid) return View(transactionVM);
+              
 
                 switch (transactionVM.Type)
                 {
@@ -81,6 +81,9 @@ namespace JPFinancial.Controllers
                                 UpdateModel(transactionVM.Transaction);
                             }
 
+
+                            if (!ModelState.IsValid) return View(transactionVM);
+                            _transactionManager.Create(transactionVM);
                             break;
                         }
                     case TransactionTypesEnum.Income:
