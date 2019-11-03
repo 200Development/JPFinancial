@@ -117,7 +117,7 @@
     <Compile Include="Metrics\ExpenseMetrics.cs" />
     <Compile Include="Metrics\IncomeMetrics.cs" />
     <Compile Include="Metrics\StaticFinancialMetrics.cs" />
-    <Compile Include="Metrics\TimePeriodFinancialMetrics.cs" />
+    <Compile Include="Metrics\TimeValueOfMoneyMetrics.cs" />
     <Compile Include="Metrics\TransactionMetrics.cs" />
     <Compile Include="Enumerations\ExpenseTypeEnum.cs" />
     <Compile Include="Managers\AccountManager.cs" />
@@ -172,7 +172,6 @@
     <Compile Include="Enumerations\StatesEnum.cs" />
     <Compile Include="Enumerations\TermClassificationEnum.cs" />
     <Compile Include="Enumerations\TransactionTypesEnum.cs" />
-    <Compile Include="DTO\DashboardDTO.cs" />
     <Compile Include="Models\JPFinancial\Deduction.cs" />
     <Compile Include="Enumerations\DeductionsEnum.cs" />
     <Compile Include="Models\JPFinancial\Earning.cs" />
