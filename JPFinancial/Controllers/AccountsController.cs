@@ -20,13 +20,14 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                Logger.Instance.DataFlow($"Index");
                 AccountViewModel accountVM = new AccountViewModel();
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
+                _accountManager.Update();
 
-                
+
+
                 //TODO: Add ability to show X number of Accounts
                 return View(accountVM);
             }
@@ -47,6 +48,8 @@ namespace JPFinancial.Controllers
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
+                _accountManager.Update();
+
 
                 ModelState.Clear();
                 Logger.Instance.DataFlow($"ModelState cleared");

@@ -23,14 +23,14 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Avg. Spending</p>
-                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)
+                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <i class="ti-reload"></i> @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.PercentageChangeExpenses)
+                                <i class="ti-reload"></i> @Html.DisplayFor(model => model.StaticFinancialMetrics.PercentageChangeExpenses)
                             </div>
                         </div>
                     </div>
@@ -48,14 +48,14 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Mandatory $</p>
-                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.MandatoryExpenses)
+                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.MandatoryExpenses)
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthMandatoryExpenses)
+                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.StaticFinancialMetrics.LastMonthMandatoryExpenses)
                             </div>
                         </div>
                     </div>
@@ -73,14 +73,14 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p style="width: 100%">Discretionary $</p>
-                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.DiscretionarySpending)
+                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.DiscretionarySpending)
                                 </div>
                             </div>
                         </div>
                         <div class="footer">
                             <hr />
                             <div class="stats">
-                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.LastMonthDiscretionarySpending)
+                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.StaticFinancialMetrics.LastMonthDiscretionarySpending)
                             </div>
                         </div>
                     </div>
@@ -98,7 +98,7 @@
                             <div class="col-xs-7">
                                 <div class="numbers">
                                     <p>Savings Rate</p>
-                                    @Html.DisplayFor(model => model.Entity.StaticFinancialMetrics.SavingsRate)
+                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.SavingsRate)
                                 </div>
                             </div>
                         </div>
@@ -158,7 +158,7 @@
         $(document).ready(function() { chart(); });
        
         function chart() {
-            var staticMetrics = @Html.Raw(Json.Encode(@Model.Entity.StaticFinancialMetrics));
+            var staticMetrics = @Html.Raw(Json.Encode(@Model.StaticFinancialMetrics));
             var totalExpenses = staticMetrics.ExpensesByMonth;
             var mandatoryExpenses = staticMetrics.MandatoryExpensesByMonth;
             var discretionaryExpenses = staticMetrics.DiscretionarySpendingByMonth;

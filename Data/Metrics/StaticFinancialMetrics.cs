@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using JPFData.Enumerations;
 
@@ -9,7 +10,14 @@ namespace JPFData.Metrics
         //TODO: Need to rename many of the properties for clarity and to create more general terms
         public StaticFinancialMetrics()
         {
-
+            NetIncome = decimal.Zero;
+            TotalDue = decimal.Zero;
+            CostliestExpensePercentage = decimal.Zero;
+            CostliestExpenseAmount = decimal.Zero;
+            LoanInterestPercentOfIncome = decimal.Zero;
+            MonthlyLoanInterest = decimal.Zero;
+            DailyLoanInterest = decimal.Zero;
+            Expenses = decimal.Zero;
         }
 
 

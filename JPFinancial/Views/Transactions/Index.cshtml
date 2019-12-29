@@ -1,4 +1,5 @@
-﻿@model JPFData.ViewModels.TransactionViewModel
+﻿@using JPFData.Enumerations
+@model JPFData.ViewModels.TransactionViewModel
 
 @{
     ViewBag.Title = "Index";
@@ -78,7 +79,7 @@
 
                                 @foreach (var item in Model.Transactions.OrderByDescending(m => m.Date))
                                 {
-                                    <tr>
+                                    <tr class="transactionRow">
                                         <td>
                                             @Html.DisplayFor(modelItem => item.Date)
                                         </td>
@@ -138,7 +139,14 @@
                 packages: ["corechart"]
             });
 
-        $(document).ready(function() { chart(); });
+        $(document).ready(function() {
+            chart();
+
+
+            var $transactions = $('.transactionRow');
+
+            debugger;
+        });
 
         function chart() {
             var metrics = @Html.Raw(Json.Encode(@Model.Metrics));

@@ -169,7 +169,6 @@ namespace JPFData.Managers
                                 Logger.Instance.Calculation($"{transaction.DebitAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.DebitAccount.Balance}");
 
                                 // Update Account's required savings
-                                new Calculations().UpdateRequiredSavings(transaction);
                                 transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
@@ -183,7 +182,6 @@ namespace JPFData.Managers
                                 Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.CreditAccount.Balance}");
 
                                 // Update Account's required savings
-                                new Calculations().UpdateRequiredSavings(transaction);
                                 transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
@@ -221,7 +219,6 @@ namespace JPFData.Managers
                                             originalDebitAccount.Balance -= transaction.Amount;
 
                                             // Update Account's required savings
-                                            new Calculations().UpdateRequiredSavings(transaction);
 
                                             originalDebitAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
@@ -232,7 +229,6 @@ namespace JPFData.Managers
                                             originalCreditAccount.Balance += transaction.Amount;
 
                                             // Update Account's required savings
-                                            new Calculations().UpdateRequiredSavings(transaction);
 
                                             originalCreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;

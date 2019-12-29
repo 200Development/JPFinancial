@@ -62,7 +62,7 @@ namespace JPFinancial.Controllers
         {
             try
             {
-              
+
 
                 switch (transactionVM.Type)
                 {
@@ -104,8 +104,13 @@ namespace JPFinancial.Controllers
                         throw new NotImplementedException();
                 }
 
-                if (!_accountManager.Update())
-                    return View(transactionVM);
+
+                if (transactionVM.moreTransactions)
+                {
+                    Create();
+
+                }
+
 
                 return RedirectToAction("Index");
             }

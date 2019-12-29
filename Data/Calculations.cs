@@ -465,6 +465,12 @@ namespace JPFData
                 var poolAccount = accountManager.GetPoolAccount();
                 var requiredSavingsDict = GetRequiredSavingsDict();
 
+                //TODO: find better way to make sure Required Balance is always up-to-date
+                foreach (var account in accounts)
+                {
+                    account.RequiredSavings = 0;
+                }
+
                 // update required savings for all accounts
                 foreach (var requiredSavings in requiredSavingsDict)
                 {

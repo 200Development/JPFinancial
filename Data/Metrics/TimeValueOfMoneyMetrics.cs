@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 
 namespace JPFData.Metrics
 {
-    public class TimePeriodFinancialMetrics
+    public class TimeValueOfMoneyMetrics
     {
-        public TimePeriodFinancialMetrics()
+        public TimeValueOfMoneyMetrics()
         {
 
         }

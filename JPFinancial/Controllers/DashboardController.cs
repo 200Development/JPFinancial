@@ -5,6 +5,7 @@ using System.Web.Helpers;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
+using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
 
@@ -14,38 +15,46 @@ namespace JPFinancial.Controllers
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly DashboardManager _dashboardManager = new DashboardManager();
+        private readonly Calculations _calc = new Calculations();
 
 
         // GET: Dashboard
         public ActionResult Index()
         {
-            DashboardViewModel vm = new DashboardViewModel();
+            try
+            {
+                DashboardViewModel dashboardVM = new DashboardViewModel();
+                dashboardVM.Accounts = _dashboardManager.GetAllAccounts();
+                dashboardVM.StaticFinancialMetrics = _dashboardManager.RefreshStaticMetrics();
+                dashboardVM.TimePeriodMetrics = _dashboardManager.RefreshTVMMetrics(dashboardVM);
 
-            vm.HandleRequest();
-
-            return View(vm);
+                return View(dashboardVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new DashboardViewModel());
+            }
         }
 
         [HttpPost]
         public ActionResult Index(DashboardViewModel vm)
         {
-            vm.IsValid = ModelState.IsValid;
-            vm.HandleRequest();
-
-            if (vm.IsValid)
+            try
             {
-                // NOTE: Must clear the model state in order to bind the @Html helpers to the new model values
-                ModelState.Clear();
-            }
-            else
-            {
-                foreach (KeyValuePair<string, string> item in vm.ValidationErrors)
-                {
-                    ModelState.AddModelError(item.Key, item.Value);
-                }
-            }
+                DashboardViewModel dashboardVM = new DashboardViewModel();
+                dashboardVM.Accounts = _dashboardManager.GetAllAccounts();
+                dashboardVM.StaticFinancialMetrics = _dashboardManager.RefreshStaticMetrics();
+                dashboardVM.TimePeriodMetrics = _dashboardManager.RefreshTVMMetrics(dashboardVM);
 
-            return View(vm);
+                return View(dashboardVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View(new DashboardViewModel());
+            }
         }
 
         private decimal GetMonthlyIncome()

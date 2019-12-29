@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
-using JPFData.DTO;
-using JPFData.Managers;
+using JPFData.Metrics;
+using JPFData.Models.JPFinancial;
 
 namespace JPFData.ViewModels
 {
@@ -8,67 +8,32 @@ namespace JPFData.ViewModels
     {
         public DashboardViewModel()
         {
-            Init();
+            Accounts = new List<Account>();
+            Bills = new List<Bill>();
+            Expenses = new List<Expense>();
+            Transactions = new List<Transaction>();
+            StaticFinancialMetrics = new StaticFinancialMetrics();
+            TimePeriodMetrics = new TimeValueOfMoneyMetrics();
         }
+        
 
+        public List<Account> Accounts { get; set; }
+        public List<Bill> Bills { get; set; }
+        public List<Expense> Expenses { get; set; }
+        public List<Transaction> Transactions { get; set; }
+        public DashboardMetrics Metrics { get; set; }
+        public StaticFinancialMetrics StaticFinancialMetrics { get; set; }
+        public TimeValueOfMoneyMetrics TimePeriodMetrics { get; set; }
+    }
 
-        public DashboardDTO Entity { get; set; }
-        public DashboardDTO SearchEntity { get; set; }
-        public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
-        public string Mode { get; set; }
-        public bool IsValid { get; set; }
-        public string EventCommand { get; set; }
-        public string EventArgument { get; set; }
-
-        public bool IsCreateTransactionVisible { get; set; }
-        public bool IsTransactionDetailsVisible { get; set; }
-        public bool IsTransactionListAreaVisible { get; set; }
-
-
-        private void Init()
+    public class DashboardMetrics
+    {
+        public DashboardMetrics()
         {
-            EventCommand = "List";
-            EventArgument = string.Empty;
-            ValidationErrors = new List<KeyValuePair<string, string>>();
-
-            IsCreateTransactionVisible = true;
-            IsTransactionDetailsVisible = false;
-            IsTransactionListAreaVisible = true;
-
-            ListMode();
+            StaticMetrics = new StaticFinancialMetrics();
+            TVMMetrics = new TimeValueOfMoneyMetrics();
         }
-
-        private void ListMode()
-        {
-            IsValid = true;
-
-            IsCreateTransactionVisible = true;
-            IsTransactionDetailsVisible = false;
-            IsTransactionListAreaVisible = true;
-
-            Mode = "List";
-        }
-
-        private void Get()
-        {
-            DashboardManager mgr = new DashboardManager();
-
-            Entity = mgr.Get(SearchEntity);
-        }
-
-        public void HandleRequest()
-        {
-            switch (EventCommand.ToLower())
-            {
-                case "list":
-                case "search":
-                    Get();
-                    break;
-                case "cancel":
-                    ListMode();
-                    Get();
-                    break;
-            }
-        }
+        public StaticFinancialMetrics StaticMetrics { get; set; }
+        public TimeValueOfMoneyMetrics TVMMetrics { get; set; }
     }
 }
