@@ -9,9 +9,9 @@ namespace JPFData
         public AccountRebalanceReport()
         {
             NewReport = false;
-            Surplus = decimal.Zero;
-            Deficit = decimal.Zero;
-            TotalSurplus = decimal.Zero;
+            Surplus = 0.0m;;
+            Deficit = 0.0m;;
+            TotalSurplus = 0.0m;;
             AccountsWithSurplus = new List<Account>();
             AccountsWithDeficit = new List<Account>();
         }

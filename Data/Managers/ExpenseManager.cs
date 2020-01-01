@@ -7,6 +7,9 @@ using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Manages all read/write to database Expense Table
+    /// </summary>
     public class ExpenseManager
     {
         private readonly ApplicationDbContext _db;

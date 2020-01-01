@@ -8,6 +8,9 @@ using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Manages all read/write to database Bills Table
+    /// </summary>
     public class BillManager
     {
         private readonly ApplicationDbContext _db;
@@ -138,7 +141,7 @@ namespace JPFData.Managers
             }
         }
 
-        //TODO: Refactor or redesign to prevent having to use new Expense Class
+        //TODO: Refactor or redesign to prevent having to instantiate new Expense Class
         private bool AddBillToExpenses(Bill bill)
         {
             try

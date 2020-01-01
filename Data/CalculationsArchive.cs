@@ -384,7 +384,7 @@ namespace JPFData
         {
             try
             {
-                var payment = decimal.Zero;
+                var payment = 0.0m;;
                 if (loan != null)
                 {
 
@@ -405,7 +405,7 @@ namespace JPFData
         {
             try
             {
-                var interestPayment = decimal.Zero;
+                var interestPayment = 0.0m;;
                 if (loan != null)
                 {
 
@@ -425,7 +425,7 @@ namespace JPFData
         {
             try
             {
-                var principalPayment = decimal.Zero;
+                var principalPayment = 0.0m;;
                 if (loan != null)
                 {
 

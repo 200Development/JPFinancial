@@ -11,18 +11,10 @@ using JPFData.ViewModels;
 namespace JPFData.Managers
 {
     /// <summary>
-    /// Manages all Transaction communication between the application and the database
+    /// Manages all read/write to database Transaction Table
     /// </summary>
     public class TransactionManager
     {
-        /*
-        STRUCTURE
-        private properties
-        constructors
-        public properties
-        public methods
-        private methods
-        */
         private readonly ApplicationDbContext _db;
         private readonly Calculations _calc;
         private readonly string _userId;
@@ -128,7 +120,6 @@ namespace JPFData.Managers
             }
         }
 
-
         /// <summary>
         /// Sets the Credit & Debit Accounts from passed Id's
         /// </summary>
@@ -143,9 +134,8 @@ namespace JPFData.Managers
                     Logger.Instance.DataFlow($"Credit Account set");
                 }
 
-                if (entity.Transaction.DebitAccountId == null) return;
-
-                entity.Transaction.DebitAccount = _db.Accounts.Find(entity.Transaction.DebitAccountId);
+                //If income transaction, debit to pool account, else get selected debit account
+                entity.Transaction.DebitAccount = entity.Transaction.Type == TransactionTypesEnum.Income ? _db.Accounts.FirstOrDefault(a => a.IsPoolAccount && a.UserId == _userId) : _db.Accounts.Find(entity.Transaction.DebitAccountId);
                 Logger.Instance.DataFlow($"Debit Account set");
             }
             catch (Exception e)
@@ -319,7 +309,6 @@ namespace JPFData.Managers
                 {
                     // TODO: How to handle income not enough to cover all paycheck contributions
                 }
-
 
                 foreach (var account in accountsWithContributions)
                 {

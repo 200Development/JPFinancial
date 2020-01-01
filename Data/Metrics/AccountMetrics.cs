@@ -6,17 +6,17 @@ namespace JPFData.Metrics
     {
         public AccountMetrics()
         {
-            LargestBalance = decimal.Zero;
-            SmallestBalance = decimal.Zero;
-            AverageBalance = decimal.Zero;
-            PercentageOfSavings = decimal.Zero;
-            LargestSurplus = decimal.Zero;
-            SmallestSurplus = decimal.Zero;
-            AverageSurplus = decimal.Zero;
-            CashBalance = decimal.Zero;
-            OutstandingExpenses = decimal.Zero;
-            OutstandingAccountDeficit = decimal.Zero;
-            PoolBalance = decimal.Zero;
+            LargestBalance = 0.0m;
+            SmallestBalance = 0.0m;
+            AverageBalance = 0.0m;
+            PercentageOfSavings = 0.0m;
+            LargestSurplus = 0.0m;
+            SmallestSurplus = 0.0m;
+            AverageSurplus = 0.0m;
+            CashBalance = 0.0m;
+            OutstandingExpenses = 0.0m;
+            OutstandingAccountDeficit = 0.0m;
+            PoolBalance = 0.0m;
         }
 
 

@@ -724,14 +724,14 @@ namespace JPFData
                 if (account.BalanceLimit > 0)
                     return account.BalanceSurplus = account.Balance > account.BalanceLimit
                         ? account.Balance - account.BalanceLimit
-                        : decimal.Zero;
+                        : 0.0m;;
 
                 return account.Balance - account.RequiredSavings;
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return decimal.Zero;
+                return 0.0m;;
             }
         }
 
@@ -929,7 +929,7 @@ namespace JPFData
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
                 {
-                    account.PaycheckContribution = decimal.Zero;
+                    account.PaycheckContribution = 0.0m;;
                 }
 
                 // update suggested paycheck contributions for bills

@@ -9,18 +9,10 @@ using JPFData.Models.JPFinancial;
 namespace JPFData.Managers
 {
     /// <summary>
-    /// Handles all Account interactions with the database
+    /// Manages all read/write to database Accounts Table
     /// </summary>
     public class AccountManager
     {
-        /*
-       STRUCTURE
-       private properties
-       constructors
-       public properties
-       public methods
-       private methods
-       */
         private readonly ApplicationDbContext _db;
         private readonly string _userId;
         private readonly Calculations _calc;
@@ -187,7 +179,7 @@ namespace JPFData.Managers
                 metrics.AccountingBalance = cashBalance - totalRequiredSavings;
 
                 var totalSurplus = accounts.Sum(a => a.BalanceSurplus) + poolAccount.Balance;
-                metrics.SpendableCash = totalSurplus > 0 ? totalSurplus : 0.0m; // An Account balance surplus is any sum over the required savings and balance limit.  Balance limit allows the account to "fill up" to the limit 
+                metrics.SpendableCash = totalSurplus > 0 ? totalSurplus : 0.0m; // Account balance surplus = account balance - balance limit (balance limit is 0, surplus = balance - required savings).  Balance limit allows the account to "fill up" to the limit 
                 metrics.OutstandingExpenses = outstandingExpenses;
                 metrics.PoolBalance = accountManager.GetPoolAccount().Balance;
                 metrics.OutstandingAccountDeficit = accounts.Where(a => a.BalanceSurplus < 0).Sum(a => a.BalanceSurplus);
@@ -210,7 +202,7 @@ namespace JPFData.Managers
 
                 var poolAccount = new Account();
                 poolAccount.Name = "Pool";
-                poolAccount.Balance = decimal.Zero;
+                poolAccount.Balance = 0.0m;;
                 poolAccount.IsPoolAccount = true;
                 poolAccount.UserId = _userId;
 

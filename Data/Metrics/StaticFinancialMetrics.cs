@@ -10,14 +10,14 @@ namespace JPFData.Metrics
         //TODO: Need to rename many of the properties for clarity and to create more general terms
         public StaticFinancialMetrics()
         {
-            NetIncome = decimal.Zero;
-            TotalDue = decimal.Zero;
-            CostliestExpensePercentage = decimal.Zero;
-            CostliestExpenseAmount = decimal.Zero;
-            LoanInterestPercentOfIncome = decimal.Zero;
-            MonthlyLoanInterest = decimal.Zero;
-            DailyLoanInterest = decimal.Zero;
-            Expenses = decimal.Zero;
+            NetIncome = 0.0m;;
+            TotalDue = 0.0m;;
+            CostliestExpensePercentage = 0.0m;;
+            CostliestExpenseAmount = 0.0m;;
+            LoanInterestPercentOfIncome = 0.0m;;
+            MonthlyLoanInterest = 0.0m;;
+            DailyLoanInterest = 0.0m;;
+            Expenses = 0.0m;;
         }
 
 
