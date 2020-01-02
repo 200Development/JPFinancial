@@ -363,67 +363,22 @@ namespace JPFData
         /// <summary>
         /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
         /// </summary>
-        /// <param name="entity"></param>
+        /// <param name="accounts"></param>
         /// <returns></returns>
-        public bool Update()
+        public bool Update(List<Account> accounts)
         {
             try
             {
                 var requiredSavingsDict = GetRequiredSavingsDict();
                 var paycheckContributionsDict = GetPaycheckContributionsDict();
-                var accountManager = new AccountManager();
 
-                // Load all Accounts from the database into the list of updated accounts.
-                // Ensures that the required savings and balance surplus's for all accounts has fresh data
-                // TODO: research if there's a way to accomplish this, without having to iterate through ALL of the Db Accounts each time.  Updated flag or time entry?
-                var accounts = accountManager.GetAllAccounts();
-
-
-                // Update required savings for all accounts and add updated accounts to updatedAccounts to track changes
-                foreach (var requiredSavings in requiredSavingsDict)
-                {
-                    try
-                    {
-                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-
-                        var accountIndex = -1;
-                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-
-
-                        if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
-                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // Update paycheck contribution for all accounts
-                foreach (var paycheckContribution in paycheckContributionsDict)
-                {
-                    try
-                    {
-                        var account = accounts.Find(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
-
-                        var accountIndex = -1;
-                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
-
-
-                        if (!(paycheckContribution.Value >= account.PaycheckContribution)) continue;
-                        accounts[accountIndex].PaycheckContribution = paycheckContribution.Value;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // iterate through all updated accounts and set state to modified to save to database
+               
                 foreach (var account in accounts)
                 {
                     try
                     {
+                        account.RequiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
+                        account.PaycheckContribution = paycheckContributionsDict.FirstOrDefault(p => p.Key == account.Name).Value;
                         account.BalanceSurplus = UpdateBalanceSurplus(account);
 
 
@@ -437,7 +392,10 @@ namespace JPFData
 
                 // save changes to the database
                 if (_db.ChangeTracker.HasChanges())
+                {
                     _db.SaveChanges();
+                }
+
 
 
                 return true;
@@ -449,53 +407,19 @@ namespace JPFData
             }
         }
 
-        public bool Rebalance()
+        public bool Rebalance(List<Account> accounts)
         {
             try
             {
-                //// throws "Attaching an entity of type 'JPFData.Models.JPFinancial.Account' failed because another entity of the same type already has the same primary key value" Exception
-                //if (!Update())
-                //{
-                //    Logger.Instance.Info("Failed to update accounts");
-                //    return false;
-                //}
-
                 var accountManager = new AccountManager();
-                var accounts = accountManager.GetAllAccounts();
                 var poolAccount = accountManager.GetPoolAccount();
                 var requiredSavingsDict = GetRequiredSavingsDict();
-
-                //TODO: find better way to make sure Required Balance is always up-to-date
-                foreach (var account in accounts)
-                {
-                    account.RequiredSavings = 0;
-                }
-
-                // update required savings for all accounts
-                foreach (var requiredSavings in requiredSavingsDict)
-                {
-                    try
-                    {
-                        var account = accounts.Find(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-
-                        var accountIndex = -1;
-                        accountIndex = accounts.FindIndex(a => string.Equals(a.Name, requiredSavings.Key, StringComparison.CurrentCultureIgnoreCase));
-
-                        if (!(requiredSavings.Value >= account.RequiredSavings)) continue;
-
-                        // update the correct account
-                        accounts[accountIndex].RequiredSavings = requiredSavings.Value;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
+                
 
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                foreach (Account account in accounts)
+                foreach (Account account in accounts.Where(a => a.BalanceSurplus != 0.0m && !a.ExcludeFromSurplus))
                 {
                     try
                     {
@@ -509,7 +433,7 @@ namespace JPFData
                             // set balance surplus to $0.00
                             account.BalanceSurplus = 0;
                         }
-                        else if(!account.ExcludeFromSurplus && account.BalanceSurplus <= 0)
+                        else if(!account.ExcludeFromSurplus && account.BalanceSurplus < 0)
                         {
                             // cover any account deficits from the surplus in the pool account 
                             var deficit = account.BalanceSurplus * -1;
@@ -528,11 +452,10 @@ namespace JPFData
                         }
 
 
-                        // update balance surplus for each account
+                        account.RequiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
                         account.BalanceSurplus = UpdateBalanceSurplus(account);
+                        
 
-
-                        // set state to modified to save to database
                         _db.Entry(account).State = EntityState.Modified;
                     }
                     catch (Exception e)
@@ -558,154 +481,6 @@ namespace JPFData
         }
 
         /// <summary>
-        /// Update Account.RequiredBalance for Accounts used in Transaction
-        /// </summary>
-        /// <param name="transaction"></param>
-        /// <returns></returns>
-        public bool UpdateRequiredSavings(Transaction transaction)
-        {
-            try
-            {
-                Logger.Instance.Calculation($"UpdateRequiredSavings");
-                var savingsAccountBalances = new Dictionary<string, decimal>();
-                var expenseManager = new ExpenseManager();
-                var unpaidExpenses = expenseManager.GetAllUnpaidExpenses();
-
-                foreach (var expense in unpaidExpenses)
-                {
-                    var bill = _db.Bills.FirstOrDefault(b => b.Id == expense.BillId);
-                    if (bill == null)
-                    {
-                        Logger.Instance.Debug($"No Bill found WHERE expense.BillId = {expense.BillId}");
-                        Logger.Instance.DataFlow($"No Bill found WHERE expense.BillId = {expense.BillId}");
-                        continue;
-                    }
-
-                    bill.Account = _db.Accounts.FirstOrDefault(a => a.Id == bill.AccountId);
-                    if (bill.Account == null) continue;
-                    var billTotal = expense.Amount; // Use info from Expense and not Bill to account for when the current Bill.Amount differs from past amounts
-                    var dueDate = expense.Due;
-                    var payPeriodsLeft = PayPeriodsTilDue(dueDate);
-                    var savePerPaycheck = 0.0m;
-                    var save = 0.0m;
-
-                    // Calculate how much to save each pay period
-                    if (dueDate > DateTime.Today)
-                    {
-                        switch (bill.PaymentFrequency)
-                        {
-                            case FrequencyEnum.Annually:
-                                savePerPaycheck = billTotal / 24;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                savePerPaycheck = billTotal / 12;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                savePerPaycheck = billTotal / 6;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                savePerPaycheck = billTotal / 4;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.Monthly:
-                                savePerPaycheck = billTotal / 2;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                savePerPaycheck = billTotal;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            case FrequencyEnum.Weekly:
-                                savePerPaycheck = billTotal * 2;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                            default:
-                                savePerPaycheck = billTotal / 2;
-                                Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
-                                break;
-                        }
-
-                        save = Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2);
-                    }
-                    else
-                        save = expense.Amount;
-
-                    // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
-
-                    Logger.Instance.Calculation($"{bill.Account.Name} - [{Math.Round(billTotal, 2)}] [{bill.DueDate:d}] [{payPeriodsLeft}(ppl)] [{Math.Round(savePerPaycheck, 2)}(spp)] [{Math.Round(save, 2)}(req save)]");
-
-                    if (savingsAccountBalances.ContainsKey(bill.Account.Name))
-                        savingsAccountBalances[bill.Account.Name] += save;
-                    else
-                        savingsAccountBalances.Add(bill.Account.Name, save);
-                    ////savingsAccountBalances.Add(new KeyValuePair<string, decimal>(bill.Account.Name, save));
-                }
-
-                // update each account that has a bill credited to it 
-                if (transaction.CreditAccount != null)
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != transaction.CreditAccount.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-
-                    if (valuesFound)
-                    {
-                        // If required savings doesn't need updating, save a call to the DB
-                        if (transaction.CreditAccount.RequiredSavings != totalSavings)
-                        {
-                            transaction.CreditAccount.RequiredSavings = totalSavings;
-                            Logger.Instance.Calculation(
-                                $"{transaction.CreditAccount.Name}.RequiredSavings = {Math.Round(totalSavings, 2)}");
-                            _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
-                        }
-                    }
-                }
-                if (transaction.DebitAccount != null)
-                {
-                    var valuesFound = false;
-                    decimal totalSavings = 0;
-
-                    foreach (var savings in savingsAccountBalances)
-                    {
-                        if (savings.Key != transaction.DebitAccount.Name) continue;
-                        totalSavings += savings.Value;
-                        valuesFound = true;
-                    }
-
-                    if (valuesFound)
-                    {
-                        // If required savings doesn't need updating, save a call to the DB
-                        if (transaction.DebitAccount.RequiredSavings != totalSavings)
-                        {
-                            transaction.DebitAccount.RequiredSavings = totalSavings;
-                            Logger.Instance.Calculation(
-                                $"{transaction.DebitAccount.Name}.RequiredSavings = {Math.Round(totalSavings, 2)}");
-                            _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
-                        }
-                    }
-                }
-
-
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        /// <summary>
         /// 
         /// </summary>
         /// <param name="account"></param>
@@ -719,12 +494,12 @@ namespace JPFData
                 // If the balance limit is > balance, balance surplus = $0.00 since there is no surplus
                 // If there's no balance limit, balance surplus = any funds over the required savings
                 if (account.Balance < 0.0m)
-                    return account.BalanceSurplus = account.Balance;
+                    return account.Balance;
 
-                if (account.BalanceLimit > 0)
-                    return account.BalanceSurplus = account.Balance > account.BalanceLimit
+                if (account.BalanceLimit > 0.0m)
+                    return account.Balance > account.BalanceLimit
                         ? account.Balance - account.BalanceLimit
-                        : 0.0m;;
+                        : 0.0m;
 
                 return account.Balance - account.RequiredSavings;
             }

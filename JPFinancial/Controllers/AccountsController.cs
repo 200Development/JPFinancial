@@ -21,10 +21,12 @@ namespace JPFinancial.Controllers
             try
             {
                 AccountViewModel accountVM = new AccountViewModel();
+                var accounts = _accountManager.GetAllAccounts();
+                _accountManager.Update(accounts);
+                _accountManager.Rebalance(accounts);
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
-                _accountManager.Update();
 
 
 
@@ -45,10 +47,12 @@ namespace JPFinancial.Controllers
             try
             {
                 Logger.Instance.DataFlow($"Index (w/ VM)");
+                var accounts = _accountManager.GetAllAccounts();
+                _accountManager.Update(accounts);
+                _accountManager.Rebalance(accounts);
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
-                _accountManager.Update();
 
 
                 ModelState.Clear();
@@ -250,7 +254,8 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                _accountManager.Update();
+                var accounts = _accountManager.GetAllAccounts();
+                _accountManager.Update(accounts);
                 vm.Accounts = _accountManager.GetAllAccounts();
                 vm.Metrics = _accountManager.GetMetrics();
 
@@ -268,7 +273,8 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                _accountManager.Rebalance();
+                var accounts = _accountManager.GetAllAccounts();
+                _accountManager.Rebalance(accounts);
                 vm.Accounts = _accountManager.GetAllAccounts();
                 vm.Metrics = _accountManager.GetMetrics();
 

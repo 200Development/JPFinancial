@@ -115,7 +115,7 @@ namespace JPFData.Managers
                 _db.SaveChanges();
 
 
-                return true;
+               return true;
             }
             catch (Exception e)
             {
@@ -190,7 +190,7 @@ namespace JPFData.Managers
 
                         if (account == null)
                         {
-                            account.Name = paycheckContribution.Key;
+                            account = new Account {Name = paycheckContribution.Key};
                         }
                         else
                             accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
@@ -208,11 +208,13 @@ namespace JPFData.Managers
 
 
                         // iterate through all updated accounts and set state to modified to save to database
+                        var accounts = accountManager.GetAllAccounts();
+
                         foreach (var updatedAccount in updatedAccounts)
                         {
                             try
                             {
-                                var accounts = accountManager.GetAllAccounts();
+
                                 account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
 
                                 // shouldn't ever be null since updatedAccounts comes from Accounts in DB

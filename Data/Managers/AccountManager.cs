@@ -216,14 +216,14 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Update()
+        public bool Update(List<Account> accounts)
         {
-            return _calc.Update();
+            return _calc.Update(accounts);
         }
 
-        public bool Rebalance()
+        public bool Rebalance(List<Account> accounts)
         {
-            return _calc.Rebalance();
+            return _calc.Rebalance(accounts);
         }
     }
 }

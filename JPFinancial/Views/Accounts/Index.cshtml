@@ -199,9 +199,9 @@
                             @*<button class="btn btn-sm">
                                 @Html.ActionLink("Update", "Update")
                             </button>*@
-                            <button class="btn btn-sm">
+                            @*<button class="btn btn-sm">
                                 @Html.ActionLink("Rebalance", "Rebalance")
-                            </button>
+                            </button>*@
                         </div>
                         <div class="container-fluid" style="text-align: center">
                             @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
