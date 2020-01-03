@@ -80,7 +80,6 @@ namespace JPFData.Managers
             try
             {
                 GetUsedAccounts(entity);
-                //AsNoTracking() is essential or EF will throw an error
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Update);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
@@ -104,7 +103,7 @@ namespace JPFData.Managers
             {
                 Transaction transaction = _db.Transactions.Find(id);
 
-                if (transaction.SelectedExpenseId != null)
+                if (transaction.SelectedExpenseId != null && transaction.SelectedExpenseId != 0)
                     if (!SetExpenseToUnpaid(transaction.SelectedExpenseId)) return false;
 
                 if (!UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete)) return false;
@@ -135,7 +134,13 @@ namespace JPFData.Managers
                 }
 
                 //If income transaction, debit to pool account, else get selected debit account
-                entity.Transaction.DebitAccount = entity.Transaction.Type == TransactionTypesEnum.Income ? _db.Accounts.FirstOrDefault(a => a.IsPoolAccount && a.UserId == _userId) : _db.Accounts.Find(entity.Transaction.DebitAccountId);
+                if (entity.Transaction.Type == TransactionTypesEnum.Income)
+                {
+                    entity.Transaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount && a.UserId == _userId);
+                    entity.Transaction.DebitAccountId = entity.Transaction.DebitAccount?.Id;
+                } else
+                    _db.Accounts.Find(entity.Transaction.DebitAccountId);
+
                 Logger.Instance.DataFlow($"Debit Account set");
             }
             catch (Exception e)
@@ -185,20 +190,208 @@ namespace JPFData.Managers
                     case EventArgumentEnum.Delete:
                     case EventArgumentEnum.Update:
                         {
+                            var accountManager = new AccountManager();
+                            var calculations = new Calculations();
+
                             var originalTransaction = _db.Transactions
                                 .AsNoTracking()
                                 .Where(t => t.Id == transaction.Id)
                                 .Cast<Transaction>()
                                 .FirstOrDefault();
                             if (originalTransaction == null) return false;
-                            var originalCreditAccount =
-                                _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.CreditAccountId ?? 0));
-                            var originalDebitAccount = _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.DebitAccountId ?? 0));
+                            var originalCreditAccount = _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.CreditAccountId ?? 0));
+                            var originalDebitAccount = transaction.Type == TransactionTypesEnum.Income ? accountManager.GetPoolAccount() : _db.Accounts.FirstOrDefault(a => a.Id == (originalTransaction.DebitAccountId ?? 0));
                             var originalAmount = originalTransaction.Amount;
 
                             // Reassign the Debit/Credit Account Id's to Transaction Model
                             transaction.CreditAccountId = originalTransaction.CreditAccountId;
                             transaction.DebitAccountId = originalTransaction.DebitAccountId;
+
+                            if (transaction.Type == TransactionTypesEnum.Income)
+                            {
+                                var accounts = accountManager.GetAllAccounts();
+                                switch (eventArgument)
+                                {
+                                    case EventArgumentEnum.Delete:
+                                        {
+                                            if (originalDebitAccount != null)
+                                            {
+                                                // Pool all Account balances (including deficits) 
+                                                foreach (Account account in accounts.Where(a => a.Balance != 0.0m))
+                                                {
+                                                    try
+                                                    {
+                                                        if (account.Balance > 0.0m)
+                                                        {
+                                                            var balance = account.Balance;
+                                                            account.Balance -= balance;
+                                                            originalDebitAccount.Balance += balance;
+                                                        }
+                                                        else if (account.Balance < 0.0m)
+                                                        {
+                                                            var deficit = account.Balance * -1;
+
+                                                            account.Balance -= deficit;
+                                                            originalDebitAccount.Balance -= deficit;
+                                                        }
+
+                                                        account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                    }
+                                                    catch (Exception e)
+                                                    {
+                                                        Logger.Instance.Error(e);
+                                                    }
+                                                }
+
+                                                // Subtract the amount of the income transaction from the Pool
+                                                originalDebitAccount.Balance -= transaction.Amount;
+
+                                                // If there's still a balance left, rebalance Accounts with a negative balance surplus
+                                                if (originalDebitAccount.Balance > 0.0m)
+                                                {
+                                                    foreach (Account account in accounts.Where(a => !a.ExcludeFromSurplus))
+                                                    {
+                                                        try
+                                                        {
+                                                            if (account.BalanceSurplus > 0.0m)
+                                                            {
+                                                                var balance = account.Balance;
+                                                                account.Balance -= balance;
+                                                                originalDebitAccount.Balance += balance;
+                                                            }
+                                                            else
+                                                            {
+                                                                var deficit = account.BalanceSurplus * -1;
+
+                                                                if (originalDebitAccount.Balance < deficit)
+                                                                {
+                                                                    account.Balance += originalDebitAccount.Balance;
+                                                                    originalDebitAccount.Balance -=
+                                                                        originalDebitAccount.Balance;
+                                                                }
+                                                                else // Make account whole
+                                                                {
+                                                                    account.Balance += deficit;
+                                                                    originalDebitAccount.Balance -= deficit;
+                                                                }
+                                                            }
+                                                            
+                                                            account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+
+
+                                                            _db.Entry(account).State = EntityState.Modified;
+                                                        }
+                                                        catch (Exception e)
+                                                        {
+                                                            Logger.Instance.Error(e);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Logger.Instance.Debug("Debit account for income transaction is null");
+                                            }
+
+
+                                            if (_db.ChangeTracker.HasChanges())
+                                                _db.SaveChanges();
+
+
+                                            return true;
+                                        }
+                                    case EventArgumentEnum.Update:
+                                        {
+                                            if (originalDebitAccount != null)
+                                            {
+                                                // Pool Account balances (including deficits)
+                                                foreach (Account account in accounts.Where(a => a.Balance != 0.0m))
+                                                {
+                                                    try
+                                                    {
+                                                        if (account.Balance > 0.0m)
+                                                        {
+                                                            var balance = account.Balance;
+                                                            account.Balance -= balance;
+                                                            originalDebitAccount.Balance += balance;
+                                                        }
+                                                        else if (account.Balance < 0.0m)
+                                                        {
+                                                            var deficit = account.Balance * -1;
+
+                                                            account.Balance -= deficit;
+                                                            originalDebitAccount.Balance -= deficit;
+                                                        }
+
+                                                        account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                    }
+                                                    catch (Exception e)
+                                                    {
+                                                        Logger.Instance.Error(e);
+                                                    }
+                                                }
+
+                                                // Subtract difference of the updated transaction and the original transaction amount
+                                                originalDebitAccount.Balance += transaction.Amount - originalAmount;
+
+                                                // if there's a balance left, rebalance Accounts with a negative balance surplus 
+                                                if (originalDebitAccount.Balance > 0.0m)
+                                                {
+                                                    foreach (Account account in accounts.Where(a => !a.ExcludeFromSurplus))
+                                                    {
+                                                        try
+                                                        {
+                                                            if (account.BalanceSurplus > 0.0m)
+                                                            {
+                                                                var balance = account.Balance;
+                                                                account.Balance -= balance;
+                                                                originalDebitAccount.Balance += balance;
+                                                            }
+                                                            else
+                                                            {
+                                                                var deficit = account.BalanceSurplus * -1;
+
+                                                                if (originalDebitAccount.Balance < deficit)
+                                                                {
+                                                                    account.Balance += originalDebitAccount.Balance;
+                                                                    originalDebitAccount.Balance -=
+                                                                        originalDebitAccount.Balance;
+                                                                }
+                                                                else // Make account whole
+                                                                {
+                                                                    account.Balance += deficit;
+                                                                    originalDebitAccount.Balance -= deficit;
+                                                                }
+                                                            }
+
+                                                            account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+
+
+                                                            _db.Entry(account).State = EntityState.Modified;
+                                                        }
+                                                        catch (Exception e)
+                                                        {
+                                                            Logger.Instance.Error(e);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                Logger.Instance.Debug("Debit account for income transaction is null");
+                                            }
+
+
+                                            if (_db.ChangeTracker.HasChanges())
+                                                _db.SaveChanges();
+
+
+                                            return true;
+                                        }
+                                    default:
+                                        throw new NotImplementedException();
+                                }
+                            }
 
                             switch (eventArgument)
                             {
@@ -318,7 +511,7 @@ namespace JPFData.Managers
                 }
 
                 Logger.Instance.Calculation($"Net income of {incomeAfterPaycheckContributions} added to {transaction.DebitAccount?.Name} after {totalContributions} in paycheck contributions was paid out");
-                if(!UpdateAccountBalance(transaction.DebitAccount, incomeAfterPaycheckContributions, AccountingTypes.Debit)) return false;
+                if (!UpdateAccountBalance(transaction.DebitAccount, incomeAfterPaycheckContributions, AccountingTypes.Debit)) return false;
 
                 //TODO: find a better way to add remainder of income after paycheck contributions to Db
                 var incomeAfterContributions = new Transaction();

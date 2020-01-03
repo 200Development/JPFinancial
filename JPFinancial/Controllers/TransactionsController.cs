@@ -135,7 +135,7 @@ namespace JPFinancial.Controllers
 
                 transactionVM.Accounts = accountManager.GetAllAccounts();
 
-                return HttpNotFound();
+                return View(transactionVM);
             }
             catch (Exception e)
             {
