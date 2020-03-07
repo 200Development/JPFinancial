@@ -3,8 +3,20 @@
     padding: 4px;
 }
 
+#addAccountIcon {
+    text-align: center;
+    padding: 15px 0 0 10px;
+    font-size: 22px;
+}
+
 #mainNav {
     height: 35px;
     -ms-border-radius: 20px;
     border-radius: 20px;
+}
+
+#selectedAccountDiv {
+    text-align: center;
+    margin: 20px 0;
+
 }
