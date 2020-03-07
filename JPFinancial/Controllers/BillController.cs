@@ -25,6 +25,7 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.DataFlow("Index");
                 BillViewModel billVM = new BillViewModel();
+                billVM.Accounts = _accountManager.GetAllAccounts();
                 billVM.Bills = _billManager.GetAllBills();
                 billVM.Metrics = _billManager.GetBillMetrics();
 

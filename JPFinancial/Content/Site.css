@@ -3,6 +3,11 @@
     padding-bottom: 20px;
 }
 
+.nav-item {
+    margin: 5px 10px;
+    padding: 4px;
+}
+
 /* Set padding to keep content from hitting the edges */
 .body-content {
     padding-left: 15px;
@@ -21,4 +26,15 @@ input,
 select,
 textarea {
     max-width: 280px;
+}
+
+#mainNav {
+    height: 35px;
+    -ms-border-radius: 20px;
+    border-radius: 20px;
+}
+
+.table {
+    margin: auto;
+    width: 100% !important;
 }

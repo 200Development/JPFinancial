@@ -4,12 +4,13 @@
     ViewBag.Title = "Accounts";
 }
 
+@Styles.Render("~/Content/Accounts.css")
+
 @using (Html.BeginForm(FormMethod.Post))
 {
     <div class="content">
         <div class="row">
-            <div class="col-md-1"></div>
-            <div class="col-md-10">
+            <div class="col-md-12">
                 <div class="card">
                     <div class="header">
                         <h4 class="title">Balances</h4>
@@ -19,7 +20,6 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-1"></div>
         </div>
         <div class="row">
             <div class="col-md-12">
@@ -38,7 +38,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row" id="addAccountIcon"><i class="fa fa-plus-circle"></i></th>
+                            <th scope="row" id="addAccountIcon"><a href="@Url.Action("Create","Accounts")"><i class="fa fa-plus-circle"></i></a></th>
                             <td><input type="text" class="form-control" aria-label="Name" id="newAccountName"></td>
                             <td>
                                 <div class="input-group">

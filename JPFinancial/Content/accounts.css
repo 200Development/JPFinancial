@@ -1,0 +1,11 @@
+﻿#addAccountIcon {
+    text-align: center;
+    padding: 15px 0 0 10px;
+    font-size: 22px;
+}
+
+#selectedAccountDiv {
+    text-align: center;
+    margin: 20px 0;
+
+}
