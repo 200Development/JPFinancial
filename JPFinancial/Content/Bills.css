@@ -1,1 +1,15 @@
-﻿
+﻿#addBillColumn {
+    text-align: center;
+    padding: 15px 0 0 10px;
+    font-size: 22px;
+}
+
+#addBillIcon {
+    color: #508CA4;
+}
+
+#addBillButton {
+    background: transparent;
+    border: 0;
+}
+

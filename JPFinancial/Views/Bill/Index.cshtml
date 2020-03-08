@@ -4,8 +4,14 @@
     ViewBag.Title = "Bills";
 }
 
-@using (Html.BeginForm(FormMethod.Post))
+@Styles.Render("~/Content/Bills.css")
+
+
+@using (Html.BeginForm("Create", "Bill", FormMethod.Post))
 {
+
+    @Html.AntiForgeryToken();
+
     <div class="content">
         <div class="row">
             <div class="col-md-12">
@@ -37,32 +43,36 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row" id="addAccountIcon"><a href="@Url.Action("Create","Bill")"><i class="fa fa-plus-circle"></i></a></th>
-                            <td><input type="text" class="form-control" aria-label="Name" id="newBillName"></td>
+                            <th scope="row" id="addBillColumn"><button id="addBillButton" type="submit"><i id="addBillIcon" class="fa fa-plus-circle"></i></button></th>
+                            <td>
+                                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
+                            </td>
                             <td>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
                                     </div>
-                                    <input type="text" class="form-control" aria-label="Amount" id="newBillAmountDue">
+                                    @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    @Html.EditorFor(model => Model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => Model.Bill.DueDate, "", new { @class = "text-danger" })
+                                    @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    @Html.EnumDropDownListFor(model => Model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => Model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
+                                    @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    @Html.DropDownListFor(model => Model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => Model.Bill.AccountId, "", new { @class = "text-danger" })
+                                    @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                         </tr>

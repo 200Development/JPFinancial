@@ -79,7 +79,7 @@ namespace JPFinancial.Controllers
                 billVM.Accounts = _accountManager.GetAllAccounts();
 
 
-                return View(billVM);
+                return RedirectToAction("Index");
             }
             catch (Exception e)
             {
