@@ -23,7 +23,7 @@ namespace JPFinancial.Controllers
                 AccountViewModel accountVM = new AccountViewModel();
                 var accounts = _accountManager.GetAllAccounts();
                 _accountManager.Update(accounts);
-                _accountManager.Rebalance(accounts);
+              //  _accountManager.Rebalance(accounts);
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
@@ -131,13 +131,16 @@ namespace JPFinancial.Controllers
                 if (!ModelState.IsValid) return View(accountVM);
                 if (!_accountManager.Create(accountVM.Account)) return View(accountVM);
 
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.Metrics = _accountManager.GetMetrics();
+                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
-                return RedirectToAction("Index");
+                return RedirectToAction("Index", accountVM);
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new AccountViewModel());
+                return View("Error");
             }
         }
 

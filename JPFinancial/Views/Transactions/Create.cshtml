@@ -91,7 +91,7 @@
         <div id="divDebitAccount">
             <div class="form-group">
                 <label class="control-label col-md-2">Debit</label>
-                <div class="col-md-3">
+                <div class="col-md-3"> 
                     @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                     @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
                 </div>

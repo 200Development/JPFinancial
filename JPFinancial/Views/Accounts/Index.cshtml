@@ -6,8 +6,10 @@
 
 @Styles.Render("~/Content/Accounts.css")
 
-@using (Html.BeginForm(FormMethod.Post))
+@using (Html.BeginForm("Create", "Accounts", FormMethod.Post))
 {
+    @Html.AntiForgeryToken()
+
     <div class="content">
         <div class="row">
             <div class="col-md-12">
@@ -38,14 +40,18 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row" id="addAccountIcon"><a href="@Url.Action("Create","Accounts")"><i class="fa fa-plus-circle"></i></a></th>
-                            <td><input type="text" class="form-control" aria-label="Name" id="newAccountName"></td>
+                            <th scope="row" id="addAccountColumn"><button id="addAccountButton" type="submit"><i id="addAccountIcon" class="fa fa-plus-circle"></i></button></th>
+                            <td>
+                                @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
+                            </td>
                             <td>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
                                     </div>
-                                    <input type="text" class="form-control" aria-label="Amount" id="newAccountBalance">
+                                    @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td></td>
