@@ -36,7 +36,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new AccountViewModel());
+                return View("Error");
             }
         }
 
@@ -128,12 +128,9 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                if (!ModelState.IsValid) return View(accountVM);
-                if (!_accountManager.Create(accountVM.Account)) return View(accountVM);
+                if (!ModelState.IsValid) return View("Error");
+                if (!_accountManager.Create(accountVM.Account)) return View("Error");
 
-                //accountVM.Accounts = _accountManager.GetAllAccounts();
-                //accountVM.Metrics = _accountManager.GetMetrics();
-                //accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
                 return RedirectToAction("Index");
             }

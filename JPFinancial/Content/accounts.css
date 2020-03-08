@@ -1,18 +1,4 @@
-﻿#addAccountColumn {
-    text-align: center;
-    padding: 15px 0 0 10px;
-    font-size: 22px;
-}
-
-#addAccountIcon {
-    color: #508CA4;
-}
-
-#addAccountButton {
-    background: transparent;
-    border: 0;
-}
-
+﻿
 #selectedAccountDiv {
     text-align: center;
     margin: 20px 0;

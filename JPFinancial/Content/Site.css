@@ -38,3 +38,18 @@ textarea {
     margin: auto;
     width: 100% !important;
 }
+
+.addButton {
+    background: transparent;
+    border: 0;
+}
+
+.addButtonColumn {
+    text-align: center;
+    padding: 15px 0 0 10px;
+    font-size: 22px;
+}
+
+.addIcon {
+    color: #508CA4;
+}

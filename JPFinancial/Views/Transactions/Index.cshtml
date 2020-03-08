@@ -1,13 +1,16 @@
-﻿@using JPFData.Enumerations
-@model JPFData.ViewModels.TransactionViewModel
+﻿@model JPFData.ViewModels.TransactionViewModel
 
 @{
     ViewBag.Title = "Transactions";
 }
 
+@Styles.Render("~/Content/Transactions.css")
 
-@using (Html.BeginForm(FormMethod.Post))
+@using (Html.BeginForm("Create", "Transactions", FormMethod.Post))
 {
+
+    @Html.AntiForgeryToken();
+
     <div class="content">
         <div class="row">
             <div class="col-md-12">
@@ -31,6 +34,7 @@
                         <tr>
                             <th scope="col"></th>
                             <th scope="col">Date</th>
+                            <th scope="col">Payee</th>
                             <th scope="col">Amount</th>
                             <th scope="col">Type</th>
                             <th scope="col">Category</th>
@@ -40,7 +44,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <th scope="row" id="addAccountIcon"><a href="@Url.Action("Create","Transactions")"><i class="fa fa-plus-circle"></i></a></th>
+                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
                             <td>
                                 <div class="form-group">
                                     @Html.EditorFor(model => Model.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
@@ -48,11 +52,18 @@
                                 </div>
                             </td>
                             <td>
+                                <div class="form-group">
+                                    @Html.EditorFor(model => model.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Transaction.Payee, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text">$</span>
                                     </div>
-                                    <input type="text" class="form-control" aria-label="Amount" id="newTransactionAmount">
+                                    @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td>
@@ -68,13 +79,13 @@
                                 </div>
                             </td>
                             <td>
-                                <div class="form-group">
+                                <div class="form-group" id="divCreditAccount">
                                     @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
                                 </div>
                             </td>
                             <td>
-                                <div class="form-group">
+                                <div class="form-group" id="divDebitAccount">
                                     @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
                                     @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
                                 </div>
@@ -85,6 +96,7 @@
                             <tr>
                                 <th scope="row"></th>
                                 <td>@item.Date</td>
+                                <td>@item.Payee</td>
                                 <td>$@item.Amount</td>
                                 <td>@item.Type</td>
                                 <td>@item.Category</td>
@@ -124,14 +136,12 @@
     <script type="text/javascript" src="https://www.google.com/jsapi"></script> ;
     <script>
 
-        /* General javascript Begin */
+        /* updateType variables */
+        var transactionType = document.getElementById('Type');
+        var creditAccountDiv = document.getElementById('divCreditAccount');
+        var debitAccountDiv = document.getElementById('divDebitAccount');
 
-        var filterOptionDiv = document.getElementById('divFilter');
-        filterOptionDiv.style.display = "block";
-
-        /* General javascript End */
-
-
+        
         /* Graph Begin */
         google.load("visualization",
             "1",
@@ -222,7 +232,7 @@
                 width: "auto",
                 pointSize: 8,
                 lineWidth: 2,
-                height: "225",
+                height: "250",
                 backgroundColor: "transparent",
                 colors: ["#32CA0A", "#EB5E28"],
                 tooltip: {
@@ -257,5 +267,29 @@
 
             /* Graph End */
         }
+
+        function updateType() {
+            // 0 - Income, 1 - Expense, 2 - Transfer
+            if (transactionType.value === "0") {
+                creditAccountDiv.style.display = "none";
+                debitAccountDiv.style.display = "none";
+            } else if (transactionType.value === "1") {
+                creditAccountDiv.style.display = "block";
+                debitAccountDiv.style.display = "none";
+            } else if (transactionType.value === "2") {
+                creditAccountDiv.style.display = "block";
+                debitAccountDiv.style.display = "block";
+            }
+        };
+
+
+        document.addEventListener("DOMContentLoaded", function () {
+            updateType();
+        });
+
+        transactionType.addEventListener('change', (event) => {
+            updateType();
+        });
+
     </script>
 }

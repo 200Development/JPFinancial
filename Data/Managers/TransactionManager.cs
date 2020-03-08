@@ -61,7 +61,7 @@ namespace JPFData.Managers
                 GetUsedAccounts(entity);
 
 
-                if (entity.Transaction.SelectedExpenseId != null)
+                if (entity.Transaction.SelectedExpenseId != null && entity.Transaction.SelectedExpenseId > 0)
                     if (!SetExpenseToPaid(entity.Transaction.SelectedExpenseId)) return false;
 
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
@@ -464,7 +464,7 @@ namespace JPFData.Managers
                 var newTransaction = new Transaction();
                 newTransaction.UserId = entity.Transaction.UserId;
                 newTransaction.Date = entity.Transaction.Date;
-                newTransaction.Payee = entity.Transaction.SelectedExpenseId != null
+                newTransaction.Payee = entity.Transaction.SelectedExpenseId != null && entity.Transaction.SelectedExpenseId > 0
                     ? _db.Expenses.FirstOrDefault(e => e.Id == entity.Transaction.SelectedExpenseId)?.Name
                     : entity.Transaction.Payee;
                 newTransaction.Category = entity.Transaction.Category;
@@ -473,7 +473,7 @@ namespace JPFData.Managers
                 newTransaction.DebitAccountId = entity.Transaction.DebitAccountId;
                 newTransaction.CreditAccountId = entity.Transaction.CreditAccountId;
                 newTransaction.Amount = entity.Transaction.Amount;
-                if (entity.Transaction.SelectedExpenseId != null)
+                if (entity.Transaction.SelectedExpenseId != null && entity.Transaction.SelectedExpenseId > 0)
                     newTransaction.SelectedExpenseId = entity.Transaction.SelectedExpenseId;
                 _db.Transactions.Add(newTransaction);
 

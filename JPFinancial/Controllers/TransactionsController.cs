@@ -30,7 +30,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new TransactionViewModel());
+                return View("Error");
             }
         }
 
@@ -75,7 +75,7 @@ namespace JPFinancial.Controllers
                             }
 
 
-                            if (!ModelState.IsValid) return View(transactionVM);
+                            if (!ModelState.IsValid) return View("Error");
                             _transactionManager.Create(transactionVM);
                             break;
                         }
@@ -86,7 +86,7 @@ namespace JPFinancial.Controllers
                             else
                             {
                                 if (!_transactionManager.HandlePaycheckContributions(transactionVM.Transaction))
-                                    return View(transactionVM);
+                                    return View("Error");
                             }
 
                             break;
@@ -96,21 +96,14 @@ namespace JPFinancial.Controllers
                     default:
                         throw new NotImplementedException();
                 }
-
-
-                if (transactionVM.moreTransactions)
-                {
-                    Create();
-
-                }
-
+                
 
                 return RedirectToAction("Index");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new TransactionViewModel());
+                return View("Error");
             }
         }
 
