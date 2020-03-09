@@ -22,103 +22,76 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div id="selectedAccountDiv">Selected Account</div>
-            </div>
-            <div class="col-md-12">
-                <table class="table table-striped table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Balance</th>
-                            <th scope="col">Required Savings</th>
-                            <th scope="col">Paycheck Contribution</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
-                            <td>
-                                @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">$</span>
-                                    </div>
-                                    @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
-                        {
-                            <tr>
-                                <th scope="row"></th>
-                                <td>@item.Name</td>
-                                <td>$@item.Balance</td>
-                                <td>$@item.RequiredSavings</td>
-                                <td>$@item.PaycheckContribution</td>
-                            </tr>
 
-                        }
-                    </tbody>
-                </table>
+
+            <div class="col-md-12" id="selectedAccountDiv">
+
+                <div class="card col-md-5 mx-auto border-dark" id="selectedAccountCard">
+                    <div class="card-title">
+                        <h1 id="selectedAccountName"></h1>
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <h3 id="selectedAccountEmptyText">Click on a row to edit or delete a bill</h3>
+                            <h3 id="selectedAccountBalance"></h3>
+                            <h3 id="selectedAccountRequiredSavings"></h3>
+                            <h3 id="selectedAccountPaycheckContribution"></h3>
+                        </div>
+                    </div>
+                    <div class="card-footer" id="selectedAccountFooter">
+                        <button class="editButton btn btn-dark" type="submit"><i class="fa fa-edit editIcon"></i><span id="editSelectedAccountSpan">Edit</span></button>
+                        <button class="deleteButton btn btn-dark" type="submit"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedAccountSpan">Delete</span></button>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Name</th>
+                                <th scope="col">Balance</th>
+                                <th scope="col">Required Savings</th>
+                                <th scope="col">Paycheck Contribution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
+                                <td>
+                                    @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td></td>
+                                <td></td>
+                            </tr>
+                            @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+                            {
+                                var rowId = "rowId_" + item.Id;
+                                var nameId = "accountName_" + item.Id;
+                                var balanceId = "accountBalance_" + item.Id;
+                                var requiredSavingsId = "accountRequiredSavings_" + item.Id;
+                                var paycheckContributionId = "accountPaycheckContribution_" + item.Id;
+                                <tr class="tableRow" id="@rowId">
+                                    <th scope="row"></th>
+                                    <td id="@nameId">@item.Name</td>
+                                    <td id="@balanceId">$@item.Balance</td>
+                                    <td id="@requiredSavingsId">$@item.RequiredSavings</td>
+                                    <td id="@paycheckContributionId">$@item.PaycheckContribution</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
-            @*<div class="card">
-                    <div class="header" style="margin: 8px 0">
-                        <h4 class="title">Accounts</h4>
-                        <button class="btn btn-sm">
-                            @Html.ActionLink("Add Account", "Create")
-                        </button>
-                    </div>
-                    <div class="container-fluid" style="text-align: center">
-                        @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
-                        {
-                            <div class="card col-lg-3" style="margin: 8px 0; border: slategray solid 1px">
-                                <div class="card-header">
-                                    <div style="font-weight: bold; font-size: 1.5em">@item.Name</div>
-                                    <div>
-                                        @Html.ActionLink("Edit", "Edit", new { id = item.Id }) |
-                                        @Html.ActionLink("Details", "Details", new { id = item.Id }) |
-                                        @Html.ActionLink("Delete", "Delete", new { id = item.Id })
-                                    </div>
-                                </div>
-                                <div class="card-body" style="margin: 12px 0; text-align: center">
-                                    <div class="card-price"><span style="font-weight: bold">Balance:</span>&nbsp;$@item.Balance</div>
-                                    @if (@item.BalanceSurplus > 0)
-                                    {
-                                        <div class="card-price"><span style="font-weight: bold; color: rgb(13, 115, 13)">Surplus:</span>&nbsp;$@item.BalanceSurplus</div>
-                                    }
-                                    @if (@item.BalanceSurplus < 0)
-                                    {
-                                        <div class="card-price"><span style="font-weight: bold; color: rgb(186, 18, 18)">Deficit:</span>&nbsp;$@item.BalanceSurplus</div>
-                                    }
-                                    @if (@item.BalanceSurplus == 0)
-                                    {
-                                        <div class="card-price"><span style="font-weight: bold">Balanced</span></div>
-                                    }
-                                </div>
-                                <div class="card-footer">
-                                    <div class="card-text">
-                                        <div style="float: left; font-size: .9em">
-                                            <span style="font-weight: bold">Required:</span>&nbsp;$@item.RequiredSavings
-                                        </div>
-                                        <div style="float: right; font-size: .9em">
-                                            <span style="font-weight: bold">Limit:</span>&nbsp;$@item.BalanceLimit
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        }
-                    </div>
-                </div>*@
         </div>
     </div>
 }
@@ -126,52 +99,64 @@
 @section scripts {
 
     <!--  Charts Plugin -->
-    <script src="../../Scripts/chartist.min.js"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script> ;
-    <script>
-        google.load("visualization",
-            "1",
-            {
-                packages: ["corechart"]
-            });
+  
+    <script type="text/javascript">
 
-        $(document).ready(function() { chart(); });
 
-        function chart() {
-            var accounts = @Html.Raw(Json.Encode(@Model.Accounts.OrderByDescending(a => a.Balance).Take(8)));
-            var dataTable = new google.visualization.DataTable();
-            var accountsLength = Object.keys(accounts).length;
+        function rowSelected (e) {
+            const id = e.target.id.split('_')[1];
+
+            const name = $('#accountName_' + id).length ? $('#accountName_' + id).text() : '';
+            const balance = $('#accountBalance_' + id).length ? $('#accountBalance_' + id).text() : '';
+            const requiredSavings = $('#accountRequiredSavings_' + id).length ? $('#accountRequiredSavings_' + id).text() : '';
+            const paycheckContribution = $('#accountPaycheckContribution_' + id).length ? $('#accountPaycheckContribution_' + id).text() : '';
+
+
+            $('#selectedAccountEmptyText').css('display', 'none');
+            $('#selectedAccountFooter').css('display', 'block');
+            $('#selectedAccountName').text(name);
+            $('#selectedAccountBalance').text(balance);
+            $('#selectedAccountRequiredSavings').text(requiredSavings);
+            $('#selectedAccountPaycheckContribution').text(paycheckContribution);
+        };
+
+        function chart () {
+            const accounts = @Html.Raw(Json.Encode(@Model.Accounts.OrderByDescending(a => a.Balance).Take(8)));
+            const dataTable = new window.google.visualization.DataTable();
+            const accountsLength = Object.keys(accounts).length;
             var accountsArray = new Array(accountsLength);
 
             //Add each Account from Model to an array to iterate through
-            for (prop in accounts) {
-                accountsArray.push(accounts[prop]);
+            for (let prop in accounts) {
+                if (Object.prototype.hasOwnProperty.call(accounts, prop)) {
+                    accountsArray.push(accounts[prop]);
+                }
             }
 
             //Remove any undefined Accounts
             accountsArray = accountsArray.filter(function(n) { return n != undefined });
 
             //Set the graph X (Account) and Y (CurrentBalance) values
-            var data = [['Account', 'Current Balance']];
+            const data = [['Account', 'Current Balance']];
 
             //Iterate through Accounts array to add each account to the graph.
-            for (var i = 0; i < accountsArray.length; i++) {
+            for (let i = 0; i < accountsArray.length; i++) {
                 if (accountsArray[i]['Balance'] === 0) continue; //Exclude any Accounts with a balance of $0.00
                 data.push([accountsArray[i]['Name'], accountsArray[i]['Balance']]);
             };
 
-            var numRows = data.length;
-            var numCols = data[0].length;
+            const numRows = data.length;
+            const numCols = data[0].length;
 
             dataTable.addColumn('string', data[0][0]);
 
-            for (var i = 1; i < numCols; i++)
+            for (let i = 1; i < numCols; i++)
                 dataTable.addColumn('number', data[0][1]);
 
-            for (var i = 1; i < numRows; i++)
+            for (let i = 1; i < numRows; i++)
                 dataTable.addRow(data[i]);
 
-            var options = {
+            const options = {
                 width: "auto",
                 pointSize: 8,
                 lineWidth: 2,
@@ -204,9 +189,24 @@
                 }
             };
 
-            var chart = new google.visualization.ColumnChart(document.getElementById("chartAccounts"));
+            const chart = new window.google.visualization.ColumnChart(document.getElementById("chartAccounts"));
             chart.draw(dataTable, options);
+        };
+
+        function addTableListeners() {
+            $('.tableRow').click(rowSelected);
         }
 
+
+        google.load("visualization",
+            "1",
+            {
+                packages: ["corechart"]
+            });
+
+
+        $(document).ready(function() { chart(); });
+
+        document.addEventListener("DOMContentLoaded", addTableListeners);
     </script>
 }
