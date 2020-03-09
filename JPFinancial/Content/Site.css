@@ -44,12 +44,20 @@ textarea {
     border: 0;
 }
 
+.editButton, .deleteButton {
+    background: #212529;
+    border: 0;
+    width: 120px;
+    margin-right: 20px;
+}
+
 .addButtonColumn {
     text-align: center;
     padding: 15px 0 0 10px;
-    font-size: 22px;
+   
 }
 
-.addIcon {
+.addIcon, .editIcon, .deleteIcon {
     color: #508CA4;
+    font-size: 22px;
 }

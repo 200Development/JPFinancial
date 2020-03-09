@@ -1,1 +1,16 @@
-﻿
+﻿#selectedBillDiv {
+    margin-top: 25px;
+    text-align: center;
+}
+
+#selectedBillFooter {
+    display: none;
+}
+
+#selectedBillCard {
+    margin: 30px 0;
+}
+
+.card-body {
+    padding: 0;
+}

@@ -4,7 +4,6 @@
     ViewBag.Title = "Transactions";
 }
 
-@Styles.Render("~/Content/Transactions.css")
 
 @using (Html.BeginForm("Create", "Transactions", FormMethod.Post))
 {
@@ -127,9 +126,9 @@
 }
 
 @section scripts {
+  
     <!--   Core JS Files   -->
     <script src="../../Scripts/jquery-1.10.2.js" type="text/javascript"></script>
-    <script src="../../Scripts/bootstrap-paper.min.js" type="text/javascript"></script>
 
     <!--  Charts Plugin -->
     <script src="../../Scripts/chartist.min.js"></script>
@@ -283,13 +282,9 @@
         };
 
 
-        document.addEventListener("DOMContentLoaded", function () {
-            updateType();
-        });
+        document.addEventListener("DOMContentLoaded", updateType);
 
-        transactionType.addEventListener('change', (event) => {
-            updateType();
-        });
+        transactionType.addEventListener('change', updateType);
 
     </script>
 }

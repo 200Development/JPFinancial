@@ -363,6 +363,7 @@
     <Content Include="Scripts\Bootstrap4\dist\tab.js.map" />
     <Content Include="Scripts\Bootstrap4\dist\tooltip.js.map" />
     <Content Include="Scripts\Bootstrap4\dist\util.js.map" />
+    <Content Include="Content\site.scss" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
