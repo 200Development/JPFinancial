@@ -213,7 +213,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="App_Data\sql scripts\seed accounts, bills, expenses for testing.sql" />
-    <Content Include="Content\Bills.css" />
+    <Content Include="Content\bills.css" />
     <Content Include="Content\bootstrap-darkly.min.css" />
     <Content Include="Content\bootstrap-theme.css" />
     <Content Include="Content\bootstrap-theme.min.css" />
@@ -225,6 +225,7 @@
     <Content Include="Content\paper-dashboard.css" />
     <Content Include="Content\Site.css" />
     <Content Include="Content\themify-icons.css" />
+    <Content Include="Content\transactions.css" />
     <Content Include="fonts\glyphicons-halflings-regular.eot" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
@@ -363,7 +364,6 @@
     <Content Include="Scripts\Bootstrap4\dist\tab.js.map" />
     <Content Include="Scripts\Bootstrap4\dist\tooltip.js.map" />
     <Content Include="Scripts\Bootstrap4\dist\util.js.map" />
-    <Content Include="Content\site.scss" />
     <None Include="Scripts\jquery-3.4.1.intellisense.js" />
     <Content Include="Scripts\jquery-3.4.1.js" />
     <Content Include="Scripts\jquery-3.4.1.min.js" />
@@ -372,6 +372,7 @@
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery-blockUI-2.70.0-2014.11.23.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />

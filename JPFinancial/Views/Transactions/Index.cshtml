@@ -4,6 +4,8 @@
     ViewBag.Title = "Transactions";
 }
 
+@Styles.Render("~/Content/transactions.css")
+
 
 @using (Html.BeginForm("Create", "Transactions", FormMethod.Post))
 {
@@ -24,113 +26,141 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div id="selectedAccountDiv">Selected Account</div>
-            </div>
-            <div class="col-md-12">
-                <table class="table table-striped table-dark">
-                    <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Date</th>
-                            <th scope="col">Payee</th>
-                            <th scope="col">Amount</th>
-                            <th scope="col">Type</th>
-                            <th scope="col">Category</th>
-                            <th scope="col">From</th>
-                            <th scope="col">To</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
-                            <td>
-                                <div class="form-group">
-                                    @Html.EditorFor(model => Model.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => Model.Transaction.Date, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    @Html.EditorFor(model => model.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.Transaction.Payee, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">$</span>
-                                    </div>
-                                    @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group">
-                                    @Html.EnumDropDownListFor(model => model.Transaction.Category, htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Transaction.Category, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group" id="divCreditAccount">
-                                    @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group" id="divDebitAccount">
-                                    @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                                    @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
-                                </div>
-                            </td>
-                        </tr>
-                        @foreach (var item in Model.Transactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
-                        {
-                            <tr>
-                                <th scope="row"></th>
-                                <td>@item.Date</td>
-                                <td>@item.Payee</td>
-                                <td>$@item.Amount</td>
-                                <td>@item.Type</td>
-                                <td>@item.Category</td>
-                                @if (@item.CreditAccount == null)
-                                {
-                                    <td></td>
-                                }
-                                else
-                                {
-                                    <td>$@item.?CreditAccount.Name</td>
-                                }
-                                @if (@item.DebitAccount == null)
-                                {
-                                    <td></td>
-                                }
-                                else
-                                {
-                                    <td>$@item.?DebitAccount.Name</td>
-                                }
-                            </tr>
+            <div class="col-md-12" id="selectedTransactionDiv">
 
-                        }
-                    </tbody>
-                </table>
+                <div class="card col-md-5 mx-auto border-dark" id="selectedTransactionCard">
+                    <div class="card-title">
+                        <h1 id="selectedTransactionPayee"></h1>
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <h3 id="selectedTransactionEmptyText">Click on a row to edit or delete a transaction</h3>
+                            <h3 id="selectedTransactionDate"></h3>
+                            <h3 id="selectedTransactionAmount"></h3>
+                            <h3 id="selectedTransactionType"></h3>
+                            <h3 id="selectedTransactionCategory"></h3>
+                            <h3 id="selectedTransactionFrom"></h3>
+                            <h3 id="selectedTransactionTo"></h3>
+                        </div>
+                    </div>
+                    <div class="card-footer" id="selectedTransactionFooter">
+                        <button class="editButton btn btn-dark" type="submit"><i class="fa fa-edit editIcon"></i><span id="editSelectedTransactionSpan">Edit</span></button>
+                        <button class="deleteButton btn btn-dark" type="submit"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedTransactionSpan">Delete</span></button>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    <table class="table table-striped table-dark">
+                        <thead>
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Date</th>
+                                <th scope="col">Payee</th>
+                                <th scope="col">Amount</th>
+                                <th scope="col">Type</th>
+                                <th scope="col">Category</th>
+                                <th scope="col">From</th>
+                                <th scope="col">To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
+                                <td>
+                                    <div class="form-group">
+                                        @Html.EditorFor(model => Model.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => Model.Transaction.Date, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        @Html.EditorFor(model => model.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Transaction.Payee, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                        @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group">
+                                        @Html.EnumDropDownListFor(model => model.Transaction.Category, htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Transaction.Category, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group" id="divCreditAccount">
+                                        @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group" id="divDebitAccount">
+                                        @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>
+                            </tr>
+                            @foreach (var item in Model.Transactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
+                            {
+
+                                var rowId = "rowId_" + item.Id;
+                                var dateId = "transactionDate_" + item.Id;
+                                var payeeId = "transactionPayee_" + item.Id;
+                                var amountId = "transactionAmount_" + item.Id;
+                                var typeId = "transactionType_" + item.Id;
+                                var categoryId = "transactionCategory_" + item.Id;
+                                var creditAccountId = "transactionCreditAccount_" + item.Id;
+                                var debitAccountId = "transactionDebitAccount_" + item.Id;
+                                <tr class="tableRow" id="rowId">
+                                    <th scope="row"></th>
+                                    <td id="@dateId">@item.Date</td>
+                                    <td id="@payeeId">@item.Payee</td>
+                                    <td id="@amountId">$@item.Amount</td>
+                                    <td id="@typeId">@item.Type</td>
+                                    <td id="@categoryId">@item.Category</td>
+                                    @if (@item.CreditAccount == null)
+                                    {
+                                        <td id="@creditAccountId"></td>
+                                    }
+                                    else
+                                    {
+                                        <td id="@creditAccountId">$@item.?CreditAccount.Name</td>
+                                    }
+                                    @if (@item.DebitAccount == null)
+                                    {
+                                        <td id="@debitAccountId"></td>
+                                    }
+                                    else
+                                    {
+                                        <td id="@debitAccountId">$@item.?DebitAccount.Name</td>
+                                    }
+                                </tr>
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 }
 
 @section scripts {
-  
-    <!--  Charts Plugin -->
-    <script src="../../Scripts/chartist.min.js"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script> 
-    <script>
+    
+    <script type="text/javascript">
 
         /* updateType variables */
         var transactionType = document.getElementById('Type');
@@ -138,40 +168,26 @@
         var debitAccountDiv = document.getElementById('divDebitAccount');
 
         
-        /* Graph Begin */
-        google.load("visualization",
-            "1",
-            {
-                packages: ["corechart"]
-            });
-
-        $(document).ready(function() {
-            chart();
-
-
-            var $transactions = $('.transactionRow');
-
-            debugger;
-        });
 
         function chart() {
-            var metrics = @Html.Raw(Json.Encode(@Model.Metrics));
-            var expensesByMonth = metrics.ExpensesByMonth;
-            var incomeByMonth = metrics.IncomeByMonth;
-            var transfersByMonth = metrics.TransfersByMonth;
 
-            var expensesLength = Object.keys(expensesByMonth).length;
-            var incomeLength = Object.keys(incomeByMonth).length;
-            var transferLength = Object.keys(transfersByMonth).length;
+            const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
+            const expensesByMonth = metrics.ExpensesByMonth;
+            const incomeByMonth = metrics.IncomeByMonth;
+            const transfersByMonth = metrics.TransfersByMonth;
 
-            var monthsArray = new Array(expensesLength);
-            var expensesArray = new Array(expensesLength);
-            var incomeArray = new Array(incomeLength);
-            var transferArray = new Array(transferLength);
-            var highestAmount = 0;
+            const expensesLength = Object.keys(expensesByMonth).length;
+            const incomeLength = Object.keys(incomeByMonth).length;
+            const transferLength = Object.keys(transfersByMonth).length;
+
+            let monthsArray = new Array(expensesLength);
+            let expensesArray = new Array(expensesLength);
+            let incomeArray = new Array(incomeLength);
+            let transferArray = new Array(transferLength);
+            let highestAmount = 0;
 
 
-            for (prop in expensesByMonth) {
+            for (let prop in expensesByMonth) {
                 if (expensesByMonth.hasOwnProperty(prop)) {
                     monthsArray.push(prop);
                     expensesArray.push(expensesByMonth[prop]);
@@ -181,7 +197,7 @@
                 }
             }
 
-            for (prop in incomeByMonth) {
+            for (let prop in incomeByMonth) {
                 if (incomeByMonth.hasOwnProperty(prop)) {
                     incomeArray.push(incomeByMonth[prop]);
                     if (incomeByMonth[prop] > highestAmount) {
@@ -190,7 +206,7 @@
                 }
             }
 
-            for (prop in transfersByMonth) {
+            for (let prop in transfersByMonth) {
                 if (transfersByMonth.hasOwnProperty(prop)) {
                     transferArray.push(transfersByMonth[prop]);
                     if (transfersByMonth[prop] > highestAmount) {
@@ -258,11 +274,9 @@
                 }
             };
 
-            var chart = new window.google.visualization.AreaChart(document.getElementById("chartTransactions"));
-            chart.draw(dataTable, options);
-
-            /* Graph End */
-        }
+            var googleChart = new window.google.visualization.AreaChart(document.getElementById("chartTransactions"));
+            googleChart.draw(dataTable, options);
+        };
 
         function updateType() {
             // 0 - Income, 1 - Expense, 2 - Transfer
@@ -278,10 +292,45 @@
             }
         };
 
+        function rowSelected(e) {
+            const id = e.target.id.split('_')[1];
+
+            const date = $('#transactionDate_' + id).length ? $('#transactionDate_' + id).text() : '';
+            const payee = $('#transactionPayee_' + id).length ? $('#transactionPayee_' + id).text() : '';
+            const amount = $('#transactionAmount_' + id).length ? $('#transactionAmount_' + id).text() : '';
+            const type = $('#transactionType_' + id).length ? $('#transactionType_' + id).text() : '';
+            const category = $('#transactionCategory_' + id).length ? $('#transactionCategory_' + id).text() : '';
+            const creditAccount = $('#transactionCreditAccount_' + id).length ? $('#transactionCreditAccount_' + id).text() : '';
+            const debitAccount = $('#transactionDebitAccount_' + id).length ? $('#transactionDebitAccount_' + id).text() : '';
+
+            $('#selectedTransactionEmptyText').css('display', 'none');
+            $('#selectedTransactionFooter').css('display', 'block');
+            $('#selectedTransactionPayee').text(payee);
+            $('#selectedTransactionDate').text(date);
+            $('#selectedTransactionAmount').text(amount);
+            $('#selectedTransactionType').text(type);
+            $('#selectedTransactionCategory').text(category);
+            $('#selectedTransactionFrom').text(creditAccount);
+            $('#selectedTransactionTo').text(debitAccount);
+        };
+
+        function addTableListeners() {
+            $('.tableRow').click(rowSelected);
+        };
+
 
         document.addEventListener("DOMContentLoaded", updateType);
-
+        document.addEventListener("DOMContentLoaded", addTableListeners);
         transactionType.addEventListener('change', updateType);
+
+
+        google.load("visualization",
+            "1",
+            {
+                packages: ["corechart"]
+            });
+
+        $(document).ready(function() { chart(); });
 
     </script>
 }

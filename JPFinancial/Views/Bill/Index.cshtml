@@ -1,12 +1,11 @@
-﻿@using System.Diagnostics
-@model JPFData.ViewModels.BillViewModel
+﻿@model JPFData.ViewModels.BillViewModel
 
 @{
     ViewBag.Title = "Bills";
 }
 
 
-@Styles.Render("~/Content/Bills.css")
+@Styles.Render("~/Content/bills.css")
 
 
 @using (Html.BeginForm("Create", "Bill", FormMethod.Post))
@@ -150,11 +149,11 @@
             $('#selectedBillDueDate').text(dueDate);
             $('#selectedBillFrequency').text(frequency);
             $('#selectedBillAccount').text(account);
-        }
+        };
 
         function addTableListeners() {
             $('.tableRow').click(rowSelected);
-        }
+        };
 
         document.addEventListener("DOMContentLoaded", addTableListeners);
     </script>
