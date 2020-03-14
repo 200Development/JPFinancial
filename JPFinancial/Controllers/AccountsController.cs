@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Managers;
@@ -40,96 +39,33 @@ namespace JPFinancial.Controllers
             }
         }
 
-        //TODO: figure out a better way to update the ViewModel
-        [HttpPost]
-        public ActionResult Index(AccountViewModel accountVM)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Index (w/ VM)");
-                var accounts = _accountManager.GetAllAccounts();
-                _accountManager.Update(accounts);
-                _accountManager.Rebalance(accounts);
-                accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.Metrics = _accountManager.GetMetrics();
-                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
-
-
-                ModelState.Clear();
-                Logger.Instance.DataFlow($"ModelState cleared");
-
-
-                Logger.Instance.DataFlow($"AccountViewModel returned to View");
-                return View(accountVM);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new AccountViewModel());
-            }
-        }
-
-        // GET: Accounts/Details/5
-        public ActionResult Details(int? id)
-        {
-            try
-            {
-                Logger.Instance.DataFlow($"Details");
-                if (id == null) 
-                {
-                    Logger.Instance.Debug("Account ID is null");
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-
-                AccountViewModel accountVM = new AccountViewModel();
-                accountVM.Account = _accountManager.GetAccount(id);
-
-
-                if (accountVM.Account != null)
-                {
-                    Logger.Instance.DataFlow($"AccountViewModel returned to View");
-                    return View(accountVM);
-                }
-
-
-                Logger.Instance.Debug("Returned Account is null - (error)");
-                return HttpNotFound();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new AccountViewModel());
-            }
-        }
-
-        // GET: Accounts/Create
-        public ActionResult Create()
-        {
-            try
-            {
-                AccountViewModel accountVM = new AccountViewModel();
-
-
-                return View(accountVM);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new AccountViewModel());
-            }
-        }
-
-        // POST: Accounts/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
+       
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(AccountViewModel accountVM)
+        public ActionResult SubmitForm(AccountViewModel accountVM, string submitButton)
         {
             try
             {
                 if (!ModelState.IsValid) return View("Error");
-                if (!_accountManager.Create(accountVM.Account)) return View("Error");
+                switch (submitButton)
+                {
+                    case "Add":
+                        Create(accountVM);
+                        break;
+                    case "Edit":
+                        Edit(accountVM);
+                        break;
+                    case "Delete":
+                        var id = accountVM.Account.Id;
+
+                        if (id > 0)
+                            Delete(id);
+                        else
+                            return View("Error");
+                        break;
+                    default:
+                        throw new NotImplementedException($"Form submit event {submitButton} is not currently handled");
+                }
 
 
                 return RedirectToAction("Index");
@@ -141,44 +77,37 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // GET: Accounts/Edit/5
-        public ActionResult Edit(int? id)
+        public JsonResult EditAccount(Account account)
         {
             try
             {
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-
-                AccountViewModel accountVM = new AccountViewModel();
-                accountVM.Account = _accountManager.GetAccount(id);
-
-
-                if (accountVM.Account == null)
-                {
-                    Logger.Instance.Debug("Returned Account is null - (error)");
-                    return HttpNotFound();
-                }
-
-                accountVM.Accounts = _accountManager.GetAllAccounts();
-
-
-                return View(accountVM);
+                return Json(_accountManager.Edit(account) ? "Success" : "Failed");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new AccountViewModel());
+                return Json("Error");
             }
         }
 
-        // POST: Accounts/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(AccountViewModel accountVM)
+        private ActionResult Create(AccountViewModel accountVM)
+        {
+            try
+            {
+                
+                if (!_accountManager.Create(accountVM.Account)) return View("Error");
+
+
+                return RedirectToAction("Index");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View("Error");
+            }
+        }
+        
+        private ActionResult Edit(AccountViewModel accountVM)
         {
             try
             {
@@ -187,65 +116,29 @@ namespace JPFinancial.Controllers
                     return RedirectToAction("Index");
 
 
-                return View(accountVM);
+                return RedirectToAction("Index");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new AccountViewModel());
+                return View("Error");
             }
         }
-
-        //GET: Accounts/Delete/5
-        public ActionResult Delete(int? id)
-        {
-            try
-            {
-                if (id == null)
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-                Account account = _accountManager.GetAccount(id);
-                if (account == null)
-                {
-                    Logger.Instance.Debug("Returned Account is null - (error)");
-                    return HttpNotFound();
-                }
-
-
-                return View(account);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new Account());
-            }
-        }
-
-        // POST: Accounts/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
+        
+        private ActionResult Delete(int id)
         {
             try
             {
                 if (_accountManager.Delete(id))
                     return RedirectToAction("Index");
 
-                // Send Account back to Delete View if delete failed
-                Account account = _accountManager.GetAccount(id);
-                if (account == null)
-                {
-                    Logger.Instance.Debug("Returned Account is null - (error)");
-                    return HttpNotFound();
-                }
 
-
-                return View("Index");
+                return View("Error");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return RedirectToAction("Index");
+                return View("Error");
             }
         }
 
@@ -295,5 +188,11 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
+    }
+
+    public class Data
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
     }
 }
