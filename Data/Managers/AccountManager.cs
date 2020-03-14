@@ -110,9 +110,26 @@ namespace JPFData.Managers
         {
             try
             {
-                Account account = _db.Accounts.Find(id);
+                var billManager = new BillManager();
+                var transactionManager = new TransactionManager();
+
+                var account = _db.Accounts.Find(id);
                 if (account.IsPoolAccount)
                     throw new Exception("Cannot delete pool account");
+
+                var bills = billManager.GetAllBills().Where(b => b.AccountId == id);
+                var transactions = transactionManager.GetAllTransactions()
+                    .Where(t => t.CreditAccountId == id || t.DebitAccountId == id);
+
+                foreach (var bill in bills)
+                {
+                    billManager.Delete(bill.Id);
+                }
+
+                foreach (var transaction in transactions)
+                {
+                    transactionManager.Delete(transaction.Id);
+                }
 
                 _db.Accounts.Remove(account);
                 _db.SaveChanges();
@@ -132,10 +149,10 @@ namespace JPFData.Managers
             try
             {
                 //TODO: Needs Refactoring
-                AccountMetrics metrics = new AccountMetrics();
-                AccountManager accountManager = new AccountManager();
-                BillManager billManager = new BillManager();
-                List<Account> accounts = GetAllAccounts();
+                var metrics = new AccountMetrics();
+                var accountManager = new AccountManager();
+                var billManager = new BillManager();
+                var accounts = GetAllAccounts();
                 var poolAccount = GetPoolAccount();
                 var requiredSavingsDict = _calc.GetRequiredSavingsDict();
                 var totalRequiredSavings = 0.0m;

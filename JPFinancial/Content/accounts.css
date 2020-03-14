@@ -19,6 +19,10 @@
     margin: 100px 0 -200px 0;
 }
 
+#deleteConfirmationDiv {
+    display: none;
+}
+
 .card-body {
     padding: 0;
 }

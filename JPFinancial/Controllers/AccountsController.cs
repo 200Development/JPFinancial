@@ -11,7 +11,7 @@ namespace JPFinancial.Controllers
     public class AccountsController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly  AccountManager _accountManager = new AccountManager();
+        private readonly AccountManager _accountManager = new AccountManager();
         private readonly Calculations _calc = new Calculations();
 
         // GET: Accounts
@@ -22,7 +22,7 @@ namespace JPFinancial.Controllers
                 AccountViewModel accountVM = new AccountViewModel();
                 var accounts = _accountManager.GetAllAccounts();
                 _accountManager.Update(accounts);
-              //  _accountManager.Rebalance(accounts);
+                //  _accountManager.Rebalance(accounts);
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
@@ -39,33 +39,12 @@ namespace JPFinancial.Controllers
             }
         }
 
-       
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult SubmitForm(AccountViewModel accountVM, string submitButton)
+        public ActionResult Create(AccountViewModel accountVM)
         {
             try
             {
-                if (!ModelState.IsValid) return View("Error");
-                switch (submitButton)
-                {
-                    case "Add":
-                        Create(accountVM);
-                        break;
-                    case "Edit":
-                        Edit(accountVM);
-                        break;
-                    case "Delete":
-                        var id = accountVM.Account.Id;
 
-                        if (id > 0)
-                            Delete(id);
-                        else
-                            return View("Error");
-                        break;
-                    default:
-                        throw new NotImplementedException($"Form submit event {submitButton} is not currently handled");
-                }
+                if (!_accountManager.Create(accountVM.Account)) return View("Error");
 
 
                 return RedirectToAction("Index");
@@ -90,55 +69,17 @@ namespace JPFinancial.Controllers
             }
         }
 
-        private ActionResult Create(AccountViewModel accountVM)
+        public JsonResult DeleteAccount(Account account)
         {
             try
             {
-                
-                if (!_accountManager.Create(accountVM.Account)) return View("Error");
-
-
-                return RedirectToAction("Index");
+                //TODO: Add verification and notification of success 
+                return account.Id > 0 ? Json(_accountManager.Delete(account.Id) ? "Success" : "Failed") : Json("ID is invalid");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View("Error");
-            }
-        }
-        
-        private ActionResult Edit(AccountViewModel accountVM)
-        {
-            try
-            {
-                if (!ModelState.IsValid) return View(accountVM);
-                if (_accountManager.Edit(accountVM.Account))
-                    return RedirectToAction("Index");
-
-
-                return RedirectToAction("Index");
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View("Error");
-            }
-        }
-        
-        private ActionResult Delete(int id)
-        {
-            try
-            {
-                if (_accountManager.Delete(id))
-                    return RedirectToAction("Index");
-
-
-                return View("Error");
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View("Error");
+                return Json("Error");
             }
         }
 
@@ -188,11 +129,5 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
-    }
-
-    public class Data
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
     }
 }

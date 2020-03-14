@@ -6,7 +6,8 @@
 
 @Styles.Render("~/Content/Accounts.css")
 
-@using (Html.BeginForm("SubmitForm", "Accounts", FormMethod.Post))
+
+@using (Html.BeginForm("Create", "Accounts", FormMethod.Post))
 {
     @Html.AntiForgeryToken()
 
@@ -37,7 +38,7 @@
                     <div>
                         <div class="card-body">
                             <h3 id="selectedAccountEmptyText">Click on a row to edit or delete an account</h3>
-                            
+
                             <div class="selectedInputLabel">Balance</div>
                             <div class="input-group justify-content-center selectedInputs">
                                 <div class="input-group-prepend">
@@ -45,7 +46,7 @@
                                 </div>
                                 <input class="input-group" id="selectedAccountBalance" type="number" />
                             </div>
-                            
+
                             <div class="selectedInputLabel">Required Savings</div>
                             <div class="input-group justify-content-center selectedInputs">
                                 <div class="input-group-prepend">
@@ -53,7 +54,7 @@
                                 </div>
                                 <input class="input-group" id="selectedAccountRequiredSavings" type="number" />
                             </div>
-                            
+
                             <div class="selectedInputLabel">Paycheck Contribution</div>
                             <div class="input-group justify-content-center selectedInputs">
                                 <div class="input-group-prepend">
@@ -65,8 +66,17 @@
                         </div>
                     </div>
                     <div class="card-footer" id="selectedAccountFooter">
-                        <button class="editButton btn btn-dark" id="editButton" value="Edit"><i class="fa fa-edit editIcon"></i><span id="editSelectedAccountSpan">Edit</span></button>
-                        <button class="deleteButton btn btn-dark" id="deleteButton" value="Delete"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedAccountSpan">Delete</span></button>
+                        <div id="footerOptions">
+                            <button class="editButton btn btn-dark" id="editButton" value="Edit"><i class="fa fa-edit editIcon"></i><span id="editSelectedAccountSpan">Edit</span></button>
+                            <button class="deleteButton btn btn-dark" id="deleteButton" value="Delete"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedAccountSpan">Delete</span></button>
+                        </div>
+                        <div id="deleteConfirmationDiv">
+                            <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this account will delete all transactions and bills associated with it. Are you sure?</p>
+                            <div>
+                                <button class="editButton btn btn-dark" id="yesDeleteButton" value="Yes"><span id="confirmAccountDeletionSpan">Yes</span></button>
+                                <button class="deleteButton btn btn-dark" id="noDeleteButton" value="Cancel"><span id="cancelAccountDeletionSpan">Cancel</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -132,7 +142,7 @@
     <script type="text/javascript">
 
 
-        function rowSelected (e) {
+        function rowSelected(e) {
             const id = e.target.id.split('_')[1];
 
             $('#selectedAccountId').val(id);
@@ -144,8 +154,12 @@
             const balance = Number(balanceText) != NaN ? Number(balanceText) : 0;
 
             //const balance = Number($('#accountBalance_' + id).text().replace('$','')) != NaN ? Number($('#accountBalance_' + id).text().replace('$','')) : 0;
-            const requiredSavings = Number($('#accountRequiredSavings_' + id).text().replace('$','')) != NaN ? Number($('#accountRequiredSavings_' + id).text().replace('$','')) : 0;
-            const paycheckContribution = Number($('#accountPaycheckContribution_' + id).text().replace('$','')) != NaN ? Number($('#accountPaycheckContribution_' + id).text().replace('$','')) : 0;
+            const requiredSavings = Number($('#accountRequiredSavings_' + id).text().replace('$', '')) != NaN
+                ? Number($('#accountRequiredSavings_' + id).text().replace('$', ''))
+                : 0;
+            const paycheckContribution = Number($('#accountPaycheckContribution_' + id).text().replace('$', '')) != NaN
+                ? Number($('#accountPaycheckContribution_' + id).text().replace('$', ''))
+                : 0;
 
             $('#selectedAccountEmptyText').css('display', 'none');
             $('.selectedInputs').css('display', 'flex');
@@ -157,7 +171,7 @@
             $('#selectedAccountPaycheckContribution').val(paycheckContribution);
         };
 
-        function saveEditedAccount(e) {
+        function saveAccount(e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -165,25 +179,73 @@
             data.Id = $('#selectedAccountId').val() != undefined ? $('#selectedAccountId').val() : null;
             data.Name = $('#selectedAccountName').val() != undefined ? $('#selectedAccountName').val() : '';
             data.Balance = $('#selectedAccountBalance').val() != undefined ? $('#selectedAccountBalance').val() : null;
-            data.RequiredSavings = $('#selectedAccountRequiredSavings').val() != undefined ? $('#selectedAccountRequiredSavings').val() : null;
-            data.PaycheckContribution = $('#selectedAccountPaycheckContribution').val() != undefined ? $('#selectedAccountPaycheckContribution').val() : null;
+            data.RequiredSavings = $('#selectedAccountRequiredSavings').val() != undefined
+                ? $('#selectedAccountRequiredSavings').val()
+                : null;
+            data.PaycheckContribution = $('#selectedAccountPaycheckContribution').val() != undefined
+                ? $('#selectedAccountPaycheckContribution').val()
+                : null;
 
 
             $.ajax({
-                type: "POST",
-                url: "Accounts/EditAccount",
-                dataType: "json",
+                type: 'POST',
+                url: 'Accounts/EditAccount',
+                dataType: 'json',
                 data: data,
                 success: function(d) {
 
                 },
-                error: function () {
+                error: function() {
 
                 }
             });
-        }
+        };
 
-        function chart () {
+        function deleteAccount(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+
+            $('#footerOptions').css('display', 'none');
+            $('#deleteConfirmationDiv').css('display', 'block');
+
+            //Unbind click event listener before adding to prevent stacking handler
+            $('#yesDeleteButton').unbind('click');
+            $('#noDeleteButton').unbind('click');
+
+            $('#yesDeleteButton').click(deleteConfirmed);
+            $('#noDeleteButton').click(deleteCancelled);
+        };
+
+        function deleteConfirmed(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const data = {};
+            data.Id = $('#selectedAccountId').val() != undefined ? $('#selectedAccountId').val() : null;
+            data.Name = $('#selectedAccountName').val() != undefined ? $('#selectedAccountName').val() : '';
+            $.ajax({
+                type: 'POST',
+                url: 'Accounts/DeleteAccount',
+                dataType: 'json',
+                data: data,
+                success: function(d) {
+                    window.location.reload();
+                },
+                error: function() {
+                }
+            });
+        };
+
+        function deleteCancelled(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('#footerOptions').css('display', 'block');
+            $('#deleteConfirmationDiv').css('display', 'none');
+        };
+
+        function chart() {
             const accounts = @Html.Raw(Json.Encode(@Model.Accounts.OrderByDescending(a => a.Balance).Take(8)));
             const dataTable = new window.google.visualization.DataTable();
             const accountsLength = Object.keys(accounts).length;
@@ -258,7 +320,8 @@
 
         function addListeners() {
             $('.tableRow').click(rowSelected);
-            $('#editButton').click(saveEditedAccount);
+            $('#editButton').click(saveAccount);
+            $('#deleteButton').click(deleteAccount);
         }
 
 
