@@ -192,12 +192,10 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountsController.cs" />
-    <Compile Include="Controllers\BillController.cs" />
-    <Compile Include="Controllers\CreditCardsController.cs" />
+    <Compile Include="Controllers\BillsController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\IdentityController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\LoansController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
     <Compile Include="Controllers\TransactionsController.cs" />
     <Compile Include="Global.asax.cs">
@@ -372,7 +370,6 @@
     <Content Include="Scripts\jquery-3.4.1.slim.min.map" />
     <Content Include="Scripts\jquery-3.4.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
-    <Content Include="Scripts\jquery-blockUI-2.70.0-2014.11.23.js" />
     <Content Include="Scripts\jquery.validate.js" />
     <Content Include="Scripts\jquery.validate.min.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
@@ -382,15 +379,9 @@
     <Content Include="Scripts\respond.min.js" />
     <None Include="Scripts\_references.js" />
     <Content Include="Views\Shared\_CreateTransaction.cshtml" />
-    <Content Include="Views\CreditCards\Create.cshtml" />
-    <Content Include="Views\CreditCards\Delete.cshtml" />
-    <Content Include="Views\CreditCards\Details.cshtml" />
-    <Content Include="Views\CreditCards\Edit.cshtml" />
-    <Content Include="Views\CreditCards\Index.cshtml" />
     <None Include="Views\Dashboard\index.cshtml" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Scripts\SalaryScript.js" />
     <Content Include="Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -434,27 +425,13 @@
     <Content Include="Views\Dashboard\Details.cshtml" />
     <Content Include="Views\Dashboard\Edit.cshtml" />
     <Content Include="Views\Dashboard\IndexList.cshtml" />
-    <Content Include="Views\Bill\Create.cshtml" />
-    <Content Include="Views\Bill\Delete.cshtml" />
-    <Content Include="Views\Bill\Details.cshtml" />
-    <Content Include="Views\Bill\Edit.cshtml" />
-    <Content Include="Views\Bill\Index.cshtml" />
-    <Content Include="Views\Bill\_Bills.cshtml" />
-    <Content Include="Views\Accounts\Create.cshtml" />
-    <Content Include="Views\Accounts\Delete.cshtml" />
-    <Content Include="Views\Accounts\Details.cshtml" />
-    <Content Include="Views\Accounts\Edit.cshtml" />
+    <Content Include="Views\Bills\Index.cshtml" />
     <Content Include="Views\Accounts\Index.cshtml" />
     <Content Include="Views\Transactions\Create.cshtml" />
     <Content Include="Views\Transactions\Delete.cshtml" />
     <Content Include="Views\Transactions\Details.cshtml" />
     <Content Include="Views\Transactions\Edit.cshtml" />
     <Content Include="Views\Transactions\Index.cshtml" />
-    <Content Include="Views\Loans\Create.cshtml" />
-    <Content Include="Views\Loans\Delete.cshtml" />
-    <Content Include="Views\Loans\Details.cshtml" />
-    <Content Include="Views\Loans\Edit.cshtml" />
-    <Content Include="Views\Loans\Index.cshtml" />
     <Content Include="Views\Dashboard\_AccountsPartial.cshtml" />
     <Content Include="Views\Dashboard\_TopTransactions.cshtml" />
     <Content Include="Views\Shared\_Transactions.cshtml" />

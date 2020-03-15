@@ -24,14 +24,13 @@
                 </div>
             </div>
         </div>
-
         <div class="row">
             <div class="col-md-12" id="selectedAccountDiv">
                 @Html.Hidden("selectedAccountId")
                 <div class="card col-md-5 mx-auto border-dark text-center" id="selectedAccountCard">
                     <div class="card-title">
-                        <div class="selectedInputs selectedInputLabel">Name</div>
-                        <div class="input-group justify-content-center selectedInputs">
+                        <div class="selectedInput selectedInputLabel">Name</div>
+                        <div class="input-group justify-content-center selectedInput">
                             <input id="selectedAccountName" type="text" />
                         </div>
                     </div>
@@ -40,7 +39,7 @@
                             <h3 id="selectedAccountEmptyText">Click on a row to edit or delete an account</h3>
 
                             <div class="selectedInputLabel">Balance</div>
-                            <div class="input-group justify-content-center selectedInputs">
+                            <div class="input-group justify-content-center selectedInput">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
@@ -48,7 +47,7 @@
                             </div>
 
                             <div class="selectedInputLabel">Required Savings</div>
-                            <div class="input-group justify-content-center selectedInputs">
+                            <div class="input-group justify-content-center selectedInput">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
@@ -56,7 +55,7 @@
                             </div>
 
                             <div class="selectedInputLabel">Paycheck Contribution</div>
-                            <div class="input-group justify-content-center selectedInputs">
+                            <div class="input-group justify-content-center selectedInput">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
@@ -148,21 +147,21 @@
             $('#selectedAccountId').val(id);
 
 
-            const name = $('#accountName_' + id).length ? $('#accountName_' + id).text() : '';
+            const name = $(`#accountName_${id}`).length ? $(`#accountName_${id}`).text() : '';
 
-            const balanceText = $('#accountBalance_' + id).text().replace('$', '');
+            const balanceText = $(`#accountBalance_${id}`).text().replace('$', '');
             const balance = Number(balanceText) != NaN ? Number(balanceText) : 0;
 
             //const balance = Number($('#accountBalance_' + id).text().replace('$','')) != NaN ? Number($('#accountBalance_' + id).text().replace('$','')) : 0;
-            const requiredSavings = Number($('#accountRequiredSavings_' + id).text().replace('$', '')) != NaN
-                ? Number($('#accountRequiredSavings_' + id).text().replace('$', ''))
+            const requiredSavings = Number($(`#accountRequiredSavings_${id}`).text().replace('$', '')) != NaN
+                ? Number($(`#accountRequiredSavings_${id}`).text().replace('$', ''))
                 : 0;
-            const paycheckContribution = Number($('#accountPaycheckContribution_' + id).text().replace('$', '')) != NaN
-                ? Number($('#accountPaycheckContribution_' + id).text().replace('$', ''))
+            const paycheckContribution = Number($(`#accountPaycheckContribution_${id}`).text().replace('$', '')) != NaN
+                ? Number($(`#accountPaycheckContribution_${id}`).text().replace('$', ''))
                 : 0;
 
             $('#selectedAccountEmptyText').css('display', 'none');
-            $('.selectedInputs').css('display', 'flex');
+            $('.selectedInput').css('display', 'flex');
             $('.selectedInputLabel').css('display', 'block');
             $('#selectedAccountFooter').css('display', 'block');
             $('#selectedAccountName').val(name);
@@ -192,11 +191,14 @@
                 url: 'Accounts/EditAccount',
                 dataType: 'json',
                 data: data,
-                success: function(d) {
-
+                success: function(result) {
+                    window.location.reload();
                 },
-                error: function() {
-
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
                 }
             });
         };
@@ -229,10 +231,14 @@
                 url: 'Accounts/DeleteAccount',
                 dataType: 'json',
                 data: data,
-                success: function(d) {
+                success: function(result) {
                     window.location.reload();
                 },
-                error: function() {
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
                 }
             });
         };

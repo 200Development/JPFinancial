@@ -27,8 +27,7 @@ namespace JPFinancial.Controllers
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
 
-
-
+                
                 //TODO: Add ability to show X number of Accounts
                 return View(accountVM);
             }

@@ -1,0 +1,318 @@
+﻿@model JPFData.ViewModels.BillViewModel
+
+@{
+    ViewBag.Title = "Bills";
+}
+
+
+@Styles.Render("~/Content/bills.css")
+
+
+@using (Html.BeginForm("Create", "Bills", FormMethod.Post))
+{
+
+    @Html.AntiForgeryToken();
+
+    <div class="content">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card">
+                        <div class="header">
+                            <header>Balances</header>
+                        </div>
+                        <div class="content">
+                            <div id="chartBills" class="ct-chart"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="selectedBillDiv">
+                @Html.Hidden("selectedBillId")
+                @Html.Hidden("selectedAccountId")
+                @Html.Hidden("selectedFrequencyId")
+                <div class="card col-md-5 mx-auto border-dark text-center" id="selectedBillCard">
+                    <div class="card-title">
+                        <div class="selectedInput selectedInputLabel">Name</div>
+                        <div class="input-group justify-content-center selectedInput">
+                            <input id="selectedBillName" type="text" />
+                        </div>
+                    </div>
+                    <div>
+                        <div class="card-body">
+                            <h3 id="selectedBillEmptyText">Click on a row to edit or delete a bill</h3>
+
+                            <div class="selectedInputLabel">Amount</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input class="input-group" id="selectedBillAmountDue" type="number" />
+                            </div>
+
+                            <div class="selectedInputLabel">Due Date</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                <input class="input-group" id="selectedBillDueDate" type="date" />
+                            </div>
+
+                            <div class="selectedInputLabel">Frequency</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "input-group" })
+                                @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
+                            </div>
+
+                            <div class="selectedInputLabel">Linked Account</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "input-group" })
+                                @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-footer" id="selectedBillFooter">
+                        <div id="footerOptions">
+                            <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span id="editSelectedBillSpan">Edit</span></button>
+                            <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedBillSpan">Delete</span></button>
+                        </div>
+                        <div id="deleteConfirmationDiv">
+                            <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this bill will reset all paid expenses tied to this bill to unpaid. Are you sure?</p>
+                            <div>
+                                <button class="editButton btn btn-dark" id="yesDeleteButton" value="Yes"><span id="confirmBillDeletionSpan">Yes</span></button>
+                                <button class="deleteButton btn btn-dark" id="noDeleteButton" value="Cancel"><span id="cancelBillDeletionSpan">Cancel</span></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-dark" id="billsTable">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Name</th>
+                            <th scope="col">Amount Due</th>
+                            <th scope="col">Due Date</th>
+                            <th scope="col">Frequency</th>
+                            <th scope="col">Linked Account</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
+                            <td>
+                                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForFrequency(event)" })
+                                @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
+                            </td>
+                            <td>
+                                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control", @onchange= "setHiddenForAccount(event)" })
+                                @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
+                            </td>
+                        </tr>
+                        @foreach (var item in Model.Bills.OrderByDescending(b => b.Name))
+                        {
+                            var rowId = "rowId_" + item.Id;
+                            var nameId = "billName_" + item.Id;
+                            var amountDueId = "billAmountDue_" + item.Id;
+                            var dueDateId = "billDueDate_" + item.Id;
+                            var frequencyNameId = "billFrequency_" + item.Id;
+                            var frequencyId = "billFrequencyId_" + item.Id;
+                            var accountNameId = "billAccount_" + item.Id;
+                            var accountId = "billAccountId_" + item.Id;
+                            var frequencyIdValue = (int) item.PaymentFrequency;
+                            var accountIdValue = item.AccountId;
+                            <tr class="tableRow" id="@rowId">
+                                <th scope="row"></th>
+                                <td id="@nameId">@item.Name</td>
+                                <td id="@amountDueId">$@item.AmountDue</td>
+                                <td id="@dueDateId">@item.DueDate.ToShortDateString()</td>
+                                <td id="@frequencyNameId">@item.PaymentFrequency</td>
+                                @if(@item.Account != null){
+                                    <td id="@accountNameId">@item.Account.Name</td>
+                                } else {
+                                    <td id="@accountNameId"></td>
+                                }
+                                <td id="@frequencyId" style="display: none">@frequencyIdValue</td>
+                                <td id="@accountId" style="display: none">@accountIdValue</td>
+                            </tr>
+                        }
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}
+
+
+@section scripts
+{
+    <script type="text/javascript">
+
+
+        function rowSelected(e) {
+            const id = e.target.id.split('_')[1];
+
+            $('#selectedBillId').val(id);
+
+            const name = $(`#billName_${id}`).length ? $(`#billName_${id}`).text() : '';
+
+            const amountDueText = $(`#billAmountDue_${id}`).text().replace('$', '');
+            const amountDue = Number(amountDueText) != NaN ? Number(amountDueText) : 0;
+
+            const dueDateText = $(`#billDueDate_${id}`).length ? $(`#billDueDate_${id}`).text() : '';
+            const dueDateFields = dueDateText.split('/');
+
+            const year = dueDateFields[2];
+            const month = ('0' + dueDateFields[0]).slice(-2);
+            const day = ('0' + dueDateFields[1]).slice(-2);
+            const dueDate = `${year}-${month}-${day}`;
+
+            const frequencyIdText = Number($('#billFrequencyId_' + id).text()) != NaN ? Number($('#billFrequencyId_' + id).text()) : '-1';
+            const frequencyId = Number(frequencyIdText);
+
+            const accountIdText = Number($('#billAccountId_' + id).text()) != NaN ? Number($('#billAccountId_' + id).text()) : '-1';
+            const accountId = Number(accountIdText);
+
+
+            $('#selectedBillEmptyText').css('display', 'none');
+            $('.selectedInput').css('display', 'flex');
+            $('.selectedInputLabel').css('display', 'block');
+            $('#selectedBillFooter').css('display', 'block');
+            $('#selectedBillName').val(name);
+            $('#selectedBillAmountDue').val(amountDue);
+            $('#selectedBillDueDate').val(dueDate);
+            $('#Bill_PaymentFrequency').val(frequencyId);
+            $('#Bill_AccountId').val(accountId);
+        };
+
+        function saveBill(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const data = {};
+            data.Id = $('#selectedBillId').val() != undefined ? $('#selectedBillId').val() : null;
+            data.Name = $('#selectedBillName').val() != undefined ? $('#selectedBillName').val() : null;
+            data.AmountDue = $('#selectedBillAmountDue').val() != undefined ? $('#selectedBillAmountDue').val() : null;
+            data.DueDate = $('#selectedBillDueDate').val() != undefined ? $('#selectedBillDueDate').val() : null;
+            data.PaymentFrequency = $('#Bill_PaymentFrequency').val() != undefined ? $('#Bill_PaymentFrequency').val() : null;
+            data.AccountId = $('#Bill_AccountId').val() != undefined ? $('#Bill_AccountId').val() : null;
+            debugger;
+            $.ajax({
+                type: 'POST',
+                url: 'Bills/EditBill',
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    window.location.reload();
+                },
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        };
+
+        function deleteBill(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('#footerOptions').css('display', 'none');
+            $('#deleteConfirmationDiv').css('display', 'block');
+
+            //Unbind click event listener before adding to prevent stacking handler
+            $('#yesDeleteButton').unbind('click');
+            $('#noDeleteButton').unbind('click');
+
+            $('#yesDeleteButton').click(deleteConfirmed);
+            $('#noDeleteButton').click(deleteCancelled);
+        };
+
+        function deleteConfirmed(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const data = {};
+            data.Id = $('#selectedBillId').val() != undefined ? $('#selectedBillId').val() : null;
+
+            $.ajax({
+                type: 'POST',
+                url: 'Bills/DeleteBill',
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    window.location.reload();
+                },
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        };
+
+        function deleteCancelled(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('#footerOptions').css('display', 'block');
+            $('#deleteConfirmationDiv').css('display', 'none');
+        }
+
+        function setHiddenForAccount(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var selected = $('#Bill.AccountId').prevObject[0];
+            var t = selected.activeElement;
+            var s = t.value;
+            $('#selectedAccountId').val(s);
+        }
+
+        function setHiddenForFrequency(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            var selected = $('#Bill.PaymentFrequency').prevObject[0];
+            var t = selected.activeElement;
+            var s = t.value;
+            $('#selectedFrequencyId').val(s);
+        }
+
+        function addTableListeners() {
+            $('.tableRow').click(rowSelected);
+            $('#editButton').click(saveBill);
+            $('#deleteButton').click(deleteBill);
+
+        };
+
+        document.addEventListener("DOMContentLoaded", addTableListeners);
+    </script>
+}
+
+
+
+
+

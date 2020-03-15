@@ -1,9 +1,10 @@
 ﻿#selectedBillDiv {
     margin-top: 25px;
-    text-align: center;
+    display: flex;
 }
 
 #selectedBillFooter {
+    margin-top: 10px;
     display: none;
 }
 
@@ -11,6 +12,28 @@
     margin: 30px 0;
 }
 
+#deleteConfirmationDiv {
+    display: none;
+}
+
 .card-body {
     padding: 0;
+}
+
+.selectedInput {
+    display: none;
+}
+
+.selectedInputLabel {
+    margin: 15px 0 5px 0;
+    display: none;
+}
+
+.selectedBillLabels {
+    margin: 5px 15px 0 0;
+}
+
+.selectedBillFields {
+    margin: 0;
+    display: block;
 }

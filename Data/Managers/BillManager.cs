@@ -31,7 +31,7 @@ namespace JPFData.Managers
             {
 
                 Logger.Instance.DataFlow($"Return list of Bills");
-                return _db.Bills.Where(b => b.UserId == _userId).ToList();
+                return _db.Bills.Where(b => b.UserId == _userId).Include(b => b.Account).ToList();
             }
             catch (Exception e)
             {
@@ -54,13 +54,13 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Create(BillViewModel billVM)
+        public bool Create(Bill bill)
         {
             try
             {
-                if (!AddBill(billVM)) return false;
+                if (!AddBill(bill)) return false;
 
-                if (!AddBillToExpenses(billVM.Bill)) return false;
+                if (!AddBillToExpenses(bill)) return false;
 
                 if (!UpdateAccountPaycheckContribution()) return false;
 
@@ -76,12 +76,12 @@ namespace JPFData.Managers
             }
         }
         
-        public bool Edit(BillViewModel billVM)
+        public bool Edit(Bill bill)
         {
             try
             {
                 Logger.Instance.DataFlow($"Edit");
-                _db.Entry(billVM.Bill).State = EntityState.Modified;
+                _db.Entry(bill).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Save Account changes to data context");
                 _db.SaveChanges();
                 Logger.Instance.DataFlow($"Save changes to DB");
@@ -124,11 +124,11 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddBill(BillViewModel billVM)
+        private bool AddBill(Bill bill)
         {
             try
             {
-                _db.Bills.Add(billVM.Bill);
+                _db.Bills.Add(bill);
                 Logger.Instance.DataFlow($"New Bill added to data context");
                 _db.SaveChanges();
 
