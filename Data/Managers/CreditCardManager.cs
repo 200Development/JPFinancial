@@ -12,13 +12,11 @@ namespace JPFData.Managers
     public class CreditCardManager
     {
         private readonly ApplicationDbContext _db;
-        private readonly Calculations _calc;
 
 
         public CreditCardManager()
         {
             _db = new ApplicationDbContext();
-            _calc = new Calculations();
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 

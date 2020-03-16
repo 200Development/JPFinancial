@@ -16,14 +16,12 @@ namespace JPFData.Managers
     public class TransactionManager
     {
         private readonly ApplicationDbContext _db;
-        private readonly Calculations _calc;
         private readonly string _userId;
 
 
         public TransactionManager()
         {
             _db = new ApplicationDbContext();
-            _calc = new Calculations();
             _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
@@ -153,6 +151,8 @@ namespace JPFData.Managers
         {
             try
             {
+                var accountManager = new AccountManager();
+
                 switch (eventArgument)
                 {
                     case EventArgumentEnum.Create:
@@ -164,7 +164,7 @@ namespace JPFData.Managers
                                 Logger.Instance.Calculation($"{transaction.DebitAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.DebitAccount.Balance}");
 
                                 // Update Account's required savings
-                                transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
+                                transaction.CreditAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
                                 _db.Entry(transaction.DebitAccount).State = EntityState.Modified;
@@ -177,7 +177,7 @@ namespace JPFData.Managers
                                 Logger.Instance.Calculation($"{transaction.CreditAccount.Name}.balance ({originalBalance}) + {transaction.Amount} = {transaction.CreditAccount.Balance}");
 
                                 // Update Account's required savings
-                                transaction.CreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(transaction.CreditAccount);
+                                transaction.CreditAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(transaction.CreditAccount);
 
 
                                 _db.Entry(transaction.CreditAccount).State = EntityState.Modified;
@@ -190,9 +190,6 @@ namespace JPFData.Managers
                     case EventArgumentEnum.Delete:
                     case EventArgumentEnum.Update:
                         {
-                            var accountManager = new AccountManager();
-                            var calculations = new Calculations();
-
                             var originalTransaction = _db.Transactions
                                 .AsNoTracking()
                                 .Where(t => t.Id == transaction.Id)
@@ -235,7 +232,7 @@ namespace JPFData.Managers
                                                             originalDebitAccount.Balance -= deficit;
                                                         }
 
-                                                        account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                        account.BalanceSurplus = AccountManager.UpdateBalanceSurplus(account);
                                                     }
                                                     catch (Exception e)
                                                     {
@@ -276,7 +273,7 @@ namespace JPFData.Managers
                                                                 }
                                                             }
                                                             
-                                                            account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                            account.BalanceSurplus = AccountManager.UpdateBalanceSurplus(account);
 
 
                                                             _db.Entry(account).State = EntityState.Modified;
@@ -323,7 +320,7 @@ namespace JPFData.Managers
                                                             originalDebitAccount.Balance -= deficit;
                                                         }
 
-                                                        account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                        account.BalanceSurplus = AccountManager.UpdateBalanceSurplus(account);
                                                     }
                                                     catch (Exception e)
                                                     {
@@ -364,7 +361,7 @@ namespace JPFData.Managers
                                                                 }
                                                             }
 
-                                                            account.BalanceSurplus = calculations.UpdateBalanceSurplus(account);
+                                                            account.BalanceSurplus = AccountManager.UpdateBalanceSurplus(account);
 
 
                                                             _db.Entry(account).State = EntityState.Modified;
@@ -403,7 +400,7 @@ namespace JPFData.Managers
 
                                             // Update Account's required savings
 
-                                            originalDebitAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalDebitAccount);
+                                            originalDebitAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
                                         }
 
@@ -413,7 +410,7 @@ namespace JPFData.Managers
 
                                             // Update Account's required savings
 
-                                            originalCreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalCreditAccount);
+                                            originalCreditAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
 
@@ -427,14 +424,14 @@ namespace JPFData.Managers
                                         if (originalDebitAccount != null)
                                         {
                                             originalDebitAccount.Balance += amountDifference;
-                                            originalDebitAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalDebitAccount);
+                                            originalDebitAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(originalDebitAccount);
                                             _db.Entry(originalDebitAccount).State = EntityState.Modified;
                                         }
 
                                         if (originalCreditAccount != null)
                                         {
                                             originalCreditAccount.Balance -= amountDifference;
-                                            originalCreditAccount.BalanceSurplus = _calc.UpdateBalanceSurplus(originalCreditAccount);
+                                            originalCreditAccount.BalanceSurplus = AccountManager.UpdateBalanceSurplus(originalCreditAccount);
                                             _db.Entry(originalCreditAccount).State = EntityState.Modified;
                                         }
 

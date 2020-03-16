@@ -17,18 +17,18 @@ namespace JPFinancial.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private readonly Calculations _calc;
+        private readonly BillManager _billManager;
 
         public IdentityController()
         {
-            _calc = new Calculations();
+            _billManager = new BillManager();
         }
 
         public IdentityController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             SignInManager = signInManager;
             UserManager = userManager;
-            _calc = new Calculations();
+            _billManager = new BillManager();
         }
 
         public ApplicationSignInManager SignInManager
@@ -101,7 +101,7 @@ namespace JPFinancial.Controllers
             {
                 case SignInStatus.Success:
                     Global.Instance.User = user;
-                    _calc.UpdateBillDueDates();
+                    _billManager.UpdateBillDueDates();
 
                     var accountManager = new AccountManager();
                     accountManager.CheckAndCreatePoolAccount();

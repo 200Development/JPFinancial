@@ -11,13 +11,11 @@ namespace JPFData.Managers
     public class DashboardManager
     {
         private readonly ApplicationDbContext _db;
-        private readonly Calculations _calc;
         private readonly string _userId;
 
         public DashboardManager()
         {
             _db = new ApplicationDbContext();
-            _calc = new Calculations();
             _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
@@ -41,10 +39,11 @@ namespace JPFData.Managers
         
         public StaticFinancialMetrics RefreshStaticMetrics()
         {
-            StaticFinancialMetrics metrics = new StaticFinancialMetrics();
+            var metrics = new StaticFinancialMetrics();
+            var billManager = new BillManager();
             //TODO: create StaticFinancialMetrics manager class 
 
-            var income = _calc.GetMonthlyIncome();
+            //var income = Calculations.GetMonthlyIncome();
             var bills = _db.Bills.ToList();
             var loans = _db.Loans.ToList();
             var transactions = _db.Transactions.ToList();
@@ -58,11 +57,11 @@ namespace JPFData.Managers
                 monthlyLoanInterest += Calculations.MonthlyInterest(loan);
                 dailyLoanInterest += Calculations.DailyInterest(loan);
             }
-            if (income > 0)
-                metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
-            metrics.MonthlyLoanInterest = monthlyLoanInterest;
-            if (income > 0)
-                metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
+            //if (income > 0)
+            //    metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
+            //metrics.MonthlyLoanInterest = monthlyLoanInterest;
+            //if (income > 0)
+            //    metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
             metrics.DailyLoanInterest = dailyLoanInterest;
 
             /* CURRENT MONTH'S EXPENSES */
@@ -74,17 +73,17 @@ namespace JPFData.Managers
 
             /* PAST MONTHLY EXPENSES */
             var lastMonth = DateTime.Today.AddMonths(-1);
-            var lastMonthFirstDay = _calc.FirstDayOfMonth(lastMonth.Year, lastMonth.Month);
-            var lastMonthLastDay = _calc.LastDayOfMonth(lastMonth);
-            metrics.LastMonthDiscretionarySpending = _calc.DiscretionarySpendingByDateRange(lastMonthFirstDay, lastMonthLastDay);
-            metrics.LastMonthMandatoryExpenses = _calc.ExpensesByDateRange(lastMonthFirstDay, lastMonthLastDay);
+            var lastMonthFirstDay = Calculations.FirstDayOfMonth(lastMonth.Year, lastMonth.Month);
+            var lastMonthLastDay = Calculations.LastDayOfMonth(lastMonth);
+            metrics.LastMonthDiscretionarySpending = Calculations.DiscretionarySpendingByDateRange(lastMonthFirstDay, lastMonthLastDay);
+            metrics.LastMonthMandatoryExpenses = billManager.ExpensesByDateRange(lastMonthFirstDay, lastMonthLastDay);
 
             /* RANKED EXPENSES */
             var costliestExpense = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
             metrics.CostliestExpenseAmount = costliestExpense;
             metrics.CostliestCategory = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Category).Take(1).FirstOrDefault();
-            if (income > 0)
-                metrics.CostliestExpensePercentage = costliestExpense / income;
+            //if (income > 0)
+            //    metrics.CostliestExpensePercentage = costliestExpense / income;
 
             /* AVERAGES */
             var transactionSumsByMonth = transactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
@@ -231,10 +230,10 @@ namespace JPFData.Managers
         {
             TimeValueOfMoneyMetrics metric = new TimeValueOfMoneyMetrics();
 
-            metric.OneMonthSavings = _calc.FutureValue(DateTime.Today.AddMonths(1), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.ThreeMonthsSavings = _calc.FutureValue(DateTime.Today.AddMonths(3), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.SixMonthsSavings = _calc.FutureValue(DateTime.Today.AddMonths(6), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.OneYearSavings = _calc.FutureValue(DateTime.Today.AddYears(1), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.OneMonthSavings = Calculations.FutureValue(DateTime.Today.AddMonths(1), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.ThreeMonthsSavings = Calculations.FutureValue(DateTime.Today.AddMonths(3), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.SixMonthsSavings = Calculations.FutureValue(DateTime.Today.AddMonths(6), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.OneYearSavings = Calculations.FutureValue(DateTime.Today.AddYears(1), dashboardVM.StaticFinancialMetrics.NetIncome);
             metric.MonthlyExpenses = dashboardVM.StaticFinancialMetrics.TotalDue;
             metric.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2);
 

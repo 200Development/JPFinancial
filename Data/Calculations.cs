@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using JPFData.Enumerations;
@@ -9,17 +8,15 @@ using JPFData.Models.JPFinancial;
 
 namespace JPFData
 {
-    public class Calculations
+    public static class Calculations
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
-
 
         /// <summary>
         /// Returns the last day of the month for the provided date
         /// </summary>
         /// <param name="date"></param>
         /// <returns></returns>
-        public DateTime LastDayOfMonth(DateTime date)
+        public static DateTime LastDayOfMonth(DateTime date)
         {
             try
             {
@@ -40,7 +37,7 @@ namespace JPFData
         /// <param name="year"></param>
         /// <param name="month"></param>
         /// <returns></returns>
-        public DateTime FirstDayOfMonth(int year, int month)
+        public static DateTime FirstDayOfMonth(int year, int month)
         {
             //TODO: change to take datetime as parameter
             try
@@ -56,7 +53,7 @@ namespace JPFData
             }
         }
 
-        public decimal FutureValue(DateTime futureDate, decimal? netPay)
+        public static decimal FutureValue(DateTime futureDate, decimal? netPay)
         {
             try
             {
@@ -86,8 +83,8 @@ namespace JPFData
                 for (var i = 0; i < payperiods; i++)
                 {
 
-                    bills = UpdateBillDueDates(bills);
-                    bills = UpdateTotalCosts(bills);
+                    bills = billManager.UpdateBillDueDates(bills);
+                    bills = billManager.UpdateTotalCosts(bills);
                     SetCurrentAndEndDate(bills);
                     decimal? savings = Convert.ToDecimal(bills["totalSavings"]);
                     var periodCosts = Convert.ToDecimal(bills["periodCosts"]);
@@ -107,125 +104,7 @@ namespace JPFData
             }
         }
 
-        public decimal GetMonthlyIncome()
-        {
-            try
-            {
-                Logger.Instance.Calculation($"GetMonthlyIncome");
-                var incomePerPayPeriod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
-                var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
-                var monthlyIncome = 0.00m;
-
-                switch (paymentFrequency)
-                {
-                    case FrequencyEnum.Weekly:
-                        monthlyIncome = incomePerPayPeriod * 4;
-                        Logger.Instance.Calculation($"Monthly income for weekly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 4)");
-                        break;
-                    case FrequencyEnum.SemiMonthly:
-                        monthlyIncome = incomePerPayPeriod * 2;
-                        Logger.Instance.Calculation($"Monthly income for semi-monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 2)");
-                        break;
-                    case FrequencyEnum.Monthly:
-                        monthlyIncome = incomePerPayPeriod;
-                        Logger.Instance.Calculation($"Monthly income for monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod})");
-                        break;
-                    default:
-                        monthlyIncome = incomePerPayPeriod * 2;
-                        Logger.Instance.Calculation($"Monthly income for semi-monthly pay is {monthlyIncome} (income per pay {incomePerPayPeriod} * 2)");
-                        break;
-                }
-
-                return monthlyIncome;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return 0.0m;
-            }
-        }
-
-        //TODO: Improve date range handling
-        /// <summary>
-        /// Returns summation of bills within the date range of the begin and end parameters  
-        /// </summary>
-        /// <param name="begin">start date of the date range</param>
-        /// <param name="end">end date of the date range</param>
-        /// <param name="onlyMandatory">sumates only mandatory expenses</param>
-        /// <returns></returns>
-        public decimal ExpensesByDateRange(DateTime begin, DateTime end, bool onlyMandatory = false)
-        {
-            try
-            {
-                Logger.Instance.Calculation($"Expenses by DateRange");
-                var billManager = new BillManager();
-                var bills = billManager.GetAllBills();
-                var expenses = 0m;
-
-                foreach (var bill in bills)
-                {
-                    //if (bill.DueDate.Date < beginDate) continue;
-
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-                    Logger.Instance.Calculation($"{bill.Name} original due date is {dueDate:d}");
-                    //TODO: Fix semi-monthly bills being added 3 times (31st, 16th, 1st)
-                    while (newDueDate >= begin)
-                    {
-                        switch (frequency)
-                        {
-                            case FrequencyEnum.Daily:
-                                newDueDate = newDueDate.AddDays(-1);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Weekly:
-                                newDueDate = newDueDate.AddDays(-7);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                newDueDate = newDueDate.AddDays(-14);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Monthly:
-                                newDueDate = newDueDate.AddMonths(-1);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(-15);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                newDueDate = newDueDate.AddMonths(-3);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(-6);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Annually:
-                                newDueDate = newDueDate.AddYears(-1);
-                                Logger.Instance.Calculation($"{bill.Name} new due date is {newDueDate:d}");
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        // adds expense only if the bill due date falls within the date range
-                        if (newDueDate < begin || newDueDate >= end) continue;
-                        expenses += bill.AmountDue;
-                        Logger.Instance.Calculation($"Expenses: {expenses} added to {bill.Name}.AmountDue");
-                    }
-                }
-                return expenses;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return 0.0m;
-            }
-        }
-
-        public decimal DiscretionarySpendingByDateRange(DateTime begin, DateTime end)
+        public static decimal DiscretionarySpendingByDateRange(DateTime begin, DateTime end)
         {
             try
             {
@@ -300,295 +179,8 @@ namespace JPFData
                 return 0.0m;
             }
         }
-
-        public AccountRebalanceReport GetRebalancingAccountsReport()
-        {
-            try
-            {
-                Logger.Instance.Calculation($"GetRebalancingAccountsReport");
-                AccountRebalanceReport report = new AccountRebalanceReport();
-                var accountManager = new AccountManager();
-                var accounts = accountManager.GetAllAccounts();
-
-                //Clear out to prevent stacking
-                report.AccountsWithSurplus.Clear();
-                report.AccountsWithDeficit.Clear();
-                report.Surplus = 0.0m;
-                report.Deficit = 0.0m;
-                foreach (var account in accounts)
-                {
-                    Logger.Instance.Calculation($"Name: {account.Name}; Accts. W/ Surplus: {report.AccountsWithSurplus.Count}; Accts. W/ Deficit: {report.AccountsWithDeficit.Count}; Surplus: {Math.Round(report.Surplus, 2)}; Deficit: {Math.Round(report.Deficit, 2)}; TotalSurplus: {Math.Round(report.TotalSurplus, 2)}; PaycheckSurplus: {Math.Round(report.PaycheckSurplus, 2)}");
-                    // Get Accounts' Total Surplus/Deficit
-                    var accountSurplus = account.Balance - account.RequiredSavings;
-                    if (accountSurplus == 0) continue;
-                    if (accountSurplus > 0)
-                    {
-                        report.AccountsWithSurplus.Add(account);
-                        report.Surplus += accountSurplus;
-                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} surplus added to report.Surplus ({report.Surplus})");
-                    }
-                    else if (accountSurplus < 0)
-                    {
-                        report.AccountsWithDeficit.Add(account);
-                        report.Deficit += accountSurplus;
-                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} deficit added to report.Deficit ({report.Deficit})");
-                    }
-
-                    if (!account.ExcludeFromSurplus)
-                    {
-                        report.TotalSurplus += accountSurplus;
-                        Logger.Instance.Calculation($"{Math.Round(accountSurplus, 2)} added to report.TotalSurplus ({report.TotalSurplus})");
-                    }
-
-                    // Get Paycheck's Total Surplus/Deficit
-                    if (account.ExcludeFromSurplus) continue;
-
-                    var paycheckSurplus = account.PaycheckContribution - account.SuggestedPaycheckContribution;
-                    if (paycheckSurplus == 0) continue;
-
-                    report.PaycheckSurplus += paycheckSurplus;
-                    Logger.Instance.Calculation($"{paycheckSurplus} paycheck surplus (contribution: {account.PaycheckContribution} - suggested: {account.SuggestedPaycheckContribution}) added to report.PaycheckSurplus ({report.Surplus})");
-                }
-
-                report.NewReport = true;
-                return report;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return new AccountRebalanceReport();
-            }
-        }
-
-        /// <summary>
-        /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
-        /// </summary>
-        /// <param name="accounts"></param>
-        /// <returns></returns>
-        public bool Update(List<Account> accounts)
-        {
-            try
-            {
-                var requiredSavingsDict = GetRequiredSavingsDict();
-                var paycheckContributionsDict = GetPaycheckContributionsDict();
-
-               
-                foreach (var account in accounts)
-                {
-                    try
-                    {
-                        account.RequiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
-                        account.PaycheckContribution = paycheckContributionsDict.FirstOrDefault(p => p.Key == account.Name).Value;
-                        account.BalanceSurplus = UpdateBalanceSurplus(account);
-
-
-                        _db.Entry(account).State = EntityState.Modified;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-                // save changes to the database
-                if (_db.ChangeTracker.HasChanges())
-                {
-                    _db.SaveChanges();
-                }
-
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        public bool Rebalance(List<Account> accounts)
-        {
-            try
-            {
-                var accountManager = new AccountManager();
-                var poolAccount = accountManager.GetPoolAccount();
-                var requiredSavingsDict = GetRequiredSavingsDict();
-                
-
-                if (poolAccount == null) throw new Exception("Pool account has not been assigned");
-
-
-                foreach (Account account in accounts.Where(a => a.BalanceSurplus != 0.0m && !a.ExcludeFromSurplus))
-                {
-                    try
-                    {
-                        // if balance surplus is > $0.00, transfer to pool account.  If surplus is < 0, transfer funds from pool to cover account deficits
-                        if (!account.ExcludeFromSurplus && account.BalanceSurplus > 0)
-                        {
-                            // transfer balance surplus's from each account to the pool account
-                            account.Balance -= account.BalanceSurplus;
-                            poolAccount.Balance += account.BalanceSurplus;
-
-                            // set balance surplus to $0.00
-                            account.BalanceSurplus = 0;
-                        }
-                        else if(!account.ExcludeFromSurplus && account.BalanceSurplus < 0)
-                        {
-                            // cover any account deficits from the surplus in the pool account 
-                            var deficit = account.BalanceSurplus * -1;
-
-                            // Use the rest of the pool money if there's not enough to cover the full deficit
-                            if (poolAccount.Balance < deficit)
-                            {
-                                account.Balance += poolAccount.Balance;
-                                poolAccount.Balance -= poolAccount.Balance;
-                            }
-                            else // Make account whole
-                            {
-                                account.Balance += deficit;
-                                poolAccount.Balance -= deficit;
-                            }
-                        }
-
-
-                        account.RequiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
-                        account.BalanceSurplus = UpdateBalanceSurplus(account);
-                        
-
-                        _db.Entry(account).State = EntityState.Modified;
-                    }
-                    catch (Exception e)
-                    {
-                        Logger.Instance.Error(e);
-                    }
-                }
-
-
-                // save changes to the database
-                _db.Entry(poolAccount).State = EntityState.Modified;
-                if (_db.ChangeTracker.HasChanges())
-                    _db.SaveChanges();
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="account"></param>
-        /// <returns></returns>
-        public decimal UpdateBalanceSurplus(Account account)
-        {
-            try
-            {
-                // If account balance is < $0.00, balance surplus = balance.
-                // If there's a balance limit AND the account balance is greater than the balance limit, balance surplus = any funds over the balance limit
-                // If the balance limit is > balance, balance surplus = $0.00 since there is no surplus
-                // If there's no balance limit, balance surplus = any funds over the required savings
-                if (account.Balance < 0.0m)
-                    return account.Balance;
-
-                if (account.BalanceLimit > 0.0m)
-                    return account.Balance > account.BalanceLimit
-                        ? account.Balance - account.BalanceLimit
-                        : 0.0m;
-
-                return account.Balance - account.RequiredSavings;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return 0.0m;;
-            }
-        }
-
-        /// <summary>
-        /// Updates database Bills.DueDate if the previous due date has passed
-        /// </summary>
-        public void UpdateBillDueDates()
-        {
-            try
-            {
-                Logger.Instance.Calculation($"UpdateBillDueDates");
-                var billManager = new BillManager();
-                var bills = billManager.GetAllBills();
-                var beginDate = DateTime.Today;
-
-                foreach (var bill in bills)
-                {
-                    if (bill.DueDate.Date > beginDate) continue;
-
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-
-                    /* Updates bill due date to the current due date
-                       while loop handles due date updates, regardless of how out of date they are */
-                    while (newDueDate < beginDate)
-                    {
-                        switch (frequency)
-                        {
-                            case FrequencyEnum.Daily:
-                                newDueDate = newDueDate.AddDays(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Weekly:
-                                newDueDate = newDueDate.AddDays(7);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                newDueDate = newDueDate.AddDays(14);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Monthly:
-                                newDueDate = newDueDate.AddMonths(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                newDueDate = newDueDate.AddMonths(3);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(6);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Annually:
-                                newDueDate = newDueDate.AddYears(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                    }
-                    bill.DueDate = newDueDate;
-                    _db.Entry(bill).State = EntityState.Modified;
-                    Logger.Instance.Calculation($"{bill.Name} due date of {dueDate:d} updated to {newDueDate:d}");
-
-                    if (!AddNewExpenseToDb(bill)) return;
-                }
-
-
-                _db.SaveChanges();
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-            }
-        }
-
-        public Dictionary<string, decimal> GetRequiredSavingsDict()
+      
+        public static Dictionary<string, decimal> GetRequiredSavingsDict()
         {
             try
             {
@@ -689,7 +281,7 @@ namespace JPFData
             }
         }
 
-        public Dictionary<string, decimal> GetPaycheckContributionsDict()
+        public static Dictionary<string, decimal> GetPaycheckContributionsDict()
         {
             try
             {
@@ -800,168 +392,7 @@ namespace JPFData
                 throw;
             }
         }
-
-        private Dictionary<string, string> UpdateTotalCosts(Dictionary<string, string> billsDictionary)
-        {
-            try
-            {
-                Logger.Instance.Calculation($"UpdateTotalCosts");
-                var billManager = new BillManager();
-                var bills = billManager.GetAllBills();
-                var currentDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-                var endDate = Convert.ToDateTime(billsDictionary["endDate"]);
-                var expenses = 0.0m;
-                billsDictionary["periodCosts"] = "0";
-
-                foreach (var bill in billsDictionary)
-                {
-                    if (bill.Key == "currentDate" || bill.Key == "endDate" || bill.Key == "periodCosts" ||
-                        bill.Key == "totalSavings" || bill.Key == "totalCosts") continue;
-
-                    var dueDate = Convert.ToDateTime(bill.Value);
-                    if (!(dueDate >= currentDate && dueDate <= endDate)) continue;
-
-                    expenses += bills.Where(b => b.Name == bill.Key).Select(b => b.AmountDue).FirstOrDefault();
-                    Logger.Instance.Calculation($"{expenses} added to {bill.Key}");
-                }
-
-                var billCosts = Convert.ToDecimal(billsDictionary["totalCosts"]);
-                billsDictionary["totalCosts"] = (expenses + billCosts).ToString(CultureInfo.InvariantCulture);
-                Logger.Instance.Calculation($"{expenses + billCosts} added to total costs (expenses: {expenses} + bill costs: {billCosts})");
-                billsDictionary["periodCosts"] = expenses.ToString(CultureInfo.InvariantCulture);
-                Logger.Instance.Calculation($"expenses: {expenses} added to period costs");
-
-                return billsDictionary;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return null;
-            }
-        }
-
-        private bool AddNewExpenseToDb(Bill bill)
-        {
-            try
-            {
-                if (ExpenseExists(bill))
-                {
-                    Logger.Instance.DataFlow($"{bill.Name} due {bill.DueDate} already exists in Expense DB table");
-                    return false;
-                }
-
-                var newExpense = new Expense();
-                newExpense.Name = bill.Name;
-                newExpense.BillId = bill.Id;
-                newExpense.Amount = bill.AmountDue;
-                newExpense.Due = bill.DueDate;
-                newExpense.IsPaid = false;
-
-                _db.Expenses.Add(newExpense);
-                Logger.Instance.DataFlow($"New Expense added to data context");
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Saved changes to DB");
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        private bool ExpenseExists(Bill bill)
-        {
-            try
-            {
-                return _db.Expenses.Where(e => e.BillId == bill.Id)
-                    .Where(e => e.Due == bill.DueDate)
-                    .Any(e => e.Amount == bill.AmountDue);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                throw new Exception("Error thrown checking for existing Expense", e);
-            }
-        }
-
-        /// <summary>
-        /// Returns Dictionary with due dates for all bills for calculating all expenses within a timeframe.  Used for calculating future savings
-        /// </summary>
-        /// <param name="billsDictionary"></param>
-        /// <returns></returns>
-        private Dictionary<string, string> UpdateBillDueDates(Dictionary<string, string> billsDictionary)
-        {
-            try
-            {
-                Logger.Instance.Calculation($"UpdateBillDueDates");
-                var billManager = new BillManager();
-                var bills = billManager.GetAllBills();
-                var beginDate = Convert.ToDateTime(billsDictionary["currentDate"]);
-
-                foreach (var bill in bills)
-                {
-                    if (bill.DueDate.Date > beginDate) continue;
-
-                    var frequency = bill.PaymentFrequency;
-                    var dueDate = bill.DueDate;
-                    var newDueDate = dueDate;
-                    Logger.Instance.Calculation($"{bill.Name} due date {dueDate:d}");
-                    while (newDueDate < beginDate)
-                    {
-                        switch (frequency)
-                        {
-                            case FrequencyEnum.Daily:
-                                newDueDate = newDueDate.AddDays(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Weekly:
-                                newDueDate = newDueDate.AddDays(7);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.BiWeekly:
-                                newDueDate = newDueDate.AddDays(14);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Monthly:
-                                newDueDate = newDueDate.AddMonths(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiMonthly:
-                                newDueDate = newDueDate.AddDays(15);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Quarterly:
-                                newDueDate = newDueDate.AddMonths(3);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.SemiAnnually:
-                                newDueDate = newDueDate.AddMonths(6);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            case FrequencyEnum.Annually:
-                                newDueDate = newDueDate.AddYears(1);
-                                Logger.Instance.Calculation($"New due date {newDueDate:d}");
-                                break;
-                            default:
-                                throw new ArgumentOutOfRangeException();
-                        }
-                        billsDictionary[bill.Name] = newDueDate.ToShortDateString();
-                        Logger.Instance.Calculation($"Set due date {newDueDate:d}");
-                    }
-                }
-                return billsDictionary;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return null;
-            }
-        }
-
+       
         /// <summary>
         /// Returns how many times the user will get paid before a due date
         /// </summary>
@@ -1008,7 +439,7 @@ namespace JPFData
         /// Returns Dictionary (string, string) with current and end (next pay period) dates set
         /// </summary>
         /// <param name="billsDictionary"></param>
-        private void SetCurrentAndEndDate(IDictionary<string, string> billsDictionary)
+        private static void SetCurrentAndEndDate(IDictionary<string, string> billsDictionary)
         {
             try
             {

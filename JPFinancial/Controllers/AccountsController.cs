@@ -12,20 +12,19 @@ namespace JPFinancial.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly AccountManager _accountManager = new AccountManager();
-        private readonly Calculations _calc = new Calculations();
 
         // GET: Accounts
         public ActionResult Index()
         {
             try
             {
-                AccountViewModel accountVM = new AccountViewModel();
+                var accountVM = new AccountViewModel();
                 var accounts = _accountManager.GetAllAccounts();
                 _accountManager.Update(accounts);
                 //  _accountManager.Rebalance(accounts);
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.Metrics = _accountManager.GetMetrics();
-                accountVM.RebalanceReport = _calc.GetRebalancingAccountsReport();
+                accountVM.RebalanceReport = _accountManager.GetRebalancingAccountsReport();
 
                 
                 //TODO: Add ability to show X number of Accounts

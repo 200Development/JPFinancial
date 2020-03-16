@@ -16,7 +16,6 @@ namespace JPFinancial.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly DashboardManager _dashboardManager = new DashboardManager();
-        private readonly Calculations _calc = new Calculations();
 
 
         // GET: Dashboard
