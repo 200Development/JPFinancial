@@ -15,7 +15,7 @@ namespace JPFData.Models.JPFinancial
             CreditAccountId = 0;
             DebitAccountId = 0;
             SelectedExpenseId = 0;
-            Amount = 0.0m;;
+            Amount = 0.0m; ;
         }
 
         [Required, Key]
@@ -40,7 +40,8 @@ namespace JPFData.Models.JPFinancial
         public int? DebitAccountId { get; set; }
         public int? SelectedExpenseId { get; set; }
 
-        [Required, DisplayFormat(DataFormatString = "{0:dd MMM yyyy}")]
+        [Required, DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime Date { get; set; }
 
         [Display(Name = "From")]

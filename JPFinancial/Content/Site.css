@@ -34,6 +34,24 @@ textarea {
     border-radius: 20px;
 }
 
+#selectedDiv {
+    margin-top: 25px;
+    display: flex;
+}
+
+#selectedFooter {
+    margin-top: 10px;
+    display: none;
+}
+
+#selectedCard {
+    margin: 30px 0;
+}
+
+#deleteConfirmationDiv {
+    display: none;
+}
+
 .table {
     margin: auto;
     width: 100% !important;
@@ -60,4 +78,17 @@ textarea {
 .addIcon, .editIcon, .deleteIcon {
     color: #508CA4;
     font-size: 22px;
+}
+
+.card-body {
+    padding: 0;
+}
+
+.selectedInput {
+    display: none;
+}
+
+.selectedInputLabel {
+    margin: 15px 0 5px 0;
+    display: none;
 }

@@ -26,140 +26,204 @@
                     </div>
                 </div>
             </div>
-            <div class="col-md-12" id="selectedTransactionDiv">
-
-                <div class="card col-md-5 mx-auto border-dark" id="selectedTransactionCard">
+        </div>
+        <div class="row">
+            <div class="col-md-12" id="selectedDiv">
+                @Html.Hidden("selectedTransactionId")
+                @Html.Hidden("selectedTypeId")
+                @Html.Hidden("selectedCategoryId")
+                @Html.Hidden("selectedCreditAccountId")
+                @*@Html.Hidden("selectedDebitAccountId")*@
+                <div class="card col-md-5 mx-auto border-dark text-center" id="selectedCard">
                     <div class="card-title">
-                        <h1 id="selectedTransactionPayee"></h1>
+                        <div class="selectedInput selectedInputLabel">Payee</div>
+                        <div class="input-group justify-content-center selectedInput">
+                            <input id="selectedTransactionPayee" type="text" />
+                        </div>
                     </div>
                     <div>
                         <div class="card-body">
                             <h3 id="selectedTransactionEmptyText">Click on a row to edit or delete a transaction</h3>
-                            <h3 id="selectedTransactionDate"></h3>
-                            <h3 id="selectedTransactionAmount"></h3>
-                            <h3 id="selectedTransactionType"></h3>
-                            <h3 id="selectedTransactionCategory"></h3>
-                            <h3 id="selectedTransactionFrom"></h3>
-                            <h3 id="selectedTransactionTo"></h3>
+                            
+                            <div class="selectedInputLabel">Date</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                <input class="input-group" id="selectedTransactionDate" type="date" />
+                            </div>
+
+                            <div class="selectedInputLabel">Amount</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
+                                </div>
+                                <input class="input-group" id="selectedTransactionAmount" type="number" />
+                            </div>
+
+                            <div class="selectedInputLabel">Type</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                @Html.EnumDropDownListFor(model => model.Transaction.Type, htmlAttributes: new { @class = "input-group disabled" })
+                                @Html.ValidationMessageFor(model => model.Transaction.Type, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div class="selectedInputLabel">Category</div>
+                            <div class="input-group justify-content-center selectedInput">
+                                @Html.EnumDropDownListFor(model => model.Transaction.Category, htmlAttributes: new { @class = "input-group" })
+                                @Html.ValidationMessageFor(model => model.Transaction.Category, "", new { @class = "text-danger" })
+                            </div>
+                            
+                            <div id="from">
+                            <div class="selectedInputLabel">From</div>
+                                <div class="input-group justify-content-center selectedInput">
+                                    @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), htmlAttributes: new { @class = "input-group" })
+                                    @Html.ValidationMessageFor(model => model.Transaction.CreditAccountId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                            
+                            @*<div id="to">
+                            <div class="selectedInputLabel">To</div>
+                                <div class="input-group justify-content-center selectedInput">
+                                    @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), htmlAttributes: new { @class = "input-group" })
+                                    @Html.ValidationMessageFor(model => model.Transaction.DebitAccountId, "", new { @class = "text-danger" })
+                                </div>
+                            </div>*@
                         </div>
                     </div>
-                    <div class="card-footer" id="selectedTransactionFooter">
-                        <button class="editButton btn btn-dark" type="submit"><i class="fa fa-edit editIcon"></i><span id="editSelectedTransactionSpan">Edit</span></button>
-                        <button class="deleteButton btn btn-dark" type="submit"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedTransactionSpan">Delete</span></button>
+                    <div class="card-footer" id="selectedFooter">
+                        <div id="footerOptions">
+                            <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span id="editSelectedTransactionSpan">Edit</span></button>
+                            <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedTransactionSpan">Delete</span></button>
+                        </div>
+                        <div id="deleteConfirmationDiv">
+                            <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this transaction will reset all account balances. Are you sure?</p>
+                            <div>
+                                <button class="editButton btn btn-dark" id="yesDeleteButton"><span id="confirmTransactionDeletionSpan">Yes</span></button>
+                                <button class="deleteButton btn btn-dark" id="noDeleteButton"><span id="cancelTransactionDeletionSpan">Cancel</span></button>
+                            </div>
+                        </div>
                     </div>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <table class="table table-striped table-dark">
+                    <thead>
+                        <tr>
+                            <th scope="col"></th>
+                            <th scope="col">Date</th>
+                            <th scope="col">Payee</th>
+                            <th scope="col">Amount</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Category</th>
+                            <th scope="col">From</th>
+                            @*<th scope="col">To</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
+                            <td>
+                                <div class="form-group">
+                                    @Html.EditorFor(model => Model.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => Model.Transaction.Date, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @Html.EditorFor(model => model.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Transaction.Payee, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">$</span>
+                                    </div>
+                                    @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
+                                    @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForType(event)" })
+                                    @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    @Html.EnumDropDownListFor(model => model.Category, htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForCategory(event)" })
+                                    @Html.ValidationMessageFor(model => model.Category, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group" id="divCreditAccount">
+                                    @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForCreditAccount(event)" })
+                                    @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
+                                </div>
+                            </td>
+                            @*<td>
+                                <div class="form-group" id="divDebitAccount">
+                                    @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForDebitAccount(event)" })
+                                    @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
+                                </div>
+                            </td>*@
+                        </tr>
+                        @foreach (var item in Model.Transactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
+                        {
 
-
-                <div class="col-md-12">
-                    <table class="table table-striped table-dark">
-                        <thead>
-                            <tr>
-                                <th scope="col"></th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Payee</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Type</th>
-                                <th scope="col">Category</th>
-                                <th scope="col">From</th>
-                                <th scope="col">To</th>
+                            var rowId = "rowId_" + item.Id;
+                            var dateId = "transactionDate_" + item.Id;
+                            var payeeId = "transactionPayee_" + item.Id;
+                            var amountId = "transactionAmount_" + item.Id;
+                            var typeNameId = "transactionType_" + item.Id;
+                            var typeId = "transactionTypeId_" + item.Id;
+                            var typeIdValue = (int) item.Type;
+                            var categoryNameId = "transactionCategory_" + item.Id;
+                            var categoryId = "transactionCategoryId_" + item.Id;
+                            var categoryIdValue = (int) item.Category;
+                            var creditAccountNameId = "transactionCreditAccount_" + item.Id;
+                            var creditAccountId = "transactionCreditAccountId_" + item.Id;
+                            var creditAccountIdValue = item.CreditAccountId;
+                            //var debitAccountNameId = "transactionDebitAccount_" + item.Id;
+                            //var debitAccountId = "transactionDebitAccountId_" + item.Id;
+                            //var debitAccountIdValue = item.DebitAccountId;
+                            <tr class="tableRow" id="@rowId">
+                                <th scope="row"></th>
+                                <td id="@dateId">@item.Date.ToShortDateString()</td>
+                                <td id="@payeeId">@item.Payee</td>
+                                <td id="@amountId">$@item.Amount</td>
+                                <td id="@typeNameId">@item.Type</td>
+                                <td id="@categoryNameId">@item.Category</td>
+                                @if (@item.CreditAccount != null)
+                                {
+                                    <td id="@creditAccountNameId">@item.CreditAccount.Name</td>
+                                }
+                                else
+                                {
+                                    <td id="@creditAccountNameId"></td>
+                                }
+                                @*@if (@item.DebitAccount != null)
+                                {
+                                    <td id="@debitAccountNameId">@item.DebitAccount.Name</td>
+                                }
+                                else
+                                {
+                                    <td id="@debitAccountNameId"></td>
+                                }*@
+                                <td id="@typeId" style="display:none">@typeIdValue</td>
+                                <td id="@categoryId" style="display:none">@categoryIdValue</td>
+                                <td id="@creditAccountId" style="display:none">@creditAccountIdValue</td>
+                                @*<td id="@debitAccountId" style="display:none">@debitAccountIdValue</td>*@
                             </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <th scope="row" class="addButtonColumn"><button class="addButton" type="submit"><i class="fa fa-plus-circle addIcon"></i></button></th>
-                                <td>
-                                    <div class="form-group">
-                                        @Html.EditorFor(model => Model.Transaction.Date, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => Model.Transaction.Date, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group">
-                                        @Html.EditorFor(model => model.Transaction.Payee, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Transaction.Payee, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">$</span>
-                                        </div>
-                                        @Html.EditorFor(model => model.Transaction.Amount, new { htmlAttributes = new { @class = "form-control" } })
-                                        @Html.ValidationMessageFor(model => model.Transaction.Amount, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group">
-                                        @Html.EnumDropDownListFor(model => model.Type, htmlAttributes: new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Type, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group">
-                                        @Html.EnumDropDownListFor(model => model.Transaction.Category, htmlAttributes: new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Transaction.Category, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group" id="divCreditAccount">
-                                        @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                                <td>
-                                    <div class="form-group" id="divDebitAccount">
-                                        @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control" })
-                                        @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
-                                    </div>
-                                </td>
-                            </tr>
-                            @foreach (var item in Model.Transactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
-                            {
-
-                                var rowId = "rowId_" + item.Id;
-                                var dateId = "transactionDate_" + item.Id;
-                                var payeeId = "transactionPayee_" + item.Id;
-                                var amountId = "transactionAmount_" + item.Id;
-                                var typeId = "transactionType_" + item.Id;
-                                var categoryId = "transactionCategory_" + item.Id;
-                                var creditAccountId = "transactionCreditAccount_" + item.Id;
-                                var debitAccountId = "transactionDebitAccount_" + item.Id;
-                                <tr class="tableRow" id="rowId">
-                                    <th scope="row"></th>
-                                    <td id="@dateId">@item.Date</td>
-                                    <td id="@payeeId">@item.Payee</td>
-                                    <td id="@amountId">$@item.Amount</td>
-                                    <td id="@typeId">@item.Type</td>
-                                    <td id="@categoryId">@item.Category</td>
-                                    @if (@item.CreditAccount == null)
-                                    {
-                                        <td id="@creditAccountId"></td>
-                                    }
-                                    else
-                                    {
-                                        <td id="@creditAccountId">$@item.?CreditAccount.Name</td>
-                                    }
-                                    @if (@item.DebitAccount == null)
-                                    {
-                                        <td id="@debitAccountId"></td>
-                                    }
-                                    else
-                                    {
-                                        <td id="@debitAccountId">$@item.?DebitAccount.Name</td>
-                                    }
-                                </tr>
-
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                        }
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 }
 
 @section scripts {
-    
+
     <script type="text/javascript">
 
         /* updateType variables */
@@ -168,7 +232,6 @@
         var debitAccountDiv = document.getElementById('divDebitAccount');
 
         
-
         function chart() {
 
             const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
@@ -224,20 +287,19 @@
 
             var data = [['Month', 'Income', 'Expense']];
 
-            var i;
-            for (i = 0; i <= monthsArray.length; i++) {
+            for (let i = 0; i <= monthsArray.length; i++) {
                 data.push([monthsArray[i], incomeArray[i], expensesArray[i]]);
-            };
+            }
 
             var numRows = data.length;
             var numCols = data[0].length;
 
             dataTable.addColumn('string', data[0][0]);
 
-            for (i = 1; i < numCols; i++)
+            for (let i = 1; i < numCols; i++)
                 dataTable.addColumn('number', data[0][i]);
 
-            for (i = 1; i < numRows; i++)
+            for (let i = 1; i < numRows; i++)
                 dataTable.addRow(data[i]);
 
             var options = {
@@ -266,13 +328,12 @@
                     top: 25,
                     height: "85%"
                 },
-
                 vAxis: {
                     gridlines: {
                         color: "transparent"
                     }
                 }
-            };
+            }
 
             var googleChart = new window.google.visualization.AreaChart(document.getElementById("chartTransactions"));
             googleChart.draw(dataTable, options);
@@ -282,40 +343,196 @@
             // 0 - Income, 1 - Expense, 2 - Transfer
             if (transactionType.value === "0") {
                 creditAccountDiv.style.display = "none";
-                debitAccountDiv.style.display = "none";
+                //debitAccountDiv.style.display = "none";
             } else if (transactionType.value === "1") {
                 creditAccountDiv.style.display = "block";
-                debitAccountDiv.style.display = "none";
+                //debitAccountDiv.style.display = "none";
             } else if (transactionType.value === "2") {
                 creditAccountDiv.style.display = "block";
-                debitAccountDiv.style.display = "block";
+                //debitAccountDiv.style.display = "block";
             }
         };
 
         function rowSelected(e) {
             const id = e.target.id.split('_')[1];
+            debugger;
+            $('#selectedTransactionId').val(id);
 
-            const date = $('#transactionDate_' + id).length ? $('#transactionDate_' + id).text() : '';
             const payee = $('#transactionPayee_' + id).length ? $('#transactionPayee_' + id).text() : '';
-            const amount = $('#transactionAmount_' + id).length ? $('#transactionAmount_' + id).text() : '';
-            const type = $('#transactionType_' + id).length ? $('#transactionType_' + id).text() : '';
-            const category = $('#transactionCategory_' + id).length ? $('#transactionCategory_' + id).text() : '';
-            const creditAccount = $('#transactionCreditAccount_' + id).length ? $('#transactionCreditAccount_' + id).text() : '';
-            const debitAccount = $('#transactionDebitAccount_' + id).length ? $('#transactionDebitAccount_' + id).text() : '';
+            
+            const dateText = $('#transactionDate_' + id).length ? $('#transactionDate_' + id).text() : '';
+            const dateFields = dateText.split('/');
+
+            const year = dateFields[2];
+            const month = ('0' + dateFields[0]).slice(-2);
+            const day = ('0' + dateFields[1]).slice(-2);
+            const date = year + '-' + month + '-' + day;
+
+            const amount = Number($('#transactionAmount_' + id).text().replace('$','')) != NaN ? Number($('#transactionAmount_' + id).text().replace('$','')) : -1;
+            const typeId = Number($('#transactionTypeId_' + id).text()) != NaN ? Number($('#transactionTypeId_' + id).text()) : -1;
+            const categoryId = Number($('#transactionCategoryId_' + id).text()) != NaN ? Number($('#transactionCategoryId_' + id).text()) : -1;
+            const creditAccountId = Number($('#transactionCreditAccountId_' + id).text()) != NaN ? $('#transactionCreditAccountId_' + id).text() : -1;
+            const debitAccountId = Number($('#transactionDebitAccountId_' + id).text()) != NaN ? Number($('#transactionDebitAccountId_' + id).text()) : -1;
 
             $('#selectedTransactionEmptyText').css('display', 'none');
-            $('#selectedTransactionFooter').css('display', 'block');
-            $('#selectedTransactionPayee').text(payee);
-            $('#selectedTransactionDate').text(date);
-            $('#selectedTransactionAmount').text(amount);
-            $('#selectedTransactionType').text(type);
-            $('#selectedTransactionCategory').text(category);
-            $('#selectedTransactionFrom').text(creditAccount);
-            $('#selectedTransactionTo').text(debitAccount);
+            $('.selectedInput').css('display', 'flex');
+            $('.selectedInputLabel').css('display', 'block');
+            $('#selectedFooter').css('display', 'block');
+            $('#selectedTransactionPayee').val(payee);
+            $('#selectedTransactionDate').val(date);
+            $('#selectedTransactionAmount').val(amount);
+            $('#Transaction_Type').val(typeId);
+            $('#Transaction_Category').val(categoryId);
+            switch (typeId) {
+                case 0:
+                    $('#from').css('display', 'none');
+                    //$('#to').css('display', 'block');
+                    break;
+                case 1:
+                    $('#from').css('display', 'block');
+                    //$('#to').css('display', 'none');
+                    break;
+                case 2:
+                    $('#from').css('display', 'block');
+                    //$('#to').css('display', 'block');
+                    break;
+                default:
+                    $('#from').css('display', 'none');
+                    //$('#to').css('display', 'none');
+                    break;
+            }
+            $('#Transaction_CreditAccountId').val(creditAccountId);
+            //$('#Transaction_DebitAccountId').val(debitAccountId);
         };
+
+        function saveChanges(e) {
+            e.stopPropagation();
+            e.preventDefault();
+            debugger;
+            const data = {};
+            data.Id = $('#selectedTransactionId').val() != undefined ? $('#selectedTransactionId').val() : null;
+            data.Payee = $('#selectedTransactionPayee').val() != undefined ? $('#selectedTransactionPayee').val() : null;
+            data.Date = $('#selectedTransactionDate').val() != undefined ? $('#selectedTransactionDate').val() : null;
+            data.Amount = $('#selectedTransactionAmount').val() != undefined ? $('#selectedTransactionAmount').val() : null;
+            data.Type = $('#Transaction_Type').val() != undefined ? $('#Transaction_Type').val() : null;
+            data.Category = $('#Transaction_Category').val() != undefined ? $('#Transaction_Category').val() : null;
+            data.CreditAccountId = $('#Transaction_CreditAccountId').val() != undefined ? $('#Transaction_CreditAccountId').val() : null;
+            //data.DebitAccountId = $('#Transaction_DebitAccountId').val() != undefined ? $('#Transaction_DebitAccountId').val() : null;
+
+            $.ajax({
+                type: 'POST',
+                url: 'Transactions/EditTransaction',
+                dataType: 'json',
+                data: data,
+                success: function() {
+                    window.location.reload();
+                },
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        };
+
+        function deleteConfirmation(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            debugger;
+            $('#footerOptions').css('display', 'none');
+            $('#deleteConfirmationDiv').css('display', 'block');
+
+            //Unbind click event listener before adding to prevent stacking handler
+            $('#yesDeleteButton').unbind('click');
+            $('#noDeleteButton').unbind('click');
+
+            $('#yesDeleteButton').click(deleteConfirmed);
+            $('#noDeleteButton').click(deleteCancelled);
+        };
+
+        function deleteConfirmed(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            debugger;
+            const data = {};
+            data.Id = $('#selectedTransactionId').val() != undefined ? $('#selectedTransactionId').val() : null;
+
+            $.ajax({
+                type: 'POST',
+                url: 'Transactions/DeleteTransaction',
+                dataType: 'json',
+                data: data,
+                success: function() {
+                    window.location.reload();
+                },
+                failure: function(result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        };
+
+        function deleteCancelled(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            $('#footerOptions').css('display', 'block');
+            $('#deleteConfirmationDiv').css('display', 'none');
+        };
+
+        function setHiddenForType(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const selected = $('#Transaction.Type').prevObject[0];
+            const activeElement = selected.activeElement;
+            const value = activeElement.value;
+
+            $('#selectedTypeId').val(value);
+        };
+
+        function setHiddenForCategory(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const selected = $('#Transaction.Category').prevObject[0];
+            const activeElement = selected.activeElement;
+            const value = activeElement.value;
+            debugger;
+            $('#selectedCategoryId').val(value);
+        };
+
+        function setHiddenForCreditAccount(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const selected = $('#Transaction.CreditAccountId').prevObject[0];
+            const activeElement = selected.activeElement;
+            const value = activeElement.value;
+
+            $('#selectedCreditAccountId').val(value);
+        };
+
+        //function setHiddenForDebitAccount(e) {
+        //    e.preventDefault();
+        //    e.stopPropagation();
+
+        //    const selected = $('#Transaction.DebitAccountId').prevObject[0];
+        //    const activeElement = selected.activeElement;
+        //    const value = activeElement.value;
+
+        //    $('#selectedDebitAccountId').val(value);
+        //};
 
         function addTableListeners() {
             $('.tableRow').click(rowSelected);
+            $('#editButton').click(saveChanges);
+            $('#deleteButton').click(deleteConfirmation);
         };
 
 

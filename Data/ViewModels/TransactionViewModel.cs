@@ -22,7 +22,7 @@ namespace JPFData.ViewModels
             {
                 Accounts = new AccountManager().GetAllAccounts();
                 BillsOutstanding = new BillManager().GetOutstandingBills();
-                FilterOptions = GetFilterOptions();
+                GetFilterOptions();
             }
             catch (Exception e)
             {
@@ -37,12 +37,11 @@ namespace JPFData.ViewModels
         public IEnumerable<Transaction> Transactions { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
         public IEnumerable<OutstandingExpense> BillsOutstanding { get; set; }
-        public IEnumerable<TransactionFilterOptions> FilterOptions { get; set; }
-        public bool AutoTransferPaycheckContributions { get; set; }
+        public bool AutoTransferPaycheckContributions { get; }
         public TransactionTypesEnum Type { get; set; }
+        public CategoriesEnum Category { get; set; }
         public string Date { get; set; }
         public bool IsBill { get; set; }
-        public bool moreTransactions { get; set; }
         
         
         // Using Class instead of Enum to allow custom display names

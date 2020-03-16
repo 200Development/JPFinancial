@@ -1,16 +1,2 @@
-﻿#selectedTransactionDiv {
-    margin-top: 25px;
-    text-align: center;
-}
+﻿
 
-#selectedTransactionFooter {
-    display: none;
-}
-
-#selectedTransactionCard {
-    margin: 30px 0;
-}
-
-.card-body {
-    padding: 0;
-}

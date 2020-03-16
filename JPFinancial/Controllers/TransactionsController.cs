@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Net;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
@@ -14,13 +13,12 @@ namespace JPFinancial.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly TransactionManager _transactionManager = new TransactionManager();
-        private readonly AccountManager _accountManager = new AccountManager();
 
         public ActionResult Index()
         {
             try
             {
-                TransactionViewModel transactionVM = new TransactionViewModel();
+                var transactionVM = new TransactionViewModel();
                 transactionVM.Transactions = _transactionManager.GetAllTransactions();
                 transactionVM.Metrics = _transactionManager.GetMetrics();
 
@@ -34,25 +32,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        public ActionResult Create()
-        {
-            try
-            {
-                TransactionViewModel transactionVM = new TransactionViewModel();
-                transactionVM.Accounts = _accountManager.GetAllAccounts();
-
-
-                return View(transactionVM);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return HttpNotFound();
-            }
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
             try
@@ -91,8 +70,8 @@ namespace JPFinancial.Controllers
 
                             break;
                         }
-                    case TransactionTypesEnum.Transfer:
-                        throw new NotImplementedException();
+                    //case TransactionTypesEnum.Transfer:
+                    //    throw new NotImplementedException();
                     default:
                         throw new NotImplementedException();
                 }
@@ -107,105 +86,31 @@ namespace JPFinancial.Controllers
             }
         }
 
-        public ActionResult Edit(int? id)
+        public JsonResult EditTransaction(Transaction transaction)
         {
             try
             {
-                if (id == null)
-                {
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-                }
-                TransactionViewModel transactionVM = new TransactionViewModel();
-                AccountManager accountManager = new AccountManager();
-                transactionVM.Transaction = _transactionManager.GetTransaction(id);
-
-
-                if (transactionVM.Transaction == null)
-                {
-                    Logger.Instance.Debug("Returned Transaction is null - (error)");
-                    return HttpNotFound();
-                }
-
-                transactionVM.Accounts = accountManager.GetAllAccounts();
-
-                return View(transactionVM);
+                return Json(_transactionManager.Edit(transaction) ? "Success" : "Failed");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new TransactionViewModel());
+                return Json("Error");
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(TransactionViewModel transactionVM)
+        public JsonResult DeleteTransaction(Transaction transaction)
         {
             try
             {
-                if (!ModelState.IsValid) return View(transactionVM);
-                if (_transactionManager.Edit(transactionVM))
-                    return RedirectToAction("Index");
-
-
-                return View(transactionVM);
+                return transaction.Id > 0
+                    ? Json(_transactionManager.Delete(transaction.Id) ? "Success" : "Failed")
+                    : Json("ID is invalid");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new TransactionViewModel());
-            }
-        }
-
-        public ActionResult Delete(int? id)
-        {
-            try
-            {
-                if (id == null)
-                    return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-
-                Transaction transaction = _transactionManager.GetTransaction(id);
-                if (transaction == null)
-                {
-                    Logger.Instance.Debug("Returned Transaction is null - (error)");
-                    return HttpNotFound();
-                }
-
-
-
-                return View(transaction);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new Transaction());
-            }
-        }
-
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            try
-            {
-                if (_transactionManager.Delete(id))
-                    return RedirectToAction("Index");
-
-                // Send Transaction back to Delete View because Delete failed
-                Transaction transaction = _transactionManager.GetTransaction(id);
-                if (transaction == null)
-                {
-                    Logger.Instance.Debug("Returned Transaction is null - (error)");
-                    return HttpNotFound();
-                }
-
-
-                return View("Index");
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return RedirectToAction("Index");
+                return Json("Error");
             }
         }
 

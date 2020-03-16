@@ -58,7 +58,7 @@ namespace JPFData.Managers
         {
             try
             {
-                GetUsedAccounts(entity);
+                GetUsedAccounts(entity.Transaction);
 
 
                 if (entity.Transaction.SelectedExpenseId != null && entity.Transaction.SelectedExpenseId > 0)
@@ -75,15 +75,15 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Edit(TransactionViewModel entity)
+        public bool Edit(Transaction transaction)
         {
             try
             {
-                GetUsedAccounts(entity);
-                UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Update);
+                GetUsedAccounts(transaction);
+                UpdateDbAccountBalances(transaction, EventArgumentEnum.Update);
                 Logger.Instance.DataFlow($"Account balances updated in data context");
 
-                _db.Entry(entity.Transaction).State = EntityState.Modified;
+                _db.Entry(transaction).State = EntityState.Modified;
                 Logger.Instance.DataFlow($"Transaction updated in data context");
 
 
@@ -122,24 +122,24 @@ namespace JPFData.Managers
         /// <summary>
         /// Sets the Credit & Debit Accounts from passed Id's
         /// </summary>
-        /// <param name="entity"></param>
-        private void GetUsedAccounts(TransactionViewModel entity)
+        /// <param name="transaction"></param>
+        private void GetUsedAccounts(Transaction transaction)
         {
             try
             {
-                if (entity.Transaction.CreditAccountId != null)
+                if (transaction.CreditAccountId != null)
                 {
-                    entity.Transaction.CreditAccount = _db.Accounts.Find(entity.Transaction.CreditAccountId);
+                    transaction.CreditAccount = _db.Accounts.Find(transaction.CreditAccountId);
                     Logger.Instance.DataFlow($"Credit Account set");
                 }
 
                 //If income transaction, debit to pool account, else get selected debit account
-                if (entity.Transaction.Type == TransactionTypesEnum.Income)
+                if (transaction.Type == TransactionTypesEnum.Income)
                 {
-                    entity.Transaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount && a.UserId == _userId);
-                    entity.Transaction.DebitAccountId = entity.Transaction.DebitAccount?.Id;
+                    transaction.DebitAccount = _db.Accounts.FirstOrDefault(a => a.IsPoolAccount && a.UserId == _userId);
+                    transaction.DebitAccountId = transaction.DebitAccount?.Id;
                 } else
-                    _db.Accounts.Find(entity.Transaction.DebitAccountId);
+                    _db.Accounts.Find(transaction.DebitAccountId);
 
                 Logger.Instance.DataFlow($"Debit Account set");
             }
@@ -506,7 +506,7 @@ namespace JPFData.Managers
                 foreach (var account in accountsWithContributions)
                 {
                     if (!UpdateAccountBalance(account, account.PaycheckContribution, AccountingTypes.Debit)) return false;
-                    if (!AddTransferToDb(transaction, account)) return false;
+                    //if (!AddTransferToDb(transaction, account)) return false;
                     incomeAfterPaycheckContributions -= account.PaycheckContribution;
                 }
 
@@ -565,31 +565,31 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddTransferToDb(Transaction transaction, Account account)
-        {
-            try
-            {
-                var newTransaction = new Transaction();
-                newTransaction.Date = transaction.Date;
-                newTransaction.Payee = $"Transfer to {account.Name}";
-                newTransaction.Category = CategoriesEnum.PaycheckContribution;
-                newTransaction.Memo = "Paycheck Contribution";
-                newTransaction.Type = TransactionTypesEnum.Transfer;
-                newTransaction.DebitAccountId = account.Id;
-                newTransaction.CreditAccountId = null;
-                newTransaction.Amount = account.PaycheckContribution;
-                _db.Transactions.Add(newTransaction);
+        //private bool AddTransferToDb(Transaction transaction, Account account)
+        //{
+        //    try
+        //    {
+        //        var newTransaction = new Transaction();
+        //        newTransaction.Date = transaction.Date;
+        //        newTransaction.Payee = $"Transfer to {account.Name}";
+        //        newTransaction.Category = CategoriesEnum.PaycheckContribution;
+        //        newTransaction.Memo = "Paycheck Contribution";
+        //        newTransaction.Type = TransactionTypesEnum.Transfer;
+        //        newTransaction.DebitAccountId = account.Id;
+        //        newTransaction.CreditAccountId = null;
+        //        newTransaction.Amount = account.PaycheckContribution;
+        //        _db.Transactions.Add(newTransaction);
 
 
-                _db.SaveChanges();
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
+        //        _db.SaveChanges();
+        //        return true;
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        Logger.Instance.Error(e);
+        //        return false;
+        //    }
+        //}
 
         private bool SetExpenseToPaid(int? expenseId)
         {
@@ -654,7 +654,7 @@ namespace JPFData.Managers
                 var transactions = _db.Transactions.Where(t => t.UserId == Global.Instance.User.Id).ToList();
                 var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();
                 var expenseTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Expense).ToList();
-                var transferTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Transfer).ToList();
+                //var transferTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Transfer).ToList();
 
                 var expenseTransactionsByMonth = expenseTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
@@ -662,8 +662,8 @@ namespace JPFData.Managers
                 var incomeTransactionsByMonth = incomeTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
                     .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
-                var transferTransactionsByMonth = transferTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
-                    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
+                //var transferTransactionsByMonth = transferTransactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
+                //    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
 
 
                 var expensesByMonth = new Dictionary<DateTime, decimal>();
@@ -687,12 +687,12 @@ namespace JPFData.Managers
                     incomeByMonth.Add(date, amount);
                 }
 
-                foreach (var transaction in transferTransactionsByMonth)
-                {
-                    var date = new DateTime(transaction.year, transaction.month, 1);
-                    var amount = transaction.expenses;
-                    transfersByMonth.Add(date, amount);
-                }
+                //foreach (var transaction in transferTransactionsByMonth)
+                //{
+                //    var date = new DateTime(transaction.year, transaction.month, 1);
+                //    var amount = transaction.expenses;
+                //    transfersByMonth.Add(date, amount);
+                //}
 
 
                 foreach (KeyValuePair<DateTime, decimal> transaction in expensesByMonth)

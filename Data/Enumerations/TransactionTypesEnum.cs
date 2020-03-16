@@ -4,6 +4,5 @@ namespace JPFData.Enumerations
     {
         Income,
         Expense,
-        Transfer,
     }
 }

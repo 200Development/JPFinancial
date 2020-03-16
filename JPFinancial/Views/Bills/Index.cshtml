@@ -29,11 +29,11 @@
             </div>
         </div>
         <div class="row">
-            <div class="col-md-12" id="selectedBillDiv">
+            <div class="col-md-12" id="selectedDiv">
                 @Html.Hidden("selectedBillId")
                 @Html.Hidden("selectedAccountId")
                 @Html.Hidden("selectedFrequencyId")
-                <div class="card col-md-5 mx-auto border-dark text-center" id="selectedBillCard">
+                <div class="card col-md-5 mx-auto border-dark text-center" id="selectedCard">
                     <div class="card-title">
                         <div class="selectedInput selectedInputLabel">Name</div>
                         <div class="input-group justify-content-center selectedInput">
@@ -70,7 +70,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="card-footer" id="selectedBillFooter">
+                    <div class="card-footer" id="selectedFooter">
                         <div id="footerOptions">
                             <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span id="editSelectedBillSpan">Edit</span></button>
                             <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedBillSpan">Delete</span></button>
@@ -155,7 +155,6 @@
                                 <td id="@accountId" style="display: none">@accountIdValue</td>
                             </tr>
                         }
-                        
                     </tbody>
                 </table>
             </div>
@@ -187,17 +186,14 @@
             const day = ('0' + dueDateFields[1]).slice(-2);
             const dueDate = `${year}-${month}-${day}`;
 
-            const frequencyIdText = Number($('#billFrequencyId_' + id).text()) != NaN ? Number($('#billFrequencyId_' + id).text()) : '-1';
-            const frequencyId = Number(frequencyIdText);
-
-            const accountIdText = Number($('#billAccountId_' + id).text()) != NaN ? Number($('#billAccountId_' + id).text()) : '-1';
-            const accountId = Number(accountIdText);
+            const frequencyId = Number($('#billFrequencyId_' + id).text()) != NaN ? Number($('#billFrequencyId_' + id).text()) : -1;
+            const accountId = Number($('#billAccountId_' + id).text()) != NaN ? Number($('#billAccountId_' + id).text()) : -1;
 
 
             $('#selectedBillEmptyText').css('display', 'none');
             $('.selectedInput').css('display', 'flex');
             $('.selectedInputLabel').css('display', 'block');
-            $('#selectedBillFooter').css('display', 'block');
+            $('#selectedFooter').css('display', 'block');
             $('#selectedBillName').val(name);
             $('#selectedBillAmountDue').val(amountDue);
             $('#selectedBillDueDate').val(dueDate);
@@ -205,7 +201,7 @@
             $('#Bill_AccountId').val(accountId);
         };
 
-        function saveBill(e) {
+        function saveChanges(e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -216,13 +212,13 @@
             data.DueDate = $('#selectedBillDueDate').val() != undefined ? $('#selectedBillDueDate').val() : null;
             data.PaymentFrequency = $('#Bill_PaymentFrequency').val() != undefined ? $('#Bill_PaymentFrequency').val() : null;
             data.AccountId = $('#Bill_AccountId').val() != undefined ? $('#Bill_AccountId').val() : null;
-            debugger;
+
             $.ajax({
                 type: 'POST',
                 url: 'Bills/EditBill',
                 dataType: 'json',
                 data: data,
-                success: function(result) {
+                success: function() {
                     window.location.reload();
                 },
                 failure: function(result) {
@@ -234,7 +230,7 @@
             });
         };
 
-        function deleteBill(e) {
+        function deleteConfirmation(e) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -285,26 +281,28 @@
             e.preventDefault();
             e.stopPropagation();
 
-            var selected = $('#Bill.AccountId').prevObject[0];
-            var t = selected.activeElement;
-            var s = t.value;
-            $('#selectedAccountId').val(s);
+            const selected = $('#Bill.AccountId').prevObject[0];
+            const activeElement = selected.activeElement;
+            const value = activeElement.value;
+
+            $('#selectedAccountId').val(value);
         }
 
         function setHiddenForFrequency(e) {
             e.preventDefault();
             e.stopPropagation();
 
-            var selected = $('#Bill.PaymentFrequency').prevObject[0];
-            var t = selected.activeElement;
-            var s = t.value;
-            $('#selectedFrequencyId').val(s);
+            const selected = $('#Bill.PaymentFrequency').prevObject[0];
+            const activeElement = selected.activeElement;
+            const value = activeElement.value;
+
+            $('#selectedFrequencyId').val(value);
         }
 
         function addTableListeners() {
             $('.tableRow').click(rowSelected);
-            $('#editButton').click(saveBill);
-            $('#deleteButton').click(deleteBill);
+            $('#editButton').click(saveChanges);
+            $('#deleteButton').click(deleteConfirmation);
 
         };
 
