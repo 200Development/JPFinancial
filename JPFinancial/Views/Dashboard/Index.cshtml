@@ -13,7 +13,7 @@
 
                 <div class="row">
                     <div class="col-12" id="graph">
-                        <div class="card">
+                        <div id="cashFlowDiv" class="card text-white bg-dark">
                             <div class="header">
                                 <header>Cash Flow</header>
                             </div>
@@ -24,7 +24,7 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row" id="metricsRow">
                     <div class="col-8" id="expenseCol">
                         <div id="expense">
                             <div class="card text-white bg-dark">
@@ -244,7 +244,7 @@
             //    dataTable.addRow(data[i]);
 
             const options = {
-                width: "auto",
+                width: "100%",
                 pointSize: 8,
                 lineWidth: 2,
                 height: "300",

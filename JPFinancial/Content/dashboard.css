@@ -1,19 +1,32 @@
-﻿#graph {
+﻿#cashFlowDiv {
+    margin: 0 -14px;
+    box-shadow: 1px 2px #25292E;
+}
+
+#graph {
     height: 350px;
-    background: lightgray;
-    padding: 5px;
     margin: 10px 0 5px 0;
+    border-radius: 10px;
+    box-shadow: 1px 2px #25292E;
 }
 
 #expenseCol {
     padding: 0;
 }
 
+#metricsRow {
+    height: auto;
+    border-radius: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 #expense {
-    height: 150px;
-    background: lightgray;
-    padding: 5px;
+    height: 100%;
+    background: #25292E;
+    box-shadow: 1px 2px #25292E;
     margin-right: 5px;
+    border-radius: 10px;
 }
 
     #expense td {
@@ -26,9 +39,10 @@
 }
 
 #income {
-    height: 150px;
-    background: lightgray;
-    padding: 5px;
+    height: 100%;
+    /*background: #25292E;*/
+    box-shadow: 1px 2px #25292E;
+    border-radius: 10px;
 }
 
     #income td {
@@ -41,10 +55,11 @@
 }
 
 #disposableIncome {
-    height: 250px;
-    background: lightgray;
-    padding: 5px;
+    height: 218px;
+    background: #25292E;
+    box-shadow: 1px 2px #25292E;
     margin-top: 5px;
+    border-radius: 10px;
 }
 
 .expenseContentLabel {
@@ -171,4 +186,11 @@ input[type="range"] {
 
 input[type="range"]:focus {
     outline: none;
+}
+
+
+/*OVERRIDES*/
+.card {
+    border-radius: 10px;
+    height: 100%;
 }
