@@ -4,136 +4,163 @@
     ViewBag.Title = "Dashboard";
 }
 
+@Styles.Render("~/Content/dashboard.css")
+
 <div class="content">
-    <div class="container-fluid">
-        <div class="row">
-            <div class="row" style="margin: 0 0 12px 16px">
-                <p style="font-size: large; font-weight: bold">@DateTime.Today.ToString("MMMM yyyy")</p>
-                <p class="category">Monthly</p>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-warning text-center">
-                                    <i class="ti-server"></i>
-                                </div>
+    <div class="row">
+        <div class="col-12">
+            <div class="jumbotron-fluid">
+
+                <div class="row">
+                    <div class="col-12" id="graph">
+                        <div class="card">
+                            <div class="header">
+                                <header>Cash Flow</header>
                             </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Avg. Spending</p>
-                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.AverageMonthlyExpenses3MMA)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i> @Html.DisplayFor(model => model.StaticFinancialMetrics.PercentageChangeExpenses)
+                            <div class="content">
+                                <div id="chartCashFlow" class="ct-chart"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-success text-center">
-                                    <i class="ti-wallet"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Mandatory $</p>
-                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.MandatoryExpenses)
+
+                <div class="row">
+                    <div class="col-8" id="expenseCol">
+                        <div id="expense">
+                            <div class="card text-white bg-dark">
+                                <div class="card-header card-title text-center">Expense Metrics</div>
+                                <div class="card-body">
+                                    <table title="Expenses">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Minimum Monthly Expenses</td>
+                                                <td style="width: 50%" class="expenseContentValue">$1,983</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Expenses Due Before Next Paycheck</td>
+                                                <td style="width: 50%" class="expenseContentValue">$342</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Targeted Net Worth</td>
+                                                <td style="width: 50%" class="expenseContentValue">$350,000</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.StaticFinancialMetrics.LastMonthMandatoryExpenses)
+                    </div>
+                    <div class="col-4" id="incomeCol">
+                        <div id="income">
+                            <div class="card text-white bg-dark">
+                                <div class="card-header card-title text-center">Ratios</div>
+                                <div class="card-body">
+                                    <table title="Expenses">
+                                        <tbody>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Current</td>
+                                                <td style="width: 50%" class="expenseContentValue">3.04</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Debt-To-Income</td>
+                                                <td style="width: 50%" class="expenseContentValue">1.87%</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Savings</td>
+                                                <td style="width: 50%" class="expenseContentValue">9.5%</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 50%" class="expenseContentLabel">Emergency Fund (Months)</td>
+                                                <td style="width: 50%" class="expenseContentValue">4.84</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-danger text-center">
-                                    <i class="ti-pulse"></i>
+
+                <div class="row">
+                    <div class="col-12" id="disposableIncomeCol">
+                        <div id="disposableIncome">
+                            <div class="card text-white bg-dark">
+                                <div class="card-header card-title text-center">
+                                    Disposable Income
+                                    <div>$2,308</div>
                                 </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p style="width: 100%">Discretionary $</p>
-                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.DiscretionarySpending)
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-4">
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        <div class="col-4">
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 sliderDiv">
+                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
+                                                <div class="col-md-8">
+                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-4">
+                                            <table>
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="width: 50%" class="expenseContentLabel">Current</td>
+                                                        <td style="width: 50%" class="expenseContentValue">3.04</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 50%" class="expenseContentLabel">Debt-To-Income</td>
+                                                        <td style="width: 50%" class="expenseContentValue">1.87%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 50%" class="expenseContentLabel">Savings</td>
+                                                        <td style="width: 50%" class="expenseContentValue">9.5%</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 50%" class="expenseContentLabel">Emergency Fund (Months)</td>
+                                                        <td style="width: 50%" class="expenseContentValue">4.84</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-calendar"></i> Last month - @Html.DisplayFor(model => model.StaticFinancialMetrics.LastMonthDiscretionarySpending)
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-3 col-sm-6">
-                <div class="card">
-                    <div class="content">
-                        <div class="row">
-                            <div class="col-xs-5">
-                                <div class="icon-big icon-info text-center">
-                                    <i class="ti-server"></i>
-                                </div>
-                            </div>
-                            <div class="col-xs-7">
-                                <div class="numbers">
-                                    <p>Savings Rate</p>
-                                    @Html.DisplayFor(model => model.StaticFinancialMetrics.SavingsRate)
-                                </div>
-                            </div>
-                        </div>
-                        <div class="footer">
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i> Update now
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="header">
-                        <h4 class="title">Expenses</h4>
-                        <p class="category">Monthly</p>
-                    </div>
-                    <div class="content">
-                        <div id="chartBills" class="ct-chart"></div>
-                        <div class="footer">
-                            @*<div class="chart-legend">
-                                    <i class="fa fa-circle text-success"></i> Total
-                                    <i class="fa fa-circle text-info"></i> Mandatory
-                                    <i class="fa fa-circle text-danger"></i> Discretionary
-                                </div>*@
-                            <hr />
-                            <div class="stats">
-                                <i class="ti-reload"></i> Updated 3 minutes ago
-                            </div>
-                        </div>
-                    </div>
-                </div>
+
             </div>
         </div>
     </div>
@@ -142,110 +169,125 @@
 
 @section scripts {
 
-    <!--  Charts Plugin -->
-    <script src="../../Scripts/chartist.min.js"></script>
-    <script type="text/javascript" src="https://www.google.com/jsapi"></script> ;
-    <script>
+    <script type="text/javascript">
+
+
+        function chart() {
+
+            @*const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
+            const expensesByMonth = metrics.ExpensesByMonth;
+            const incomeByMonth = metrics.IncomeByMonth;
+            const transfersByMonth = metrics.TransfersByMonth;
+
+            const expensesLength = Object.keys(expensesByMonth).length;
+            const incomeLength = Object.keys(incomeByMonth).length;
+            const transferLength = Object.keys(transfersByMonth).length;
+
+            let monthsArray = new Array(expensesLength);
+            let expensesArray = new Array(expensesLength);
+            let incomeArray = new Array(incomeLength);
+            let transferArray = new Array(transferLength);
+            let highestAmount = 0;
+
+
+            for (let prop in expensesByMonth) {
+                if (expensesByMonth.hasOwnProperty(prop)) {
+                    monthsArray.push(prop);
+                    expensesArray.push(expensesByMonth[prop]);
+                    if (expensesByMonth[prop] > highestAmount) {
+                        highestAmount = expensesByMonth[prop];
+                    }
+                }
+            }
+
+            for (let prop in incomeByMonth) {
+                if (incomeByMonth.hasOwnProperty(prop)) {
+                    incomeArray.push(incomeByMonth[prop]);
+                    if (incomeByMonth[prop] > highestAmount) {
+                        highestAmount = incomeByMonth[prop];
+                    }
+                }
+            }
+
+            for (let prop in transfersByMonth) {
+                if (transfersByMonth.hasOwnProperty(prop)) {
+                    transferArray.push(transfersByMonth[prop]);
+                    if (transfersByMonth[prop] > highestAmount) {
+                        highestAmount = transfersByMonth[prop];
+                    }
+                }
+            }
+
+            monthsArray = monthsArray.filter(function(n) { return n != undefined });
+            expensesArray = expensesArray.filter(function(n) { return n != undefined });
+            incomeArray = incomeArray.filter(function(n) { return n != undefined });
+            transferArray = transferArray.filter(function(n) { return n != undefined });
+*@
+
+            const dataTable = new window.google.visualization.DataTable();
+
+            //var data = [['Month', 'Income', 'Expense']];
+
+            //for (let i = 0; i <= monthsArray.length; i++) {
+            //    data.push([monthsArray[i], incomeArray[i], expensesArray[i]]);
+            //}
+
+            //var numRows = data.length;
+            //var numCols = data[0].length;
+
+            //dataTable.addColumn('string', data[0][0]);
+
+            //for (let i = 1; i < numCols; i++)
+            //    dataTable.addColumn('number', data[0][i]);
+
+            //for (let i = 1; i < numRows; i++)
+            //    dataTable.addRow(data[i]);
+
+            const options = {
+                width: "auto",
+                pointSize: 8,
+                lineWidth: 2,
+                height: "300",
+                backgroundColor: "transparent",
+                colors: ["#32CA0A", "#EB5E28"],
+                tooltip: {
+                    textStyle: {
+                        color: "#3D4849",
+                        fontSize: 12
+                    },
+                    showColorCode: true
+                },
+                legend: {
+                    textStyle: {
+                        color: "black",
+                        border: 2,
+                        fontSize: 12
+                    }
+                },
+                chartArea: {
+                    left: 50,
+                    top: 25,
+                    height: "85%"
+                },
+                vAxis: {
+                    gridlines: {
+                        color: "transparent"
+                    }
+                }
+            }
+
+            const googleChart = new window.google.visualization.AreaChart(document.getElementById("chartCashFlow"));
+            googleChart.draw(dataTable, options);
+        };
+
+
         google.load("visualization",
             "1",
             {
                 packages: ["corechart"]
             });
 
-        $(document).ready(function() { chart(); });
+        $(document).ready(function () { chart(); });
 
-        function chart() {
-            var staticMetrics = @Html.Raw(Json.Encode(@Model.StaticFinancialMetrics));
-            var totalExpenses = staticMetrics.ExpensesByMonth;
-            var mandatoryExpenses = staticMetrics.MandatoryExpensesByMonth;
-            var discretionaryExpenses = staticMetrics.DiscretionarySpendingByMonth;
-
-            var totalLength = Object.keys(totalExpenses).length;
-            var mandatoryLength = Object.keys(mandatoryExpenses).length;
-            var discretionaryLength = Object.keys(discretionaryExpenses).length;
-
-            var monthsArray = new Array(totalLength);
-            var expensesArray = new Array(totalLength);
-            var mandatoryArray = new Array(mandatoryLength);
-            var discretionaryArray = new Array(discretionaryLength);
-            var highestAmount = 0;
-
-            for (prop in totalExpenses) {
-                monthsArray.push(prop);
-                expensesArray.push(totalExpenses[prop]);
-                if (totalExpenses[prop] > highestAmount) {
-                    highestAmount = totalExpenses[prop];
-                }
-            }
-
-            for (prop in mandatoryExpenses) {
-                mandatoryArray.push(mandatoryExpenses[prop]);
-                if (mandatoryExpenses[prop] > highestAmount) {
-                    highestAmount = mandatoryExpenses[prop];
-                }
-            }
-
-            for (prop in discretionaryExpenses) {
-                discretionaryArray.push(discretionaryExpenses[prop]);
-                if (discretionaryExpenses[prop] > highestAmount) {
-                    highestAmount = discretionaryExpenses[prop];
-                }
-            }
-
-            monthsArray = monthsArray.filter(function(n) { return n != undefined });
-            expensesArray = expensesArray.filter(function(n) { return n != undefined });
-            mandatoryArray = mandatoryArray.filter(function(n) { return n != undefined });
-            discretionaryArray = discretionaryArray.filter(function(n) { return n != undefined });
-
-            var dataTable = new google.visualization.DataTable();
-
-            var data = [['Month', 'Total Spending', 'Discretionary Spending', 'Mandatory Spending']];
-
-            for (var i = 0; i <= monthsArray.length; i++) {
-                data.push([monthsArray[i], expensesArray[i], discretionaryArray[i], mandatoryArray[i]]);
-            };
-
-            var numRows = data.length;
-            var numCols = data[0].length;
-
-            dataTable.addColumn('string', data[0][0]);
-
-            for (var i = 1; i < numCols; i++)
-                dataTable.addColumn('number', data[0][i]);
-
-            for (var i = 1; i < numRows; i++)
-                dataTable.addRow(data[i]);
-
-            var options = {
-                width: "auto",
-                pointSize: 8,
-                lineWidth: 2,
-                height: "200",
-                backgroundColor: "transparent",
-                colors: ["#EB5E28", "#F3BB45", "#F3BB45"],
-                tooltip: {
-                    textStyle: {
-                        color: "#666666",
-                        fontSize: 12
-                    },
-                    showColorCode: false
-                },
-                legend: {
-                    textStyle: {
-                        color: "black",
-                        fontSize: 12
-                    }
-                },
-                chartArea: {
-                    left: 65,
-                    top: 10,
-                    height: "80%"
-                }
-            };
-
-            var chart = new google.visualization.AreaChart(document.getElementById("chartBills"));
-            chart.draw(dataTable, options);
-        }
     </script>
 }
-

@@ -16,13 +16,11 @@
         <div class="row">
             <div class="col-md-12">
                 <div class="card">
-                    <div class="card">
-                        <div class="header">
-                            <header>Balances</header>
-                        </div>
-                        <div class="content">
-                            <div id="chartTransactions" class="ct-chart"></div>
-                        </div>
+                    <div class="header">
+                        <header>Balances</header>
+                    </div>
+                    <div class="content">
+                        <div id="chartTransactions" class="ct-chart"></div>
                     </div>
                 </div>
             </div>
@@ -44,7 +42,7 @@
                     <div>
                         <div class="card-body">
                             <h3 id="selectedTransactionEmptyText">Click on a row to edit or delete a transaction</h3>
-                            
+
                             <div class="selectedInputLabel">Date</div>
                             <div class="input-group justify-content-center selectedInput">
                                 <input class="input-group" id="selectedTransactionDate" type="date" />
@@ -63,28 +61,28 @@
                                 @Html.EnumDropDownListFor(model => model.Transaction.Type, htmlAttributes: new { @class = "input-group disabled" })
                                 @Html.ValidationMessageFor(model => model.Transaction.Type, "", new { @class = "text-danger" })
                             </div>
-                            
+
                             <div class="selectedInputLabel">Category</div>
                             <div class="input-group justify-content-center selectedInput">
                                 @Html.EnumDropDownListFor(model => model.Transaction.Category, htmlAttributes: new { @class = "input-group" })
                                 @Html.ValidationMessageFor(model => model.Transaction.Category, "", new { @class = "text-danger" })
                             </div>
-                            
+
                             <div id="from">
-                            <div class="selectedInputLabel">From</div>
+                                <div class="selectedInputLabel">From</div>
                                 <div class="input-group justify-content-center selectedInput">
                                     @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), htmlAttributes: new { @class = "input-group" })
                                     @Html.ValidationMessageFor(model => model.Transaction.CreditAccountId, "", new { @class = "text-danger" })
                                 </div>
                             </div>
-                            
+
                             @*<div id="to">
-                            <div class="selectedInputLabel">To</div>
-                                <div class="input-group justify-content-center selectedInput">
-                                    @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), htmlAttributes: new { @class = "input-group" })
-                                    @Html.ValidationMessageFor(model => model.Transaction.DebitAccountId, "", new { @class = "text-danger" })
-                                </div>
-                            </div>*@
+                                <div class="selectedInputLabel">To</div>
+                                    <div class="input-group justify-content-center selectedInput">
+                                        @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), htmlAttributes: new { @class = "input-group" })
+                                        @Html.ValidationMessageFor(model => model.Transaction.DebitAccountId, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>*@
                         </div>
                     </div>
                     <div class="card-footer" id="selectedFooter">
@@ -161,11 +159,11 @@
                                 </div>
                             </td>
                             @*<td>
-                                <div class="form-group" id="divDebitAccount">
-                                    @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForDebitAccount(event)" })
-                                    @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
-                                </div>
-                            </td>*@
+                                    <div class="form-group" id="divDebitAccount">
+                                        @Html.DropDownListFor(model => model.Transaction.DebitAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForDebitAccount(event)" })
+                                        @Html.ValidationMessageFor(model => model.Accounts, "", new { @class = "text-danger" })
+                                    </div>
+                                </td>*@
                         </tr>
                         @foreach (var item in Model.Transactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
                         {
@@ -176,10 +174,10 @@
                             var amountId = "transactionAmount_" + item.Id;
                             var typeNameId = "transactionType_" + item.Id;
                             var typeId = "transactionTypeId_" + item.Id;
-                            var typeIdValue = (int) item.Type;
+                            var typeIdValue = (int)item.Type;
                             var categoryNameId = "transactionCategory_" + item.Id;
                             var categoryId = "transactionCategoryId_" + item.Id;
-                            var categoryIdValue = (int) item.Category;
+                            var categoryIdValue = (int)item.Category;
                             var creditAccountNameId = "transactionCreditAccount_" + item.Id;
                             var creditAccountId = "transactionCreditAccountId_" + item.Id;
                             var creditAccountIdValue = item.CreditAccountId;
@@ -202,13 +200,13 @@
                                     <td id="@creditAccountNameId"></td>
                                 }
                                 @*@if (@item.DebitAccount != null)
-                                {
-                                    <td id="@debitAccountNameId">@item.DebitAccount.Name</td>
-                                }
-                                else
-                                {
-                                    <td id="@debitAccountNameId"></td>
-                                }*@
+                                    {
+                                        <td id="@debitAccountNameId">@item.DebitAccount.Name</td>
+                                    }
+                                    else
+                                    {
+                                        <td id="@debitAccountNameId"></td>
+                                    }*@
                                 <td id="@typeId" style="display:none">@typeIdValue</td>
                                 <td id="@categoryId" style="display:none">@categoryIdValue</td>
                                 <td id="@creditAccountId" style="display:none">@creditAccountIdValue</td>
@@ -231,7 +229,7 @@
         var creditAccountDiv = document.getElementById('divCreditAccount');
         var debitAccountDiv = document.getElementById('divDebitAccount');
 
-        
+
         function chart() {
 
             const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
@@ -359,7 +357,7 @@
             $('#selectedTransactionId').val(id);
 
             const payee = $('#transactionPayee_' + id).length ? $('#transactionPayee_' + id).text() : '';
-            
+
             const dateText = $('#transactionDate_' + id).length ? $('#transactionDate_' + id).text() : '';
             const dateFields = dateText.split('/');
 
