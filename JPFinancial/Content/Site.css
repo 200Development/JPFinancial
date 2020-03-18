@@ -2,6 +2,15 @@
     padding-top: 50px;
     padding-bottom: 20px;
     background: #32383E;
+    color: #E1E5EE;
+}
+
+.card {
+    background: #32383E;
+}
+
+.text {
+    color: #E1E5EE;
 }
 
 a {
