@@ -12,7 +12,7 @@ namespace JPFData.ViewModels
             Bills = new List<Bill>();
             Expenses = new List<Expense>();
             Transactions = new List<Transaction>();
-            StaticFinancialMetrics = new StaticFinancialMetrics();
+            Metrics = new DashboardMetrics();
             TimePeriodMetrics = new TimeValueOfMoneyMetrics();
         }
         
@@ -22,18 +22,6 @@ namespace JPFData.ViewModels
         public List<Expense> Expenses { get; set; }
         public List<Transaction> Transactions { get; set; }
         public DashboardMetrics Metrics { get; set; }
-        public StaticFinancialMetrics StaticFinancialMetrics { get; set; }
         public TimeValueOfMoneyMetrics TimePeriodMetrics { get; set; }
-    }
-
-    public class DashboardMetrics
-    {
-        public DashboardMetrics()
-        {
-            StaticMetrics = new StaticFinancialMetrics();
-            TVMMetrics = new TimeValueOfMoneyMetrics();
-        }
-        public StaticFinancialMetrics StaticMetrics { get; set; }
-        public TimeValueOfMoneyMetrics TVMMetrics { get; set; }
     }
 }

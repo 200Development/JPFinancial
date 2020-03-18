@@ -121,7 +121,7 @@
     <Compile Include="Metrics\CreditCardMetrics.cs" />
     <Compile Include="Metrics\ExpenseMetrics.cs" />
     <Compile Include="Metrics\IncomeMetrics.cs" />
-    <Compile Include="Metrics\StaticFinancialMetrics.cs" />
+    <Compile Include="Metrics\DashboardMetrics.cs" />
     <Compile Include="Metrics\TimeValueOfMoneyMetrics.cs" />
     <Compile Include="Metrics\TransactionMetrics.cs" />
     <Compile Include="Enumerations\ExpenseTypeEnum.cs" />
@@ -253,6 +253,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Utilities\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

@@ -1,25 +1,65 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using JPFData.Enumerations;
 
 namespace JPFData.Metrics
 {
-    public class StaticFinancialMetrics
+    public class DashboardMetrics
     {
         //TODO: Need to rename many of the properties for clarity and to create more general terms
-        public StaticFinancialMetrics()
+        public DashboardMetrics()
         {
-            NetIncome = 0.0m;;
-            TotalDue = 0.0m;;
-            CostliestExpensePercentage = 0.0m;;
-            CostliestExpenseAmount = 0.0m;;
-            LoanInterestPercentOfIncome = 0.0m;;
-            MonthlyLoanInterest = 0.0m;;
-            DailyLoanInterest = 0.0m;;
-            Expenses = 0.0m;;
+            NetIncome = 0.00m;
+            TotalDue = 0.00m;
+            CostliestExpensePercentage = 0.00m;
+            CostliestExpenseAmount = 0.00m;
+            LoanInterestPercentOfIncome = 0.00m;
+            MonthlyLoanInterest = 0.00m;
+            DailyLoanInterest = 0.00m;
+            Expenses = 0.00m;
+            DueBeforeNextPayPeriod = 0.00m;
+            MinimumMonthlyExpenses = 0.00m;
+            DisposableIncome = 0.00m;
+            EmergencyFundRatio = 0.00m;
+            TargetedNetWorth = 0.00m;
+            CurrentRatio = 0.00m;
+            DebtToIncome = 0.00m;
+            SavingsRate = 0.00m;
+            BudgetRuleDiscretionary = 0.00m;
+            BudgetRuleExpense = 0.00m;
+            BudgetRuleSavings = 0.00m;
         }
 
+
+        [Display(Name = "Due Before Next Pay Period"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal DueBeforeNextPayPeriod { get; set; }
+
+        [Display(Name = "Minimum Monthly Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal MinimumMonthlyExpenses { get; set; }
+
+        [Display(Name = "Disposable Income"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal DisposableIncome { get; set; }
+
+        [Display(Name = "Emergency Fund Ratio"), DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        public decimal EmergencyFundRatio { get; set; }
+
+        [Display(Name = "Targeted Net Worth"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal TargetedNetWorth { get; set; }
+
+        [Display(Name = "Current Ratio"), DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        public decimal CurrentRatio { get; set; }
+
+        [Display(Name = "Debt-To-Income"), DisplayFormat(DataFormatString = "{0:F2}", ApplyFormatInEditMode = true)]
+        public decimal DebtToIncome { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal BudgetRuleExpense { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal BudgetRuleSavings { get; set; }
+
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal BudgetRuleDiscretionary { get; set; }
 
         [Display(Name = "Net Income"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal NetIncome { get; set; }
@@ -74,10 +114,7 @@ namespace JPFData.Metrics
 
         [Display(Name = "Disposable Income %"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:P2}", ApplyFormatInEditMode = true)]
         public decimal DisposableIncomePercentage { get; set; }
-
-        [Display(Name = "Disposable Income $"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
-        public decimal DisposableIncome { get; set; }
-
+        
         [Display(Name = "Discretionary Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal DiscretionaryExpenses { get; set; }
 
@@ -93,7 +130,6 @@ namespace JPFData.Metrics
         public Dictionary<string, decimal> ExpensesByMonth { get; set; }
         public Dictionary<string, decimal> MandatoryExpensesByMonth { get; set; }
         public Dictionary<string, decimal> DiscretionarySpendingByMonth { get; set; }
-
-        public decimal? AverageMonthlyExpenses3MMA;
+        public Dictionary<string, decimal> CashFlowByMonth { get; set; }
     }
 }

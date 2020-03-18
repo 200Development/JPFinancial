@@ -1,22 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using JPFData.Enumerations;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
-using JPFData.ViewModels;
 
 
 namespace JPFData.Managers
 {
     public class DashboardManager
     {
-        private readonly ApplicationDbContext _db;
-        private readonly string _userId;
+        private readonly AccountManager _accountManager;
+        private readonly BillManager _billManager;
+        private readonly TransactionManager _transactionManager;
+        //TODO: Solution to accurately calculate and define "savings"
+        //TODO: Solution to get/calculate these user variables
+        private const decimal Savings = 3400;
+        private const decimal GrossIncome = 100000;
+        private const int Age = 45;
+
 
         public DashboardManager()
         {
-            _db = new ApplicationDbContext();
-            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+            _accountManager = new AccountManager();
+            _billManager = new BillManager();
+            _transactionManager = new TransactionManager();
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
@@ -24,11 +32,150 @@ namespace JPFData.Managers
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-        public List<Account> GetAllAccounts()
+        public DashboardMetrics RefreshStaticMetrics()
+        {
+            var metrics = new DashboardMetrics();
+
+            try
+            {
+                metrics.DisposableIncome = GetDisposableIncome();
+                metrics.TargetedNetWorth = GetTargetedNetWorth();
+                metrics.SavingsRate = GetSavingsRate();
+                metrics.BudgetRuleExpense = GetBudgetRuleExpenses();
+                metrics.BudgetRuleSavings = GetBudgetRuleSavings();
+                metrics.BudgetRuleDiscretionary = GetBudgetRuleDiscretionary();
+                metrics.MinimumMonthlyExpenses = GetMinimumMonthlyExpenses();
+                metrics.CashFlowByMonth = GetCashFlowByMonth();
+
+
+                return metrics;
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+        }
+
+        private decimal GetDisposableIncome()
         {
             try
             {
-                return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount).ToList();
+                return _accountManager.GetPoolAccount().Balance;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private static decimal GetTargetedNetWorth()
+        {
+            try
+            {
+                // TODO: Add income & age
+                return Age * (GrossIncome / 10);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private decimal GetSavingsRate()
+        {
+            try
+            {
+                return Savings / GrossIncome;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private static decimal GetBudgetRuleExpenses()
+        {
+            try
+            {
+                return GrossIncome * .50m;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private static decimal GetBudgetRuleSavings()
+        {
+            try
+            {
+                return GrossIncome * .20m;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private static decimal GetBudgetRuleDiscretionary()
+        {
+            try
+            {
+                return GrossIncome * .30m;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private decimal GetMinimumMonthlyExpenses()
+        {
+            try
+            {
+                var totalMonthlyExpense = 0.00m;
+                var bills = _billManager.GetAllBills();
+
+                foreach (Bill bill in bills)
+                {
+                    switch (bill.PaymentFrequency)
+                    {
+                        case FrequencyEnum.Daily:
+                            totalMonthlyExpense += bill.AmountDue * 365 / 12;
+                            break;
+                        case FrequencyEnum.Weekly:
+                            totalMonthlyExpense += bill.AmountDue * 52 / 12;
+                            break;
+                        case FrequencyEnum.BiWeekly:
+                            totalMonthlyExpense += bill.AmountDue * 26 / 12;
+                            break;
+                        case FrequencyEnum.Monthly:
+                            totalMonthlyExpense += bill.AmountDue;
+                            break;
+                        case FrequencyEnum.SemiMonthly:
+                            totalMonthlyExpense += bill.AmountDue * 2;
+                            break;
+                        case FrequencyEnum.Quarterly:
+                            totalMonthlyExpense += bill.AmountDue / 3;
+                            break;
+                        case FrequencyEnum.SemiAnnually:
+                            totalMonthlyExpense += bill.AmountDue / 6;
+                            break;
+                        case FrequencyEnum.Annually:
+                            totalMonthlyExpense += bill.AmountDue / 12;
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+
+                return Math.Round(totalMonthlyExpense, 2);
             }
             catch (Exception e)
             {
@@ -37,160 +184,50 @@ namespace JPFData.Managers
             }
         }
         
-        public StaticFinancialMetrics RefreshStaticMetrics()
+        private Dictionary<string, decimal> GetCashFlowByMonth()
         {
-            var metrics = new StaticFinancialMetrics();
-            var billManager = new BillManager();
-            //TODO: create StaticFinancialMetrics manager class 
-
-            //var income = Calculations.GetMonthlyIncome();
-            var bills = _db.Bills.ToList();
-            var loans = _db.Loans.ToList();
-            var transactions = _db.Transactions.ToList();
-            var accounts = _db.Accounts.ToList();
-
-            /* LOAN METRICS */
-            var monthlyLoanInterest = 0.0m;
-            var dailyLoanInterest = 0.0m;
-            foreach (var loan in loans)
+            try
             {
-                monthlyLoanInterest += Calculations.MonthlyInterest(loan);
-                dailyLoanInterest += Calculations.DailyInterest(loan);
-            }
-            //if (income > 0)
-            //    metrics.LoanInterestPercentOfIncome = monthlyLoanInterest / income;
-            //metrics.MonthlyLoanInterest = monthlyLoanInterest;
-            //if (income > 0)
-            //    metrics.DailyLoanInterestPercentage = dailyLoanInterest / income;
-            metrics.DailyLoanInterest = dailyLoanInterest;
+                var allTransactions = _transactionManager.GetAllTransactions();
 
-            /* CURRENT MONTH'S EXPENSES */
-            //TODO: difference between totalDue and billsDue?
-            //TODO: what counts as expenses, mandatory expenses, discretionary spending?
-            //metrics.MandatoryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => b.IsMandatory).Sum(b => b.AmountDue);
-            //metrics.DiscretionaryExpenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month).Where(b => !b.IsMandatory).Sum(b => b.AmountDue);
-            metrics.Expenses = bills.Where(b => b.DueDate.Month == DateTime.Today.Month && b.DueDate.Year == DateTime.Today.Year).Sum(b => b.AmountDue);
+                var transactionsByMonth = allTransactions
+                    .Select(t => new { t.Date.Year, t.Date.Month, t.Amount, t.Type })
+                    .GroupBy(t => new { t.Year, t.Month },
+                        (key, group) => new { year = key.Year, month = key.Month, cashflow = group.Sum(k => k.Type == TransactionTypesEnum.Expense ? -1 * k.Amount : k.Amount) }).ToList();
 
-            /* PAST MONTHLY EXPENSES */
-            var lastMonth = DateTime.Today.AddMonths(-1);
-            var lastMonthFirstDay = Calculations.FirstDayOfMonth(lastMonth.Year, lastMonth.Month);
-            var lastMonthLastDay = Calculations.LastDayOfMonth(lastMonth);
-            metrics.LastMonthDiscretionarySpending = Calculations.DiscretionarySpendingByDateRange(lastMonthFirstDay, lastMonthLastDay);
-            metrics.LastMonthMandatoryExpenses = billManager.ExpensesByDateRange(lastMonthFirstDay, lastMonthLastDay);
+                var transactionsByMonthDict = new Dictionary<DateTime, decimal>();
 
-            /* RANKED EXPENSES */
-            var costliestExpense = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
-            metrics.CostliestExpenseAmount = costliestExpense;
-            metrics.CostliestCategory = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Category).Take(1).FirstOrDefault();
-            //if (income > 0)
-            //    metrics.CostliestExpensePercentage = costliestExpense / income;
-
-            /* AVERAGES */
-            var transactionSumsByMonth = transactions.Select(t => new { t.Date.Year, t.Date.Month, t.Amount })
-                .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
-
-            //var discretionaryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory == false);
-
-            //var discretionarySpendingSumsByMonth = discretionaryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
-            //    .GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
-
-            //var mandatoryTransactions = transactions.Join(bills, t => t.CreditAccountId, b => b.AccountId, (t, b) => new { transactions = t, bills = b }).Where(x => x.bills.IsMandatory);
-
-            //var mandatoryExpensesByMonth = mandatoryTransactions.Select(t => new { t.transactions.Date.Year, t.transactions.Date.Month, t.transactions.Amount })
-                //.GroupBy(x => new { x.Year, x.Month }, (key, group) => new { year = key.Year, month = key.Month, expenses = group.Sum(k => k.Amount) }).ToList();
-
-            var last3MonthsTransactions = transactionSumsByMonth.OrderByDescending(t => t.year).ThenByDescending(x => x.month).Take(3);
-            var quarterlyTransactionAverageCost = last3MonthsTransactions.Average(t => t?.expenses);
-            var lastMonthSpending = transactionSumsByMonth.FirstOrDefault(t => t.year == lastMonth.Year && t.month == lastMonth.Month)?.expenses;
-            var lastMonthSpendingVsMovingAvg = (lastMonthSpending - quarterlyTransactionAverageCost) / lastMonthSpending;
-            metrics.AverageMonthlyExpenses3MMA = quarterlyTransactionAverageCost;
-            metrics.PercentageChangeExpenses = lastMonthSpendingVsMovingAvg;
-
-            var expensesByMonth = new Dictionary<DateTime, decimal>();
-            var mandatoryByMonth = new Dictionary<DateTime, decimal>();
-            var discretionaryByMonth = new Dictionary<DateTime, decimal>();
-            foreach (var transaction in transactionSumsByMonth)
-            {
-                var date = new DateTime(transaction.year, transaction.month, 1);
-                var amount = transaction.expenses;
-                expensesByMonth.Add(date, amount);
-            }
-
-            //foreach (var transaction in discretionarySpendingSumsByMonth)
-            //{
-            //    var date = new DateTime(transaction.year, transaction.month, 1);
-            //    var amount = transaction.expenses;
-            //    discretionaryByMonth.Add(date, amount);
-            //}
-
-            //foreach (var transaction in mandatoryExpensesByMonth)
-            //{
-            //    var date = new DateTime(transaction.year, transaction.month, 1);
-            //    var amount = transaction.expenses;
-            //    mandatoryByMonth.Add(date, amount);
-            //}
-
-            foreach (KeyValuePair<DateTime, decimal> expense in expensesByMonth)
-            {
-                if (mandatoryByMonth.ContainsKey(expense.Key) == false)
+                foreach (var item in transactionsByMonth)
                 {
-                    mandatoryByMonth.Add(expense.Key, 0m);
+                    var date = new DateTime(item.year, item.month, 1);
+                    var amount = item.cashflow;
+                    transactionsByMonthDict.Add(date, amount);
                 }
 
-                if (discretionaryByMonth.ContainsKey(expense.Key) == false)
-                {
-                    discretionaryByMonth.Add(expense.Key, 0m);
-                }
-            }
 
-            foreach (KeyValuePair<DateTime, decimal> expense in mandatoryByMonth)
+                foreach (var pair in transactionsByMonthDict.Where(pair => transactionsByMonthDict.ContainsKey(pair.Key) == false))
+                {
+                    transactionsByMonthDict.Add(pair.Key, 0m);
+                }
+
+
+                var oneYearAgo = DateTime.Today.AddYears(-1);
+                var index = new DateTime(oneYearAgo.Year, oneYearAgo.Month, 1);
+
+                for (DateTime i = index; i <= DateTime.Today; i = i.AddMonths(1))
+                {
+                    if (!transactionsByMonthDict.ContainsKey(i))
+                        transactionsByMonthDict.Add(i, 0m);
+                }
+
+                return transactionsByMonthDict.Take(12).OrderBy(t => t.Key.Year).ThenBy(t => t.Key.Month)
+                    .ToDictionary(t => $"{ConvertMonthIntToString(t.Key.Month)}{t.Key.Year}", t => t.Value);
+            }
+            catch (Exception e)
             {
-                if (expensesByMonth.ContainsKey(expense.Key) == false)
-                {
-                    expensesByMonth.Add(expense.Key, 0m);
-                }
-
-                if (discretionaryByMonth.ContainsKey(expense.Key) == false)
-                {
-                    discretionaryByMonth.Add(expense.Key, 0m);
-                }
+                Logger.Instance.Error(e);
+                throw;
             }
-
-            foreach (KeyValuePair<DateTime, decimal> expense in discretionaryByMonth)
-            {
-                if (expensesByMonth.ContainsKey(expense.Key) == false)
-                {
-                    expensesByMonth.Add(expense.Key, 0m);
-                }
-
-                if (mandatoryByMonth.ContainsKey(expense.Key) == false)
-                {
-                    mandatoryByMonth.Add(expense.Key, 0m);
-                }
-            }
-
-            var oneYearAgo = DateTime.Today.AddYears(-1);
-            var index = new DateTime(oneYearAgo.Year, oneYearAgo.Month, 1);
-
-            for (DateTime i = index; i <= DateTime.Today; i = i.AddMonths(1))
-            {
-                if (expensesByMonth.ContainsKey(i)) continue;
-                expensesByMonth.Add(i, 0m);
-                mandatoryByMonth.Add(i, 0m);
-                discretionaryByMonth.Add(i, 0m);
-            }
-
-            var last12 = expensesByMonth.Take(11);
-            var orderedByYear = last12.OrderBy(expense => expense.Key.Year);
-            var thenOrderByMonth = orderedByYear.OrderBy(expense => expense.Key.Month);
-            var toDict = thenOrderByMonth.ToDictionary(expense => expense.Key, expense => expense.Value);
-
-            metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);
-            metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)}{mandatory.Key.Year}", mandatory => mandatory.Value);
-            metrics.DiscretionarySpendingByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
-
-
-            return metrics;
         }
 
         private string ConvertMonthIntToString(int month)
@@ -198,7 +235,7 @@ namespace JPFData.Managers
             switch (month)
             {
                 case 1:
-                    return $"Jan";
+                    return "Jan";
                 case 2:
                     return "Feb";
                 case 3:
@@ -222,39 +259,8 @@ namespace JPFData.Managers
                 case 12:
                     return "Dec";
                 default:
-                    throw new NotImplementedException();
+                    throw new ArgumentOutOfRangeException();
             }
-        }
-
-        public TimeValueOfMoneyMetrics RefreshTVMMetrics(DashboardViewModel dashboardVM)
-        {
-            TimeValueOfMoneyMetrics metric = new TimeValueOfMoneyMetrics();
-
-            metric.OneMonthSavings = Calculations.FutureValue(DateTime.Today.AddMonths(1), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.ThreeMonthsSavings = Calculations.FutureValue(DateTime.Today.AddMonths(3), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.SixMonthsSavings = Calculations.FutureValue(DateTime.Today.AddMonths(6), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.OneYearSavings = Calculations.FutureValue(DateTime.Today.AddYears(1), dashboardVM.StaticFinancialMetrics.NetIncome);
-            metric.MonthlyExpenses = dashboardVM.StaticFinancialMetrics.TotalDue;
-            metric.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2);
-
-
-            return metric;
-        }
-
-
-        private bool Validate()
-        {
-            ValidationErrors.Clear();
-
-            // EXAMPLE
-            //if (entity.CreateTransaction.Amount <= 0)
-            //{
-            //    ValidationErrors.Add(new
-            //        KeyValuePair<string, string>("Transaction",
-            //            "Transaction amount must be greater than 0."));
-            //}
-
-            return (ValidationErrors.Count == 0);
         }
     }
 }

@@ -12,9 +12,6 @@ namespace JPFData.Models.JPFinancial
             Date = DateTime.Today;
             Payee = string.Empty;
             Memo = string.Empty;
-            CreditAccountId = 0;
-            DebitAccountId = 0;
-            SelectedExpenseId = 0;
             Amount = 0.0m; ;
         }
 

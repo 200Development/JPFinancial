@@ -33,7 +33,7 @@
                                     <div class="col-6">
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Minimum Monthly Expenses</div>
-                                            <div class="col-6 expenseContentValue">$1,983</div>
+                                            <div class="col-6 expenseContentValue">$@Model.Metrics.MinimumMonthlyExpenses</div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Expenses Due Before Next Paycheck</div>
@@ -41,7 +41,7 @@
                                         </div>
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Targeted Net Worth</div>
-                                            <div class="col-6 expenseContentValue">$350,000</div>
+                                            <div class="col-6 expenseContentValue">$@Model.Metrics.TargetedNetWorth</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -52,7 +52,7 @@
                                         </div>
                                         <div class="row text-center">
                                             <div class="col-12">
-                                                <div>$50,000 / $20,000 / $30,000</div>
+                                                <div>$@Model.Metrics.BudgetRuleExpense / $@Model.Metrics.BudgetRuleSavings / $@Model.Metrics.BudgetRuleDiscretionary</div>
                                             </div>
                                         </div>
                                     </div>
@@ -95,7 +95,7 @@
                                             </tr>
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Savings</td>
-                                                <td style="width: 50%" class="expenseContentValue">9.5%</td>
+                                                <td style="width: 50%" class="expenseContentValue">@Model.Metrics.SavingsRate</td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Emergency Fund (Months)</td>
@@ -115,7 +115,7 @@
                             <div class="card text-white bg-dark">
                                 <div class="card-header card-title text-center">
                                     Disposable Income
-                                    <div>$2,308</div>
+                                    <div>@Model.Metrics.DisposableIncome</div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -202,74 +202,50 @@
 
         function chart() {
 
-            @*const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
-            const expensesByMonth = metrics.ExpensesByMonth;
-            const incomeByMonth = metrics.IncomeByMonth;
-            const transfersByMonth = metrics.TransfersByMonth;
+            const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
+            const cashFlowByMonth = metrics.CashFlowByMonth;
 
-            const expensesLength = Object.keys(expensesByMonth).length;
-            const incomeLength = Object.keys(incomeByMonth).length;
-            const transferLength = Object.keys(transfersByMonth).length;
+            const cashFlowLength = Object.keys(cashFlowByMonth).length;
 
-            let monthsArray = new Array(expensesLength);
-            let expensesArray = new Array(expensesLength);
-            let incomeArray = new Array(incomeLength);
-            let transferArray = new Array(transferLength);
+            let monthsArray = new Array(cashFlowLength);
+            let cashFlowArray = new Array(cashFlowLength);
             let highestAmount = 0;
 
 
-            for (let prop in expensesByMonth) {
-                if (expensesByMonth.hasOwnProperty(prop)) {
+            for (let prop in cashFlowByMonth) {
+                if (cashFlowByMonth.hasOwnProperty(prop)) {
                     monthsArray.push(prop);
-                    expensesArray.push(expensesByMonth[prop]);
-                    if (expensesByMonth[prop] > highestAmount) {
-                        highestAmount = expensesByMonth[prop];
+                    cashFlowArray.push(cashFlowByMonth[prop]);
+                    if (cashFlowByMonth[prop] > highestAmount) {
+                        highestAmount = cashFlowByMonth[prop];
                     }
                 }
             }
-
-            for (let prop in incomeByMonth) {
-                if (incomeByMonth.hasOwnProperty(prop)) {
-                    incomeArray.push(incomeByMonth[prop]);
-                    if (incomeByMonth[prop] > highestAmount) {
-                        highestAmount = incomeByMonth[prop];
-                    }
-                }
-            }
-
-            for (let prop in transfersByMonth) {
-                if (transfersByMonth.hasOwnProperty(prop)) {
-                    transferArray.push(transfersByMonth[prop]);
-                    if (transfersByMonth[prop] > highestAmount) {
-                        highestAmount = transfersByMonth[prop];
-                    }
-                }
-            }
+        
 
             monthsArray = monthsArray.filter(function(n) { return n != undefined });
-            expensesArray = expensesArray.filter(function(n) { return n != undefined });
-            incomeArray = incomeArray.filter(function(n) { return n != undefined });
-            transferArray = transferArray.filter(function(n) { return n != undefined });
-*@
+            cashFlowArray = cashFlowArray.filter(function(n) { return n != undefined });
+         
+
 
             const dataTable = new window.google.visualization.DataTable();
 
-            //var data = [['Month', 'Income', 'Expense']];
+            var data = [['Month', 'Cash Flow']];
 
-            //for (let i = 0; i <= monthsArray.length; i++) {
-            //    data.push([monthsArray[i], incomeArray[i], expensesArray[i]]);
-            //}
+            for (let i = 0; i <= monthsArray.length; i++) {
+                data.push([monthsArray[i], cashFlowArray[i]]);
+            }
 
-            //var numRows = data.length;
-            //var numCols = data[0].length;
+            var numRows = data.length;
+            var numCols = data[0].length;
 
-            //dataTable.addColumn('string', data[0][0]);
+            dataTable.addColumn('string', data[0][0]);
 
-            //for (let i = 1; i < numCols; i++)
-            //    dataTable.addColumn('number', data[0][i]);
+            for (let i = 1; i < numCols; i++)
+                dataTable.addColumn('number', data[0][i]);
 
-            //for (let i = 1; i < numRows; i++)
-            //    dataTable.addRow(data[i]);
+            for (let i = 1; i < numRows; i++)
+                dataTable.addRow(data[i]);
 
             const options = {
                 width: "100%",
@@ -277,17 +253,17 @@
                 lineWidth: 2,
                 height: "300",
                 backgroundColor: "transparent",
-                colors: ["#32CA0A", "#EB5E28"],
+                colors: ["#6BFFB8"],
                 tooltip: {
                     textStyle: {
-                        color: "#3D4849",
+                        color: "#E1E5EE",
                         fontSize: 12
                     },
                     showColorCode: true
                 },
                 legend: {
                     textStyle: {
-                        color: "black",
+                        color: "#E1E5EE",
                         border: 2,
                         fontSize: 12
                     }

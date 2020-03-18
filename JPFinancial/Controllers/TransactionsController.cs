@@ -55,7 +55,7 @@ namespace JPFinancial.Controllers
 
 
                             if (!ModelState.IsValid) return View("Error");
-                            _transactionManager.Create(transactionVM);
+                            if (!_transactionManager.Create(transactionVM)) return View("Error");
                             break;
                         }
                     case TransactionTypesEnum.Income:

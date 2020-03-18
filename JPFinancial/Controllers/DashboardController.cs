@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.Helpers;
 using System.Web.Mvc;
 using JPFData;
-using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
@@ -15,6 +13,7 @@ namespace JPFinancial.Controllers
     public class DashboardController : Controller
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
+        private readonly AccountManager _accountManager = new AccountManager();
         private readonly DashboardManager _dashboardManager = new DashboardManager();
 
 
@@ -24,89 +23,20 @@ namespace JPFinancial.Controllers
             try
             {
                 DashboardViewModel dashboardVM = new DashboardViewModel();
-                dashboardVM.Accounts = _dashboardManager.GetAllAccounts();
-                dashboardVM.StaticFinancialMetrics = _dashboardManager.RefreshStaticMetrics();
-                dashboardVM.TimePeriodMetrics = _dashboardManager.RefreshTVMMetrics(dashboardVM);
+                dashboardVM.Accounts = _accountManager.GetAllAccounts();
+                dashboardVM.Metrics = _dashboardManager.RefreshStaticMetrics();
+
 
                 return View(dashboardVM);
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View(new DashboardViewModel());
+                return View("Error");
             }
         }
 
-        [HttpPost]
-        public ActionResult Index(DashboardViewModel vm)
-        {
-            try
-            {
-                DashboardViewModel dashboardVM = new DashboardViewModel();
-                dashboardVM.Accounts = _dashboardManager.GetAllAccounts();
-                dashboardVM.StaticFinancialMetrics = _dashboardManager.RefreshStaticMetrics();
-                dashboardVM.TimePeriodMetrics = _dashboardManager.RefreshTVMMetrics(dashboardVM);
-
-                return View(dashboardVM);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new DashboardViewModel());
-            }
-        }
-
-        private decimal GetMonthlyIncome()
-        {
-            try
-            {
-                var incomePerPayperiod = Convert.ToDecimal(_db.Salaries.Sum(s => s.NetIncome));
-                var paymentFrequency = _db.Salaries.Select(s => s.PayFrequency).FirstOrDefault();
-                var monthlyIncome = 0.00m;
-
-                switch (paymentFrequency)
-                {
-                    case FrequencyEnum.Weekly:
-                        monthlyIncome = incomePerPayperiod * 4;
-                        break;
-                    case FrequencyEnum.SemiMonthly:
-                        monthlyIncome = incomePerPayperiod * 2;
-                        break;
-                    case FrequencyEnum.Monthly:
-                        monthlyIncome = incomePerPayperiod;
-                        break;
-                    default:
-                        monthlyIncome = incomePerPayperiod * 2;
-                        break;
-                }
-
-                return monthlyIncome;
-            }
-            catch (Exception)
-            {
-                return 0.0m;
-            }
-        }
-
-        public Chart AccountsGraph()
-        {
-            var accounts = _db.Accounts.ToList();
-
-            var accountNames = accounts.Select(a => a.Name).ToArray();
-            var accountBalances = accounts.Select(a => a.Balance).ToArray();
-
-            var accountGraph = new Chart(900, 500)
-                .AddTitle("Accounts")
-                .AddSeries(
-                    name: "Account",
-                    xValue: accountNames,
-                    yValues: accountBalances)
-                .Write();
-
-            accountGraph.Save("~/Content/chart" + "jpeg");
-            return accountGraph;
-        }
-
+       
         private SortedTransactions SortTransactions(IEnumerable<Transaction> transactions, int yearsBack)
         {
             var date = DateTime.Today;
