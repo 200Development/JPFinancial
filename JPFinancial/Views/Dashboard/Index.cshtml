@@ -119,48 +119,9 @@
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
-                                        <div class="col-4">
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-
-                                        </div>
-                                        <div class="col-4">
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-md-12 sliderDiv">
-                                                <div class="col-md-4"><label for="account3">Account 3</label></div>
-                                                <div class="col-md-8">
-                                                    <div class="slider"><input type="range" class="bar" value="10035100" min="200" max="1500" id="account3" onchange="rangevalue1.value = value" /><span class="highlight"><output class="rangevalue" id="rangevalue1">10035100</output></span></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="col-4">
+                                        <div class="col-4" id="accountCol1"></div>
+                                        <div class="col-4" id="accountCol2"></div>
+                                        <div class="col-4" id="accountCol3">
                                             <table>
                                                 <tbody>
                                                     <tr>
@@ -200,6 +161,32 @@
     <script type="text/javascript">
 
 
+        function loadAccounts() {
+            const accounts = @Html.Raw(Json.Encode(@Model.Accounts));
+            debugger;
+
+            let j = 1;
+            if (accounts.length > 0) {
+                for (let i = 0; i < accounts.length; i++) {
+                    const account = accounts[i];
+                    const min = account.Balance < account.RequiredSavings ? account.Balance : account.RequiredSavings;
+
+                    let accountStr = `<div class="col-md-12 sliderDiv">`;
+                    accountStr += `<div class="col-md-4"><label for="account_` + account.Id + `">` + account.Name + `</label></div>`;
+                    accountStr += `<div class="col-md-8"><div class="slider">`;
+                    accountStr += `<input type="range" class="bar" value="` + account.Balance + `" min="` + min + `" max="` + (@Model.Metrics.DisposableIncome + account.Balance) + `" id="acount_` + account.Id + `" onchange="rangevalue_` + account.Id + `.value = value" />`;
+                    accountStr += `<span class="highlight"><output class="rangevalue" id="rangevalue_` + account.Id + `">` + account.Balance + `</output></span></div></div></div>`;
+
+                    $('#accountCol' + j).append(accountStr);
+
+                    // Reset counter to add accounts evenly over 2 columns
+                    j = j === 1 ? 2 : 1;
+                }
+            } else {
+                $('#accountCol' + j).append('Go Add Some Accounts :)');
+            }
+        };
+
         function chart() {
 
             const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
@@ -221,11 +208,10 @@
                     }
                 }
             }
-        
+
 
             monthsArray = monthsArray.filter(function(n) { return n != undefined });
             cashFlowArray = cashFlowArray.filter(function(n) { return n != undefined });
-         
 
 
             const dataTable = new window.google.visualization.DataTable();
@@ -291,7 +277,10 @@
                 packages: ["corechart"]
             });
 
-        $(document).ready(function () { chart(); });
+        $(document).ready(function() {
+            chart();
+            loadAccounts();
+        });
 
     </script>
 }
