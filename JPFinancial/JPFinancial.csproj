@@ -379,6 +379,7 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <None Include="Scripts\_references.js" />
+    <Content Include="Scripts\utility.js" />
     <Content Include="Views\Shared\_CreateTransaction.cshtml" />
     <None Include="Views\Dashboard\index.cshtml" />
     <Content Include="favicon.ico" />

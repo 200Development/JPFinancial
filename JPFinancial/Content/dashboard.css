@@ -40,7 +40,6 @@
 
 #income {
     height: 100%;
-    /*background: #25292E;*/
     box-shadow: 1px 2px #25292E;
     border-radius: 10px;
 }
@@ -60,6 +59,14 @@
     box-shadow: 1px 2px #25292E;
     margin-top: 5px;
     border-radius: 10px;
+}
+
+#disposableIncomeValue {
+    outline: none;
+    background: transparent;
+    color: #E1E5EE;
+    border: 0;
+    text-align: center;
 }
 
 .expenseContentLabel {
