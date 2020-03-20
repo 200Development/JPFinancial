@@ -98,6 +98,7 @@
                                 <div class="card-header card-title text-center">
                                     Disposable Income
                                     <div>
+                                        @Html.Hidden("hiddenDisposableValue")
                                         <input type="text" name="disposableIncomeValue" id="disposableIncomeValue" value="$@Model.Metrics.DisposableIncome" readonly="readonly"/>
                                     </div>
                                 </div>
@@ -141,7 +142,7 @@
 
 
 @section scripts {
-    
+
     <script type="text/javascript" src="~/Scripts/utility.js"></script>
     <script type="text/javascript">
 
@@ -155,11 +156,11 @@
                     const account = accounts[i];
                     const min = account.Balance < account.RequiredSavings ? account.Balance : account.RequiredSavings;
 
-                    let accountStr = `<div class="col-md-12 sliderDiv">`;
+                    let accountStr = `<div class="col-md-12 rangeDiv">`;
                     accountStr += `<div class="col-md-4"><label for="account_` + account.Id + `">` + account.Name + `</label></div>`;
-                    accountStr += `<div class="col-md-8"><div class="slider">`;
-                    accountStr += `<input type="range" class="bar accountBalanceSlider" value="` + account.Balance + `" min="` + min + `" max="` + (@Model.Metrics.DisposableIncome + account.Balance) + `" id="account_` + account.Id + `" onchange="updateMultipleRelatedSliders(this,'accountBalanceSlider')" oninput="rangevalue_` + account.Id + `.value=account_` + account.Id + `.value" />`;
-                    accountStr += `<span class="highlight"><output class="rangevalue" id="rangevalue_` + account.Id + `">` + account.Balance + `</output></span></div></div></div>`;
+                    accountStr += `<div class="col-md-8"><div class="range">`;
+                    accountStr += `<input type="range" class="bar accountBalanceRanges" value="` + account.Balance + `" min="` + min + `" max="` + (@Model.Metrics.DisposableIncome + account.Balance) + `" id="range_` + account.Id + `" oninput="updateLabels(this, 'accountBalanceRanges')" />`;
+                    accountStr += `<span class="highlight"><output class="rangeLabel" id="rangeLabel_` + account.Id + `">` + account.Balance + `</output></span></div></div></div>`;
 
                     $('#accountCol' + j).append(accountStr);
 
@@ -170,7 +171,6 @@
                 $('#accountCol' + j).append('Go Add Some Accounts :)');
             }
         };
-        
 
         function chart() {
 
@@ -255,7 +255,7 @@
             googleChart.draw(dataTable, options);
         };
 
-
+       
         google.load("visualization",
             "1",
             {

@@ -77,12 +77,12 @@
     text-align: right;
 }
 
-.sliderDiv {
+.rangeDiv {
     display: inline-flex; 
     margin-bottom: 12px
 }
 
-.slider {
+.range {
     height: 17px;
     position: relative;
     margin-top: 4px;
@@ -95,7 +95,7 @@
     box-shadow: inset 0px 0px 1px 1px rgba(0, 0, 0, 0.9), 0px 1px 1px 0px rgba(255, 255, 255, 0.13);
 }
 
-    .slider .bar {
+    .range .bar {
         width: 97%;
         height: 5px;
         background: #333;
@@ -115,7 +115,7 @@
         border-radius: 40px;
     }
 
-    .slider .highlight {
+    .range .highlight {
         height: 2px;
         position: absolute;
         width: 96%;
@@ -150,8 +150,8 @@ input[type="range"] {
         background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0%, #ebf1f6), color-stop(50%, #abd3ee), color-stop(51%, #89c3eb), color-stop(100%, #d5ebfb));
     }
 
-    input[type="range"]:hover ~ #rangevalue,
-    input[type="range"]:active ~ #rangevalue {
+    input[type="range"]:hover ~ #rangeLabel,
+    input[type="range"]:active ~ #rangeLabel {
         -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
         filter: alpha(opacity=100);
         opacity: 1;
@@ -159,7 +159,7 @@ input[type="range"] {
     }
 /* Tool Tip */
 
-.rangevalue {
+.rangeLabel {
     color: white;
     font-size: 10px;
     text-align: center;
