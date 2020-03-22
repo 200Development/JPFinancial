@@ -9,6 +9,10 @@ text {
     fill: #E1E5EE;
 }
 
+.input-group>.form-control {
+    text-align: right;
+}
+
 .card {
     background: #32383E;
 }
