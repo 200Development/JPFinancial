@@ -16,12 +16,14 @@ namespace JPFData.Managers
     public class TransactionManager
     {
         private readonly ApplicationDbContext _db;
+        private readonly ExpenseManager _expenseManager;
         private readonly string _userId;
 
 
         public TransactionManager()
         {
             _db = new ApplicationDbContext();
+            _expenseManager = new ExpenseManager();
             _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
@@ -60,7 +62,7 @@ namespace JPFData.Managers
 
 
                 if (entity.Transaction.SelectedExpenseId != null && entity.Transaction.SelectedExpenseId > 0)
-                    if (!SetExpenseToPaid(entity.Transaction.SelectedExpenseId)) return false;
+                    if (!_expenseManager.SetExpenseToPaid(entity.Transaction.SelectedExpenseId)) return false;
 
                 UpdateDbAccountBalances(entity.Transaction, EventArgumentEnum.Create);
 
@@ -102,7 +104,7 @@ namespace JPFData.Managers
                 Transaction transaction = _db.Transactions.Find(id);
 
                 if (transaction.SelectedExpenseId != null && transaction.SelectedExpenseId != 0)
-                    if (!SetExpenseToUnpaid(transaction.SelectedExpenseId)) return false;
+                    if (!_expenseManager.SetExpenseToUnpaid(transaction.SelectedExpenseId)) return false;
 
                 if (!UpdateDbAccountBalances(transaction, EventArgumentEnum.Delete)) return false;
                 _db.Transactions.Remove(transaction);
@@ -587,57 +589,7 @@ namespace JPFData.Managers
         //        return false;
         //    }
         //}
-
-        private bool SetExpenseToPaid(int? expenseId)
-        {
-            try
-            {
-                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
-                if (selectedExpense == null)
-                {
-                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
-                    return true;
-                }
-
-                selectedExpense.IsPaid = true;
-                _db.Entry(selectedExpense).State = EntityState.Modified;
-                _db.SaveChanges();
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
-        private bool SetExpenseToUnpaid(int? expenseId)
-        {
-            try
-            {
-                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
-                if (selectedExpense == null)
-                {
-                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
-                    return true;
-                }
-
-                selectedExpense.IsPaid = false;
-                _db.Entry(selectedExpense).State = EntityState.Modified;
-                _db.SaveChanges();
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return false;
-            }
-        }
-
+        
         public TransactionMetrics GetMetrics()
         {
             try
@@ -734,11 +686,11 @@ namespace JPFData.Managers
                         transfersByMonth.Add(i, 0m);
                 }
 
-                metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)}{expense.Key.Year}", expense => expense.Value);
-                metrics.DiscretionaryExpensesByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)}{mandatory.Key.Year}", mandatory => mandatory.Value);
-                metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
-                metrics.IncomeByMonth = incomeByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
-                metrics.TransfersByMonth = transfersByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)}{disc.Key.Year}", disc => disc.Value);
+                metrics.MandatoryExpensesByMonth = mandatoryByMonth.Take(12).OrderBy(expense => expense.Key.Year).ThenBy(expense => expense.Key.Month).ToDictionary(expense => $"{ConvertMonthIntToString(expense.Key.Month)} {expense.Key.Year}", expense => expense.Value);
+                metrics.DiscretionaryExpensesByMonth = discretionaryByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(mandatory => $"{ConvertMonthIntToString(mandatory.Key.Month)} {mandatory.Key.Year}", mandatory => mandatory.Value);
+                metrics.ExpensesByMonth = expensesByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)} {disc.Key.Year}", disc => disc.Value);
+                metrics.IncomeByMonth = incomeByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)} {disc.Key.Year}", disc => disc.Value);
+                metrics.TransfersByMonth = transfersByMonth.Take(12).OrderBy(expense => expense.Key).ToDictionary(disc => $"{ConvertMonthIntToString(disc.Key.Month)} {disc.Key.Year}", disc => disc.Value);
 
 
                 return metrics;

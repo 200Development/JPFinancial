@@ -115,6 +115,8 @@ namespace JPFData.Enumerations
         LoanPrincipal,
         Lunch,
         Lyft,
+        [Display(Name = "Manual Payment")]
+        ManualPayment,
         Massage,
         Medical,
         [Display(Name = "Membership Fee")]

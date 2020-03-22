@@ -10,11 +10,13 @@ namespace JPFData.ViewModels
         {
             Bill = new Bill();
             Bills = new List<Bill>();
+            UnpaidBills = new List<Expense>();
             Metrics = new BillMetrics();
         }
 
         public Bill Bill { get; set; }
         public List<Bill> Bills { get; set; }
+        public List<Expense> UnpaidBills { get; set; }
         public List<Account> Accounts { get; set; }
         public BillMetrics Metrics { get; set; }
     }

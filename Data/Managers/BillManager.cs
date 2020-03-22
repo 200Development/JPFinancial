@@ -140,36 +140,7 @@ namespace JPFData.Managers
                 throw;
             }
         }
-
-        //TODO: Refactor or redesign to prevent having to instantiate new Expense Class
-        private bool AddBillToExpenses(Bill bill)
-        {
-            try
-            {
-                var expense = new Expense();
-                expense.Name = bill.Name;
-                expense.BillId = bill.Id;
-                expense.Amount = bill.AmountDue;
-                expense.Due = bill.DueDate;
-                expense.IsPaid = false;
-                expense.UserId = _userId;
-
-                _db.Expenses.Add(expense);
-                Logger.Instance.DataFlow($"New Expense added to data context");
-
-                _db.SaveChanges();
-                Logger.Instance.DataFlow($"Saved changes to DB");
-
-
-                return true;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                throw;
-            }
-        }
-
+        
         //TODO: Update to only update effected Accounts
         private bool UpdateAccountPaycheckContribution()
         {
@@ -396,7 +367,7 @@ namespace JPFData.Managers
                     _db.Entry(bill).State = EntityState.Modified;
                     Logger.Instance.Calculation($"{bill.Name} due date of {dueDate:d} updated to {newDueDate:d}");
 
-                    if (!AddNewExpenseToDb(bill)) return;
+                    if (!AddBillToExpenses(bill)) return;
                 }
 
 
@@ -600,7 +571,7 @@ namespace JPFData.Managers
             }
         }
 
-        private bool AddNewExpenseToDb(Bill bill)
+        private bool AddBillToExpenses(Bill bill)
         {
             try
             {
@@ -615,6 +586,7 @@ namespace JPFData.Managers
                 newExpense.BillId = bill.Id;
                 newExpense.Amount = bill.AmountDue;
                 newExpense.Due = bill.DueDate;
+                newExpense.CreditAccountId = bill.AccountId;
                 newExpense.IsPaid = false;
 
                 _db.Expenses.Add(newExpense);

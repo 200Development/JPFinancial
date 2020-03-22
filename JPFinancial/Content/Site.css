@@ -5,12 +5,16 @@
     color: #E1E5EE;
 }
 
+text {
+    fill: #E1E5EE;
+}
+
 .card {
     background: #32383E;
 }
 
-.text {
-    color: #E1E5EE;
+.title {
+    padding: 10px;
 }
 
 a {
@@ -105,4 +109,8 @@ textarea {
 .selectedInputLabel {
     margin: 15px 0 5px 0;
     display: none;
+}
+
+.ct-chart {
+    height: 350px;
 }

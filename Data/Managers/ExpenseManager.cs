@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using JPFData.DTO;
 using JPFData.Metrics;
@@ -51,11 +52,6 @@ namespace JPFData.Managers
             }
         }
 
-        private ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
-        {
-            throw new NotImplementedException();
-        }
-
         public List<Expense> GetAllUnpaidExpenses()
         {
             try
@@ -69,6 +65,59 @@ namespace JPFData.Managers
             }
         }
 
-     
+        public bool SetExpenseToPaid(int? expenseId)
+        {
+            try
+            {
+                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                if (selectedExpense == null)
+                {
+                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                    return true;
+                }
+
+                selectedExpense.IsPaid = true;
+                _db.Entry(selectedExpense).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        public bool SetExpenseToUnpaid(int? expenseId)
+        {
+            try
+            {
+                var selectedExpense = _db.Expenses.FirstOrDefault(e => e.Id == expenseId);
+                if (selectedExpense == null)
+                {
+                    Logger.Instance.Debug($"No Expense found with an ID of - {expenseId}");
+                    return true;
+                }
+
+                selectedExpense.IsPaid = false;
+                _db.Entry(selectedExpense).State = EntityState.Modified;
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
+
+        private ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

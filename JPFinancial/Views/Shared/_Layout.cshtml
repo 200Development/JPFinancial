@@ -27,7 +27,7 @@
                         <nav class="navbar navbar-expand-lg navbar-dark bg-dark w-100" id="mainNav">
                             <div class="navbar-collapse collapse">
                                 <ul class="navbar-nav ml-auto text-center">
-                                    @if (Request.IsAuthenticated)
+                                    @if (User.Identity.IsAuthenticated)
                                     {
                                         @Html.ActionLink("Log Out", "Logoff", "Identity")
                                     }

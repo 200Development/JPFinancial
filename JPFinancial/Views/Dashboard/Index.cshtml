@@ -15,7 +15,7 @@
                     <div class="col-12" id="graph">
                         <div id="cashFlowDiv" class="card text-white bg-dark">
                             <div class="header">
-                                <header>Cash Flow</header>
+                                <h4 class="title">Cash Flow</h4>
                             </div>
                             <div class="content">
                                 <div id="chartCashFlow" class="ct-chart"></div>
@@ -222,7 +222,7 @@
                 width: "100%",
                 pointSize: 8,
                 lineWidth: 2,
-                height: "300",
+                height: "100%",
                 backgroundColor: "transparent",
                 colors: ["#6BFFB8"],
                 tooltip: {
@@ -230,7 +230,7 @@
                         color: "#E1E5EE",
                         fontSize: 12
                     },
-                    showColorCode: true
+                    showColorCode: false
                 },
                 legend: {
                     textStyle: {
@@ -240,9 +240,9 @@
                     }
                 },
                 chartArea: {
-                    left: 50,
+                    left: 75,
                     top: 25,
-                    height: "85%"
+                    height: "80%"
                 },
                 vAxis: {
                     gridlines: {

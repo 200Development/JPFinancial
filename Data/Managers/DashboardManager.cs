@@ -221,7 +221,7 @@ namespace JPFData.Managers
                 }
 
                 return transactionsByMonthDict.Take(12).OrderBy(t => t.Key.Year).ThenBy(t => t.Key.Month)
-                    .ToDictionary(t => $"{ConvertMonthIntToString(t.Key.Month)}{t.Key.Year}", t => t.Value);
+                    .ToDictionary(t => $"{ConvertMonthIntToString(t.Key.Month)} {t.Key.Year}", t => t.Value);
             }
             catch (Exception e)
             {

@@ -13,7 +13,9 @@ namespace JPFinancial.Controllers
     {
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly BillManager _billManager = new BillManager();
+        private readonly ExpenseManager _expenseManager = new ExpenseManager();
         private readonly AccountManager _accountManager = new AccountManager();
+        private readonly TransactionManager _transactionManager = new TransactionManager();
 
         // GET: Bills
         public ActionResult Index()
@@ -24,6 +26,7 @@ namespace JPFinancial.Controllers
                 BillViewModel billVM = new BillViewModel();
                 billVM.Accounts = _accountManager.GetAllAccounts();
                 billVM.Bills = _billManager.GetAllBills();
+                billVM.UnpaidBills = _expenseManager.GetAllUnpaidExpenses();
                 billVM.Metrics = _billManager.GetBillMetrics();
 
                 return View(billVM);
@@ -77,6 +80,63 @@ namespace JPFinancial.Controllers
             try
             {
                 return bill.Id > 0 ? Json(_billManager.Delete(bill.Id) ? "Success" : "Failed") : Json("ID is invalid");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return Json("Error");
+            }
+        }
+
+        public JsonResult SetExpenseToPaid(Expense expense)
+        {
+            try
+            {
+                if (expense.Id >= 1)
+                    return _expenseManager.SetExpenseToPaid(expense.Id) ? Json("Success") : Json("Failed");
+
+
+                Logger.Instance.Info("Invalid Expense Id");
+                return Json("Invalid Expense Id");
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return Json("Error");
+            }
+        }
+
+        public JsonResult SetExpenseToPaidWithTransaction(Expense expense)
+        {
+            try
+            {
+                if (expense.Id < 1)
+                {
+                    Logger.Instance.Info("Invalid Expense Id");
+                    return Json("Invalid Expense Id");
+                }
+
+                if (expense.CreditAccountId < 1)
+                {
+                    Logger.Instance.Info("Invalid Credit Account Id");
+                    return Json("Invalid Credit Account Id");
+                }
+
+                var transactionVM = new TransactionViewModel();
+
+                var transaction = new Transaction();
+                transaction.Type = TransactionTypesEnum.Expense;
+                transaction.Category = CategoriesEnum.ManualPayment;
+                transaction.Amount = expense.Amount;
+                transaction.CreditAccountId = expense.CreditAccountId;
+                transaction.SelectedExpenseId = expense.Id;
+                transaction.Date = expense.Due;
+                transaction.Payee = "Manual Expense Payment";
+
+                transactionVM.Transaction = transaction;
+
+
+                return _transactionManager.Create(transactionVM) ? Json("Success") : Json("Failed");
             }
             catch (Exception e)
             {

@@ -422,16 +422,9 @@
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Dashboard\Create.cshtml" />
-    <Content Include="Views\Dashboard\Delete.cshtml" />
-    <Content Include="Views\Dashboard\Details.cshtml" />
-    <Content Include="Views\Dashboard\Edit.cshtml" />
-    <Content Include="Views\Dashboard\IndexList.cshtml" />
     <Content Include="Views\Bills\Index.cshtml" />
     <Content Include="Views\Accounts\Index.cshtml" />
     <Content Include="Views\Transactions\Index.cshtml" />
-    <Content Include="Views\Dashboard\_AccountsPartial.cshtml" />
-    <Content Include="Views\Dashboard\_TopTransactions.cshtml" />
     <Content Include="Views\Shared\_Transactions.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
   </ItemGroup>

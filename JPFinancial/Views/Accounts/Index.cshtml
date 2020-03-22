@@ -16,7 +16,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
-                        <h4 class="title">Income/Expense</h4>
+                        <h4 class="title">Account Balances</h4>
                     </div>
                     <div class="content">
                         <div id="chartAccounts" class="ct-chart"></div>
@@ -288,29 +288,30 @@
                 dataTable.addRow(data[i]);
 
             const options = {
-                width: "auto",
+                width: "100%",
                 pointSize: 8,
                 lineWidth: 2,
-                height: "250",
+                height: "100%",
                 backgroundColor: "transparent",
-                colors: ["#7AC29A"],
+                colors: ["#6BFFB8"],
                 tooltip: {
                     textStyle: {
-                        color: "#666666",
+                        color: "black",
                         fontSize: 12
                     },
                     showColorCode: false
                 },
                 legend: {
                     textStyle: {
-                        color: "black",
+                        color: "#E1E5EE",
+                        border: 2,
                         fontSize: 12
                     }
                 },
                 chartArea: {
-                    left: 50,
+                    left: 75,
                     top: 25,
-                    height: "85%"
+                    height: "80%"
                 },
 
                 vAxis: {

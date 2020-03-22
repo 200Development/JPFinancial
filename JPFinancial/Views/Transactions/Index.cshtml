@@ -17,7 +17,7 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="header">
-                        <header>Balances</header>
+                        <h4 class="title">Income/Expense</h4>
                     </div>
                     <div class="content">
                         <div id="chartTransactions" class="ct-chart"></div>
@@ -301,30 +301,30 @@
                 dataTable.addRow(data[i]);
 
             var options = {
-                width: "auto",
+                width: "100%",
                 pointSize: 8,
                 lineWidth: 2,
-                height: "250",
+                height: "100%",
                 backgroundColor: "transparent",
                 colors: ["#6BFFB8", "#FF220C"],
                 tooltip: {
                     textStyle: {
-                        color: "#3D4849",
+                        color: "#E1E5EE",
                         fontSize: 12
                     },
                     showColorCode: true
                 },
                 legend: {
                     textStyle: {
-                        color: "black",
+                        color: "#E1E5EE",
                         border: 2,
                         fontSize: 12
                     }
                 },
                 chartArea: {
-                    left: 50,
+                    left: 75,
                     top: 25,
-                    height: "85%"
+                    height: "80%"
                 },
                 vAxis: {
                     gridlines: {
