@@ -100,7 +100,6 @@ namespace JPFinancial.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    Global.Instance.User = user;
                     _billManager.UpdateBillDueDates();
 
                     var accountManager = new AccountManager();

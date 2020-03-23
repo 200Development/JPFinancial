@@ -1,4 +1,7 @@
 ﻿using System.Web.Mvc;
+using System.Web.Security;
+using JPFData;
+using Microsoft.AspNet.Identity;
 
 namespace JPFinancial.Controllers
 {
@@ -6,6 +9,10 @@ namespace JPFinancial.Controllers
     {
         public ActionResult Index()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                Global.Instance.User.Id = User.Identity.GetUserId();
+            }
             return View();
         }
 

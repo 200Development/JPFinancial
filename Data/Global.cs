@@ -11,6 +11,7 @@ namespace JPFData
 
         private Global()
         {
+            User = new ApplicationUser();
         }
 
 
