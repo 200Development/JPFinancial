@@ -63,6 +63,44 @@ namespace JPFData.Managers
                 return false;
             }
         }
+        
+        public bool UpdateAccountsFromDashboard(IList<Account> accounts)
+        {
+            try
+            {
+                foreach (var account in accounts)
+                {
+                    if (account.Id <= 0)
+                    {
+                        var poolAccount = GetPoolAccount();
+                        poolAccount.Balance = account.Balance;
+
+                        _db.Entry(poolAccount).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        var dbAccount = GetAccount(account.Id);
+                        dbAccount.Balance = account.Balance;
+
+                        if (account.Balance > dbAccount.BalanceLimit)
+                            dbAccount.BalanceLimit = account.Balance;
+
+                        dbAccount.BalanceSurplus = UpdateBalanceSurplus(dbAccount);
+
+                        _db.Entry(dbAccount).State = EntityState.Modified;
+                    }
+                }
+                _db.SaveChanges();
+
+
+                return true;
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return false;
+            }
+        }
 
         public bool Delete(int id)
         {
@@ -322,7 +360,7 @@ namespace JPFData.Managers
         /// <summary>
         /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
         /// </summary>
-        /// <param name="accounts"></param>
+        /// <param></param>
         /// <returns></returns>
         public bool Update()
         {
@@ -336,8 +374,10 @@ namespace JPFData.Managers
                 {
                     try
                     {
-                        account.RequiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
-                        account.PaycheckContribution = paycheckContributionsDict.FirstOrDefault(p => p.Key == account.Name).Value;
+                        var requiredSavings = requiredSavingsDict.FirstOrDefault(k => k.Key == account.Name).Value;
+                        var paycheckContributions = paycheckContributionsDict.FirstOrDefault(p => p.Key == account.Name).Value;
+                        account.RequiredSavings = requiredSavings > 0.00m ? requiredSavings : 0.00m;
+                        account.PaycheckContribution = paycheckContributions > 0.00m ? paycheckContributions : 0.00m;
                         account.BalanceSurplus = UpdateBalanceSurplus(account);
 
 

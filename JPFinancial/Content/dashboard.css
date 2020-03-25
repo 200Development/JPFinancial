@@ -69,6 +69,10 @@
     text-align: center;
 }
 
+#updateAccountsButton {
+    margin: 15px 0 5px 0;
+}
+
 .expenseContentLabel {
     text-align: left;
 }

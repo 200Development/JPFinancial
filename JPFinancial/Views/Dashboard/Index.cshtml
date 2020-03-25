@@ -94,13 +94,14 @@
                 <div class="row">
                     <div class="col-12" id="disposableIncomeCol">
                         <div id="disposableIncome">
-                            <div class="card text-white bg-dark">
+                            <div class="card h-100 text-white bg-dark">
                                 <div class="card-header card-title text-center">
                                     Disposable Income
                                     <div>
                                         @Html.Hidden("hiddenDisposableValue")
-                                        <input type="text" name="disposableIncomeValue" id="disposableIncomeValue" value="$@Model.Metrics.DisposableIncome" readonly="readonly"/>
+                                        <span>$</span><input type="number" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome" readonly="readonly" />
                                     </div>
+                                    <div><input type="button" class="btn btn-dark text-info" id="updateAccountsButton" value="Save Changes" onclick="updateAccounts(event)" /></div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -143,9 +144,10 @@
 
 @section scripts {
 
-    <script type="text/javascript" src="~/Scripts/utility.js"></script>
+    @*<script type="text/javascript" src="~/Scripts/utility.js"></script>*@
     <script type="text/javascript">
 
+        var updatedAccounts = [];
 
         function loadAccounts() {
             const accounts = @Html.Raw(Json.Encode(@Model.Accounts));
@@ -155,12 +157,17 @@
                 for (let i = 0; i < accounts.length; i++) {
                     const account = accounts[i];
                     const min = account.Balance < account.RequiredSavings ? account.Balance : account.RequiredSavings;
+                    const fixedMin = min.toFixed(2);
+                    const max = @Model.Metrics.DisposableIncome + account.Balance;
+                    const fixedMax = max.toFixed(2);
+                    const balance = account.Balance;
+                    const fixedBalance = balance.toFixed(2);
 
                     let accountStr = `<div class="col-md-12 rangeDiv">`;
                     accountStr += `<div class="col-md-4"><label for="account_` + account.Id + `">` + account.Name + `</label></div>`;
                     accountStr += `<div class="col-md-8"><div class="range">`;
-                    accountStr += `<input type="range" class="bar accountBalanceRanges" value="` + account.Balance + `" min="` + min + `" max="` + (@Model.Metrics.DisposableIncome + account.Balance) + `" id="range_` + account.Id + `" oninput="updateLabels(this, 'accountBalanceRanges')" />`;
-                    accountStr += `<span class="highlight"><output class="rangeLabel" id="rangeLabel_` + account.Id + `">` + account.Balance + `</output></span></div></div></div>`;
+                    accountStr += `<input type="range" class="bar accountBalanceRanges" step="0.01" value="` + account.Balance + `" min="` + fixedMin + `" max="` + fixedMax + `" id="range_` + account.Id + `" oninput="updateLabels(this, 'accountBalanceRanges')" />`;
+                    accountStr += `<span class="highlight"><output class="rangeLabel" id="rangeLabel_` + account.Id + `">` + fixedBalance + `</output></span></div></div></div>`;
 
                     $('#accountCol' + j).append(accountStr);
 
@@ -172,17 +179,105 @@
             }
         };
 
+        function updateLabels(changedRange, rangeClass) {
+
+            // Add class to track changed accounts
+            // TODO: Remove tracking if account is set back to original values to prevent useless update
+
+            if (!$(changedRange).hasClass('updated')) {
+                $(changedRange).addClass('updated');
+            }
+
+            const id = changedRange.id.split('_')[1];
+
+            const rangeLabel = $('#rangeLabel_' + id)[0];
+            const rangeValue = Number(changedRange.value);
+            const rangeDefaultValue = Number(changedRange.defaultValue);
+
+            rangeLabel.value = changedRange.value;
+
+            if (rangeDefaultValue !== NaN && rangeValue !== NaN) {
+                const disposableIncomeElement = $('#disposableIncomeValue')[0];
+                const disposableIncomeValue = Number(disposableIncomeElement.value);
+                const delta = rangeValue - rangeDefaultValue;
+
+                if (disposableIncomeValue !== NaN) {
+                    const updatedDisposableIncome = disposableIncomeValue - delta;
+                    const updatedDisposableIncomeFixed = updatedDisposableIncome.toFixed(2);
+                    disposableIncomeElement.value = updatedDisposableIncomeFixed.toString();
+                } 
+                
+                if (!$(disposableIncomeElement).hasClass('updated')) {
+                    $(disposableIncomeElement).addClass('updated');
+                }
+
+                setRangeMaxValues(rangeClass, changedRange, delta);
+
+                // Set updated slider's defaultValue to current value for calculating delta next time through
+                changedRange.defaultValue = changedRange.value;
+            }
+        };
+
+
+        function setRangeMaxValues(rangeClass, changedRange, delta) {
+
+            const ranges = $('.' + rangeClass);
+
+            ranges.each(function () {
+                const max = Number(this.max);
+
+                if (this.id === changedRange.id) {
+                    this.setAttribute('value', this.value);
+                } else {
+                    if (max !== NaN) {
+                        const newMax = max - delta;
+                        const newMaxFixed = newMax.toFixed(2);
+                        this.max = newMaxFixed.toString();
+                    }
+                }
+            });
+        };
+
+        function updateAccounts(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            const accounts = [];
+
+            $.each($('.updated'),function(key, value) {
+                const account = {};
+                const id = value.id.split('_')[1];
+                account.Id = Number(id);
+                account.Balance = value.valueAsNumber;
+
+                accounts.push(account);
+            });
+
+            const data = JSON.stringify({ 'accounts': accounts });
+
+            $.ajax({
+                url: 'Accounts/UpdateAccounts',
+                contentType: 'application/json; charset=utf-8',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function(result) {
+                    console.log('Success: ' + result);
+                },
+                error: function(error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        }
+
         function chart() {
 
             const metrics = @Html.Raw(Json.Encode(@Model.Metrics));
             const cashFlowByMonth = metrics.CashFlowByMonth;
-
             const cashFlowLength = Object.keys(cashFlowByMonth).length;
 
             let monthsArray = new Array(cashFlowLength);
             let cashFlowArray = new Array(cashFlowLength);
             let highestAmount = 0;
-
 
             for (let prop in cashFlowByMonth) {
                 if (cashFlowByMonth.hasOwnProperty(prop)) {
@@ -194,10 +289,8 @@
                 }
             }
 
-
             monthsArray = monthsArray.filter(function(n) { return n != undefined });
             cashFlowArray = cashFlowArray.filter(function(n) { return n != undefined });
-
 
             const dataTable = new window.google.visualization.DataTable();
 
@@ -255,7 +348,6 @@
             googleChart.draw(dataTable, options);
         };
 
-       
         google.load("visualization",
             "1",
             {

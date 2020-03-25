@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Managers;
@@ -32,7 +33,7 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View("Error");
+                return View("Error: " + e);
             }
         }
 
@@ -76,45 +77,21 @@ namespace JPFinancial.Controllers
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return Json("Error");
+                return Json("Error: " + e);
             }
         }
 
-        [ActionName("Update")]
-        public ActionResult Update(AccountViewModel vm)
+        public JsonResult UpdateAccounts(List<Account> accounts)
         {
             try
             {
-                var accounts = _accountManager.GetAllAccounts();
-                _accountManager.Update();
-                vm.Accounts = _accountManager.GetAllAccounts();
-                vm.Metrics = _accountManager.GetMetrics();
-
-                return RedirectToAction("Index", vm);
+                return accounts.Count > 0
+                    ? Json(_accountManager.UpdateAccountsFromDashboard(accounts) ? "Success" : "Failed") : Json("No Accounts received");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return RedirectToAction("Index", new AccountViewModel());
-            }
-        }
-
-        [ActionName("Rebalance")]
-        public ActionResult Rebalance(AccountViewModel vm)
-        {
-            try
-            {
-                var accounts = _accountManager.GetAllAccounts();
-                _accountManager.Rebalance();
-                vm.Accounts = _accountManager.GetAllAccounts();
-                vm.Metrics = _accountManager.GetMetrics();
-
-                return RedirectToAction("Index", vm);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return RedirectToAction("Index", new AccountViewModel());
+                return Json("Error: " + e);
             }
         }
 
