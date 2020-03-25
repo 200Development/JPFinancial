@@ -46,14 +46,6 @@
                                 <input class="input-group" id="selectedAccountBalance" type="number" />
                             </div>
 
-                            <div class="selectedInputLabel">Required Savings</div>
-                            <div class="input-group justify-content-center selectedInput">
-                                <div class="input-group-prepend">
-                                    <span class="input-group-text">$</span>
-                                </div>
-                                <input class="input-group" id="selectedAccountRequiredSavings" type="number" />
-                            </div>
-
                             <div class="selectedInputLabel">Paycheck Contribution</div>
                             <div class="input-group justify-content-center selectedInput">
                                 <div class="input-group-prepend">
@@ -88,7 +80,6 @@
                             <th scope="col"></th>
                             <th scope="col">Name</th>
                             <th scope="col">Balance</th>
-                            <th scope="col">Required Savings</th>
                             <th scope="col">Paycheck Contribution</th>
                         </tr>
                     </thead>
@@ -117,13 +108,11 @@
 
                             var nameId = "accountName_" + item.Id;
                             var balanceId = "accountBalance_" + item.Id;
-                            var requiredSavingsId = "accountRequiredSavings_" + item.Id;
                             var paycheckContributionId = "accountPaycheckContribution_" + item.Id;
                             <tr class="tableRow" id="@rowId">
                                 <th scope="row"></th>
                                 <td id="@nameId">@item.Name</td>
                                 <td id="@balanceId">$@item.Balance</td>
-                                <td id="@requiredSavingsId">$@item.RequiredSavings</td>
                                 <td id="@paycheckContributionId">$@item.PaycheckContribution</td>
                             </tr>
                         }
@@ -146,16 +135,9 @@
 
             $('#selectedAccountId').val(id);
 
-
             const name = $(`#accountName_${id}`).length ? $(`#accountName_${id}`).text() : '';
-
             const balanceText = $(`#accountBalance_${id}`).text().replace('$', '');
             const balance = Number(balanceText) != NaN ? Number(balanceText) : 0;
-
-            //const balance = Number($('#accountBalance_' + id).text().replace('$','')) != NaN ? Number($('#accountBalance_' + id).text().replace('$','')) : 0;
-            const requiredSavings = Number($(`#accountRequiredSavings_${id}`).text().replace('$', '')) != NaN
-                ? Number($(`#accountRequiredSavings_${id}`).text().replace('$', ''))
-                : 0;
             const paycheckContribution = Number($(`#accountPaycheckContribution_${id}`).text().replace('$', '')) != NaN
                 ? Number($(`#accountPaycheckContribution_${id}`).text().replace('$', ''))
                 : 0;
@@ -166,7 +148,6 @@
             $('#selectedAccountFooter').css('display', 'block');
             $('#selectedAccountName').val(name);
             $('#selectedAccountBalance').val(balance);
-            $('#selectedAccountRequiredSavings').val(requiredSavings);
             $('#selectedAccountPaycheckContribution').val(paycheckContribution);
         };
 
@@ -178,13 +159,9 @@
             data.Id = $('#selectedAccountId').val() != undefined ? $('#selectedAccountId').val() : null;
             data.Name = $('#selectedAccountName').val() != undefined ? $('#selectedAccountName').val() : '';
             data.Balance = $('#selectedAccountBalance').val() != undefined ? $('#selectedAccountBalance').val() : null;
-            data.RequiredSavings = $('#selectedAccountRequiredSavings').val() != undefined
-                ? $('#selectedAccountRequiredSavings').val()
-                : null;
             data.PaycheckContribution = $('#selectedAccountPaycheckContribution').val() != undefined
                 ? $('#selectedAccountPaycheckContribution').val()
                 : null;
-
 
             $.ajax({
                 type: 'POST',
@@ -331,13 +308,11 @@
             $('#deleteButton').click(deleteAccount);
         }
 
-
         google.load("visualization",
             "1",
             {
                 packages: ["corechart"]
             });
-
 
         $(document).ready(function() { chart(); });
 
