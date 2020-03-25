@@ -17,18 +17,15 @@ namespace JPFinancial.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private readonly BillManager _billManager;
 
         public IdentityController()
         {
-            _billManager = new BillManager();
         }
 
         public IdentityController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
         {
             SignInManager = signInManager;
             UserManager = userManager;
-            _billManager = new BillManager();
         }
 
         public ApplicationSignInManager SignInManager
@@ -100,11 +97,7 @@ namespace JPFinancial.Controllers
             switch (result)
             {
                 case SignInStatus.Success:
-                    _billManager.UpdateBillDueDates();
-
-                    var accountManager = new AccountManager();
-                    accountManager.CheckAndCreatePoolAccount();
-
+                   
                     return RedirectToLocal(returnUrl);
                 case SignInStatus.LockedOut:
                     return View("Lockout");
