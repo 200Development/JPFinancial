@@ -179,7 +179,7 @@ namespace JPFData
                 return 0.0m;
             }
         }
-      
+
         public static Dictionary<string, decimal> GetRequiredSavingsDict()
         {
             try
@@ -218,44 +218,80 @@ namespace JPFData
                             {
                                 case FrequencyEnum.Annually:
                                     savePerPaycheck = billTotal / 24;
+                                    if (payPeriodsLeft <= 24)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.SemiAnnually:
                                     savePerPaycheck = billTotal / 12;
+                                    if (payPeriodsLeft <= 12)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.Quarterly:
                                     savePerPaycheck = billTotal / 6;
+                                    if (payPeriodsLeft <= 6)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.SemiMonthly:
                                     savePerPaycheck = billTotal / 4;
+                                    if (payPeriodsLeft <= 4)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.Monthly:
                                     savePerPaycheck = billTotal / 2;
+                                    if (payPeriodsLeft <= 2)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.BiWeekly:
                                     savePerPaycheck = billTotal;
+                                    if (payPeriodsLeft > 1)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 case FrequencyEnum.Weekly:
                                     savePerPaycheck = billTotal * 2;
+                                    if (payPeriodsLeft > 1)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                                 default:
                                     savePerPaycheck = billTotal / 2;
+                                    if (payPeriodsLeft <= 2)
+                                    {
+                                        save = billTotal - payPeriodsLeft * savePerPaycheck;
+                                        save = Math.Round(save, 2);
+                                    }
                                     Logger.Instance.Calculation($"{expense.Name} save/paycheck = {Math.Round(savePerPaycheck, 2)} to {bill.Account.Name} account");
                                     break;
                             }
-
-                            save = payPeriodsLeft > 1 ? Math.Round(billTotal - payPeriodsLeft * savePerPaycheck, 2) : savePerPaycheck;
                         }
                         else
                             save = expense.Amount;
-
-                        // required savings = bill amount due - (how many pay periods before due date * how much to save per pay period)
 
                         Logger.Instance.Calculation($"{bill.Account.Name} - [{Math.Round(billTotal, 2)}] [{bill.DueDate:d}] [{payPeriodsLeft}(ppl)] [{Math.Round(savePerPaycheck, 2)}(spp)] [{Math.Round(save, 2)}(req save)]");
 
@@ -296,7 +332,7 @@ namespace JPFData
                 //Zeros out all accounts req paycheck contributions
                 foreach (var account in accounts)
                 {
-                    account.PaycheckContribution = 0.0m;;
+                    account.PaycheckContribution = 0.0m;
                 }
 
                 // update suggested paycheck contributions for bills
@@ -392,7 +428,7 @@ namespace JPFData
                 throw;
             }
         }
-       
+
         /// <summary>
         /// Returns how many times the user will get paid before a due date
         /// </summary>
