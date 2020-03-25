@@ -324,7 +324,7 @@ namespace JPFData.Managers
         /// </summary>
         /// <param name="accounts"></param>
         /// <returns></returns>
-        public bool Update(IEnumerable<Account> accounts)
+        public bool Update()
         {
             try
             {
@@ -332,7 +332,7 @@ namespace JPFData.Managers
                 var paycheckContributionsDict = Calculations.GetPaycheckContributionsDict();
 
 
-                foreach (var account in accounts)
+                foreach (var account in GetAllAccounts())
                 {
                     try
                     {
@@ -366,7 +366,7 @@ namespace JPFData.Managers
             }
         }
 
-        public bool Rebalance(IEnumerable<Account> accounts)
+        public bool Rebalance()
         {
             try
             {
@@ -378,7 +378,7 @@ namespace JPFData.Managers
                 if (poolAccount == null) throw new Exception("Pool account has not been assigned");
 
 
-                foreach (Account account in accounts.Where(a => a.BalanceSurplus != 0.0m && !a.ExcludeFromSurplus))
+                foreach (Account account in GetAllAccounts().Where(a => a.BalanceSurplus != 0.0m && !a.ExcludeFromSurplus))
                 {
                     try
                     {
