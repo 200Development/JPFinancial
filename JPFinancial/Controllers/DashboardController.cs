@@ -25,6 +25,8 @@ namespace JPFinancial.Controllers
                 DashboardViewModel dashboardVM = new DashboardViewModel();
                 dashboardVM.Accounts = _accountManager.GetAllAccounts();
                 dashboardVM.Metrics = _dashboardManager.RefreshStaticMetrics();
+                _accountManager.Update();
+                _accountManager.Rebalance();
 
 
                 return View(dashboardVM);
