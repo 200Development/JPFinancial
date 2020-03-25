@@ -50,9 +50,10 @@ namespace JPFData.Managers
 
                 return metrics;
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                return null;
+                Logger.Instance.Error(e);
+                return new DashboardMetrics();
             }
         }
 
