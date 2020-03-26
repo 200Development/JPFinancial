@@ -13,9 +13,11 @@ namespace JPFData.Managers
         private readonly AccountManager _accountManager;
         private readonly BillManager _billManager;
         private readonly TransactionManager _transactionManager;
+        private readonly ExpenseManager _expenseManager;
         //TODO: Solution to accurately calculate and define "savings"
         //TODO: Solution to get/calculate these user variables
-        private const decimal Savings = 3400;
+        // set MinimumMonthlyExpenses to save duplicate calculations
+        private static decimal _minimumMonthlyExpenses = 0.00m;
         private const decimal GrossIncome = 100000;
         private const int Age = 45;
 
@@ -25,9 +27,11 @@ namespace JPFData.Managers
             _accountManager = new AccountManager();
             _billManager = new BillManager();
             _transactionManager = new TransactionManager();
+            _expenseManager = new ExpenseManager();
 
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
+
 
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
@@ -44,8 +48,10 @@ namespace JPFData.Managers
                 metrics.BudgetRuleExpense = GetBudgetRuleExpenses();
                 metrics.BudgetRuleSavings = GetBudgetRuleSavings();
                 metrics.BudgetRuleDiscretionary = GetBudgetRuleDiscretionary();
-                metrics.MinimumMonthlyExpenses = GetMinimumMonthlyExpenses();
+                metrics.MinimumMonthlyExpenses = _minimumMonthlyExpenses = GetMinimumMonthlyExpenses();
                 metrics.CashFlowByMonth = GetCashFlowByMonth();
+                metrics.EmergencyFundRatio = GetEmergencyFundRatio();
+                metrics.DueBeforeNextPayPeriod = GetDueBeforeNextPayPeriod();
 
 
                 return metrics;
@@ -88,7 +94,7 @@ namespace JPFData.Managers
         {
             try
             {
-                return Savings / GrossIncome;
+                return  _accountManager.GetEmergencyFundAccount().Balance / GrossIncome;
             }
             catch (Exception e)
             {
@@ -223,6 +229,34 @@ namespace JPFData.Managers
 
                 return transactionsByMonthDict.Take(12).OrderBy(t => t.Key.Year).ThenBy(t => t.Key.Month)
                     .ToDictionary(t => $"{ConvertMonthIntToString(t.Key.Month)} {t.Key.Year}", t => t.Value);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private decimal GetEmergencyFundRatio()
+        {
+            try
+            {
+                return _accountManager.GetEmergencyFundAccount().Balance / _minimumMonthlyExpenses;
+
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        private decimal GetDueBeforeNextPayPeriod()
+        {
+            try
+            {
+                var nextPayday = new DateTime(2020,4,3);
+                return _expenseManager.GetAllUnpaidExpenses().Where(e => e.Due < nextPayday).Sum(e => e.Amount);
             }
             catch (Exception e)
             {
