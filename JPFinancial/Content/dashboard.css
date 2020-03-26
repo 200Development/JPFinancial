@@ -54,7 +54,7 @@
 }
 
 #disposableIncome {
-    height: 218px;
+    height: auto;
     background: #25292E;
     box-shadow: 1px 2px #25292E;
     margin-top: 5px;
