@@ -121,7 +121,7 @@ textarea {
 
 
 /*PagedList*/
-#paginationContainer {
+.paginationContainer {
     margin-left: 200px;
 }
 

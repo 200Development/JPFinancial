@@ -123,9 +123,9 @@
                 <div style="margin-left: 20px">    
                     <p></p>    
                     <p></p>    
-                    <div id="paginationContainer" class="pagination">    
+                    <div class="pagination paginationContainer">    
                         <span class="paginationText">Page</span>@(Model.PagedAccounts.PageCount < Model.PagedAccounts.PageNumber ? 0 : Model.PagedAccounts.PageNumber)
-                        <span class="paginationText">of</span>@Model.PagedAccounts.PageCount &nbsp;&nbsp;&nbsp;@Html.PagedListPager(Model.PagedAccounts, page => Url.Action("Index", new { page }))    
+                        <span class="paginationText">of</span>@Model.PagedAccounts.PageCount &nbsp;&nbsp;&nbsp; @Html.PagedListPager(Model.PagedAccounts, page => Url.Action("Index", new { page }))    
                     </div>    
                 </div>   
             </div>
