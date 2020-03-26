@@ -1,4 +1,5 @@
-﻿@model JPFData.ViewModels.AccountViewModel
+﻿@using PagedList.Mvc
+@model JPFData.ViewModels.AccountViewModel
 
 @{
     ViewBag.Title = "Accounts";
@@ -58,8 +59,9 @@
                     </div>
                     <div class="card-footer" id="selectedAccountFooter">
                         <div id="footerOptions">
-                            <button class="editButton btn btn-dark" id="editButton" value="Edit"><i class="fa fa-edit editIcon"></i><span id="editSelectedAccountSpan">Edit</span></button>
+                            <button class="editButton btn btn-dark" id="editButton" value="Save"><i class="fa fa-edit editIcon"></i><span id="editSelectedAccountSpan">Save</span></button>
                             <button class="deleteButton btn btn-dark" id="deleteButton" value="Delete"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedAccountSpan">Delete</span></button>
+                            <button class="cancelButton btn btn-dark" id="cancelButton" value="Cancel"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedAccountSpan">Cancel</span></button>
                         </div>
                         <div id="deleteConfirmationDiv">
                             <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this account will delete all transactions and bills associated with it. Are you sure?</p>
@@ -76,48 +78,56 @@
             <div class="col-md-12">
                 <table class="table table-striped table-dark">
                     <thead>
-                        <tr>
-                            <th scope="col"></th>
-                            <th scope="col">Name</th>
-                            <th scope="col">Balance</th>
-                            <th scope="col">Paycheck Contribution</th>
-                        </tr>
+                    <tr>
+                        <th scope="col"></th>
+                        <th scope="col">Name</th>
+                        <th scope="col">Balance</th>
+                        <th scope="col">Paycheck Contribution</th>
+                    </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
-                            <td>
-                                @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
-                                @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
-                            </td>
-                            <td>
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text">$</span>
-                                    </div>
-                                    @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
-                                    @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
+                    <tr>
+                        <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
+                        <td>
+                            @Html.EditorFor(model => model.Account.Name, new { htmlAttributes = new { @class = "form-control" } })
+                            @Html.ValidationMessageFor(model => model.Account.Name, "", new { @class = "text-danger" })
+                        </td>
+                        <td>
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">$</span>
                                 </div>
-                            </td>
-                            <td></td>
-                            <td></td>
-                        </tr>
-                        @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
-                        {
-                            var rowId = "rowId_" + item.Id;
+                                @Html.EditorFor(model => model.Account.Balance, new { htmlAttributes = new { @class = "form-control" } })
+                                @Html.ValidationMessageFor(model => model.Account.Balance, "", new { @class = "text-danger" })
+                            </div>
+                        </td>
+                        <td></td>
+                    </tr>
+                    @foreach (var item in Model.PagedAccounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+                    {
+                        var rowId = "rowId_" + item.Id;
 
-                            var nameId = "accountName_" + item.Id;
-                            var balanceId = "accountBalance_" + item.Id;
-                            var paycheckContributionId = "accountPaycheckContribution_" + item.Id;
-                            <tr class="tableRow" id="@rowId">
-                                <th scope="row"></th>
-                                <td id="@nameId">@item.Name</td>
-                                <td id="@balanceId">$@item.Balance</td>
-                                <td id="@paycheckContributionId">$@item.PaycheckContribution</td>
-                            </tr>
-                        }
+                        var nameId = "accountName_" + item.Id;
+                        var balanceId = "accountBalance_" + item.Id;
+                        var paycheckContributionId = "accountPaycheckContribution_" + item.Id;
+                        <tr class="tableRow" id="@rowId">
+                            <th scope="row"></th>
+                            <td id="@nameId">@item.Name</td>
+                            <td id="@balanceId">@item.Balance.ToString("C")</td>
+                            <td id="@paycheckContributionId">@item.PaycheckContribution.ToString("C")</td>
+                        </tr>
+                    }
                     </tbody>
                 </table>
+                
+                <div style="margin-left: 20px">    
+                    <p></p>    
+                    <p></p>    
+                    <div id="paginationContainer" class="pagination">    
+                        <span class="paginationText">Page</span>@(Model.PagedAccounts.PageCount < Model.PagedAccounts.PageNumber ? 0 : Model.PagedAccounts.PageNumber)
+                        <span class="paginationText">of</span>@Model.PagedAccounts.PageCount &nbsp;&nbsp;&nbsp;@Html.PagedListPager(Model.PagedAccounts, page => Url.Action("Index", new { page }))    
+                    </div>    
+                </div>   
             </div>
         </div>
     </div>

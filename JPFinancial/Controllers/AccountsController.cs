@@ -5,6 +5,7 @@ using JPFData;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
+using PagedList;
 
 namespace JPFinancial.Controllers
 {
@@ -14,19 +15,26 @@ namespace JPFinancial.Controllers
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly AccountManager _accountManager = new AccountManager();
 
-        // GET: Accounts
-        public ActionResult Index()
+        [HttpGet]
+        public ActionResult Index(int? page)
         {
             try
             {
+                var pageSize = 10;
+                var pageIndex = 1;
+                pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+
                 var accountVM = new AccountViewModel();
                 _accountManager.Update();
                 _accountManager.Rebalance();
                 accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(pageIndex, pageSize);
                 accountVM.Metrics = _accountManager.GetMetrics();
                 accountVM.RebalanceReport = _accountManager.GetRebalancingAccountsReport();
 
                 
+
+
                 //TODO: Add ability to show X number of Accounts
                 return View(accountVM);
             }

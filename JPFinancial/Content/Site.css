@@ -118,3 +118,45 @@ textarea {
 .ct-chart {
     height: 350px;
 }
+
+
+/*PagedList*/
+#paginationContainer {
+    margin-left: 200px;
+}
+
+.ul.pagination    
+{    
+    display: inline-block;    
+    padding: 0;    
+    margin: 0;    
+}    
+    
+ul.pagination li    
+{    
+    display: inline;    
+}    
+    
+ul.pagination li a    
+{    
+    color: #E1E5EE;    
+    float: left;    
+    padding: 0 16px;    
+    text-decoration: none;    
+    transition: background-color .3s;    
+}    
+    
+ul.pagination li a.active    
+{    
+    background-color: #212529;    
+    color: #E1E5EE;    
+}    
+    
+ul.pagination li a:hover:not(.active)    
+{    
+    background-color: #212529;    
+}
+
+.paginationText {
+    padding: 0 8px;
+}
