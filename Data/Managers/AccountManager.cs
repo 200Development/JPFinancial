@@ -179,7 +179,20 @@ namespace JPFData.Managers
                 return null;
             }
         }
-      
+
+        public Account GetEmergencyFundAccount()
+        {
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == _userId).FirstOrDefault(a => a.IsEmergencyFund);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return null;
+            }
+        }
+
         public AccountMetrics GetMetrics()
         {
             try
@@ -343,11 +356,36 @@ namespace JPFData.Managers
 
                 var poolAccount = new Account();
                 poolAccount.Name = "Pool";
-                poolAccount.Balance = 0.0m;;
+                poolAccount.Balance = 0.0m;
                 poolAccount.IsPoolAccount = true;
+                poolAccount.IsEmergencyFund = false;
                 poolAccount.UserId = _userId;
 
                 _db.Accounts.Add(poolAccount);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
+        public void CheckAndCreateEmergencyFund()
+        {
+            try
+            {
+                var accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                if (accounts.Exists(a => a.IsEmergencyFund)) return;
+
+                var efAccount = new Account();
+                efAccount.Name = "Emergency Fund";
+                efAccount.Balance = 0.0m;
+                efAccount.IsPoolAccount = false;
+                efAccount.IsEmergencyFund = true;
+                efAccount.UserId = _userId;
+
+                _db.Accounts.Add(efAccount);
                 _db.SaveChanges();
             }
             catch (Exception e)
