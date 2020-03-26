@@ -33,15 +33,15 @@
                                     <div class="col-6">
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Minimum Monthly Expenses</div>
-                                            <div class="col-6 expenseContentValue">$@Model.Metrics.MinimumMonthlyExpenses</div>
+                                            <div class="col-6 expenseContentValue">@Model.Metrics.MinimumMonthlyExpenses.ToString("C")</div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Expenses Due Before Next Paycheck</div>
-                                            <div class="col-6 expenseContentValue">$342</div>
+                                            <div class="col-6 expenseContentValue">@Model.Metrics.DueBeforeNextPayPeriod.ToString("C")</div>
                                         </div>
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Targeted Net Worth</div>
-                                            <div class="col-6 expenseContentValue">$@Model.Metrics.TargetedNetWorth</div>
+                                            <div class="col-6 expenseContentValue">@Model.Metrics.TargetedNetWorth.ToString("C")</div>
                                         </div>
                                     </div>
                                     <div class="col-6">
@@ -52,7 +52,7 @@
                                         </div>
                                         <div class="row text-center">
                                             <div class="col-12">
-                                                <div>$@Model.Metrics.BudgetRuleExpense / $@Model.Metrics.BudgetRuleSavings / $@Model.Metrics.BudgetRuleDiscretionary</div>
+                                                <div>@Model.Metrics.BudgetRuleExpense.ToString("C") / @Model.Metrics.BudgetRuleSavings.ToString("C") / @Model.Metrics.BudgetRuleDiscretionary.ToString("C")</div>
                                             </div>
                                         </div>
                                     </div>
@@ -67,21 +67,21 @@
                                 <div class="card-body">
                                     <table title="Expenses">
                                         <tbody>
-                                            <tr>
+                                            @*<tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Current</td>
                                                 <td style="width: 50%" class="expenseContentValue">3.04</td>
-                                            </tr>
+                                            </tr>*@
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Debt-To-Income</td>
-                                                <td style="width: 50%" class="expenseContentValue">1.87%</td>
+                                                <td style="width: 50%" class="expenseContentValue">@Model.Metrics.DebtToIncome.ToString("C")</td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Savings</td>
-                                                <td style="width: 50%" class="expenseContentValue">@Model.Metrics.SavingsRate</td>
+                                                <td style="width: 50%" class="expenseContentValue">@Model.Metrics.SavingsRate.ToString("P")</td>
                                             </tr>
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Emergency Fund (Months)</td>
-                                                <td style="width: 50%" class="expenseContentValue">4.84</td>
+                                                <td style="width: 50%" class="expenseContentValue">@Model.Metrics.EmergencyFundRatio.ToString("F")</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -99,7 +99,7 @@
                                     Disposable Income
                                     <div>
                                         @Html.Hidden("hiddenDisposableValue")
-                                        <span>$</span><input type="number" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome" readonly="readonly" />
+                                        <input type="number" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome.ToString("C")" readonly="readonly" />
                                     </div>
                                     <div><input type="button" class="btn btn-dark text-info" id="updateAccountsButton" value="Save Changes" onclick="updateAccounts(event)" /></div>
                                 </div>
@@ -108,7 +108,7 @@
                                         <div class="col-4" id="accountCol1"></div>
                                         <div class="col-4" id="accountCol2"></div>
                                         <div class="col-4" id="accountCol3">
-                                            <table>
+                                            @*<table>
                                                 <tbody>
                                                     <tr>
                                                         <td style="width: 50%" class="expenseContentLabel">Current</td>
@@ -127,7 +127,7 @@
                                                         <td style="width: 50%" class="expenseContentValue">4.84</td>
                                                     </tr>
                                                 </tbody>
-                                            </table>
+                                            </table>*@
                                         </div>
                                     </div>
                                 </div>
@@ -153,6 +153,7 @@
             const accounts = @Html.Raw(Json.Encode(@Model.Accounts));
 
             let j = 1;
+            debugger;
             if (accounts.length > 0) {
                 for (let i = 0; i < accounts.length; i++) {
                     const account = accounts[i];
@@ -172,7 +173,7 @@
                     $('#accountCol' + j).append(accountStr);
 
                     // Reset counter to add accounts evenly over 2 columns
-                    j = j === 1 ? 2 : 1;
+                    j = j === 3 ? 1 : ++j;
                 }
             } else {
                 $('#accountCol' + j).append('Go Add Some Accounts :)');
@@ -205,8 +206,8 @@
                     const updatedDisposableIncome = disposableIncomeValue - delta;
                     const updatedDisposableIncomeFixed = updatedDisposableIncome.toFixed(2);
                     disposableIncomeElement.value = updatedDisposableIncomeFixed.toString();
-                } 
-                
+                }
+
                 if (!$(disposableIncomeElement).hasClass('updated')) {
                     $(disposableIncomeElement).addClass('updated');
                 }
