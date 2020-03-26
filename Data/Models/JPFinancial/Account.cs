@@ -39,6 +39,9 @@ namespace JPFData.Models.JPFinancial
         [Required, Display(Name = "Pool Account")]
         public bool IsPoolAccount { get; set; }
 
+        [Required, Display(Name = "Emergency Fund")]
+        public bool IsEmergencyFund { get; set; }
+
         [Required, Display(Name = "Mandatory Account?")]
         public bool IsMandatory { get; set; }
 
