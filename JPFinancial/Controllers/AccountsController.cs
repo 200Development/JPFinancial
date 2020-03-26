@@ -21,8 +21,7 @@ namespace JPFinancial.Controllers
             try
             {
                 var pageSize = 10;
-                var pageIndex = 1;
-                pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+                var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
 
                 var accountVM = new AccountViewModel();
                 _accountManager.Update();
