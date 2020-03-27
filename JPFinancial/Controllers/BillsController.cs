@@ -5,6 +5,7 @@ using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
+using PagedList;
 
 namespace JPFinancial.Controllers
 {
@@ -17,25 +18,10 @@ namespace JPFinancial.Controllers
         private readonly AccountManager _accountManager = new AccountManager();
         private readonly TransactionManager _transactionManager = new TransactionManager();
 
-        // GET: Bills
+       
         public ActionResult Index()
         {
-            try
-            {
-                Logger.Instance.DataFlow("Index");
-                BillViewModel billVM = new BillViewModel();
-                billVM.Accounts = _accountManager.GetAllAccounts();
-                billVM.Bills = _billManager.GetAllBills();
-                billVM.UnpaidBills = _expenseManager.GetAllUnpaidExpenses();
-                billVM.Metrics = _billManager.GetBillMetrics();
-
-                return View(billVM);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return View(new BillViewModel());
-            }
+            return View();
         }
 
         public ActionResult Create(BillViewModel billVM)
@@ -47,8 +33,8 @@ namespace JPFinancial.Controllers
                 billVM.Bill.AccountId = Convert.ToInt32(selectedAccountId);
 
                 var selectedFrequencyId = Convert.ToInt32(Request.Form["selectedFrequencyId"]);
-                if (selectedFrequencyId > 0) billVM.Bill.PaymentFrequency = (FrequencyEnum) selectedFrequencyId;
-                
+                if (selectedFrequencyId > 0) billVM.Bill.PaymentFrequency = (FrequencyEnum)selectedFrequencyId;
+
 
                 if (!_billManager.Create(billVM.Bill)) return View("Error");
 
@@ -143,6 +129,55 @@ namespace JPFinancial.Controllers
                 Logger.Instance.Error(e);
                 return Json("Error");
             }
+        }
+
+        public JsonResult PageBills(int? page)
+        {
+            try
+            {
+                var pageSize = 10;
+                var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
+
+                var pagedBills = _billManager.GetAllBills().ToPagedList(pageIndex, pageSize);
+
+
+                return Json(pagedBills);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return Json("Error: " + e);
+            }
+        }
+
+        public ActionResult ExpensesTablePartial(int page = 1, int pageSize = 10)
+        {
+
+            BillViewModel billVM = new BillViewModel();
+            billVM.Accounts = _accountManager.GetAllAccounts();
+            billVM.Bills = _billManager.GetAllBills();
+            billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
+            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
+            billVM.Metrics = _billManager.GetBillMetrics();
+            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+
+
+            return PartialView("_ExpensesTable", billVM.PagedExpenses);
+        }
+
+        public ActionResult BillsTablePartial(int page = 1, int pageSize = 10)
+        {
+
+            BillViewModel billVM = new BillViewModel();
+            billVM.Accounts = _accountManager.GetAllAccounts();
+            billVM.Bills = _billManager.GetAllBills();
+            billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
+            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
+            billVM.Metrics = _billManager.GetBillMetrics();
+            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+
+
+            return PartialView("_BillsTable", billVM);
         }
 
         protected override void Dispose(bool disposing)
