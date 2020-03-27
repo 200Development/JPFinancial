@@ -256,52 +256,6 @@ namespace JPFData.Managers
             return metrics;
         }
 
-        public IEnumerable<OutstandingExpense> GetOutstandingBills()
-        {
-            try
-            {
-                var ret = new List<OutstandingExpense>();
-                Logger.Instance.DataFlow($"Get");
-
-                // Get all bill expenses that have not yet been paid
-                var expenses = _db.Expenses.Where(e => e.UserId == Global.Instance.User.Id).Where(e => e.BillId > 0 && !e.IsPaid).ToList();
-                Logger.Instance.DataFlow($"Pulled list of bill expenses from DB that haven't been paid");
-                //var outstandingBills = bills.Where(b => b.IsPaid == false).ToList();
-
-                foreach (var expense in expenses)
-                {
-                    var newExpense = new OutstandingExpense();
-                    newExpense.Id = expense.Id;
-                    newExpense.Name = $"{expense.Name} - {expense.Amount} Due {expense.Due.ToShortDateString()}";
-                    newExpense.DueDate = expense.Due;
-                    newExpense.AmountDue = expense.Amount;
-
-                    ret.Add(newExpense);
-                }
-
-                return ret;
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return new List<OutstandingExpense>();
-            }
-        }
-
-        public decimal GetOutstandingExpenseTotal()
-        {
-            try
-            {
-                var outstandingBills = GetOutstandingBills();
-                return outstandingBills.Sum(b => b.AmountDue);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return 0m;
-            }
-        }
-
         /// <summary>
         /// Updates database Bills.DueDate if the previous due date has passed
         /// </summary>

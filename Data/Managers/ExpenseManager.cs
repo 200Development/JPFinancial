@@ -65,6 +65,19 @@ namespace JPFData.Managers
             }
         }
 
+        public decimal GetOutstandingExpensesTotal()
+        {
+            try
+            {
+                return GetAllUnpaidExpenses().Sum(b => b.Amount);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return 0m;
+            }
+        }
+
         public bool SetExpenseToPaid(int? expenseId)
         {
             try
