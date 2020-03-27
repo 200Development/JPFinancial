@@ -21,13 +21,11 @@ namespace JPFData.ViewModels
             try
             {
                 Accounts = new AccountManager().GetAllAccounts();
-                BillsOutstanding = new BillManager().GetOutstandingBills();
                 GetFilterOptions();
             }
             catch (Exception e)
             {
                 Accounts = new AccountManager().GetAllAccounts();
-                BillsOutstanding = new BillManager().GetOutstandingBills();
                 Logger.Instance.Error(e);
             }
         }
@@ -36,7 +34,6 @@ namespace JPFData.ViewModels
         public TransactionMetrics Metrics { get; set; }
         public IEnumerable<Transaction> Transactions { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
-        public IEnumerable<OutstandingExpense> BillsOutstanding { get; set; }
         public bool AutoTransferPaycheckContributions { get; }
         public TransactionTypesEnum Type { get; set; }
         public CategoriesEnum Category { get; set; }
