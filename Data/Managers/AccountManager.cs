@@ -200,7 +200,7 @@ namespace JPFData.Managers
                 //TODO: Needs Refactoring
                 var metrics = new AccountMetrics();
                 var accountManager = new AccountManager();
-                var billManager = new BillManager();
+                var expenseManager = new ExpenseManager();
                 var accounts = GetAllAccounts();
                 var poolAccount = GetPoolAccount();
                 var requiredSavingsDict = Calculations.GetRequiredSavingsDict();
@@ -239,7 +239,7 @@ namespace JPFData.Managers
                     metrics.AverageSurplus = accounts.Sum(a => a.BalanceSurplus) / surplusAccounts;
                 
                 var cashBalance = accounts.Sum(a => a.Balance) + poolAccount.Balance;
-                var outstandingExpenses = billManager.GetOutstandingExpenseTotal();
+                var outstandingExpenses = expenseManager.GetOutstandingExpensesTotal();
 
                 metrics.CashBalance = cashBalance;
                 metrics.AccountingBalance = cashBalance - totalRequiredSavings;
