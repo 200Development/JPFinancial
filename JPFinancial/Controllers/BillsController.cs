@@ -21,7 +21,19 @@ namespace JPFinancial.Controllers
        
         public ActionResult Index()
         {
-            return View();
+            var page = 1;
+            var pageSize = 10;
+
+            BillViewModel billVM = new BillViewModel();
+            billVM.Accounts = _accountManager.GetAllAccounts();
+            billVM.Bills = _billManager.GetAllBills();
+            billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
+            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
+            billVM.Metrics = _billManager.GetBillMetrics();
+            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+
+
+            return View(billVM);
         }
 
         public ActionResult Create(BillViewModel billVM)
@@ -131,26 +143,7 @@ namespace JPFinancial.Controllers
             }
         }
 
-        public JsonResult PageBills(int? page)
-        {
-            try
-            {
-                var pageSize = 10;
-                var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
-
-                var pagedBills = _billManager.GetAllBills().ToPagedList(pageIndex, pageSize);
-
-
-                return Json(pagedBills);
-            }
-            catch (Exception e)
-            {
-                Logger.Instance.Error(e);
-                return Json("Error: " + e);
-            }
-        }
-
-        public ActionResult ExpensesTablePartial(int page = 1, int pageSize = 10)
+        public ActionResult PageExpenses(int page = 1, int pageSize = 10)
         {
 
             BillViewModel billVM = new BillViewModel();
@@ -165,7 +158,7 @@ namespace JPFinancial.Controllers
             return PartialView("_ExpensesTable", billVM.PagedExpenses);
         }
 
-        public ActionResult BillsTablePartial(int page = 1, int pageSize = 10)
+        public ActionResult PageBills(int page = 1, int pageSize = 10)
         {
 
             BillViewModel billVM = new BillViewModel();

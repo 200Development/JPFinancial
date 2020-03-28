@@ -3,108 +3,48 @@
 
 
 
-<div class="row">
-    <div class="col-md-12" id="selectedDiv">
-        @Html.Hidden("selectedBillId")
-        @Html.Hidden("selectedAccountId")
-        @Html.Hidden("selectedFrequencyId")
-        <div class="card col-md-5 mx-auto border-dark text-center" id="selectedCard">
-            <div class="card-title">
-                <div class="selectedInput selectedInputLabel">Name</div>
-                <div class="input-group justify-content-center selectedInput">
-                    <input id="selectedBillName" type="text" />
+
+<table class="table table-striped table-dark" id="billsTable">
+    <thead>
+        <tr>
+            <th scope="col"></th>
+            <th scope="col">Name</th>
+            <th scope="col">Amount Due</th>
+            <th scope="col">Due Date</th>
+            <th scope="col">Frequency</th>
+            <th scope="col">Linked Account</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
+            <td>
+                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
                 </div>
-            </div>
-            <div>
-                <div class="card-body">
-                    <h3 id="selectedBillEmptyText">Click on a row to edit or delete a bill</h3>
-
-                    <div class="selectedInputLabel">Amount</div>
-                    <div class="input-group justify-content-center selectedInput">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                        <input class="input-group" id="selectedBillAmountDue" type="number" />
-                    </div>
-
-                    <div class="selectedInputLabel">Due Date</div>
-                    <div class="input-group justify-content-center selectedInput">
-                        <input class="input-group" id="selectedBillDueDate" type="date" />
-                    </div>
-
-                    <div class="selectedInputLabel">Frequency</div>
-                    <div class="input-group justify-content-center selectedInput">
-                        @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "input-group" })
-                        @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
-                    </div>
-
-                    <div class="selectedInputLabel">Linked Account</div>
-                    <div class="input-group justify-content-center selectedInput">
-                        @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "input-group" })
-                        @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer" id="selectedFooter">
-                <div id="footerOptions">
-                    <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span id="editSelectedBillSpan">Save</span></button>
-                    <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedBillSpan">Delete</span></button>
-                </div>
-                <div id="deleteConfirmationDiv">
-                    <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this bill will reset all paid expenses tied to this bill to unpaid. Are you sure?</p>
-                    <div>
-                        <button class="editButton btn btn-dark" id="yesDeleteButton" value="Yes"><span id="confirmBillDeletionSpan">Yes</span></button>
-                        <button class="deleteButton btn btn-dark" id="noDeleteButton" value="Cancel"><span id="cancelBillDeletionSpan">Cancel</span></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row">
-    <div class="col-md-12">
-        <table class="table table-striped table-dark" id="billsTable">
-            <thead>
-                <tr>
-                    <th scope="col"></th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Amount Due</th>
-                    <th scope="col">Due Date</th>
-                    <th scope="col">Frequency</th>
-                    <th scope="col">Linked Account</th>
-                </tr>
-            </thead>
-
-            <tbody>
-            <tr>
-                <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
-                <td>
-                    @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
-                </td>
-                <td>
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                        @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
-                        @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
-                    </div>
-                </td>
-                <td>
-                    @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
-                    @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
-                </td>
-                <td>
-                    @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForFrequency(event)" })
-                    @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
-                </td>
-                <td>
-                    @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)" })
-                    @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
-                </td>
-            </tr>
-            @if (Model.PagedBills != null && Model.PagedBills.Count > 0)
+            </td>
+            <td>
+                @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForFrequency(event)" })
+                @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
+            </td>
+            <td>
+                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)" })
+                @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
+            </td>
+        </tr>
+        @if (Model.PagedBills != null && Model.PagedBills.Count > 0)
             {
                 foreach (var item in Model.PagedBills.OrderByDescending(b => b.Name))
                 {
@@ -118,40 +58,40 @@
                     var accountId = "billAccountId_" + item.Id;
                     var frequencyIdValue = (int)item.PaymentFrequency;
                     var accountIdValue = item.AccountId;
-                    <tr class="tableRow" id="@rowId">
-                        <th scope="row"></th>
-                        <td id="@nameId">@item.Name</td>
-                        <td id="@amountDueId">@item.AmountDue.ToString("C")</td>
-                        <td id="@dueDateId">@item.DueDate.ToShortDateString()</td>
-                        <td id="@frequencyNameId">@item.PaymentFrequency</td>
-                        @if (@item.Account != null)
-                        {
-                            <td id="@accountNameId">@item.Account.Name</td>
-                        }
-                        else
-                        {
-                            <td id="@accountNameId"></td>
-                        }
-                        <td id="@frequencyId" style="display: none">@frequencyIdValue</td>
-                        <td id="@accountId" style="display: none">@accountIdValue</td>
-                    </tr>
-                }
-            }
-            else
-            {
-                <tr>
-                    <td colspan="6">No Bills</td>
+                <tr class="tableRow" id="@rowId">
+                    <th scope="row"></th>
+                    <td id="@nameId">@item.Name</td>
+                    <td id="@amountDueId">@item.AmountDue.ToString("C")</td>
+                    <td id="@dueDateId">@item.DueDate.ToShortDateString()</td>
+                    <td id="@frequencyNameId">@item.PaymentFrequency</td>
+                    @if (@item.Account != null)
+                    {
+                        <td id="@accountNameId">@item.Account.Name</td>
+                    }
+                    else
+                    {
+                        <td id="@accountNameId"></td>
+                    }
+                    <td id="@frequencyId" style="display: none">@frequencyIdValue</td>
+                    <td id="@accountId" style="display: none">@accountIdValue</td>
                 </tr>
             }
-            </tbody>
-            @if (Model.PagedBills != null && Model.PagedBills.Count != 0)
+        }
+        else
+        {
+            <tr>
+                <td colspan="6">No Bills</td>
+            </tr>
+        }
+    </tbody>
+    @if (Model.PagedBills != null && Model.PagedBills.Count != 0)
             {
-                <tr>
-                    <td colspan="6">
-                        <div class="fixed-table-pagination" style="display: block;">
-                            <div class="pull-left">
-                                @Html.PagedListPager(Model.PagedBills,
-                                                    page => Url.Action("Index", "Bills", new
+        <tr>
+            <td colspan="6">
+                <div class="fixed-table-pagination" style="display: block;">
+                    <div class="pull-left">
+                        @Html.PagedListPager(Model.PagedBills,
+                                                    page => Url.Action("PageBills", "Bills", new
                                                     {
                                                         page,
                                                         pageSize = Model.PagedBills.PageSize,
@@ -162,20 +102,24 @@
                                                         IsShowControls = false,
                                                         IsShowFirstLast = false,
                                                         IsShowPages = true
-                                                    }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions(), new AjaxOptions()
-                                                    { HttpMethod = "GET", UpdateTargetId = "billsTable" }))
-                            </div>
-                            <div class="pull-right pagination-detail header-title pd-tp-bt-10">
-                                <span class="pagination pagination-info">
-                                    Page @(Model.PagedBills.PageCount < Model.PagedBills.PageNumber ? 0 : Model.PagedBills.PageNumber) of @Model.PagedBills.PageCount
-                                    /
-                                    @(Model.PagedBills.TotalItemCount) items in @(Model.PagedBills.PageCount) pages
-                                </span>
-                            </div>
-                        </div>
-                    </td>
-                </tr>
-            }
-        </table>
-    </div>
-</div>
+                                                    }),
+                            PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+                                new PagedListRenderOptions(),
+                                new AjaxOptions
+                                {
+                                    HttpMethod = "GET",
+                                    UpdateTargetId = "billsTable"
+                                }))
+                    </div>
+                    <div class="pull-right pagination-detail header-title pd-tp-bt-10">
+                        <span class="pagination pagination-info">
+                            Page @(Model.PagedBills.PageCount < Model.PagedBills.PageNumber ? 0 : Model.PagedBills.PageNumber) of @Model.PagedBills.PageCount
+                            /
+                            @(Model.PagedBills.TotalItemCount) items in @(Model.PagedBills.PageCount) pages
+                        </span>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    }
+</table>

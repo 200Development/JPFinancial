@@ -1,65 +1,56 @@
-﻿@using PagedList
-@using PagedList.Mvc
+﻿@using PagedList.Mvc
 @model PagedList.IPagedList<JPFData.Models.JPFinancial.Expense>
 
 
-<div class="row" id="expensesPartialView">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="header">
-                <h4 class="title">Expenses</h4>
-            </div>
-            <div class="content">
-                <div class="row">
-                    <div class="col-md-12">
-                        <table class="table table-striped table-dark" id="expensesTable">
-                            <thead>
-                            <tr class="header">
-                                <th scope="col">Expense</th>
-                                <th scope="col">Amount Due</th>
-                                <th scope="col">Due Date</th>
-                                <th scope="col"></th>
-                            </tr>
-                            </thead>
-                            @if (Model != null && Model.Count > 0)
-                            {
-                                <tbody>
-                                @foreach (var item in Model.OrderBy(b => b.Due))
-                                {
-                                    var expenseId = "expenseId_" + item.Id;
-                                    var nameId = "expenseName_" + item.Id;
-                                    var amountDueId = "expenseAmountDue_" + item.Id;
-                                    var dueDateId = "expenseDueDate_" + item.Id;
-                                    var creditAccountId = "expenseCreditAccountId_" + item.Id;
 
-                                    @Html.Hidden(@creditAccountId, item.CreditAccountId);
+<table class="table table-striped table-dark" id="expensesTable">
+    <thead>
+        <tr class="header">
+            <th scope="col">Expense</th>
+            <th scope="col">Amount Due</th>
+            <th scope="col">Due Date</th>
+            <th scope="col"></th>
+        </tr>
+    </thead>
+    @if (Model != null && Model.Count > 0)
+    {
+        <tbody>
+            @foreach (var item in Model.OrderBy(b => b.Due))
+            {
+                var expenseId = "expenseId_" + item.Id;
+                var nameId = "expenseName_" + item.Id;
+                var amountDueId = "expenseAmountDue_" + item.Id;
+                var dueDateId = "expenseDueDate_" + item.Id;
+                var creditAccountId = "expenseCreditAccountId_" + item.Id;
 
-                                    <tr>
-                                        <td id="@nameId">@item.Name</td>
-                                        <td id="@amountDueId">@item.Amount.ToString("C")</td>
-                                        <td id="@dueDateId">@item.Due.ToShortDateString()</td>
-                                        <td><button id="@expenseId" class="payBillButtons btn btn-dark btn-sm">Mark as Paid</button></td>
-                                    </tr>
-                                }
-                                </tbody>
-                            }
-                            else
-                            {
-                                <tbody>
-                                <tr>
-                                    <td colspan="4">No Unpaid Expenses</td>
-                                </tr>
-                                </tbody>
-                            }
-                            <tfoot>
-                            @if (Model != null && Model.Count != 0)
-                            {
-                                <tr>
-                                    <td colspan="4">
-                                        <div class="fixed-table-pagination" style="display: block;">
-                                            <div class="pull-left">
-                                                @Html.PagedListPager(Model,
-                                                    page => Url.Action("Index", "Bills", new
+                @Html.Hidden(@creditAccountId, item.CreditAccountId);
+
+                <tr>
+                    <td id="@nameId">@item.Name</td>
+                    <td id="@amountDueId">@item.Amount.ToString("C")</td>
+                    <td id="@dueDateId">@item.Due.ToShortDateString()</td>
+                    <td><button id="@expenseId" class="payBillButtons btn btn-dark btn-sm">Mark as Paid</button></td>
+                </tr>
+            }
+        </tbody>
+    }
+    else
+    {
+        <tbody>
+            <tr>
+                <td colspan="4">No Unpaid Expenses</td>
+            </tr>
+        </tbody>
+    }
+    <tfoot>
+        @if (Model != null && Model.Count != 0)
+        {
+            <tr>
+                <td colspan="4">
+                    <div class="fixed-table-pagination" style="display: block;">
+                        <div class="pull-left">
+                            @Html.PagedListPager(Model,
+                                                    page => Url.Action("PageExpenses", "Bills", new
                                                     {
                                                         page,
                                                         pageSize = Model.PageSize,
@@ -70,30 +61,29 @@
                                                         IsShowControls = false,
                                                         IsShowFirstLast = false,
                                                         IsShowPages = true
-                                                    }), PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(new PagedListRenderOptions(), new AjaxOptions()
-                                                    { HttpMethod = "GET", UpdateTargetId = "expensesTable" }))
-                                            </div>
-                                            <div class="pull-right pagination-detail header-title pd-tp-bt-10">
-                                                <span class="pagination pagination-info">
-                                                    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
-                                                    /
-                                                    @(Model.TotalItemCount) items in @(Model.PageCount) pages
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
-                            }
-                            </tfoot>
-                        </table>
-
-
+                                                    }),
+                                PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
+                                    new PagedListRenderOptions(),
+                                    new AjaxOptions()
+                                    {
+                                        HttpMethod = "GET",
+                                        UpdateTargetId = "expensesTable"
+                                    }))
+                        </div>
+                        <div class="pull-right pagination-detail header-title pd-tp-bt-10">
+                            <span class="pagination pagination-info">
+                                Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+                                /
+                                @(Model.TotalItemCount) items in @(Model.PageCount) pages
+                            </span>
+                        </div>
                     </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+                </td>
+            </tr>
+        }
+    </tfoot>
+</table>
+
 
 <div class="row">
     <div class="col-md-12" id="payExpenseDiv"></div>
