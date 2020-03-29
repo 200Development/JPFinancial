@@ -18,7 +18,7 @@ namespace JPFinancial.Controllers
         private readonly AccountManager _accountManager = new AccountManager();
         private readonly TransactionManager _transactionManager = new TransactionManager();
 
-       
+        [HttpGet]       
         public ActionResult Index()
         {
             var page = 1;
@@ -36,6 +36,7 @@ namespace JPFinancial.Controllers
             return View(billVM);
         }
 
+        [HttpPost]
         public ActionResult Create(BillViewModel billVM)
         {
             try
@@ -60,6 +61,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult EditBill(Bill bill)
         {
             try
@@ -73,6 +75,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult DeleteBill(Bill bill)
         {
             try
@@ -86,6 +89,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult SetExpenseToPaid(Expense expense)
         {
             try
@@ -104,6 +108,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult SetExpenseToPaidWithTransaction(Expense expense)
         {
             try
@@ -143,6 +148,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpGet]
         public ActionResult PageExpenses(int page = 1, int pageSize = 10)
         {
 
@@ -158,6 +164,7 @@ namespace JPFinancial.Controllers
             return PartialView("_ExpensesTable", billVM.PagedExpenses);
         }
 
+        [HttpGet]
         public ActionResult PageBills(int page = 1, int pageSize = 10)
         {
 
