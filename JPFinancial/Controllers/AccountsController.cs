@@ -16,25 +16,20 @@ namespace JPFinancial.Controllers
         private readonly AccountManager _accountManager = new AccountManager();
 
         [HttpGet]
-        public ActionResult Index(int? page)
+        public ActionResult Index()
         {
             try
             {
+                var page = 1;
                 var pageSize = 10;
-                var pageIndex = page.HasValue ? Convert.ToInt32(page) : 1;
 
                 var accountVM = new AccountViewModel();
                 _accountManager.Update();
                 _accountManager.Rebalance();
                 accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(pageIndex, pageSize);
-                accountVM.Metrics = _accountManager.GetMetrics();
-                accountVM.RebalanceReport = _accountManager.GetRebalancingAccountsReport();
-
+                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
                 
 
-
-                //TODO: Add ability to show X number of Accounts
                 return View(accountVM);
             }
             catch (Exception e)
@@ -44,6 +39,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public ActionResult Create(AccountViewModel accountVM)
         {
             try
@@ -61,6 +57,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult EditAccount(Account account)
         {
             try
@@ -74,6 +71,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult DeleteAccount(Account account)
         {
             try
@@ -88,6 +86,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult UpdateAccounts(List<Account> accounts)
         {
             try
@@ -100,6 +99,17 @@ namespace JPFinancial.Controllers
                 Logger.Instance.Error(e);
                 return Json("Error: " + e);
             }
+        }
+
+        [HttpGet]
+        public ActionResult PageAccounts(int page = 1, int pageSize = 10)
+        {
+            var accountVM = new AccountViewModel();
+            accountVM.Accounts = _accountManager.GetAllAccounts();
+            accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
+           
+
+            return PartialView("_AccountsTable", accountVM);
         }
 
         protected override void Dispose(bool disposing)

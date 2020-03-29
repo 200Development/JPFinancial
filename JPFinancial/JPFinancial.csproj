@@ -389,7 +389,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <None Include="Scripts\_references.js" />
-    <Content Include="Scripts\utility.js" />
     <Content Include="Views\Shared\_ExpensesTable.cshtml" />
     <None Include="Views\Dashboard\index.cshtml" />
     <Content Include="favicon.ico" />
@@ -437,6 +436,7 @@
     <Content Include="Views\Transactions\Index.cshtml" />
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_BillsTable.cshtml" />
+    <Content Include="Views\Shared\_AccountsTable.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
