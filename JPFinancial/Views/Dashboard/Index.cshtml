@@ -67,10 +67,6 @@
                                 <div class="card-body">
                                     <table title="Expenses">
                                         <tbody>
-                                            @*<tr>
-                                                <td style="width: 50%" class="expenseContentLabel">Current</td>
-                                                <td style="width: 50%" class="expenseContentValue">3.04</td>
-                                            </tr>*@
                                             <tr>
                                                 <td style="width: 50%" class="expenseContentLabel">Debt-To-Income</td>
                                                 <td style="width: 50%" class="expenseContentValue">@Model.Metrics.DebtToIncome.ToString("C")</td>
@@ -99,7 +95,7 @@
                                     Disposable Income
                                     <div>
                                         @Html.Hidden("hiddenDisposableValue")
-                                        <input type="number" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome.ToString("C")" readonly="readonly" />
+                                        <input type="text" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome.ToString("C")" readonly="readonly" />
                                     </div>
                                     <div><input type="button" class="btn btn-dark text-info" id="updateAccountsButton" value="Save Changes" onclick="updateAccounts(event)" /></div>
                                 </div>
@@ -108,26 +104,6 @@
                                         <div class="col-4" id="accountCol1"></div>
                                         <div class="col-4" id="accountCol2"></div>
                                         <div class="col-4" id="accountCol3">
-                                            @*<table>
-                                                <tbody>
-                                                    <tr>
-                                                        <td style="width: 50%" class="expenseContentLabel">Current</td>
-                                                        <td style="width: 50%" class="expenseContentValue">3.04</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="width: 50%" class="expenseContentLabel">Debt-To-Income</td>
-                                                        <td style="width: 50%" class="expenseContentValue">1.87%</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="width: 50%" class="expenseContentLabel">Savings</td>
-                                                        <td style="width: 50%" class="expenseContentValue">9.5%</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td style="width: 50%" class="expenseContentLabel">Emergency Fund (Months)</td>
-                                                        <td style="width: 50%" class="expenseContentValue">4.84</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>*@
                                         </div>
                                     </div>
                                 </div>
@@ -135,7 +111,6 @@
                         </div>
                     </div>
                 </div>
-
             </div>
         </div>
     </div>
@@ -144,9 +119,9 @@
 
 @section scripts {
 
-    @*<script type="text/javascript" src="~/Scripts/utility.js"></script>*@
     <script type="text/javascript">
 
+       
         var updatedAccounts = [];
 
         function loadAccounts() {
@@ -199,13 +174,14 @@
 
             if (rangeDefaultValue !== NaN && rangeValue !== NaN) {
                 const disposableIncomeElement = $('#disposableIncomeValue')[0];
-                const disposableIncomeValue = Number(disposableIncomeElement.value);
+                const disposableIncomeText = disposableIncomeElement.value.replace('$', '').replace(',','');
+                const disposableIncomeValue = Number(disposableIncomeText);
                 const delta = rangeValue - rangeDefaultValue;
 
                 if (disposableIncomeValue !== NaN) {
                     const updatedDisposableIncome = disposableIncomeValue - delta;
                     const updatedDisposableIncomeFixed = updatedDisposableIncome.toFixed(2);
-                    disposableIncomeElement.value = updatedDisposableIncomeFixed.toString();
+                    disposableIncomeElement.value = updatedDisposableIncomeFixed;
                 }
 
                 if (!$(disposableIncomeElement).hasClass('updated')) {
@@ -218,7 +194,6 @@
                 changedRange.defaultValue = changedRange.value;
             }
         };
-
 
         function setRangeMaxValues(rangeClass, changedRange, delta) {
 

@@ -17,7 +17,7 @@ namespace JPFinancial.Controllers
         private readonly DashboardManager _dashboardManager = new DashboardManager();
 
 
-        // GET: Dashboard
+        [HttpGet]
         public ActionResult Index()
         {
             try
@@ -38,7 +38,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-       
         private SortedTransactions SortTransactions(IEnumerable<Transaction> transactions, int yearsBack)
         {
             var date = DateTime.Today;
