@@ -11,6 +11,7 @@ namespace JPFData.Metrics
         {
             NetIncome = 0.00m;
             TotalDue = 0.00m;
+            CashBalance = 0.00m;
             CostliestExpensePercentage = 0.00m;
             CostliestExpenseAmount = 0.00m;
             LoanInterestPercentOfIncome = 0.00m;
@@ -36,6 +37,9 @@ namespace JPFData.Metrics
 
         [Display(Name = "Minimum Monthly Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal MinimumMonthlyExpenses { get; set; }
+
+        [Display(Name = "Cash Balance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        public decimal CashBalance { get; set; }
 
         [Display(Name = "Disposable Income"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal DisposableIncome { get; set; }

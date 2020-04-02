@@ -52,6 +52,7 @@ namespace JPFData.Managers
                 metrics.CashFlowByMonth = GetCashFlowByMonth();
                 metrics.EmergencyFundRatio = GetEmergencyFundRatio();
                 metrics.DueBeforeNextPayPeriod = GetDueBeforeNextPayPeriod();
+                metrics.CashBalance = GetCashBalance();
 
 
                 return metrics;
@@ -263,6 +264,15 @@ namespace JPFData.Managers
                 Logger.Instance.Error(e);
                 throw;
             }
+        }
+
+        private decimal GetCashBalance()
+        {
+            var accountBalanceSum = _accountManager.GetAllAccounts().Sum(a => a.Balance);
+            accountBalanceSum += _accountManager.GetPoolAccount().Balance;
+
+
+            return accountBalanceSum;
         }
 
         private string ConvertMonthIntToString(int month)
