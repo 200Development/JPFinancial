@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Globalization;
 using System.Linq;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
@@ -12,7 +13,7 @@ namespace JPFData.Managers
     /// <summary>
     /// Manages all read/write to database Bills Table
     /// </summary>
-    public class BillManager
+    public class BillManager : IBillManager
     {
         private readonly ApplicationDbContext _db;
         private readonly string _userId;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 using JPFData.Managers;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
@@ -9,7 +10,7 @@ using PagedList;
 
 namespace JPFData.ViewModels
 {
-    public class TransactionViewModel
+    public class TransactionViewModel : ITransactionViewModel
     {
         public TransactionViewModel()
         {

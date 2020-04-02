@@ -2,13 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
 
 namespace JPFData.Managers
 {
-    public class DashboardManager
+    public class DashboardManager : IDashboardManager
     {
         private readonly AccountManager _accountManager;
         private readonly BillManager _billManager;
@@ -64,7 +65,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetDisposableIncome()
+        public decimal GetDisposableIncome()
         {
             try
             {
@@ -91,7 +92,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetSavingsRate()
+        public decimal GetSavingsRate()
         {
             try
             {
@@ -143,7 +144,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetMinimumMonthlyExpenses()
+        public decimal GetMinimumMonthlyExpenses()
         {
             try
             {
@@ -191,8 +192,8 @@ namespace JPFData.Managers
                 throw;
             }
         }
-        
-        private Dictionary<string, decimal> GetCashFlowByMonth()
+
+        public Dictionary<string, decimal> GetCashFlowByMonth()
         {
             try
             {
@@ -238,7 +239,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetEmergencyFundRatio()
+        public decimal GetEmergencyFundRatio()
         {
             try
             {
@@ -252,7 +253,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetDueBeforeNextPayPeriod()
+        public decimal GetDueBeforeNextPayPeriod()
         {
             try
             {
@@ -266,7 +267,7 @@ namespace JPFData.Managers
             }
         }
 
-        private decimal GetCashBalance()
+        public decimal GetCashBalance()
         {
             var accountBalanceSum = _accountManager.GetAllAccounts().Sum(a => a.Balance);
             accountBalanceSum += _accountManager.GetPoolAccount().Balance;
@@ -275,7 +276,7 @@ namespace JPFData.Managers
             return accountBalanceSum;
         }
 
-        private string ConvertMonthIntToString(int month)
+        public string ConvertMonthIntToString(int month)
         {
             switch (month)
             {

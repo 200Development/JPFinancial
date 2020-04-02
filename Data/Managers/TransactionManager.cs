@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
@@ -13,7 +14,7 @@ namespace JPFData.Managers
     /// <summary>
     /// Manages all read/write to database Transaction Table
     /// </summary>
-    public class TransactionManager
+    public class TransactionManager : ITransactionManager
     {
         private readonly ApplicationDbContext _db;
         private readonly ExpenseManager _expenseManager;

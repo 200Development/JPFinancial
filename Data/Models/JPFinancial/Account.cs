@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using JPFData.Interfaces;
 
 namespace JPFData.Models.JPFinancial
 {
-    public class Account
+    public class Account : IAccount
     {
         public Account()
         {

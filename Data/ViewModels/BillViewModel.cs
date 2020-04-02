@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 using PagedList;
 
 namespace JPFData.ViewModels
 {
-    public class BillViewModel
+    public class BillViewModel : IBillViewModel
     {
         public BillViewModel()
         {

@@ -1,11 +1,12 @@
 ﻿using System.Collections.Generic;
+using JPFData.Interfaces;
 using PagedList;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
 namespace JPFData.ViewModels
 {
-    public class AccountViewModel
+    public class AccountViewModel : IAccountViewModel
     {
         public AccountViewModel()
         {

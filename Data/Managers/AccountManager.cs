@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
@@ -11,7 +12,7 @@ namespace JPFData.Managers
     /// <summary>
     /// Manages all read/write to database Accounts Table
     /// </summary>
-    public class AccountManager
+    public class AccountManager : IAccountManager
     {
         private readonly ApplicationDbContext _db;
         private readonly string _userId;

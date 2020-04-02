@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using JPFData.DTO;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
@@ -11,7 +12,7 @@ namespace JPFData.Managers
     /// <summary>
     /// Manages all read/write to database Expense Table
     /// </summary>
-    public class ExpenseManager
+    public class ExpenseManager : IExpenseManager
     {
         private readonly ApplicationDbContext _db;
         private readonly string _userId;
@@ -128,7 +129,7 @@ namespace JPFData.Managers
             }
         }
 
-        private ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
+        public ExpenseMetrics RefreshExpenseMetrics(ExpenseDTO entity)
         {
             throw new NotImplementedException();
         }

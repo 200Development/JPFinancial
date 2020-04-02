@@ -1,10 +1,11 @@
 ﻿using System.Collections.Generic;
+using JPFData.Interfaces;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
 
 namespace JPFData.ViewModels
 {
-    public class DashboardViewModel
+    public class DashboardViewModel : IDashboardViewModel
     {
         public DashboardViewModel()
         {

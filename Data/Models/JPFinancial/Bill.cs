@@ -1,10 +1,11 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using JPFData.Enumerations;
+using JPFData.Interfaces;
 
 namespace JPFData.Models.JPFinancial
 {
-    public class Bill 
+    public class Bill : IBill
     {
 
         public Bill()

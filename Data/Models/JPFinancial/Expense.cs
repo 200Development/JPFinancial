@@ -1,8 +1,9 @@
 ﻿using System;
+using JPFData.Interfaces;
 
 namespace JPFData.Models.JPFinancial
 {
-    public class Expense
+    public class Expense : IExpense
     {
         public Expense()
         {
