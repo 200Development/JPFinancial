@@ -52,7 +52,7 @@
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
-                                <input class="input-group" id="selectedTransactionAmount" type="number" />
+                                <input class="input-group" id="selectedTransactionAmount" step="0.01" type="number" />
                             </div>
 
                             <div class="selectedInputLabel">Type</div>
@@ -79,8 +79,9 @@
                     </div>
                     <div class="card-footer" id="selectedFooter">
                         <div id="footerOptions">
-                            <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span id="editSelectedTransactionSpan">Edit</span></button>
-                            <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span id="deleteSelectedTransactionSpan">Delete</span></button>
+                            <button class="editButton btn btn-dark" id="editButton"><i class="fa fa-edit editIcon"></i><span>Edit</span></button>
+                            <button class="deleteButton btn btn-dark" id="deleteButton"><i class="fa fa-trash deleteIcon"></i><span>Delete</span></button>
+                            <button class="cancelButton btn btn-dark" id="cancelButton" value="Cancel"><i class="fa fa-ban cancelIcon"></i><span>Cancel</span></button>
                         </div>
                         <div id="deleteConfirmationDiv">
                             <p><span style="float: left; margin: 12px 12px 20px 0;"></span>Deleting this transaction will reset all account balances. Are you sure?</p>
@@ -276,6 +277,23 @@
             $('#Transaction_CreditAccountId').val(creditAccountId);
         };
 
+        function closeSelectedTransactionDiv(e) {
+            e.stopPropagation();
+            e.preventDefault();
+
+            $('#selectedTransactionEmptyText').css('display', 'block');
+            $('.selectedInput').css('display', 'none');
+            $('.selectedInputLabel').css('display', 'none');
+            $('#selectedFooter').css('display', 'none');
+            $('#selectedTransactionPayee').val('');
+            $('#selectedTransactionDate').val('');
+            $('#selectedTransactionAmount').val(0);
+            $('#Transaction_Type').val(null);
+            $('#Transaction_Category').val(null);
+            $('#from').css('display', 'none');
+            $('#Transaction_CreditAccountId').val(null);
+        }
+
         function saveChanges(e) {
             e.stopPropagation();
             e.preventDefault();
@@ -392,6 +410,7 @@
             $('.tableRow').click(rowSelected);
             $('#editButton').click(saveChanges);
             $('#deleteButton').click(deleteConfirmation);
+            $('#cancelButton').click(closeSelectedTransactionDiv);
         };
 
 

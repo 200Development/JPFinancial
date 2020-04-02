@@ -84,7 +84,9 @@ textarea {
     border: 0;
 }
 
-.editButton, .deleteButton {
+.editButton, 
+.deleteButton, 
+.cancelButton {
     background: #212529;
     border: 0;
     width: 120px;
@@ -97,7 +99,10 @@ textarea {
    
 }
 
-.addIcon, .editIcon, .deleteIcon {
+.addIcon,
+.editIcon,
+.deleteIcon,
+.cancelIcon {
     color: #508CA4;
     font-size: 22px;
 }
