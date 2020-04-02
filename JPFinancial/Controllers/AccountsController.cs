@@ -104,12 +104,20 @@ namespace JPFinancial.Controllers
         [HttpGet]
         public ActionResult PageAccounts(int page = 1, int pageSize = 10)
         {
-            var accountVM = new AccountViewModel();
-            accountVM.Accounts = _accountManager.GetAllAccounts();
-            accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
+            try
+            {
+                var accountVM = new AccountViewModel();
+                accountVM.Accounts = _accountManager.GetAllAccounts();
+                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
            
 
-            return PartialView("_AccountsTable", accountVM);
+                return PartialView("_AccountsTable", accountVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View("Error");
+            }
         }
 
         protected override void Dispose(bool disposing)

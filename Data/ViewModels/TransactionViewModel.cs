@@ -5,6 +5,7 @@ using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Metrics;
 using JPFData.Models.JPFinancial;
+using PagedList;
 
 namespace JPFData.ViewModels
 {
@@ -33,6 +34,7 @@ namespace JPFData.ViewModels
         public Transaction Transaction { get; set; }
         public TransactionMetrics Metrics { get; set; }
         public IEnumerable<Transaction> Transactions { get; set; }
+        public IPagedList<Transaction> PagedTransactions { get; set; }
         public IEnumerable<Account> Accounts { get; set; }
         public bool AutoTransferPaycheckContributions { get; }
         public TransactionTypesEnum Type { get; set; }

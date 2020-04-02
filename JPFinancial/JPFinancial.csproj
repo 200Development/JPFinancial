@@ -437,6 +437,7 @@
     <Content Include="Views\Shared\Info.cshtml" />
     <Content Include="Views\Shared\_BillsTable.cshtml" />
     <Content Include="Views\Shared\_AccountsTable.cshtml" />
+    <Content Include="Views\Shared\_TransactionsTable.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

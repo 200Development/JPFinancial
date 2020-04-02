@@ -5,6 +5,7 @@ using JPFData.Enumerations;
 using JPFData.Managers;
 using JPFData.Models.JPFinancial;
 using JPFData.ViewModels;
+using PagedList;
 
 namespace JPFinancial.Controllers
 {
@@ -14,12 +15,16 @@ namespace JPFinancial.Controllers
         private readonly ApplicationDbContext _db = new ApplicationDbContext();
         private readonly TransactionManager _transactionManager = new TransactionManager();
 
+        [HttpGet]
         public ActionResult Index()
         {
             try
             {
+                var page = 1;
+                var pageSize = 10;
                 var transactionVM = new TransactionViewModel();
                 transactionVM.Transactions = _transactionManager.GetAllTransactions();
+                transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
                 transactionVM.Metrics = _transactionManager.GetMetrics();
 
 
@@ -32,6 +37,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
             try
@@ -86,6 +92,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult EditTransaction(Transaction transaction)
         {
             try
@@ -99,6 +106,7 @@ namespace JPFinancial.Controllers
             }
         }
 
+        [HttpPost]
         public JsonResult DeleteTransaction(Transaction transaction)
         {
             try
@@ -111,6 +119,24 @@ namespace JPFinancial.Controllers
             {
                 Logger.Instance.Error(e);
                 return Json("Error");
+            }
+        }
+
+        [HttpGet]
+        public ActionResult PageTransactions(int page = 1, int pageSize = 10)
+        {
+            try
+            {
+                var transactionVM = new TransactionViewModel();
+                transactionVM.Transactions = _transactionManager.GetAllTransactions();
+                transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
+
+                return PartialView("_TransactionsTable", transactionVM);
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                return View("Error");
             }
         }
 
