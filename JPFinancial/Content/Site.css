@@ -9,6 +9,12 @@ text {
     fill: #E1E5EE;
 }
 
+/* google chart tooltip */
+path {
+    fill: #32383E;
+    color: #E1E5EE;
+}
+
 .input-group>.form-control {
     text-align: right;
 }
