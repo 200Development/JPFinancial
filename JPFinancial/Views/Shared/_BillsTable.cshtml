@@ -15,9 +15,9 @@
     </thead>
     <tbody>
         <tr>
-            <th scope="row" class="addButtonColumn"><button class="addButton" type="submit" name="submitButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
+            <th scope="row" class="addButtonColumn"><button class="addButton" id="addButton" value="Add"><i class="fa fa-plus-circle addIcon"></i></button></th>
             <td>
-                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Bill.Name, new { htmlAttributes = new { @class = "form-control", @id="newBillName" } })
                 @Html.ValidationMessageFor(model => model.Bill.Name, "", new { @class = "text-danger" })
             </td>
             <td>
@@ -25,20 +25,20 @@
                     <div class="input-group-prepend">
                         <span class="input-group-text">$</span>
                     </div>
-                    @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control" } })
+                    @Html.EditorFor(model => model.Bill.AmountDue, new { htmlAttributes = new { @class = "form-control", @id="newBillAmountDue" } })
                     @Html.ValidationMessageFor(model => model.Bill.AmountDue, "", new { @class = "text-danger" })
                 </div>
             </td>
             <td>
-                @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control" } })
+                @Html.EditorFor(model => model.Bill.DueDate, new { htmlAttributes = new { @class = "form-control", @id="newBillDueDate" } })
                 @Html.ValidationMessageFor(model => model.Bill.DueDate, "", new { @class = "text-danger" })
             </td>
             <td>
-                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForFrequency(event)" })
+                @Html.EnumDropDownListFor(model => model.Bill.PaymentFrequency, "Payment Frequency", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForFrequency(event)", @id="newBillFrequencyId" })
                 @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
             </td>
             <td>
-                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)", @id = "selectedAccountDD" })
+                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)", @id = "newBillAccountId" })
                 @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
             </td>
         </tr>

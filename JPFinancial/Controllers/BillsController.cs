@@ -37,27 +37,26 @@ namespace JPFinancial.Controllers
         }
 
         [HttpPost]
-        public ActionResult Create(BillViewModel billVM)
+        public JsonResult Create(BillWithAccount vm)
         {
             try
             {
-                // Get hidden values that are set for dropdowns on change event
-                var selectedAccountId = Request.Form["selectedAccountId"];
-                billVM.Bill.AccountId = Convert.ToInt32(selectedAccountId);
+                if (vm.FrequencyId > 0) vm.Frequency = (FrequencyEnum)vm.FrequencyId;
 
-                var selectedFrequencyId = Convert.ToInt32(Request.Form["selectedFrequencyId"]);
-                if (selectedFrequencyId > 0) billVM.Bill.PaymentFrequency = (FrequencyEnum)selectedFrequencyId;
+                var bill = MapToBill(vm);
+                if (vm.AccountId != 0) return Json(!_billManager.Create(bill) ? "Error" : "Success");
 
 
-                if (!_billManager.Create(billVM.Bill)) return View("Error");
+                var account = MapToAccount(vm);
+                _accountManager.Create(account);
+                bill.AccountId = account.Id;
 
-
-                return RedirectToAction("Index");
+                return Json(!_billManager.Create(bill) ? "Error" : "Success");
             }
             catch (Exception e)
             {
                 Logger.Instance.Error(e);
-                return View("Error");
+                return Json("Error");
             }
         }
 
@@ -180,6 +179,31 @@ namespace JPFinancial.Controllers
             return PartialView("_BillsTable", billVM);
         }
 
+        private Bill MapToBill(BillWithAccount vm)
+        {
+            var bill = new Bill();
+
+            bill.Name = vm.Name;
+            bill.AmountDue = vm.AmountDue;
+            bill.PaymentFrequency = vm.Frequency;
+            bill.DueDate = vm.DueDate;
+
+
+            return bill;
+        }
+
+        private Account MapToAccount(BillWithAccount vm)
+        {
+            var account = new Account();
+
+            account.Name = vm.AccountName;
+            account.Balance = vm.AccountBalance;
+            account.PaycheckContribution = vm.AccountPaycheckContribution;
+
+
+            return account;
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -188,5 +212,18 @@ namespace JPFinancial.Controllers
             }
             base.Dispose(disposing);
         }
+    }
+
+    public class BillWithAccount
+    {
+        public string Name { get; set; }
+        public decimal AmountDue { get; set; }
+        public DateTime DueDate { get; set; }
+        public int? FrequencyId { get; set; }
+        public FrequencyEnum Frequency { get; set; }
+        public int? AccountId { get; set; }
+        public string AccountName { get; set; }
+        public decimal AccountBalance { get; set; }
+        public decimal AccountPaycheckContribution { get; set; }
     }
 }
