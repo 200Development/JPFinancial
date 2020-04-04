@@ -66,7 +66,8 @@
                                     new AjaxOptions()
                                     {
                                         HttpMethod = "GET",
-                                        UpdateTargetId = "expensesTable"
+                                        UpdateTargetId = "expensesTable",
+                                        OnSuccess = "bindExpenseTableListeners"
                                     }))
                         </div>
                         <div class="pull-right pagination-detail header-title pd-tp-bt-10">
