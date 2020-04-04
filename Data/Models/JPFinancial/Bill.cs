@@ -11,8 +11,7 @@ namespace JPFData.Models.JPFinancial
         public Bill()
         {
             DueDate = Convert.ToDateTime(DateTime.Today.ToString("MMMM dd yyyy"));
-            if (Global.Instance.User != null)
-                UserId = Global.Instance.User.Id;
+            UserId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
         [Key]
         public int Id { get; set; }
