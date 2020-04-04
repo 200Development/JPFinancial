@@ -181,6 +181,10 @@
     <Compile Include="Migrations\202003260016532_addIsEmergencyFundToAccount.designer.cs">
       <DependentUpon>202003260016532_addIsEmergencyFundToAccount.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.cs" />
+    <Compile Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.designer.cs">
+      <DependentUpon>202004030110488_addNewAccountPropertyAddedToAccount.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
     <Compile Include="Models\Email\SendGridEmailService.cs" />
@@ -276,6 +280,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202003260016532_addIsEmergencyFundToAccount.resx">
       <DependentUpon>202003260016532_addIsEmergencyFundToAccount.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.resx">
+      <DependentUpon>202004030110488_addNewAccountPropertyAddedToAccount.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

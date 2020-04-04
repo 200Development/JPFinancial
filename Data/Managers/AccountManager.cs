@@ -396,6 +396,31 @@ namespace JPFData.Managers
             }
         }
 
+        public void CheckAndCreateAddNewAccount()
+        {
+            try
+            {
+                var accounts = _db.Accounts.Where(a => a.UserId == _userId).ToList();
+                if (accounts.Exists(a => a.IsAddNewAccount)) return;
+
+                var anAccount = new Account();
+                anAccount.Name = "Add New Account";
+                anAccount.Balance = 0.0m;
+                anAccount.IsPoolAccount = false;
+                anAccount.IsEmergencyFund = false;
+                anAccount.IsAddNewAccount = true;
+                anAccount.UserId = _userId;
+
+                _db.Accounts.Add(anAccount);
+                _db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
         /// <summary>
         /// Updates Account balances in the database.  Uses surplus balances to pay off deficits
         /// </summary>

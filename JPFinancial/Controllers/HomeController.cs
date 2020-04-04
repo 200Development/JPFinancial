@@ -23,6 +23,7 @@ namespace JPFinancial.Controllers
             var accountManager = new AccountManager();
             accountManager.CheckAndCreatePoolAccount();
             accountManager.CheckAndCreateEmergencyFund();
+            accountManager.CheckAndCreateAddNewAccount();
 
             _billManager.UpdateBillDueDates();
 

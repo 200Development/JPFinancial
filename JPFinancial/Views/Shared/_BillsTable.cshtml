@@ -38,7 +38,7 @@
                 @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
             </td>
             <td>
-                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)" })
+                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForAccount(event)", @id = "selectedAccountDD" })
                 @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
             </td>
         </tr>

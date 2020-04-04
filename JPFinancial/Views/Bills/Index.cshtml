@@ -68,7 +68,7 @@
 
                             <div class="selectedInputLabel">Linked Account</div>
                             <div class="input-group justify-content-center selectedInput">
-                                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "", htmlAttributes: new { @class = "input-group" })
+                                @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "input-group", @id = "selectedAccountDD_selected" })
                                 @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
                             </div>
                         </div>
@@ -97,7 +97,7 @@
             </div>
         </div>
     </div>
-}
+} 
 
 
 @section scripts
@@ -189,13 +189,13 @@
                 url: 'Bills/EditBill',
                 dataType: 'json',
                 data: data,
-                success: function () {
+                success: function() {
                     window.location.reload();
                 },
-                failure: function (result) {
+                failure: function(result) {
                     console.log('Failure: ' + result);
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error: ' + error);
                 }
             });
@@ -230,13 +230,13 @@
                 url: 'Bills/DeleteBill',
                 dataType: 'json',
                 data: data,
-                success: function (result) {
+                success: function(result) {
                     window.location.reload();
                 },
-                failure: function (result) {
+                failure: function(result) {
                     console.log('Failure: ' + result);
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error: ' + error);
                 }
             });
@@ -251,11 +251,15 @@
             $('#deleteConfirmationDiv').css('display', 'none');
         };
 
+        function bindExpenseTableListeners(e) {
+            $('.payBillButtons').click(payBill);
+        };
+
         function payBill(e) {
 
             e.preventDefault();
             e.stopPropagation();
-
+            debugger;
             const id = e.target.id.split('_')[1];
 
             const confirmStr = 'Add Transaction?';
@@ -287,10 +291,15 @@
             let editTransaction = `<div class="card-body"><div>Amount</div>`;
             editTransaction += `<div class="input-group justify-content-center">`;
             editTransaction += `<div class="input-group-prepend"><span class="input-group-text">$</span></div>`;
-            editTransaction += `<input class="input-group" id="expenseTransactionAmount" type="number" value="` + expenseTransaction.Amount + `"/></div>`;
+            editTransaction += `<input class="input-group" id="expenseTransactionAmount" type="number" value="` +
+                expenseTransaction.Amount +
+                `"/></div>`;
             editTransaction += `<div>Paid On</div><div class="input-group justify-content-center">`;
-            editTransaction += `<input class="input-group" id="expenseTransactionDate" type="date" value="` + expenseTransaction.Due + `" /></div>`;
-            editTransaction += `<div><button class="btn btn-dark" id="createTransactionButton">Create Transaction</button>`;
+            editTransaction += `<input class="input-group" id="expenseTransactionDate" type="date" value="` +
+                expenseTransaction.Due +
+                `" /></div>`;
+            editTransaction +=
+                `<div><button class="btn btn-dark" id="createTransactionButton">Create Transaction</button>`;
             editTransaction += `<button class="btn btn-dark" id="cancelTransactionButton">Cancel</button></div>`;
 
             $('#confirmTransactionDiv').append(editTransaction);
@@ -306,20 +315,22 @@
 
             const amountText = $('#expenseTransactionAmount').val().replace('$', '');
             expenseTransaction.Amount = Number(amountText) !== NaN ? Number(amountText) : expenseTransaction.Amount;
-            expenseTransaction.Due = $('#expenseTransactionDate') !== undefined ? $('#expenseTransactionDate').val() : expenseTransaction.Due;
+            expenseTransaction.Due = $('#expenseTransactionDate') !== undefined
+                ? $('#expenseTransactionDate').val()
+                : expenseTransaction.Due;
 
             $.ajax({
                 url: 'Bills/SetExpenseToPaidWithTransaction',
                 type: 'POST',
                 dataType: 'json',
                 data: expenseTransaction,
-                success: function () {
+                success: function() {
                     window.location.reload();
                 },
-                failure: function (result) {
+                failure: function(result) {
                     console.log('Failure: ' + result);
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error: ' + error);
                 }
             });
@@ -346,13 +357,13 @@
                 type: 'POST',
                 dataType: 'json',
                 data: data,
-                success: function () {
+                success: function() {
                     window.location.reload();
                 },
-                failure: function (result) {
+                failure: function(result) {
                     console.log('Failure: ' + result);
                 },
-                error: function (error) {
+                error: function(error) {
                     console.log('Error: ' + error);
                 }
             });
@@ -373,7 +384,8 @@
             const date = year + '-' + month + '-' + day;
 
             const creditAccountIdElement = $('#expenseCreditAccountId_' + id)[0];
-            const creditAccountId = Number(creditAccountIdElement.value) !== NaN ? Number(creditAccountIdElement.value) : 0;
+            const creditAccountId =
+                Number(creditAccountIdElement.value) !== NaN ? Number(creditAccountIdElement.value) : 0;
 
             const transaction = {};
             transaction.Id = id;
@@ -410,6 +422,87 @@
             $('#selectedFrequencyId').val(value);
         };
 
+        function relatedAccountChanged(e) {
+            debugger;
+            e.preventDefault();
+            e.stopPropagation();
+            const item = $(this).find('option:selected');
+            const text = item.html(); //get the selected option text
+            if (text === "Add New Account") {
+
+                const tableRow = $('<tr>').addClass('tableRow');
+                tableRow.attr('id', 'addAccountRow');
+
+                const tableCol = $('<td>').attr('colspan', 6);
+                tableRow.append(tableCol);
+
+                const table = $('<table>').addClass('table table-striped table-dark');
+                table.attr('id', 'newAccountTable');
+
+                const header = $('<thead>');
+                const headerCols = '<tr>' +
+                    '<th class="tdWidth"></th>' +
+                    '<th class="tdWidth"></th>' +
+                    '<th class="tdWidth"></th>' +
+                    '<th class="tdWidth" id="newAccountName">Name</th>' +
+                    '<th class="tdWidth" id="newAccountBalance">Balance</th>' +
+                    '<th class="tdWidth" id="newAccountPaycheckContribution">Paycheck Contribution</th>' +
+                    '</tr>';
+                header.append(headerCols);
+                table.append(header);
+
+                const tableBody = $('<tbody>');
+                const tableColumns = $('<tr>' +
+                    '<td class="tdWidth tdInput"></td>' +
+                    '<td class="tdWidth tdInput"></td>' +
+                    '<td class="tdWidth tdInput"></td>' +
+                    '<td class="tdWidth tdInput"><input type="text" name="newAccountName"/></td>' +
+                    '<td class="tdWidth tdInput"><input type="text" name="newAccountBalance"/></td>' +
+                    '<td class="tdWidth tdInput"><input type="text" name="newAccountPaycheckContribution"/></td>' +
+                    '</tr>');
+                tableBody.append(tableColumns);
+                table.append(tableBody);
+
+                tableCol.append(table);
+                tableRow.insertAfter($(this).parents().closest('tr'));
+
+                $('#newAccountTable').css('background-color', '#212529');
+                $('.tdWidth').css('width', '16%');
+            } else {
+                const rowExists = $('#addAccountRow');
+                if (rowExists.length) {
+                    rowExists.remove();
+                }
+            }
+        }
+
+        function relatedAccountChanged_selected() {
+            debugger;
+            e.preventDefault();
+            e.stopPropagation();
+            const item = $(this).find('option:selected');
+            const text = item.html(); //get the selected option text
+            if (text === "Other") {
+                $('#addNewAccountToSelectList_Selected').css('display', 'block'); //display the add new dialog
+            }
+        }
+
+        function addNewAccount() {
+            const newitem = $('#txtNewOption').val();
+            const newOption = '<option value="' + newitem + '">' + newitem + '</option>';
+            $(newOption).insertBefore($("#ddlCity option:last"));
+            $('#selectedAccountDD').val(newitem);
+            return false;
+        }
+
+        function addNewAccount_selected() {
+            const newitem = $('#txtNewOption').val();
+            const newOption = '<option value="' + newitem + '">' + newitem + '</option>';
+            $(newOption).insertBefore($("#ddlCity option:last"));
+            $('#selectedAccountDD_selected').val(newitem);
+            return false;
+        }
+
         function addTableListeners() {
 
             $('.tableRow').click(rowSelected);
@@ -417,6 +510,10 @@
             $('#editButton').click(saveChanges);
             $('#deleteButton').click(deleteConfirmation);
             $('#cancelButton').click(closeSelectedBillDiv);
+            $('#selectedAccountDD').change(relatedAccountChanged);
+            $('#selectedAccountDD_selected').change(relatedAccountChanged_selected);
+            $('#btnAddNewAccount').click(addNewAccount);
+            $('#btnAddNewItem_Selected').click(addNewAccount_selected);
 
         };
 

@@ -8,6 +8,16 @@ namespace JPFData.Models.JPFinancial
         public Account()
         {
           UserId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+          Balance = 0.00m;
+          PaycheckContribution = 0.00m;
+          SuggestedPaycheckContribution = 0.00m;
+          RequiredSavings = 0.00m;
+          BalanceLimit = 0.00m;
+          BalanceSurplus = 0.00m;
+          IsPoolAccount = false;
+          IsEmergencyFund = false;
+          IsMandatory = false;
+          ExcludeFromSurplus = false;
         }
 
         [Key]
@@ -43,6 +53,9 @@ namespace JPFData.Models.JPFinancial
         [Required, Display(Name = "Emergency Fund")]
         public bool IsEmergencyFund { get; set; }
 
+        [Required, Display(Name = "Add New Account")]
+        public bool IsAddNewAccount { get; set; }
+        
         [Required, Display(Name = "Mandatory Account?")]
         public bool IsMandatory { get; set; }
 
