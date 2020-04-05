@@ -21,7 +21,7 @@ namespace JPFinancial.Controllers
             try
             {
                 var page = 1;
-                var pageSize = 10;
+                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
                 var accountVM = new AccountViewModel();
                 _accountManager.Update();
@@ -102,10 +102,12 @@ namespace JPFinancial.Controllers
         }
 
         [HttpGet]
-        public ActionResult PageAccounts(int page = 1, int pageSize = 10)
+        public ActionResult PageAccounts(int page = 1)
         {
             try
             {
+                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
+
                 var accountVM = new AccountViewModel();
                 accountVM.Accounts = _accountManager.GetAllAccounts();
                 accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);

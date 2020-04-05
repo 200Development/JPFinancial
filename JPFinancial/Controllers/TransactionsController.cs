@@ -21,7 +21,7 @@ namespace JPFinancial.Controllers
             try
             {
                 var page = 1;
-                var pageSize = 10;
+                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
                 var transactionVM = new TransactionViewModel();
                 transactionVM.Transactions = _transactionManager.GetAllTransactions();
                 transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
@@ -123,10 +123,12 @@ namespace JPFinancial.Controllers
         }
 
         [HttpGet]
-        public ActionResult PageTransactions(int page = 1, int pageSize = 10)
+        public ActionResult PageTransactions(int page = 1)
         {
             try
             {
+                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
+
                 var transactionVM = new TransactionViewModel();
                 transactionVM.Transactions = _transactionManager.GetAllTransactions();
                 transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);

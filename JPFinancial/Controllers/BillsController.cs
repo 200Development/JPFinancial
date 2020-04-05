@@ -22,7 +22,7 @@ namespace JPFinancial.Controllers
         public ActionResult Index()
         {
             var page = 1;
-            var pageSize = 10;
+            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
             BillViewModel billVM = new BillViewModel();
             billVM.Accounts = _accountManager.GetAllAccounts();
@@ -148,8 +148,9 @@ namespace JPFinancial.Controllers
         }
 
         [HttpGet]
-        public ActionResult PageExpenses(int page = 1, int pageSize = 10)
+        public ActionResult PageExpenses(int page = 1)
         {
+            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
             BillViewModel billVM = new BillViewModel();
             billVM.Accounts = _accountManager.GetAllAccounts();
@@ -164,8 +165,9 @@ namespace JPFinancial.Controllers
         }
 
         [HttpGet]
-        public ActionResult PageBills(int page = 1, int pageSize = 10)
+        public ActionResult PageBills(int page = 1)
         {
+            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
             BillViewModel billVM = new BillViewModel();
             billVM.Accounts = _accountManager.GetAllAccounts();
