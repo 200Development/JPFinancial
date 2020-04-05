@@ -14,7 +14,7 @@
         <div class="col-md-12">
             <div class="card">
                 <div class="header">
-                    <h4 class="title">Expenses</h4>
+                    <h4 class="title">Upcoming Expenses</h4>
                 </div>
                 <div class="content">
                     <div class="row">
@@ -89,7 +89,19 @@
 
     <div class="row">
         <div class="col-md-12">
-            @Html.Action("PageBills")
+            <div class="card">
+                <div class="header">
+                    <h4 class="title">Bills</h4>
+                </div>
+                <div class="content">
+                    <div class="row">
+                        <div class="col-md-12">
+                            @Html.Action("PageBills")
+
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </div>
