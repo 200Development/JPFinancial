@@ -73,6 +73,14 @@
     margin: 15px 0 5px 0;
 }
 
+.dashboardExpenses {
+    padding: 10px 0;
+}
+
+.metricsRow {
+    padding: 5px 0;
+}
+
 .expenseContentLabel {
     text-align: left;
 }
@@ -81,9 +89,18 @@
     text-align: right;
 }
 
+.card-body {
+    padding: 10px;
+}
+
 .rangeDiv {
-    display: inline-flex; 
-    margin-bottom: 12px
+    display: inline-flex;
+    margin-bottom: 12px;
+    padding: 3px 0;
+}
+
+.row {
+    padding: 3px 0;
 }
 
 .range {
