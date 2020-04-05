@@ -16,7 +16,7 @@ namespace JPFinancial.Controllers
 
         public ActionResult Index()
         {
-            if (!User.Identity.IsAuthenticated) return View();
+            if (!User.Identity.IsAuthenticated) return RedirectToAction("Login", "Identity");
 
             Global.Instance.User.Id = User.Identity.GetUserId();
 
