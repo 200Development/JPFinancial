@@ -34,7 +34,9 @@
 
                                     @if (User.Identity.IsAuthenticated)
                                     {
-                                        @Html.ActionLink("Log Out", "Logoff", "Identity")
+                                        <li class="nav-item">
+                                            @Html.ActionLink("Log Out", "Logoff", "Identity")
+                                        </li>
                                     }
                                     else
                                     {
@@ -44,8 +46,19 @@
                                         <li class="nav-item">
                                             @Html.ActionLink("Register", "Register", "Identity")
                                         </li>
+                                        <li class="nav-item dropdown" id="helpDropdown">
+                                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                Help
+                                            </a>
+                                            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                                                @Html.ActionLink("Getting Started", "GettingStarted", "Support")
+                                                @Html.ActionLink("Contact Us", "Contact", "Support")
+                                            </div>
+                                        </li>
                                     }
+                                    
                                 </ul>
+
                             </div>
                         </nav>
                     </div>
