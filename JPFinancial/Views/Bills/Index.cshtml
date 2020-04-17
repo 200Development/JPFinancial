@@ -115,6 +115,7 @@
 
 
         function rowSelected(e) {
+
             const id = e.target.id.split('_')[1];
 
             $('#selectedBillId').val(id);
@@ -163,6 +164,7 @@
         };
 
         function closeSelectedBillDiv(e) {
+
             e.preventDefault();
             e.stopPropagation();
 
@@ -178,6 +180,7 @@
         }
 
         function addBill(e) {
+
             e.preventDefault();
             e.stopPropagation();
 
@@ -189,7 +192,6 @@
             data.FrequencyId = $('#newBillFrequencyId').val() != undefined ? $('#newBillFrequencyId').val() : null;
             data.AccountId = $('#newBillAccountId').val() != undefined ? $('#newBillAccountId').val() : null;
 
-            debugger;
             if ($('#newBillAccountId option:selected')[0].text === 'Add New Account') {
                 data.AccountName = $('#newAccountName').val() != undefined ? $('#newAccountName').val() : null;
                 data.AccountBalance = $('#newAccountBalance').val() != undefined ? $('#newAccountBalance').val() : null;
@@ -302,15 +304,11 @@
             $('#deleteConfirmationDiv').css('display', 'none');
         };
 
-        function bindExpenseTableListeners(e) {
-            $('.payBillButtons').click(payBill);
-        };
-
         function payBill(e) {
 
             e.preventDefault();
             e.stopPropagation();
-            debugger;
+
             const id = e.target.id.split('_')[1];
 
             const confirmStr = 'Add Transaction?';
@@ -474,9 +472,9 @@
         };
 
         function relatedAccountChanged(e) {
-            debugger;
             e.preventDefault();
             e.stopPropagation();
+
             const item = $(this).find('option:selected');
             const text = item.html(); //get the selected option text
             if (text === "Add New Account") {
@@ -528,9 +526,10 @@
         }
 
         function relatedAccountChanged_selected() {
-            debugger;
+
             e.preventDefault();
             e.stopPropagation();
+
             const item = $(this).find('option:selected');
             const text = item.html(); //get the selected option text
             if (text === "Other") {
@@ -539,6 +538,7 @@
         }
 
         function addNewAccount() {
+            
             const newitem = $('#txtNewOption').val();
             const newOption = '<option value="' + newitem + '">' + newitem + '</option>';
             $(newOption).insertBefore($("#ddlCity option:last"));
@@ -547,6 +547,7 @@
         }
 
         function addNewAccount_selected() {
+
             const newitem = $('#txtNewOption').val();
             const newOption = '<option value="' + newitem + '">' + newitem + '</option>';
             $(newOption).insertBefore($("#ddlCity option:last"));
@@ -556,19 +557,18 @@
 
         function addTableListeners() {
 
-            $('.tableRow').click(rowSelected);
-            $('.payBillButtons').click(payBill);
-            $('#addButton').click(addBill);
-            $('#editButton').click(saveChanges);
-            $('#deleteButton').click(deleteConfirmation);
-            $('#cancelButton').click(closeSelectedBillDiv);
-            $('#newBillAccountId').change(relatedAccountChanged);
-            $('#selectedAccountDD_selected').change(relatedAccountChanged_selected);
-            $('#btnAddNewAccount').click(addNewAccount);
-            $('#btnAddNewItem_Selected').click(addNewAccount_selected);
-
+            $('.tableRow').unbind('click').click(rowSelected);
+            $('.payBillButtons').unbind('click').click(payBill);
+            $('#addButton').unbind('click').click(addBill);
+            $('#editButton').unbind('click').click(saveChanges);
+            $('#deleteButton').unbind('click').click(deleteConfirmation);
+            $('#cancelButton').unbind('click').click(closeSelectedBillDiv);
+            $('#newBillAccountId').unbind('click').change(relatedAccountChanged);
+            $('#selectedAccountDD_selected').unbind('click').change(relatedAccountChanged_selected);
+            $('#btnAddNewAccount').unbind('click').click(addNewAccount);
+            $('#btnAddNewItem_Selected').unbind('click').click(addNewAccount_selected);
         };
-
+        
 
         document.addEventListener("DOMContentLoaded", addTableListeners);
 
