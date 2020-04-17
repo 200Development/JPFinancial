@@ -290,10 +290,10 @@
         };
 
         function addTableListeners() {
-            $('.tableRow').click(rowSelected);
-            $('#editButton').click(saveAccount);
-            $('#deleteButton').click(deleteAccount);
-            $('#cancelButton').click(closeSelectedAccountDiv);
+            $('.tableRow').unbind('click').click(rowSelected);
+            $('#editButton').unbind('click').click(saveAccount);
+            $('#deleteButton').unbind('click').click(deleteAccount);
+            $('#cancelButton').unbind('click').click(closeSelectedAccountDiv);
         }
 
         google.load("visualization",

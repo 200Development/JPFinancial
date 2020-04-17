@@ -106,11 +106,6 @@
 
     <script type="text/javascript">
 
-        /* updateType variables */
-        var transactionType = document.getElementById('Type');
-        var creditAccountDiv = document.getElementById('divCreditAccount');
-        var debitAccountDiv = document.getElementById('divDebitAccount');
-
 
         function chart() {
 
@@ -220,6 +215,10 @@
         };
 
         function updateType() {
+          
+            const transactionType = document.getElementById('Type');
+            const creditAccountDiv = document.getElementById('divCreditAccount');
+           
             // 0 - Income, 1 - Expense, 2 - Transfer
             if (transactionType.value === "0") {
                 creditAccountDiv.style.display = "none";
@@ -407,16 +406,17 @@
         };
         
         function addTableListeners() {
-            $('.tableRow').click(rowSelected);
-            $('#editButton').click(saveChanges);
-            $('#deleteButton').click(deleteConfirmation);
-            $('#cancelButton').click(closeSelectedTransactionDiv);
+            $('.tableRow').unbind('click').click(rowSelected);
+            $('#editButton').unbind('click').click(saveChanges);
+            $('#deleteButton').unbind('click').click(deleteConfirmation);
+            $('#cancelButton').unbind('click').click(closeSelectedTransactionDiv);
+            $('#Type').unbind('change').change(updateType);
+
         };
 
 
         document.addEventListener("DOMContentLoaded", updateType);
         document.addEventListener("DOMContentLoaded", addTableListeners);
-        transactionType.addEventListener('change', updateType);
 
 
         google.load("visualization",

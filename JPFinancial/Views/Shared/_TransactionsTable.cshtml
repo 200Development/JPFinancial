@@ -112,23 +112,24 @@
                         <div class="pull-left">
                             @Html.PagedListPager(Model.PagedTransactions,
                                 page => Url.Action("PageTransactions", "Transactions", new
-                                                {
-                                                    page,
-                                                    pageSize = Model.PagedTransactions.PageSize,
-                                                    TotalItemCount = Model.PagedTransactions.TotalItemCount,
-                                                    CurrentPage = Model.PagedTransactions.PageNumber,
-                                                    sortOrder = "",
-                                                    fieldName = "",
-                                                    IsShowControls = false,
-                                                    IsShowFirstLast = false,
-                                                    IsShowPages = true
-                                                }),
+                                {
+                                    page,
+                                    pageSize = Model.PagedTransactions.PageSize,
+                                    TotalItemCount = Model.PagedTransactions.TotalItemCount,
+                                    CurrentPage = Model.PagedTransactions.PageNumber,
+                                    sortOrder = "",
+                                    fieldName = "",
+                                    IsShowControls = false,
+                                    IsShowFirstLast = false,
+                                    IsShowPages = true
+                                }),
                                 PagedListRenderOptions.EnableUnobtrusiveAjaxReplacing(
                                     new PagedListRenderOptions(),
                                     new AjaxOptions()
                                     {
                                         HttpMethod = "GET",
-                                        UpdateTargetId = "transactionsTable"
+                                        UpdateTargetId = "transactionsTable",
+                                        OnComplete = "new function(){addTableListeners(); updateType();}"
                                     }))
                         </div>
                         <div class="pull-right pagination-detail header-title pd-tp-bt-10">
