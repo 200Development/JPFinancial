@@ -31,7 +31,7 @@
         </tr>
         @if (Model != null && Model.PagedAccounts.Count > 0)
         {
-            foreach (var item in Model.PagedAccounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))
+            foreach (var item in Model.PagedAccounts)
             {
                 var rowId = "rowId_" + item.Id;
 
@@ -78,7 +78,8 @@
                                                     new AjaxOptions()
                                                     {
                                                         HttpMethod = "GET",
-                                                        UpdateTargetId = "accountsTable"
+                                                        UpdateTargetId = "accountsTable",
+                                                        OnComplete = "addTableListeners"
                                                     }))
                         </div>
                         <div class="pull-right pagination-detail header-title pd-tp-bt-10">

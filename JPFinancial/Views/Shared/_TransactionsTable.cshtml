@@ -59,7 +59,7 @@
     </tr>
     @if (Model != null && Model.PagedTransactions.Count > 0)
     {
-        foreach (var item in Model.PagedTransactions.OrderByDescending(t => t.Date).ThenBy(t => t.Amount))
+        foreach (var item in Model.PagedTransactions)
         {
 
             var rowId = "rowId_" + item.Id;

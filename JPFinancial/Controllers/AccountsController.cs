@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Managers;
@@ -20,16 +21,20 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                var page = 1;
-                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
-
-                var accountVM = new AccountViewModel();
-                _accountManager.Update();
-                _accountManager.Rebalance();
-                accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
+                // Prevents page from breaking due to error updating or rebalancing
+                try
+                {
+                    _accountManager.Update();
+                    _accountManager.Rebalance();
+                }
+                catch (Exception e)
+                {
+                    Logger.Instance.Error(e);
+                }
                 
-
+                var accountVM = GetAccountVM(1);
+              
+             
                 return View(accountVM);
             }
             catch (Exception e)
@@ -106,11 +111,8 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
-                var accountVM = new AccountViewModel();
-                accountVM.Accounts = _accountManager.GetAllAccounts();
-                accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
+                var accountVM = GetAccountVM(page);               
            
 
                 return PartialView("_AccountsTable", accountVM);
@@ -120,6 +122,18 @@ namespace JPFinancial.Controllers
                 Logger.Instance.Error(e);
                 return View("Error");
             }
+        }
+
+        private AccountViewModel GetAccountVM(int page)
+        {
+            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
+
+            var accountVM = new AccountViewModel();
+            accountVM.Accounts = _accountManager.GetAllAccounts().OrderByDescending(a => a.Balance).ThenBy(a => a.Name).ToList();
+            accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
+
+
+            return accountVM;
         }
 
         protected override void Dispose(bool disposing)

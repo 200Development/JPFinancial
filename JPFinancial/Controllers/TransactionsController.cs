@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
@@ -20,12 +21,7 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                var page = 1;
-                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
-                var transactionVM = new TransactionViewModel();
-                transactionVM.Transactions = _transactionManager.GetAllTransactions();
-                transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
-                transactionVM.Metrics = _transactionManager.GetMetrics();
+                var transactionVM = GetTransactionVM(1);
 
 
                 return View(transactionVM);
@@ -127,11 +123,8 @@ namespace JPFinancial.Controllers
         {
             try
             {
-                var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
+                var transactionVM = GetTransactionVM(page);
 
-                var transactionVM = new TransactionViewModel();
-                transactionVM.Transactions = _transactionManager.GetAllTransactions();
-                transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
 
                 return PartialView("_TransactionsTable", transactionVM);
             }
@@ -140,6 +133,19 @@ namespace JPFinancial.Controllers
                 Logger.Instance.Error(e);
                 return View("Error");
             }
+        }
+
+        private TransactionViewModel GetTransactionVM(int page)
+        {
+            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
+
+            var transactionVM = new TransactionViewModel();
+            transactionVM.Transactions = _transactionManager.GetAllTransactions().OrderByDescending(t => t.Date).ThenBy(t => t.Amount);
+            transactionVM.PagedTransactions = transactionVM.Transactions.ToPagedList(page, pageSize);
+            transactionVM.Metrics = _transactionManager.GetMetrics();
+
+
+            return transactionVM;
         }
 
         protected override void Dispose(bool disposing)

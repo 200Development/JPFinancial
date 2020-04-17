@@ -289,7 +289,7 @@
             chart.draw(dataTable, options);
         };
 
-        function addListeners() {
+        function addTableListeners() {
             $('.tableRow').click(rowSelected);
             $('#editButton').click(saveAccount);
             $('#deleteButton').click(deleteAccount);
@@ -304,6 +304,6 @@
 
         $(document).ready(function() { chart(); });
 
-        document.addEventListener("DOMContentLoaded", addListeners);
+        document.addEventListener("DOMContentLoaded", addTableListeners);
     </script>
 }
