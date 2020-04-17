@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using JPFData;
 using JPFData.Enumerations;
@@ -21,16 +22,8 @@ namespace JPFinancial.Controllers
         [HttpGet]       
         public ActionResult Index()
         {
-            var page = 1;
-            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
-            BillViewModel billVM = new BillViewModel();
-            billVM.Accounts = _accountManager.GetAllAccounts();
-            billVM.Bills = _billManager.GetAllBills();
-            billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
-            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
-            billVM.Metrics = _billManager.GetBillMetrics();
-            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+            var billVM = GetBillVM(1);
 
 
             return View(billVM);
@@ -150,15 +143,8 @@ namespace JPFinancial.Controllers
         [HttpGet]
         public ActionResult PageExpenses(int page = 1)
         {
-            var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
-            BillViewModel billVM = new BillViewModel();
-            billVM.Accounts = _accountManager.GetAllAccounts();
-            billVM.Bills = _billManager.GetAllBills();
-            billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
-            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
-            billVM.Metrics = _billManager.GetBillMetrics();
-            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+            var billVM = GetBillVM(page);
 
 
             return PartialView("_ExpensesTable", billVM.PagedExpenses);
@@ -167,18 +153,28 @@ namespace JPFinancial.Controllers
         [HttpGet]
         public ActionResult PageBills(int page = 1)
         {
+            
+            var billVM = GetBillVM(page);
+
+
+            return PartialView("_BillsTable", billVM);
+        }
+
+        private BillViewModel GetBillVM (int page = 1)
+        {
+
             var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
             BillViewModel billVM = new BillViewModel();
             billVM.Accounts = _accountManager.GetAllAccounts();
-            billVM.Bills = _billManager.GetAllBills();
+            billVM.Bills = _billManager.GetAllBills().OrderBy(b => b.DueDate).ThenBy(b => b.Name).ToList();
             billVM.PagedBills = billVM.Bills.ToPagedList(page, pageSize);
-            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses();
+            billVM.Expenses = _expenseManager.GetAllUnpaidExpenses().OrderBy(e => e.Due).ThenBy(e => e.Name).ToList();
             billVM.Metrics = _billManager.GetBillMetrics();
-            billVM.PagedExpenses = _expenseManager.GetAllUnpaidExpenses().ToPagedList(page, pageSize);
+            billVM.PagedExpenses = billVM.Expenses.ToPagedList(page, pageSize);
 
 
-            return PartialView("_BillsTable", billVM);
+            return billVM;
         }
 
         private Bill MapToBill(BillWithAccount vm)

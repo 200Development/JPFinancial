@@ -44,7 +44,7 @@
         </tr>
         @if (Model.PagedBills != null && Model.PagedBills.Count > 0)
             {
-                foreach (var item in Model.PagedBills.OrderByDescending(b => b.Name))
+                foreach (var item in Model.PagedBills)
                 {
                     var rowId = "rowId_" + item.Id;
                     var nameId = "billName_" + item.Id;

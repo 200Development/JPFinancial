@@ -15,7 +15,7 @@
     @if (Model != null && Model.Count > 0)
     {
         <tbody>
-            @foreach (var item in Model.OrderBy(b => b.Due))
+            @foreach (var item in Model)
             {
                 var expenseId = "expenseId_" + item.Id;
                 var nameId = "expenseName_" + item.Id;
