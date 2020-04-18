@@ -155,6 +155,20 @@ namespace JPFData.Managers
             }
         }
 
+        public List<Account> GetAllAccountsForTransactions()
+        {
+            try
+            {
+                // should pool account be excluded?
+                return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount && !a.IsAddNewAccount).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
+        }
+
         public Account GetAccount(int? id)
         {
             try
