@@ -95,18 +95,24 @@
             const id = e.target.id.split('_')[1];
 
             $('#selectedAccountId').val(id);
-            debugger;
+
             const name = $(`#accountName_${id}`).length 
                 ? $(`#accountName_${id}`).text() 
                 : '';
-
-            const balanceText = $(`#accountBalance_${id}`).text()
+            let isNegativeBalance = false;
+            let balanceText = $(`#accountBalance_${id}`).text()
                 .replace('$', '')
                 .replace(',', '');
+           
+            if (balanceText.indexOf('(') >= 0) {
+                balanceText = balanceText.replace('(', '').replace(')', '');
+                isNegativeBalance = true;
+            }
 
-            const balance = isNaN(Number(balanceText)) 
-                ? 0 
-                : Number(balanceText);
+            let balance = 0;
+            if(!isNaN(Number(balanceText))) {
+                balance = isNegativeBalance ? Number(balanceText) * -1 : Number(balanceText);
+            }
 
             const paycheckContributionText = $(`#accountPaycheckContribution_${id}`).text()
                 .replace('$', '')
