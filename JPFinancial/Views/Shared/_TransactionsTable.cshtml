@@ -52,7 +52,7 @@
         </td>
         <td>
             <div class="form-group" id="divCreditAccount">
-                @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), " ", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForCreditAccount(event)" })
+                @Html.DropDownListFor(model => model.Transaction.CreditAccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "form-control", @onchange = "setHiddenForCreditAccount(event)", @id = "newTransactionAccount" })
                 @Html.ValidationMessageFor(model => Model.Accounts, "", new { @class = "text-danger" })
             </div>
         </td>          
