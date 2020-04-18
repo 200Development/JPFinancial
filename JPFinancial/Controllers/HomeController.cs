@@ -7,25 +7,26 @@ namespace JPFinancial.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly BillManager _billManager;
+        private bool _isUserIdSet;
 
         public HomeController()
         {
-            _billManager = new BillManager();
         }
 
         public ActionResult Index()
         {
             if (!User.Identity.IsAuthenticated) return RedirectToAction("Login", "Identity");
+            if(!_isUserIdSet)
+                SetGlobalUser();
 
-            Global.Instance.User.Id = User.Identity.GetUserId();
 
             var accountManager = new AccountManager();
             accountManager.CheckAndCreatePoolAccount();
             accountManager.CheckAndCreateEmergencyFund();
             accountManager.CheckAndCreateAddNewAccount();
 
-            _billManager.UpdateBillDueDates();
+            var billManager = new BillManager();
+            billManager.UpdateBillDueDates();
 
 
             return View();
@@ -44,6 +45,14 @@ namespace JPFinancial.Controllers
             ViewBag.Message = "Your contact page.";
 
             return View();
+        }
+
+        private void SetGlobalUser()
+        {
+            if (!User.Identity.IsAuthenticated) return;
+
+            Global.Instance.User.Id = User.Identity.GetUserId();
+            _isUserIdSet = true;
         }
     }
 }
