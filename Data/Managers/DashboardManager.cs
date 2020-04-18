@@ -257,7 +257,7 @@ namespace JPFData.Managers
         {
             try
             {
-                var nextPayday = new DateTime(2020,4,3);
+                var nextPayday = new DateTime(2020,5,1);
                 return _expenseManager.GetAllUnpaidExpenses().Where(e => e.Due < nextPayday).Sum(e => e.Amount);
             }
             catch (Exception e)
