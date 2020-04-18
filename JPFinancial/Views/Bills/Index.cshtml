@@ -62,11 +62,11 @@
                             @Html.ValidationMessageFor(model => model.Bill.PaymentFrequency, "", new { @class = "text-danger" })
                         </div>
 
-                        <div class="selectedInputLabel">Linked Account</div>
+                        @*<div class="selectedInputLabel">Linked Account</div>
                         <div class="input-group justify-content-center selectedInput">
                             @Html.DropDownListFor(model => model.Bill.AccountId, new SelectList(Model.Accounts, "Id", "Name"), "--Select Account--", htmlAttributes: new { @class = "input-group", @id = "selectedAccountDD_selected" })
                             @Html.ValidationMessageFor(model => model.Bill.AccountId, "", new { @class = "text-danger" })
-                        </div>
+                        </div>*@
                     </div>
                 </div>
                 <div class="card-footer" id="selectedFooter">
@@ -147,9 +147,9 @@
                 ? -1
                 : Number(frequencyIdText);
 
-            const accountId = Number($('#billAccountId_' + id).text()) !== NaN
-                ? Number($('#billAccountId_' + id).text())
-                : -1;
+            //const accountId = Number($('#billAccountId_' + id).text()) !== NaN
+            //    ? Number($('#billAccountId_' + id).text())
+            //    : -1;
 
 
             $('#selectedBillEmptyText').css('display', 'none');
@@ -160,7 +160,7 @@
             $('#selectedBillAmountDue').val(amountDue);
             $('#selectedBillDueDate').val(dueDate);
             $('#Bill_PaymentFrequency').val(frequencyId);
-            $('#Bill_AccountId').val(accountId);
+            //$('#Bill_AccountId').val(accountId);
         };
 
         function closeSelectedBillDiv(e) {
@@ -235,7 +235,7 @@
             data.AmountDue = $('#selectedBillAmountDue').val() != undefined ? $('#selectedBillAmountDue').val() : null;
             data.DueDate = $('#selectedBillDueDate').val() != undefined ? $('#selectedBillDueDate').val() : null;
             data.PaymentFrequency = $('#Bill_PaymentFrequency').val() != undefined ? $('#Bill_PaymentFrequency').val() : null;
-            data.AccountId = $('#Bill_AccountId').val() != undefined ? $('#Bill_AccountId').val() : null;
+            //data.AccountId = $('#Bill_AccountId').val() != undefined ? $('#Bill_AccountId').val() : null;
 
             $.ajax({
                 type: 'POST',
@@ -497,7 +497,6 @@
                     '<th class="tdWidth"></th>' +
                     '<th class="tdWidth">Name</th>' +
                     '<th class="tdWidth">Balance</th>' +
-                    '<th class="tdWidth">Paycheck Contribution</th>' +
                     '</tr>';
                 header.append(headerCols);
                 table.append(header);
@@ -509,7 +508,6 @@
                     '<td class="tdWidth tdInput"></td>' +
                     '<td class="tdWidth tdInput"><input type="text" id="newAccountName" /></td>' +
                     '<td class="tdWidth tdInput"><input type="text" id="newAccountBalance" /></td>' +
-                    '<td class="tdWidth tdInput"><input type="text" id="newAccountPaycheckContribution"/></td>' +
                     '</tr>');
                 tableBody.append(tableColumns);
                 table.append(tableBody);
@@ -565,8 +563,8 @@
             $('#editButton').unbind('click').click(saveChanges);
             $('#deleteButton').unbind('click').click(deleteConfirmation);
             $('#cancelButton').unbind('click').click(closeSelectedBillDiv);
-            $('#newBillAccountId').unbind('click').change(relatedAccountChanged);
-            $('#selectedAccountDD_selected').unbind('click').change(relatedAccountChanged_selected);
+            $('#newBillAccountId').unbind('change').change(relatedAccountChanged);
+            $('#selectedAccountDD_selected').unbind('change').change(relatedAccountChanged_selected);
             $('#btnAddNewAccount').unbind('click').click(addNewAccount);
             $('#btnAddNewItem_Selected').unbind('click').click(addNewAccount_selected);
         };

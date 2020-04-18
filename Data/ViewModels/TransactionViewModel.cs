@@ -22,8 +22,8 @@ namespace JPFData.ViewModels
 
             try
             {
-                Accounts = new AccountManager().GetAllAccounts();
-                GetFilterOptions();
+                Accounts = new AccountManager().GetAllAccountsForTransactions();
+               // GetFilterOptions();
             }
             catch (Exception e)
             {
