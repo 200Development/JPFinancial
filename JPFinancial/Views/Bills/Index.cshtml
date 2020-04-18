@@ -319,11 +319,13 @@
             confirmHtml += `</div><div>`;
             confirmHtml += `<button id="withTransactionButton_` + id + `" class="btn btn-dark">Yes</button>`;
             confirmHtml += `<button id="withoutTransactionButton_` + id + `" class="btn btn-dark">No</button>`;
+            confirmHtml += `<button id="cancelExpenseTransactionButton_` + id + `" class="btn btn-dark">Cancel</button>`;
             confirmHtml += `</div></div></div>`;
 
             $('#payExpenseDiv').append(confirmHtml);
             $('#withTransactionButton_' + id).click({ id: id }, setPaidWithTransaction);
             $('#withoutTransactionButton_' + id).click({ id: id }, setPaidWithoutTransaction);
+            $('#cancelExpenseTransactionButton_' + id).click({ id: id }, cancelTransaction);
         };
 
         function setPaidWithTransaction(e) {
@@ -357,6 +359,31 @@
             $('#cancelTransactionButton').click(cancelTransaction);
         };
 
+        function setPaidWithoutTransaction(e) {
+
+            e.preventDefault();
+            e.stopPropagation();
+
+            const id = e.data.id;
+            const data = buildExpenseModel(id);
+
+            $.ajax({
+                url: 'Bills/SetExpenseToPaid',
+                type: 'POST',
+                dataType: 'json',
+                data: data,
+                success: function () {
+                    window.location.reload();
+                },
+                failure: function (result) {
+                    console.log('Failure: ' + result);
+                },
+                error: function (error) {
+                    console.log('Error: ' + error);
+                }
+            });
+        };
+        
         function createTransaction(e) {
 
             e.preventDefault();
@@ -392,31 +419,6 @@
 
             $('#confirmTransactionDiv').remove();
         }
-
-        function setPaidWithoutTransaction(e) {
-
-            e.preventDefault();
-            e.stopPropagation();
-
-            const id = e.data.id;
-            const data = buildExpenseModel(id);
-
-            $.ajax({
-                url: 'Bills/SetExpenseToPaid',
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function () {
-                    window.location.reload();
-                },
-                failure: function (result) {
-                    console.log('Failure: ' + result);
-                },
-                error: function (error) {
-                    console.log('Error: ' + error);
-                }
-            });
-        };
 
         function buildExpenseModel(id) {
 

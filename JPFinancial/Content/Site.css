@@ -19,6 +19,10 @@ path {
     text-align: right;
 }
 
+.table td {
+    vertical-align: unset;
+}
+
 .card {
     background: #32383E;
 }
@@ -86,6 +90,10 @@ textarea {
 
 #deleteConfirmationDiv {
     display: none;
+}
+
+#confirmTransactionDiv {
+    padding: 20px 0;
 }
 
 .dropdown-menu {
