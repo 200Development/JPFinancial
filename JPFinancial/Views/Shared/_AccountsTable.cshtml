@@ -8,7 +8,7 @@
             <th scope="col"></th>
             <th scope="col">Name</th>
             <th scope="col">Balance</th>
-            <th scope="col">Paycheck Contribution</th>
+            <th scope="col">Required Savings</th>
         </tr>
     </thead>
     <tbody>
@@ -37,12 +37,12 @@
 
                 var nameId = "accountName_" + item.Id;
                 var balanceId = "accountBalance_" + item.Id;
-                var paycheckContributionId = "accountPaycheckContribution_" + item.Id;
+                var requiredSavingsId = "accountRequiredSavings_" + item.Id;
                 <tr class="tableRow" id="@rowId">
                     <th scope="row"></th>
                     <td id="@nameId">@item.Name</td>
                     <td id="@balanceId">@item.Balance.ToString("C")</td>
-                    <td id="@paycheckContributionId">@item.PaycheckContribution.ToString("C")</td>
+                    <td id="@requiredSavingsId">@item.RequiredSavings.ToString("C")</td>
                 </tr>
             }
         }

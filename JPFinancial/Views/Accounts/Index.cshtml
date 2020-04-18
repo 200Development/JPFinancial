@@ -48,12 +48,12 @@
                                 <input class="input-group" id="selectedAccountBalance" step="0.01" type="number" />
                             </div>
 
-                            <div class="selectedInputLabel">Paycheck Contribution</div>
+                            <div class="selectedInputLabel">Required Savings</div>
                             <div class="input-group justify-content-center selectedInput">
                                 <div class="input-group-prepend">
                                     <span class="input-group-text">$</span>
                                 </div>
-                                <input class="input-group" id="selectedAccountPaycheckContribution" step="0.01" type="number" />
+                                <input class="input-group" id="selectedAccountRequiredSavings" step="0.01" type="number" />
                             </div>
 
                         </div>
@@ -114,13 +114,13 @@
                 balance = isNegativeBalance ? Number(balanceText) * -1 : Number(balanceText);
             }
 
-            const paycheckContributionText = $(`#accountPaycheckContribution_${id}`).text()
+            const requiredSavingsText = $(`#accountRequiredSavings_${id}`).text()
                 .replace('$', '')
                 .replace(',', '');
 
-            const paycheckContribution = isNaN(Number(paycheckContributionText))
+            const requiredSavings = isNaN(Number(requiredSavingsText))
                 ? 0
-                : Number(paycheckContributionText);
+                : Number(requiredSavingsText);
 
             $('#selectedAccountEmptyText').css('display', 'none');
             $('.selectedInput').css('display', 'flex');
@@ -128,7 +128,7 @@
             $('#selectedAccountFooter').css('display', 'block');
             $('#selectedAccountName').val(name);
             $('#selectedAccountBalance').val(balance);
-            $('#selectedAccountPaycheckContribution').val(paycheckContribution);
+            $('#selectedAccountRequiredSavings').val(requiredSavings);
         };
 
         function saveAccount(e) {
@@ -139,8 +139,8 @@
             data.Id = $('#selectedAccountId').val() != undefined ? $('#selectedAccountId').val() : null;
             data.Name = $('#selectedAccountName').val() != undefined ? $('#selectedAccountName').val() : '';
             data.Balance = $('#selectedAccountBalance').val() != undefined ? $('#selectedAccountBalance').val() : null;
-            data.PaycheckContribution = $('#selectedAccountPaycheckContribution').val() != undefined
-                ? $('#selectedAccountPaycheckContribution').val()
+            data.RequiredSavings = $('#selectedAccountRequiredSavings').val() != undefined
+                ? $('#selectedAccountRequiredSavings').val()
                 : null;
 
             $.ajax({
@@ -218,7 +218,7 @@
             $('#selectedAccountFooter').css('display', 'none');
             $('#selectedAccountName').val('');
             $('#selectedAccountBalance').val(0);
-            $('#selectedAccountPaycheckContribution').val(0);
+            $('#selectedAccountRequiredSavings').val(0);
         }
 
         function chart() {
