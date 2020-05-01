@@ -598,8 +598,6 @@ namespace JPFData.Managers
                 TransactionMetrics metrics = new TransactionMetrics();
 
                 metrics.AccountMetrics = new AccountMetrics();
-                metrics.CreditCardMetrics = new CreditCardMetrics();
-
 
                 var transactions = _db.Transactions.Where(t => t.UserId == Global.Instance.User.Id).ToList();
                 var incomeTransactions = transactions.Where(t => t.Type == TransactionTypesEnum.Income).ToList();

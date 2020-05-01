@@ -8,14 +8,12 @@ namespace JPFData.Metrics
         public TransactionMetrics()
         {
             AccountMetrics = new AccountMetrics();
-            CreditCardMetrics = new CreditCardMetrics();
             MandatoryExpenses = 0.0m;;
             DiscretionaryExpenses = 0.0m;;
             Income = 0.0m;;
         }
 
         public AccountMetrics AccountMetrics { get; set; }
-        public CreditCardMetrics CreditCardMetrics { get; set; }
 
         [Display(Name = "Mandatory Expenses"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         public decimal MandatoryExpenses { get; set; }
