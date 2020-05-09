@@ -10,18 +10,14 @@ namespace JPFData
     public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
-            : base("JPFinancial", throwIfV1Schema: false)
+            : base("ApplicationConnection", throwIfV1Schema: false)
         {
         }
 
         public IDbSet<Account> Accounts { get; set; }
         public IDbSet<Bill> Bills { get; set; }
-        public IDbSet<Salary> Salaries { get; set; }
         public IDbSet<Transaction> Transactions { get; set; }
-        public IDbSet<Loan> Loans { get; set; }
-        public IDbSet<CreditCard> CreditCards { get; set; }
         public IDbSet<Expense> Expenses { get; set; }
-        public IDbSet<Rebalance> Rebalance { get; set; }
 
 
         public static ApplicationDbContext Create()

@@ -24,8 +24,8 @@ namespace JPFinancial.Controllers
                 // Prevents page from breaking due to error updating or rebalancing
                 try
                 {
-                    _accountManager.Update();
-                    _accountManager.Rebalance();
+                    //_accountManager.Update();
+                    //_accountManager.Rebalance();
                 }
                 catch (Exception e)
                 {

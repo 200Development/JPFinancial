@@ -113,8 +113,6 @@
     <Compile Include="AccountRebalanceReport.cs" />
     <Compile Include="Base\BaseManager.cs" />
     <Compile Include="Calculations.cs" />
-    <Compile Include="CalculationsArchive.cs" />
-    <Compile Include="DTO\CreditCardDTO.cs" />
     <Compile Include="DTO\ExpenseDTO.cs" />
     <Compile Include="Enumerations\EventArgumentEnum.cs" />
     <Compile Include="Enumerations\EventCommandEnum.cs" />
@@ -132,16 +130,13 @@
     <Compile Include="Interfaces\ITransactionViewModel.cs" />
     <Compile Include="Logger.cs" />
     <Compile Include="Managers\BillManager.cs" />
-    <Compile Include="Managers\CreditCardManager.cs" />
     <Compile Include="Managers\ExpenseManager.cs" />
     <Compile Include="Interfaces\IExpenseManager.cs" />
     <Compile Include="Interfaces\ITransactionManager.cs" />
     <Compile Include="Interfaces\IDashboardManager.cs" />
     <Compile Include="Metrics\AccountMetrics.cs" />
     <Compile Include="Metrics\BillMetrics.cs" />
-    <Compile Include="Metrics\CreditCardMetrics.cs" />
     <Compile Include="Metrics\ExpenseMetrics.cs" />
-    <Compile Include="Metrics\IncomeMetrics.cs" />
     <Compile Include="Metrics\DashboardMetrics.cs" />
     <Compile Include="Metrics\TimeValueOfMoneyMetrics.cs" />
     <Compile Include="Metrics\TransactionMetrics.cs" />
@@ -149,41 +144,9 @@
     <Compile Include="Managers\AccountManager.cs" />
     <Compile Include="Managers\DashboardManager.cs" />
     <Compile Include="Managers\TransactionManager.cs" />
-    <Compile Include="Migrations\201905121714344_initAfterRestart.cs" />
-    <Compile Include="Migrations\201905121714344_initAfterRestart.Designer.cs">
-      <DependentUpon>201905121714344_initAfterRestart.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.cs" />
-    <Compile Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.Designer.cs">
-      <DependentUpon>201905121731129_removeMandatoryAndLateFromBills.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905121820572_updateAccountModel.cs" />
-    <Compile Include="Migrations\201905121820572_updateAccountModel.Designer.cs">
-      <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905140154286_addUserIdToBill.cs" />
-    <Compile Include="Migrations\201905140154286_addUserIdToBill.Designer.cs">
-      <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201905191542532_addUserIdToExpense.cs" />
-    <Compile Include="Migrations\201905191542532_addUserIdToExpense.Designer.cs">
-      <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201907070703522_addsIsBillToTransaction.cs" />
-    <Compile Include="Migrations\201907070703522_addsIsBillToTransaction.Designer.cs">
-      <DependentUpon>201907070703522_addsIsBillToTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201907070738322_removesFieldsFromTransaction.cs" />
-    <Compile Include="Migrations\201907070738322_removesFieldsFromTransaction.Designer.cs">
-      <DependentUpon>201907070738322_removesFieldsFromTransaction.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202003260016532_addIsEmergencyFundToAccount.cs" />
-    <Compile Include="Migrations\202003260016532_addIsEmergencyFundToAccount.designer.cs">
-      <DependentUpon>202003260016532_addIsEmergencyFundToAccount.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.cs" />
-    <Compile Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.designer.cs">
-      <DependentUpon>202004030110488_addNewAccountPropertyAddedToAccount.cs</DependentUpon>
+    <Compile Include="Migrations\202004290145501_init.cs" />
+    <Compile Include="Migrations\202004290145501_init.designer.cs">
+      <DependentUpon>202004290145501_init.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\Email\EmailContract.cs" />
@@ -257,32 +220,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201905121714344_initAfterRestart.resx">
-      <DependentUpon>201905121714344_initAfterRestart.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905121731129_removeMandatoryAndLateFromBills.resx">
-      <DependentUpon>201905121731129_removeMandatoryAndLateFromBills.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905121820572_updateAccountModel.resx">
-      <DependentUpon>201905121820572_updateAccountModel.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905140154286_addUserIdToBill.resx">
-      <DependentUpon>201905140154286_addUserIdToBill.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201905191542532_addUserIdToExpense.resx">
-      <DependentUpon>201905191542532_addUserIdToExpense.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201907070703522_addsIsBillToTransaction.resx">
-      <DependentUpon>201907070703522_addsIsBillToTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201907070738322_removesFieldsFromTransaction.resx">
-      <DependentUpon>201907070738322_removesFieldsFromTransaction.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202003260016532_addIsEmergencyFundToAccount.resx">
-      <DependentUpon>202003260016532_addIsEmergencyFundToAccount.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202004030110488_addNewAccountPropertyAddedToAccount.resx">
-      <DependentUpon>202004030110488_addNewAccountPropertyAddedToAccount.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202004290145501_init.resx">
+      <DependentUpon>202004290145501_init.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
