@@ -40,9 +40,9 @@
                                             <div class="col-6 expenseContentValue">@Model.Metrics.DueBeforeNextPayPeriod.ToString("C")</div>
                                         </div>
                                         @*<div class="row">
-                                            <div class="col-6 expenseContentLabel">Targeted Net Worth</div>
-                                            <div class="col-6 expenseContentValue">@Model.Metrics.TargetedNetWorth.ToString("C")</div>
-                                        </div>*@
+                                                <div class="col-6 expenseContentLabel">Targeted Net Worth</div>
+                                                <div class="col-6 expenseContentValue">@Model.Metrics.TargetedNetWorth.ToString("C")</div>
+                                            </div>*@
                                         <div class="row">
                                             <div class="col-6 expenseContentLabel">Cash Balance</div>
                                             <div class="col-6 expenseContentValue">@Model.Metrics.CashBalance.ToString("C")</div>
@@ -99,7 +99,8 @@
                                         @Html.Hidden("hiddenDisposableValue")
                                         <input type="text" name="disposableIncomeValue" id="disposableIncomeValue" value="@Model.Metrics.DisposableIncome.ToString("C")" readonly="readonly" />
                                     </div>
-                                    <div><input type="button" class="btn btn-dark text-info" id="updateAccountsButton" value="Save Changes" onclick="updateAccounts(event)" /></div>
+                                    <div><input type="button" class="btn btn-dark text-info" id="updateAccountsButton" value="Save Changes" onclick="updateAccounts(event)" /><label for="updateAccountsButton" id="saveResponseLabel" style="display: block; color:transparent">test</label></div>
+                                    <div></div>
                                 </div>
                                 <div class="card-body">
                                     <div class="row">
@@ -123,7 +124,7 @@
 
     <script type="text/javascript">
 
-       
+
         var updatedAccounts = [];
 
         function loadAccounts() {
@@ -176,7 +177,7 @@
 
             if (rangeDefaultValue !== NaN && rangeValue !== NaN) {
                 const disposableIncomeElement = $('#disposableIncomeValue')[0];
-                const disposableIncomeText = disposableIncomeElement.value.replace('$', '').replace(',','');
+                const disposableIncomeText = disposableIncomeElement.value.replace('$', '').replace(',', '');
                 const disposableIncomeValue = Number(disposableIncomeText);
                 const delta = rangeValue - rangeDefaultValue;
 
@@ -201,7 +202,7 @@
 
             const ranges = $('.' + rangeClass);
 
-            ranges.each(function () {
+            ranges.each(function() {
                 const max = Number(this.max);
 
                 if (this.id === changedRange.id) {
@@ -220,31 +221,59 @@
             e.preventDefault();
             e.stopPropagation();
             const accounts = [];
+            debugger;
+            $.each($('.updated'),
+                function(key, value) {
+                    const account = {};
+                    const id = value.id.split('_')[1];
+                    account.Id = Number(id);
+                    account.Balance = value.valueAsNumber;
 
-            $.each($('.updated'),function(key, value) {
-                const account = {};
-                const id = value.id.split('_')[1];
-                account.Id = Number(id);
-                account.Balance = value.valueAsNumber;
+                    accounts.push(account);
+                });
 
-                accounts.push(account);
-            });
 
-            const data = JSON.stringify({ 'accounts': accounts });
+            if (accounts.length < 1) {
 
-            $.ajax({
-                url: 'Accounts/UpdateAccounts',
-                contentType: 'application/json; charset=utf-8',
-                type: 'POST',
-                dataType: 'json',
-                data: data,
-                success: function(result) {
-                    console.log('Success: ' + result);
-                },
-                error: function(error) {
-                    console.log('Error: ' + error);
-                }
-            });
+                const $label = $('#saveResponseLabel');
+                $label.text('No changes to save');
+                $label.css('color', '#ffef9f');
+                $label.show();
+                $label.fadeOut(2500,
+                    function() {
+                        const $label = $('#saveResponseLabel');
+                        $label.css('color', 'transparent');
+                        $label.css('display', 'block');
+                    });
+            } else {
+
+                const data = JSON.stringify({ 'accounts': accounts });
+
+                $.ajax({
+                    url: 'Accounts/UpdateAccounts',
+                    contentType: 'application/json; charset=utf-8',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: data,
+                    success: function(result) {
+                        $('.updated').removeClass('updated');
+
+                        console.log('Success: ' + result);
+                        const $label = $('#saveResponseLabel');
+                        $label.text('Saved');
+                        $label.css('color', '#6BFFB8');
+                        $label.show();
+                        $label.fadeOut(2500,  function() {
+                            const $label = $('#saveResponseLabel');
+                            $label.css('color', 'transparent');
+                            $label.css('display', 'block');
+                        });
+                    },
+                    error: function(error) {
+                        console.log('Error: ' + error);
+                    }
+                });
+            }
         }
 
         function chart() {
