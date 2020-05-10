@@ -1,16 +1,18 @@
-﻿namespace JPFData.Enumerations
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace JPFData.Enumerations
 {
     public enum FrequencyEnum
     {
         Daily = 1,
         Weekly = 2,
-        [JsonProperty(PropertyName = "Every 2 Weeks")]
+        [Display(Name = "Every 2 Weeks")]
         BiWeekly = 3,
         Monthly = 4,
-        [JsonProperty(PropertyName = "Twice a Month")]
+        [Display(Name = "Twice a Month")]
         SemiMonthly = 5,
         Quarterly = 6,
-        [JsonProperty(PropertyName = "Semi-Annually")]
+        [Display(Name = "Semi-Annually")]
         SemiAnnually = 7,
         Annually = 8
     }
