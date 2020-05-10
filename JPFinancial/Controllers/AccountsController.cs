@@ -129,7 +129,7 @@ namespace JPFinancial.Controllers
             var pageSize = Convert.ToInt32(System.Configuration.ConfigurationManager.AppSettings["defaultPageSize"]);
 
             var accountVM = new AccountViewModel();
-            accountVM.Accounts = _accountManager.GetAllAccounts().OrderByDescending(a => a.Balance).ThenBy(a => a.Name).ToList();
+            accountVM.Accounts = _accountManager.GetAllAccountsForTransactions().OrderByDescending(a => a.Balance).ThenBy(a => a.Name).ToList();
             accountVM.PagedAccounts = accountVM.Accounts.ToPagedList(page, pageSize);
 
 
