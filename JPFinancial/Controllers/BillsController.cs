@@ -36,6 +36,7 @@ namespace JPFinancial.Controllers
             {
                 if (vm.FrequencyId > 0) vm.Frequency = (FrequencyEnum)vm.FrequencyId;
 
+
                 var bill = MapToBill(vm);
                 if (vm.AccountId != 0) return Json(!_billManager.Create(bill) ? "Error" : "Success");
 
@@ -185,6 +186,7 @@ namespace JPFinancial.Controllers
             bill.AmountDue = vm.AmountDue;
             bill.PaymentFrequency = vm.Frequency;
             bill.DueDate = vm.DueDate;
+            if (vm.AccountId != null) bill.AccountId = (int) vm.AccountId;
 
 
             return bill;
