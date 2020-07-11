@@ -15,7 +15,7 @@ namespace JPFData.Models.JPFinancial
             CreditAccountId = 0;
             DebitAccountId = 0;
             SelectedExpenseId = 0;
-            Amount = decimal.Zero;
+            Amount = 0.0m;;
         }
 
         [Required, Key]

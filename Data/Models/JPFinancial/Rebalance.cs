@@ -13,7 +13,7 @@ namespace JPFData.Models.JPFinancial
             Memo = string.Empty;
             CreditAccountId = 0;
             DebitAccountId = 0;
-            Amount = decimal.Zero;
+            Amount = 0.0m;;
         }
 
 

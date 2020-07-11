@@ -12,13 +12,13 @@ namespace JPFData.DTO
             Transactions = new List<Transaction>();
             CreditCards = new List<CreditCard>();
             StaticFinancialMetrics = new StaticFinancialMetrics();
-            TimePeriodMetrics = new TimePeriodFinancialMetrics();
+            TimePeriodMetrics = new TimeValueOfMoneyMetrics();
         }
 
         public List<Account> Accounts { get; set; }
         public List<Transaction> Transactions { get; set; }
         public List<CreditCard> CreditCards { get; set; }
         public StaticFinancialMetrics StaticFinancialMetrics { get; set; }
-        public TimePeriodFinancialMetrics TimePeriodMetrics { get; set; }
+        public TimeValueOfMoneyMetrics TimePeriodMetrics { get; set; }
     }
 }

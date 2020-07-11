@@ -8,6 +8,9 @@ using JPFData.ViewModels;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Manages all read/write to database Bills Table
+    /// </summary>
     public class BillManager
     {
         private readonly ApplicationDbContext _db;
@@ -112,7 +115,7 @@ namespace JPFData.Managers
                 _db.SaveChanges();
 
 
-                return true;
+               return true;
             }
             catch (Exception e)
             {
@@ -138,7 +141,7 @@ namespace JPFData.Managers
             }
         }
 
-        //TODO: Refactor or redesign to prevent having to use new Expense Class
+        //TODO: Refactor or redesign to prevent having to instantiate new Expense Class
         private bool AddBillToExpenses(Bill bill)
         {
             try
@@ -187,7 +190,7 @@ namespace JPFData.Managers
 
                         if (account == null)
                         {
-                            account.Name = paycheckContribution.Key;
+                            account = new Account {Name = paycheckContribution.Key};
                         }
                         else
                             accountIndex = updatedAccounts.FindIndex(a => string.Equals(a.Name, paycheckContribution.Key, StringComparison.CurrentCultureIgnoreCase));
@@ -205,11 +208,13 @@ namespace JPFData.Managers
 
 
                         // iterate through all updated accounts and set state to modified to save to database
+                        var accounts = accountManager.GetAllAccounts();
+
                         foreach (var updatedAccount in updatedAccounts)
                         {
                             try
                             {
-                                var accounts = accountManager.GetAllAccounts();
+
                                 account = accounts.Find(a => string.Equals(a.Name, updatedAccount.Name, StringComparison.CurrentCultureIgnoreCase));
 
                                 // shouldn't ever be null since updatedAccounts comes from Accounts in DB

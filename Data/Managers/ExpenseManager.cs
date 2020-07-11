@@ -7,6 +7,9 @@ using JPFData.Models.JPFinancial;
 
 namespace JPFData.Managers
 {
+    /// <summary>
+    /// Manages all read/write to database Expense Table
+    /// </summary>
     public class ExpenseManager
     {
         private readonly ApplicationDbContext _db;
@@ -16,7 +19,7 @@ namespace JPFData.Managers
         public ExpenseManager()
         {
             _db = new ApplicationDbContext();
-            _userId = Global.Instance?.User.Id ?? string.Empty;
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
         }
 
 
@@ -57,7 +60,7 @@ namespace JPFData.Managers
         {
             try
             {
-                return _db.Expenses.Where(e => e.UserId == Global.Instance.User.Id).Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList();
+                return _db.Expenses.Where(e => e.UserId == _userId).Where(e => e.BillId > 0).Where(e => e.IsPaid == false).ToList();
             }
             catch (Exception e)
             {

@@ -9,9 +9,9 @@ namespace JPFData.Metrics
         {
             AccountMetrics = new AccountMetrics();
             CreditCardMetrics = new CreditCardMetrics();
-            MandatoryExpenses = decimal.Zero;
-            DiscretionaryExpenses = decimal.Zero;
-            Income = decimal.Zero;
+            MandatoryExpenses = 0.0m;;
+            DiscretionaryExpenses = 0.0m;;
+            Income = 0.0m;;
         }
 
         public AccountMetrics AccountMetrics { get; set; }

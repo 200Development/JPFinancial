@@ -16,7 +16,6 @@ namespace JPFinancial.Controllers
         private readonly TransactionManager _transactionManager = new TransactionManager();
         private readonly AccountManager _accountManager = new AccountManager();
 
-        // GET: Transactions
         public ActionResult Index()
         {
             try
@@ -35,7 +34,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // GET: Transactions/Create
         public ActionResult Create()
         {
             try
@@ -53,17 +51,12 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // POST: Transactions/Create
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Create(TransactionViewModel transactionVM)
         {
             try
             {
-                if (!ModelState.IsValid) return View(transactionVM);
-
                 switch (transactionVM.Type)
                 {
                     case TransactionTypesEnum.Expense:
@@ -81,6 +74,9 @@ namespace JPFinancial.Controllers
                                 UpdateModel(transactionVM.Transaction);
                             }
 
+
+                            if (!ModelState.IsValid) return View(transactionVM);
+                            _transactionManager.Create(transactionVM);
                             break;
                         }
                     case TransactionTypesEnum.Income:
@@ -101,8 +97,13 @@ namespace JPFinancial.Controllers
                         throw new NotImplementedException();
                 }
 
-                if (!_accountManager.Update())
-                    return View(transactionVM);
+
+                if (transactionVM.moreTransactions)
+                {
+                    Create();
+
+                }
+
 
                 return RedirectToAction("Index");
             }
@@ -113,7 +114,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // GET: Transactions/Edit/5
         public ActionResult Edit(int? id)
         {
             try
@@ -135,7 +135,7 @@ namespace JPFinancial.Controllers
 
                 transactionVM.Accounts = accountManager.GetAllAccounts();
 
-                return HttpNotFound();
+                return View(transactionVM);
             }
             catch (Exception e)
             {
@@ -144,9 +144,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // POST: Transactions/Edit/5
-        // To protect from overposting attacks, please enable the specific properties you want to bind to, for
-        // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(TransactionViewModel transactionVM)
@@ -167,7 +164,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // GET: Transactions/Delete/5
         public ActionResult Delete(int? id)
         {
             try
@@ -193,7 +189,6 @@ namespace JPFinancial.Controllers
             }
         }
 
-        // POST: Transactions/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public ActionResult DeleteConfirmed(int id)

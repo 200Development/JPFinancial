@@ -42,6 +42,7 @@ namespace JPFData.ViewModels
         public TransactionTypesEnum Type { get; set; }
         public string Date { get; set; }
         public bool IsBill { get; set; }
+        public bool moreTransactions { get; set; }
         
         
         // Using Class instead of Enum to allow custom display names

@@ -130,7 +130,10 @@
                         </div>
                         <div class="footer">
                             <hr />
-                            <div class="stats"></div>
+                            <div class="stats">
+                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingAccountDeficit):</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingAccountDeficit)
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -157,6 +160,8 @@
                         <div class="footer">
                             <hr />
                             <div class="stats">
+                                <span style="margin-right: 12px">@Html.LabelFor(model => model.Metrics.OutstandingAccountDeficit):</span>
+                                @Html.DisplayFor(model => model.Metrics.OutstandingAccountDeficit)
                             </div>
                         </div>
                     </div>
@@ -191,12 +196,12 @@
                             <button class="btn btn-sm">
                                 @Html.ActionLink("Add Account", "Create")
                             </button>
-                            <button class="btn btn-sm">
+                            @*<button class="btn btn-sm">
                                 @Html.ActionLink("Update", "Update")
-                            </button>
-                            <button class="btn btn-sm">
+                            </button>*@
+                            @*<button class="btn btn-sm">
                                 @Html.ActionLink("Rebalance", "Rebalance")
-                            </button>
+                            </button>*@
                         </div>
                         <div class="container-fluid" style="text-align: center">
                             @foreach (var item in Model.Accounts.OrderByDescending(a => a.Balance).ThenBy(b => b.Name))

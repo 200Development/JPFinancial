@@ -7,7 +7,7 @@ namespace JPFData.Models.JPFinancial
     {
         public Deduction()
         {
-            Amount = decimal.Zero;
+            Amount = 0.0m;;
             BeforeTax = false;
         }
 

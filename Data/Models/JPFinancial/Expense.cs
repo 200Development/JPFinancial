@@ -7,7 +7,7 @@ namespace JPFData.Models.JPFinancial
         public Expense()
         {
             Due = DateTime.Today;
-            Amount = decimal.Zero;
+            Amount = 0.0m;;
             BillId = 0;
             CreditAccountId = 0;
             IsPaid = false;

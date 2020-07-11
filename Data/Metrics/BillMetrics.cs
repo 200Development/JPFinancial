@@ -7,11 +7,11 @@ namespace JPFData.Metrics
     {
         public BillMetrics()
         {
-            LargestBalance = decimal.Zero;
-            SmallestBalance = decimal.Zero;
-            AverageBalance = decimal.Zero;
-            PercentageOfSavings = decimal.Zero;
-            TotalBalance = decimal.Zero;
+            LargestBalance = 0.0m;
+            SmallestBalance = 0.0m;
+            AverageBalance = 0.0m;
+            PercentageOfSavings = 0.0m;
+            TotalBalance = 0.0m;
         }
 
         [Display(Name = "Largest CurrentBalance"), DataType(DataType.Currency), DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]

@@ -1,49 +1,50 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using JPFData.DTO;
 using JPFData.Metrics;
+using JPFData.Models.JPFinancial;
+using JPFData.ViewModels;
 
 
 namespace JPFData.Managers
 {
     public class DashboardManager
     {
-        private readonly ApplicationDbContext _db = new ApplicationDbContext();
-        private readonly Calculations _calculations = new Calculations();
-
+        private readonly ApplicationDbContext _db;
+        private readonly Calculations _calc;
+        private readonly string _userId;
 
         public DashboardManager()
         {
+            _db = new ApplicationDbContext();
+            _calc = new Calculations();
+            _userId = Global.Instance.User != null ? Global.Instance.User.Id : string.Empty;
+
             ValidationErrors = new List<KeyValuePair<string, string>>();
         }
 
 
         public List<KeyValuePair<string, string>> ValidationErrors { get; set; }
 
-
-        public DashboardDTO Get()
+        public List<Account> GetAllAccounts()
         {
-            return Get(new DashboardDTO());
+            try
+            {
+                return _db.Accounts.Where(a => a.UserId == _userId && !a.IsPoolAccount).ToList();
+            }
+            catch (Exception e)
+            {
+                Logger.Instance.Error(e);
+                throw;
+            }
         }
-
-        public DashboardDTO Get(DashboardDTO entity)
-        {
-            DashboardDTO ret = new DashboardDTO();
-            TransactionManager tManager = new TransactionManager();
-
- 
-            ret.StaticFinancialMetrics = RefreshFinancialMetrics(ret);
-            ret.TimePeriodMetrics = RefreshTimePeriodMetrics(ret);
-            return ret;
-        }
-
-        private StaticFinancialMetrics RefreshFinancialMetrics(DashboardDTO dto)
+        
+        public StaticFinancialMetrics RefreshStaticMetrics()
         {
             StaticFinancialMetrics metrics = new StaticFinancialMetrics();
             //TODO: create StaticFinancialMetrics manager class 
 
-            var income = _calculations.GetMonthlyIncome();
+            var income = _calc.GetMonthlyIncome();
             var bills = _db.Bills.ToList();
             var loans = _db.Loans.ToList();
             var transactions = _db.Transactions.ToList();
@@ -73,10 +74,10 @@ namespace JPFData.Managers
 
             /* PAST MONTHLY EXPENSES */
             var lastMonth = DateTime.Today.AddMonths(-1);
-            var lastMonthFirstDay = _calculations.FirstDayOfMonth(lastMonth.Year, lastMonth.Month);
-            var lastMonthLastDay = _calculations.LastDayOfMonth(lastMonth);
-            metrics.LastMonthDiscretionarySpending = _calculations.DiscretionarySpendingByDateRange(lastMonthFirstDay, lastMonthLastDay);
-            metrics.LastMonthMandatoryExpenses = _calculations.ExpensesByDateRange(lastMonthFirstDay, lastMonthLastDay);
+            var lastMonthFirstDay = _calc.FirstDayOfMonth(lastMonth.Year, lastMonth.Month);
+            var lastMonthLastDay = _calc.LastDayOfMonth(lastMonth);
+            metrics.LastMonthDiscretionarySpending = _calc.DiscretionarySpendingByDateRange(lastMonthFirstDay, lastMonthLastDay);
+            metrics.LastMonthMandatoryExpenses = _calc.ExpensesByDateRange(lastMonthFirstDay, lastMonthLastDay);
 
             /* RANKED EXPENSES */
             var costliestExpense = transactions.Where(t => t.Date.Month == lastMonth.Month).OrderByDescending(t => t.Amount).Select(t => t.Amount).Take(1).FirstOrDefault();
@@ -226,15 +227,15 @@ namespace JPFData.Managers
             }
         }
 
-        private TimePeriodFinancialMetrics RefreshTimePeriodMetrics(DashboardDTO entity)
+        public TimeValueOfMoneyMetrics RefreshTVMMetrics(DashboardViewModel dashboardVM)
         {
-            TimePeriodFinancialMetrics metric = new TimePeriodFinancialMetrics();
+            TimeValueOfMoneyMetrics metric = new TimeValueOfMoneyMetrics();
 
-            metric.OneMonthSavings = _calculations.FutureValue(DateTime.Today.AddMonths(1), entity.StaticFinancialMetrics.NetIncome);
-            metric.ThreeMonthsSavings = _calculations.FutureValue(DateTime.Today.AddMonths(3), entity.StaticFinancialMetrics.NetIncome);
-            metric.SixMonthsSavings = _calculations.FutureValue(DateTime.Today.AddMonths(6), entity.StaticFinancialMetrics.NetIncome);
-            metric.OneYearSavings = _calculations.FutureValue(DateTime.Today.AddYears(1), entity.StaticFinancialMetrics.NetIncome);
-            metric.MonthlyExpenses = entity.StaticFinancialMetrics.TotalDue;
+            metric.OneMonthSavings = _calc.FutureValue(DateTime.Today.AddMonths(1), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.ThreeMonthsSavings = _calc.FutureValue(DateTime.Today.AddMonths(3), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.SixMonthsSavings = _calc.FutureValue(DateTime.Today.AddMonths(6), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.OneYearSavings = _calc.FutureValue(DateTime.Today.AddYears(1), dashboardVM.StaticFinancialMetrics.NetIncome);
+            metric.MonthlyExpenses = dashboardVM.StaticFinancialMetrics.TotalDue;
             metric.MonthlyIncome = (Convert.ToDecimal(_db.Salaries.Select(s => s.NetIncome).FirstOrDefault()) * 2);
 
 
@@ -242,7 +243,7 @@ namespace JPFData.Managers
         }
 
 
-        private bool Validate(DashboardDTO entity)
+        private bool Validate()
         {
             ValidationErrors.Clear();
 
